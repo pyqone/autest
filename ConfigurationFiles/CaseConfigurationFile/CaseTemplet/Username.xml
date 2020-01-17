@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="GBK"?>
+<cases project="Username">
+	<case function="addRightLoginCase">
+		<title value="通过正确的用户名与密码进行登录" />
+		<keyword value="正确的,用户名,密码,登录" />
+		<rank value="1" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="正确输入用户名及密码，登录" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="能正常登录系统，且登陆后跳转的页面正确"/>
+		</expectations>
+	</case>
+	
+	<case function="addErrorLoginCase">
+		<title value="通过非常规的用户名与密码进行登录" />
+		<keyword value="不正确的,用户名,密码,登录" />
+		<rank value="2" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="输入一个不存在的用户名及密码，登录" />
+			<step id="2" value="输入一个存在的用户名但密码输入与其不对应，登录" />
+			<step id="3" value="不输入用户名，登录" />
+			<step id="4" value="不输入密码，登录" />
+			<step id="5" value="在用用户名与密码中输入中文或特殊字符，登录" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="无法登录，并给出相应的提示"/>
+			<expectation id="2" value="无法登录，并给出相应的提示"/>
+			<expectation id="3" value="无法登录，并给出相应的提示"/>
+			<expectation id="4" value="无法登录，并给出相应的提示"/>
+			<expectation id="5" value="若带中文的用户名或密码能注册，则能正常登录系统，且登陆后跳转的页面正确；若不能注册，则无法登录，并给出相应的提示"/>
+		</expectations>
+	</case>
+	
+	<case function="addCaptchaCase">
+		<title value="输入不同的验证码进行登录" />
+		<keyword value="验证码,登录" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="帐号和密码输入正确" />
+		</preconditions>
+		<steps>
+			<step id="1" value="正确输入验证码，登录" />
+			<step id="2" value="不输入验证码，登录" />
+			<step id="3" value="输入错误的验证码，登录" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="能正常登录系统，且登陆后跳转的页面正确"/>
+			<expectation id="2" value="无法登录，并给出相应的提示"/>
+			<expectation id="3" value="无法登录，并给出相应的提示"/>
+		</expectations>
+	</case>
+	
+	<case function="addLoginAuthorityCase">
+		<title value="通过不同权限的帐号进行登录" />
+		<keyword value="权限,登录" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="帐号和密码输入正确" />
+		</preconditions>
+		<steps>
+			<step id="1" value="输入不同权限的帐号和密码，登录" />
+			<step id="2" value="在所有登录页面上输入与之权限不对应的帐号，登录" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="能正常登录系统，且登陆后能看到权限对应的页面及功能"/>
+			<expectation id="2" value="无法登录，并给出相应的提示"/>
+		</expectations>
+	</case>
+	
+	<case function="addUsernameRegisterCase">
+		<title value="注册不同用户名的账号" />
+		<keyword value="用户名,注册" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="已在注册账号界面" />
+			<precondition value="除用户名外，其他信息均正确填写" />
+		</preconditions>
+		<steps>
+			<step id="1" value="通过一个未被注册且正确的用户名进行注册操作" />
+			<step id="2" value="通过一个已注册的用户名进行注册操作" />
+			<step id="3" value="输入一个大于11位的数字字符进行注册操作" />
+			<step id="4" value="输入一个小于11位的数字字符进行注册操作" />
+			<step id="5" value="输入非数字字符进行注册操作" />
+			<step id="6" value="通过一个不符合要求的用户名进行注册操作" />
+			<step id="7" value="不输入用户名进行注册操作" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="注册完成后能通过该帐号及对应的密码进行登录"/>
+			<expectation id="2" value="提示用户名已存在"/>
+			<expectation id="3" value="提示用户名不合理"/>
+			<expectation id="4" value="提示用户名不合理"/>
+			<expectation id="5" value="提示用户名不合理"/>
+			<expectation id="6" value="提示用户名不合理"/>
+			<expectation id="7" value="提示请输入用户名"/>
+		</expectations>
+	</case>
+	
+	<case function="addUsernameForgetCase">
+		<title value="通过不同用户名的账号进行忘记密码操作" />
+		<keyword value="用户名,忘记密码" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="已在忘记密码界面" />
+			<precondition value="除用户名外，其他信息均正确填写" />
+		</preconditions>
+		<steps>
+			<step id="1" value="通过一个已存在且正确的用户名进行忘记密码操作" />
+			<step id="2" value="通过一个不存在的用户名进行忘记密码操作" />
+			<step id="3" value="通过一个不符合要求的用户名进行忘记密码操作" />
+			<step id="4" value="不输入用户名进行忘记密码操作" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="密码修改成功，并且可以使用该帐号及修改的密码进行登录操作"/>
+			<expectation id="2" value="提示用户名不存在"/>
+			<expectation id="3" value="提示用户名不合理"/>
+			<expectation id="4" value="提示请输入用户名"/>
+		</expectations>
+	</case>
+	
+	<case function="addPasswordRegisterOrForgetCase">
+		<title value="通过不同的密码进行*{operation}*操作" />
+		<keyword value="密码,*{operation}*" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="已在*{operation}*账号界面" />
+			<precondition value="除密码外，其他信息均正确填写" />
+		</preconditions>
+		<steps>
+			<step id="1" value="通过正确的密码进行*{operation}*操作" />
+			<step id="2" value="通过一个不符合要求的密码进行*{operation}*操作" />
+			<step id="3" value="不输入密码进行*{operation}*操作" />
+			<step id="4" value="不再次输入密码，*{operation}*操作" />
+			<step id="5" value="两次密码输入不一致后进行*{operation}*操作" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="*{operation}*操作完成后能通过该帐号及对应的密码进行登录"/>
+			<expectation id="2" value="提示密码不合理"/>
+			<expectation id="3" value="提示请输入密码"/>
+			<expectation id="4" value="提示两次密码输入不一致或者提示输入确认密码"/>
+			<expectation id="5" value="提示两次密码输入不一致"/>
+		</expectations>
+	</case>
+	
+	<case function="addCodeRegisterOrForgetCase">
+		<title value="通过不同的验证码进行*{operation}*操作" />
+		<keyword value="验证码,*{operation}*" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="已在*{operation}*账号界面" />
+			<precondition value="除密码外，其他信息均正确填写" />
+		</preconditions>
+		<steps>
+			<step id="1" value="通过正确的验证码进行*{operation}*" />
+			<step id="2" value="通过一个不正确的验证码进行*{operation}*" />
+			<step id="3" value="不输入验证码进行*{operation}*" />
+			<step id="4" value="重新发送验证码后输入上一次的验证码" />
+			<step id="5" value="重新发送验证码后输入新的验证码" />
+			<step id="6" value="超过验证码的过期时间后再输入验证码，*{operation}*" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="*{operation}*操作完成后能通过该帐号及对应的密码进行登录"/>
+			<expectation id="2" value="提示验证码不正确"/>
+			<expectation id="3" value="提示请输入验证码"/>
+			<expectation id="4" value="提示验证码输入有误"/>
+			<expectation id="5" value="*{operation}*操作完成后能通过该帐号及对应的密码进行登录"/>
+			<expectation id="6" value="提示验证码不正确"/>
+		</expectations>
+	</case>
+	
+	<case function="addAlterPasswordCase">
+		<title value="修改用户密码" />
+		<keyword value="修改,密码" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="已登录系统" />
+			<precondition value="除密码外，其他信息均正确填写" />
+		</preconditions>
+		<steps>
+			<step id="1" value="正确输入原密码并按要求输入新密码后修改密码" />
+			<step id="2" value="输入错误的原密码后修改密码" />
+			<step id="3" value="不输入原密码进行修改密码" />
+			<step id="4" value="输入一个不符合要求的密码进行修改密码" />
+			<step id="5" value="不输入密码进行修改密码" />
+			<step id="6" value="不再次输入密码进行修改密码" />
+			<step id="7" value="两次密码输入不一致后进行修改密码" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="修改密码成功，该帐号能通过新修改的密码进行登录"/>
+			<expectation id="2" value="提示用户原密码输入有误"/>
+			<expectation id="3" value="提示请输入原密码"/>
+			<expectation id="4" value="提示密码不合理"/>
+			<expectation id="5" value="提示请输入密码"/>
+			<expectation id="6" value="提示两次密码输入不一致或者提示输入确认密码"/>
+			<expectation id="7" value="提示两次密码输入不一致"/>
+		</expectations>
+	</case>
+</cases>

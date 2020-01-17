@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="GBK"?>
+<cases project="AddInformation">
+	<case function="addTextboxCase">
+		<steps>
+			<step id="1" value="不填写或只输入空格，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="填写特殊字符或HTML代码，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="输入非*{charGroup}*，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="输入小于*{lengthMin}*个字符，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="输入*{lengthMin}*个字符，点击“*{buttonName}*”按钮"/>
+			<step id="6" value="输入大于*{lengthMax}*个字符，点击“*{buttonName}*”按钮"/>
+			<step id="7" value="输入*{lengthMax}*个字符，点击“*{buttonName}*”按钮"/>
+			<step id="8" value="输入小于*{numberMin}*的数字，点击“*{buttonName}*”按钮"/>
+			<step id="9" value="输入*{numberMin}*的数字，点击“*{buttonName}*”按钮"/>
+			<step id="10" value="输入大于*{numberMax}*的数字，点击“*{buttonName}*”按钮"/>
+			<step id="11" value="输入*{numberMax}*的数字，点击“*{buttonName}*”按钮"/>
+			<step id="12" value="填写一个已存在的*{name}*信息，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectationss>
+		</expectationss>
+	</case>
+	
+	<case function="addSelectboxCase">
+		<steps>
+			<step id="1" value="不进行选择或选择空选项，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="选择选项中的第一项，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="选择选项中的最后一项，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectationss>
+		</expectationss>
+	</case>
+	
+	<case function="addRadioButtonCase">
+		<steps>
+			<step id="1" value="从第一个选项开始，将所有的选项依次点击"/>
+			<step id="2" value="不进行选择，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="选择选项中的第一项，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="选择选项中的最后一项，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+			<expectation id="1" value="不会出现有两个或以上的选项被选中的情况"/>
+		</expectations>
+	</case>
+	
+	<case function="addCheckboxCase">
+		<steps>
+			<step id="1" value="从第一个选项开始，依次点击所有的选项"/>
+			<step id="2" value="再次依次点击所有的选项"/>
+			<step id="3" value="不进行选择，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="选择选项中的第一项，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="选择选项中的最后一项，点击“*{buttonName}*”按钮"/>
+			<step id="6" value="选择其中多个选项，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+			<expectation id="1" value="所有的选项均被勾选"/>
+			<expectation id="2" value="所有的选项均被取消勾选"/>
+		</expectations>
+	</case>
+	
+	<case function="addDateCase">
+		<steps>
+			<step id="1" value="不选择时间，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="选择当前的时间，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="选择时间后清空时间，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="手动输入正确格式的日期，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="手动输入非正确格式的日期，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+		</expectations>
+	</case>
+	
+	<case function="addStartDateCase">
+		<steps>
+			<step id="1" value="不选择时间，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="选择当前的时间，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="选择时间后清空时间，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="手动输入正确格式的日期，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="手动输入非正确格式的日期，点击“*{buttonName}*”按钮"/>
+			<step id="6" value="输入或选择大于*{endDateName}*的日期，点击“*{buttonName}*”按钮"/>
+			<step id="7" value="选择大于*{endDateName}*的日期，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+		</expectations>
+	</case>
+	
+	<case function="addEndDateCase">
+		<steps>
+			<step id="1" value="不选择时间，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="选择当前的时间，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="选择时间后清空时间，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="手动输入正确格式的日期，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="手动输入非正确格式的日期，点击“*{buttonName}*”按钮"/>
+			<step id="6" value="输入或选择小于*{startDateName}*的日期，点击“*{buttonName}*”按钮"/>
+			<step id="7" value="选择小于*{startDateName}*的日期，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+		</expectations>
+	</case>
+	
+	<case function="addPhoneCase">
+		<steps>
+			<step id="1" value="不进行输入，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="输入非数字字符，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="输入大于11位的数字，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="输入小于11位的数字，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="输入大于7位的数字，点击“*{buttonName}*”按钮"/>
+			<step id="6" value="输入小于7位的数字，点击“*{buttonName}*”按钮"/>
+			<step id="7" value="输入不符合规则但长度符合规则的数字，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+		</expectations>
+	</case>
+	
+	<case function="addIDCardCase">
+		<steps>
+			<step id="1" value="不进行输入，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="输入非数字字符，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="输入15位的证件信息，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="输入18位的证件信息，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="输入末尾带“X”或“x”的证件信息，点击“*{buttonName}*”按钮"/>
+			<step id="6" value="输入大于18位的数字，点击“*{buttonName}*”按钮"/>
+			<step id="7" value="输入小于18位但大于15位的数字，点击“*{buttonName}*”按钮"/>
+			<step id="8" value="输入小于15位的数字，点击“*{buttonName}*”按钮"/>
+			<step id="9" value="输入不符合证件规则但长度符合规则的数字（如123456789012345678），点击“*{buttonName}*”按钮"/>
+			<step id="10" value="输入存在的证件信息，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+		</expectations>
+	</case>
+	
+	<case function="addUploadImageCase">
+		<steps>
+			<step id="1" value="不*{text}*图片，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="上传图片后点击图片"/>
+			<step id="3" value="*{text}*图片后删除图片再*{text}*图片，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="*{text}*同一张图片，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="拍照后再取消拍照"/>
+			<step id="6" value="*{text}*超过限制大小的图片，点击“*{buttonName}*”按钮"/>
+			<step id="7" value="*{text}*较大的图片（如超过3M的图片），点击“*{buttonName}*”按钮"/>
+			<step id="8" value="上传非*{fileGroup}*格式的文件，点击“*{buttonName}*”按钮"/>
+			<step id="9" value="*{text}*上传非图片格式的文件，点击“*{buttonName}*”按钮"/>
+			<step id="10" value="*{text}*小于*{fileMin}**{s}**{mode}*，点击“*{buttonName}*”按钮"/>
+			<step id="11" value="*{text}**{fileMin}**{s}**{mode}*，点击“*{buttonName}*”按钮"/>
+			<step id="12" value="*{text}*大于*{fileMax}**{s}**{mode}*，点击“*{buttonName}*”按钮"/>
+			<step id="13" value="*{text}**{fileMax}**{s}**{mode}*，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+			<expectation id="2" value="图片能进行预览"/>
+			<expectation id="5" value="界面上不显示任何图片"/>
+		</expectations>
+	</case>
+	
+	<case function="addUploadFileCase">
+		<steps>
+			<step id="1" value="不上传文件，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="上传文件后删除图片再上传一个文件，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="上传同一个文件，点击“*{buttonName}*”按钮"/>
+			<step id="4" value="上传超过限制大小的文件，点击“*{buttonName}*”按钮"/>
+			<step id="5" value="上传较大的文件（如超过50M的文件），点击“*{buttonName}*”按钮"/>
+			<step id="6" value="上传非*{fileGroup}*格式的文件，点击“*{buttonName}*”按钮"/>
+			<step id="7" value="*{text}*小于*{fileMin}**{s}**{mode}*，点击“*{buttonName}*”按钮"/>
+			<step id="8" value="*{text}**{fileMin}**{s}**{mode}*，点击“*{buttonName}*”按钮"/>
+			<step id="9" value="*{text}*大于*{fileMax}**{s}**{mode}*，点击“*{buttonName}*”按钮"/>
+			<step id="10" value="*{text}**{fileMax}**{s}**{mode}*，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+		</expectations>
+	</case>
+
+	<case function="addWholeInformationCase">
+		<steps>
+			<step id="1" value="正确填写所有的信息，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+		</expectations>
+	</case>
+	
+	<case function="addUnWholeInformationCase">
+		<steps>
+			<step id="1" value="不填写任何信息，点击“*{buttonName}*”按钮"/>
+			<step id="2" value="只填写所有的必填项信息，点击“*{buttonName}*”按钮"/>
+			<step id="3" value="只填写所有的非必填项信息，点击“*{buttonName}*”按钮"/>
+		</steps>
+		<expectations>
+		</expectations>
+	</case>
+</cases>

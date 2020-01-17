@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templet name="AddInformation">
+	<case name="addTextboxCase">
+		<前置依赖配置>新增不同&name&的&informationName</前置依赖配置>
+		<title>新增不同&name&的&informationName</title>
+		<st_and_ex mark="isMsut">
+			<step>不填写或只输入空格，点击“&ButtonName&”按钮</step>
+		</st_and_ex>
+		<st_and_ex mark="isRepeat">
+			<step>不填写或只输入空格，点击“&ButtonName&”按钮</step>
+		</st_and_ex>
+		<st_and_ex>
+			<step>填写特殊字符或HTML代码，点击“&ButtonName&”按钮</step>
+		</st_and_ex>
+		<st_and_ex mark="inputConfine">
+			<step>输入非&CharType&字符，点击“&ButtonName&”按钮</step>
+		</st_and_ex>
+	</case>
+	<function name="inputConfineStep">
+		<前置依赖配置>新增不同&name&的&informationName</前置依赖配置>
+		<title>新增不同&name&的&informationName</title>
+		<st_and_ex mark="isMsut">
+			<step>不填写或只输入空格，点击“&ButtonName&”按钮</step>
+		</st_and_ex>
+		<st_and_ex mark="isRepeat">
+			<step>不填写或只输入空格，点击“&ButtonName&”按钮</step>
+		</st_and_ex>
+		<st_and_ex>
+			<step>填写特殊字符或HTML代码，点击“&ButtonName&”按钮</step>
+		</st_and_ex>
+		<st_and_ex mark="inputConfine">
+			<step>输入非&CharType&字符，点击“&ButtonName&”按钮</step>
+		</st_and_ex>
+	</case>
+</templet>

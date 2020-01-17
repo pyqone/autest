@@ -1,0 +1,203 @@
+{
+	"id": "b109b5e98b68afe07bef4918da",
+	"class": "sheet",
+	"title": "画布 1",
+	"rootTopic": {
+		"id": "",
+		"class": "topic",
+		"title": "",
+		"structureClass": "org.xmind.ui.map.clockwise",
+		"customWidth": 388.33289802144977,
+		"extensions": [
+			{
+				"content": [
+					{
+						"content": "1",
+						"name": "right-number"
+					}
+				],
+				"provider": "org.xmind.ui.map.unbalanced"
+			}
+		]
+	},
+	"theme": {
+		"id": "d3983b42f1b90d4d50101b083f",
+		"importantTopic": {
+			"type": "topic",
+			"properties": {
+				"fo:font-weight": "bold",
+				"fo:color": "#434B54",
+				"svg:fill": "#FFEC00"
+			}
+		},
+		"minorTopic": {
+			"type": "topic",
+			"properties": {
+				"fo:font-weight": "bold",
+				"fo:color": "#434B54",
+				"svg:fill": "#FFA400"
+			}
+		},
+		"expiredTopic": {
+			"type": "topic",
+			"properties": {
+				"fo:font-style": "italic",
+				"fo:text-decoration": " line-through"
+			}
+		},
+		"centralTopic": {
+			"properties": {
+				"svg:fill": "#39BFC2",
+				"border-line-width": "5pt",
+				"border-line-color": "#CDE7EB",
+				"fo:color": "#F4F9FA",
+				"fo:font-family": "Times New Roman",
+				"fo:font-weight": "normal",
+				"fo:font-style": "italic",
+				"fo:font-size": "30pt",
+				"line-color": "#CDE7EB",
+				"line-class": "org.xmind.branchConnection.bight"
+			},
+			"styleId": "9c6b189e5ccbb87cd77a7830ae",
+			"type": "topic"
+		},
+		"floatingTopic": {
+			"properties": {
+				"svg:fill": "#39BFC2",
+				"line-width": "2px",
+				"line-class": "org.xmind.branchConnection.bight"
+			},
+			"styleId": "eadb271f6bba50b5b834c9836c",
+			"type": "topic"
+		},
+		"mainTopic": {
+			"properties": {
+				"svg:fill": "none",
+				"fo:color": "#39BFC2",
+				"fo:font-family": "Times New Roman",
+				"fo:font-weight": "normal",
+				"fo:font-size": "18pt",
+				"fo:text-align": "center",
+				"line-width": "2pt",
+				"line-class": "org.xmind.branchConnection.bight",
+				"border-line-width": "0"
+			},
+			"styleId": "8c8befaca46add0bbd37485296",
+			"type": "topic"
+		},
+		"subTopic": {
+			"properties": {
+				"fo:font-family": "Times New Roman",
+				"fo:font-weight": "normal",
+				"shape-class": "org.xmind.topicShape.roundedRect",
+				"svg:fill": "none",
+				"border-line-width": "0",
+				"fo:color": "#8793A5",
+				"fo:text-align": "left",
+				"line-class": "org.xmind.branchConnection.bight",
+				"line-color": "#CDE7EB"
+			},
+			"styleId": "bd4b3b9be19b419c650599c59b",
+			"type": "topic"
+		},
+		"summary": {
+			"type": "summary",
+			"properties": {
+				"line-width": "1px",
+				"shape-class": "org.xmind.summaryShape.curly"
+			}
+		},
+		"summaryTopic": {
+			"properties": {
+				"svg:fill": "#39BFC2",
+				"line-class": "org.xmind.branchConnection.bight"
+			},
+			"styleId": "4f7943898688787bc8037b38b1",
+			"type": "topic"
+		},
+		"boundary": {
+			"properties": {
+				"line-color": "#267D81",
+				"fo:color": "#FFFFFF"
+			},
+			"styleId": "0b6bc0207299eca8537d9affd8",
+			"type": "boundary"
+		},
+		"relationship": {
+			"properties": {
+				"line-color": "#267D81"
+			},
+			"styleId": "236b59db2f9818d5a010a9d869",
+			"type": "relationship"
+		},
+		"map": {
+			"properties": {
+				"line-tapered": "tapered",
+				"svg:fill": "#F4F9FA"
+			},
+			"styleId": "c9c904312f6968e676f4fafd22",
+			"type": "map"
+		}
+	},
+	"topicPositioning": "free",
+	"relationships": [
+		{
+			"id": "f0bc043c-671a-49a9-811e-1140cffdb7cd",
+			"end1Id": "960ad385-0c18-493d-9b37-1388c69e8c60",
+			"end2Id": "5329e7f1-33f4-4b00-8386-fb369cd3ec66",
+			"controlPoints": {
+				"0": {
+					"x": 764.1495997023039,
+					"y": -26.164953617783909
+				},
+				"1": {
+					"x": 2028.1260057364903,
+					"y": 27.56399207932236
+				}
+			},
+			"titleUnedited": true
+		},
+		{
+			"id": "7f1a995f-4dbc-40ac-9d0e-9c5a327c01a0",
+			"end1Id": "a1d8d2d4-a3f9-406d-9304-2ea8ffea6306",
+			"end2Id": "f97a529b-44cd-4374-a9d9-58998efda10f",
+			"controlPoints": {
+				"0": {
+					"x": 522.7298780505266,
+					"y": 1.9739065068178548
+				},
+				"1": {
+					"x": 694.7075962998249,
+					"y": -1.9739065068178548
+				}
+			},
+			"titleUnedited": true
+		},
+		{
+			"id": "28853890-b223-4dd8-8471-594ae4002034",
+			"end1Id": "7f609811-fa0f-4752-8a3b-d0f07927ddfd",
+			"end2Id": "8e6d91f7-146a-4e48-baba-1c687b9f64b4",
+			"controlPoints": {
+				"0": {
+					"x": 393.58217786594039,
+					"y": -2.8936990505694668
+				},
+				"1": {
+					"x": 423.60532213405966,
+					"y": -4.918800949430505
+				}
+			},
+			"titleUnedited": true
+		}
+	],
+	"legend": {
+		"visibility": "hidden"
+	},
+	"topicOverlapping": "overlap",
+	"style": {
+		"id": "13694d6b-0f40-4e88-89c0-27705cb9e249",
+		"properties": {
+			"multi-line-colors": "#5BD4FF #38B2FF #2589E5 #005FA2 #253777 #14235A"
+		}
+	}
+}

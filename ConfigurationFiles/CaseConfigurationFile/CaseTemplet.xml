@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templet>
+	<sheet id="case" name="测试用例" freeze="4">
+		<column id="case_id" name="用例编号" wide="14.00" align="center"/>
+		<column id="module" name="所属模块" wide="22.00" align="center"/>
+		<column id="story" name="相关需求" wide="22.00" align="center"/>
+		<column id="title" name="用例标题" wide="30.88" align="left"/>
+		<column id="step" name="步骤" wide="45.75" align="left"/>
+		<column id="expect" name="预期" wide="45.75" align="left"/>
+		<column id="keys" name="关键词" wide="7.88" align="left"/>
+		<column id="type" name="用例类型" wide="9.63" align="left"/>
+		<column id="rank" name="优先级" wide="6.00" align="left"/>
+		<column id="state" name="用例状态" wide="6.00" align="left"/>
+		<column id="stage" name="适用阶段" wide="6.00" align="left"/>
+		<column id="condition" name="前置条件" wide="18.25" align="left"/>
+		<column id="flow" name="所属流程" wide="15.00" align="center"/>
+	</sheet>
+</templet>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="GBK"?>
+<cases project="Map">
+	<case function="addRangeFindingCase">
+		<title value="在地图上进行测距" />
+		<keyword value="地图,测距" />
+		<rank value="3" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="设置画线的起点后拖动鼠标" />
+			<step id="2" value="在地图上画线后单击鼠标左键" />
+			<step id="3" value="在地图上画线后双击鼠标左键" />
+			<step id="4" value="停止画线后缩放地图" />
+			<step id="5" value="设置起点后直接双击左键" />
+			<step id="6" value="在不同的地图比例上画等长的线段" />
+			<step id="7" value="在画好的线段上，点击“×”按钮" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="线随鼠标的移动而增长，且标注中显示的距离随鼠标的移动而改变"/>
+			<expectation id="2" value="还能继续画线测距，且标注中显示的距离应累加上一次定位的距离"/>
+			<expectation id="3" value="停止画线，且线段留在地图上"/>
+			<expectation id="4" value="线段随地图的缩放而改变其长度，且方框中的内容显示不变"/>
+			<expectation id="5" value="停止画线"/>
+			<expectation id="6" value="随地图缩放程度不同，其不同比例尺下画出的等长的线段在标注中显示的距离不同"/>
+			<expectation id="7" value="线段被清除"/>
+		</expectations>
+	</case>
+	
+	<case function="addMapPointCase">
+		<title value="查看地图*{pointName}*定位点信息" />
+		<keyword value="地图,*{pointName}*,定位点" />
+		<rank value="2" />
+		<preconditions>
+			<precondition value="地图上有多个*{pointName}*定位点以及聚合点存在" />
+		</preconditions>
+		<steps>
+			<step id="1" value="在地图上点击*{pointName}*的定位点" />
+			<step id="2" value="在地图上点击*{pointName}*的聚合点" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="能查看到该*{pointName}*的详细信息"/>
+			<expectation id="2" value="地图能自动缩放到能看到*{pointName}*定位点的比例"/>
+		</expectations>
+	</case>
+	
+	<case function="addMapSearchInformationCase">
+		<title value="通过*{condition}*在地图上搜索*{name}*信息" />
+		<keyword value="地图,*{name}*,搜索" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="地图上有*{name}*信息存在" />
+		</preconditions>
+		<steps>
+			<step id="1" value="通过*{condition}*对*{name}*进行模糊搜索" />
+			<step id="2" value="通过*{condition}*对*{name}*进行精准搜索" />
+			<step id="3" value="不输入信息进行搜索" />
+			<step id="4" value="输入*{name}*中都不包含的关键词进行搜索" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="地图上显示所有符合条件的*{name}*定位点"/>
+			<expectation id="2" value="地图上显示*{name}*对应的定位点"/>
+			<expectation id="3" value="地图界面保持不变"/>
+			<expectation id="4" value="提示无搜索结果"/>
+		</expectations>
+	</case>
+	
+	<case function="addCarLocusPlaybackCase">
+		<title value="回放车辆轨迹" />
+		<keyword value="车辆轨迹" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="车辆有轨迹存在" />
+		</preconditions>
+		<steps>
+			<step id="1" value="查询到车辆的轨迹后点击回放或播放按钮" />
+			<step id="2" value="从最小的回放速度开始依次点击到最大的播放速度" />
+			<step id="3" value="在轨迹播放时点击播放按钮" />
+			<step id="4" value="在轨迹播放时点击暂停按钮，再点击回放按钮" />
+			<step id="5" value="在轨迹播放时点击停止按钮，再点击回放按钮" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="地图上的车辆点以默认速度沿着轨迹在地图上移动"/>
+			<expectation id="2" value="车辆点的回放速度依次加快"/>
+			<expectation id="3" value="车辆点移动后不受任何影响，且在继续移动"/>
+			<expectation id="4" value="车辆点停止移动后又重新在停止的位置继续移动"/>
+			<expectation id="5" value="车辆点停止移动后又从起点开始重新移动"/>
+		</expectations>
+	</case>
+	
+	<case function="addShowLocusCase">
+		<title value="地图上显示车辆轨迹点" />
+		<keyword value="车辆轨迹" />
+		<rank value="1" />
+		<preconditions>
+			<precondition value="车辆有轨迹存在" />
+		</preconditions>
+		<steps>
+			<step id="1" value="依次点击*{pointType}*" />
+			<step id="2" value="点击“清除轨迹”按钮" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="地图上显示的车辆轨迹随点击的轨迹样式不同而变化"/>
+			<expectation id="2" value="地图上不再显示轨迹"/>
+		</expectations>
+	</case>
+</cases>

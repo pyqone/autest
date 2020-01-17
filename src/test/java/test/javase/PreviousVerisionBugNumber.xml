@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bug>
+	<projected name="泰滴项目">
+		<version version="V0.1" time="2018-">
+			<one number="1" />
+			<two number="21" />
+			<three number="34" />
+			<four number="10" />
+		</version>
+		<version version="V0.2">
+			<one number="0" />
+			<two number="10" />
+			<three number="23" />
+			<four number="3" />
+		</version>
+	</projected>
+	<projected name="那坡扶贫项目">
+		<version version="V0.1">
+			<one number="0" />
+			<two number="13" />
+			<three number="25" />
+			<four number="7" />
+		</version>
+	</projected>
+</bug>

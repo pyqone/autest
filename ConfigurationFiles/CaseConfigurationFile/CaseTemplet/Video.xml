@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="GBK"?>
+<cases project="Video">
+	<case function="addPlayVideoCase">
+		<title value="播放/暂停*{videoType}*" />
+		<keyword value="播放/暂停" />
+		<rank value="1" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{videoType}*播放状态下点击播放按钮" />
+			<step id="2" value="在*{videoType}*播放状态下点击暂停按钮或单击*{videoType}*画面，再点击播放按钮" />
+			<step id="3" value="在*{videoType}*播放状态下点击停止按钮，再点击播放按钮" />
+			<step id="4" value="在*{videoType}*播放状态下点击暂停按钮，再点击停止按钮" />
+			<step id="5" value="在*{videoType}*播放状态下一直按住键盘上的空格按键" />
+			<step id="6" value="在*{videoType}*未播放状态下点击暂停、停止按钮" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="*{videoType}*播放不受影响"/>
+			<expectation id="2" value="*{videoType}*暂停，*{videoType}*画面定格在按下按钮的瞬间，再次按下播放时*{videoType}*会从暂停的位置继续播放"/>
+			<expectation id="3" value="*{videoType}*停止，*{videoType}*画面定格在按下按钮的瞬间或画面消失，再次按下播放时*{videoType}*会重新播放"/>
+			<expectation id="4" value="*{videoType}*停止，*{videoType}*画面定格在按下按钮的瞬间或画面消失，再次按下播放时*{videoType}*会重新播放"/>
+			<expectation id="5" value="系统只执行一次按下空格按键的操作，或*{videoType}*在不断地暂停/播放，但页面不会崩溃"/>
+			<expectation id="6" value="*{videoType}*不会播放"/>
+		</expectations>
+	</case>
+	
+	<case function="addVideoScreenshotCase">
+		<title value="对*{videoType}*进行截图" />
+		<keyword value="*{videoType}*,截图" />
+		<rank value="2" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{videoType}*播放状态下点击截图按钮" />
+			<step id="2" value="在*{videoType}*暂停状态下点击截图按钮" />
+			<step id="3" value="在*{videoType}*停止状态下点击截图按钮" />
+			<step id="4" value="在*{videoType}*未播放状态下点击截图按钮" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="弹出截图成功提示，截图的画面是按下截图按钮瞬间的画面"/>
+			<expectation id="2" value="弹出截图成功提示，截图的画面是按下当前*{videoType}*的画面"/>
+			<expectation id="3" value="截图失败，弹出未保存或*{videoType}*未播放的提示"/>
+			<expectation id="4" value="截图失败，弹出未保存或*{videoType}*未播放的提示"/>
+		</expectations>
+	</case>
+	
+	<case function="addVideoAdvanceCase">
+		<title value="快进/快退*{videoType}*" />
+		<keyword value="*{videoType}*,快进,快退" />
+		<rank value="2" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{videoType}*播放状态下点击快进或快退按钮" />
+			<step id="2" value="在*{videoType}*暂停状态下点击快进或快退按钮" />
+			<step id="3" value="在*{videoType}*刚开始播放时（只播放1-2秒）点击快退按钮" />
+			<step id="4" value="在*{videoType}*快结束时（剩余1-2秒）点击快进按钮" />
+			<step id="5" value="在*{videoType}*未播放状态下点击快进或快退按钮" />
+			<step id="6" value="一直按住键盘的右或左方向键" />
+			<step id="7" value="正常修改默认的跳跃秒数后点击快进或快退按钮" />
+			<step id="8" value="修改秒数为小于1的数字后点击快进或快退按钮" />
+			<step id="9" value="修改秒数为大于*{videoType}*剩余播放时间的数字后点击快进按钮" />
+			<step id="10" value="不输入秒数或输入非数字字符后点击快进或快退按钮" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="*{videoType}*进度条向前或向后跳跃，*{videoType}*画面前进或后退对应的时间后继续播放"/>
+			<expectation id="2" value="*{videoType}*进度条向前或向后跳跃，*{videoType}*画面前进或后退对应的时间后仍暂停播放"/>
+			<expectation id="3" value="*{videoType}*重新播放"/>
+			<expectation id="4" value="*{videoType}*停止播放"/>
+			<expectation id="5" value="快进或快退无效"/>
+			<expectation id="6" value="进度条一直向前或向后跳跃，直至进度条到达端点时按住方向键将无效"/>
+			<expectation id="7" value="*{videoType}*跳跃相应的秒数"/>
+			<expectation id="8" value="提示跳跃秒数不允许小于1，或者*{videoType}*不跳跃"/>
+			<expectation id="9" value="提示跳跃秒数不允许超过*{videoType}*的播放时间，或者*{videoType}*停止播放"/>
+			<expectation id="10" value="提示输入正确的数字，或者*{videoType}*不跳跃"/>
+		</expectations>
+	</case>
+	
+	<case function="addVideoSpeedCase">
+		<title value="快放/慢放*{videoType}*" />
+		<keyword value="*{videoType}*,快放,慢放" />
+		<rank value="2" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{videoType}*播放状态下点击快放或慢放按钮" />
+			<step id="2" value="在*{videoType}*暂停状态下点击快放或慢放按钮" />
+			<step id="3" value="在*{videoType}*未播放状态下点击快放或慢放按钮" />
+			<step id="4" value="依次选择不同的倍率后，点击快放或慢放按钮" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="*{videoType}*播放仍在播放，但其播放速度明显比默认播放速度快或慢"/>
+			<expectation id="2" value="*{videoType}*播放开始播放，但其播放速度明显比默认播放速度快或慢"/>
+			<expectation id="3" value="按钮点击无效"/>
+			<expectation id="4" value="*{videoType}*的播放速度较点击前的播放速度有明显的变化"/>
+		</expectations>
+	</case>
+	
+	<case function="addVideoProgressBarCase">
+		<title value="拖动进度条" />
+		<keyword value="进度条" />
+		<rank value="2" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{videoType}*播放状态下向前或向后拖动进度条" />
+			<step id="2" value="在*{videoType}*暂停状态下向前或向后拖动进度条" />
+			<step id="3" value="在*{videoType}*未播放状态下点击快放或慢放按" />
+			<step id="4" value="停止画线后缩放地图" />
+			<step id="5" value="将进度条拉至端点后继续向同方向拉动" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="*{videoType}*跳跃到进度条相对应的时间上继续播放"/>
+			<expectation id="2" value="*{videoType}*跳跃到进度条相对应的时间上仍暂停播放"/>
+			<expectation id="3" value="*{videoType}*跳从进度条相对应的时间上开始播放"/>
+			<expectation id="4" value="进度条不会超出端点"/>
+		</expectations>
+	</case>
+	
+	<case function="addFullScreenPlayCase">
+		<title value="全屏播放*{videoType}*" />
+		<keyword value="全屏*{videoType}*" />
+		<rank value="2" />
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="点击全屏播放按钮" />
+			<step id="2" value="双击*{videoType}*画面" />
+			<step id="3" value="再次双击*{videoType}*画面" />
+			<step id="4" value="点击退出全屏播放按钮" />
+		</steps>
+		<expectations>
+			<expectation id="1" value="*{videoType}*全屏播放"/>
+			<expectation id="2" value="*{videoType}*退出全屏播放"/>
+			<expectation id="3" value="*{videoType}*全屏播放"/>
+			<expectation id="4" value="*{videoType}*退出全屏播放"/>
+		</expectations>
+	</case>
+</cases>

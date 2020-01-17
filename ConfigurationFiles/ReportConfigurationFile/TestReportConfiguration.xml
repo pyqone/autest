@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<!-- <!DOCTYPE CONFIGURATION SYSTEM "TestReportConfigurationDTD.dtd"> -->
+<test type="Zentao"> 
+  <!-- 设置火狐浏览器的位置、配置文件的名称以及自动下载的文件保存的位置 -->  
+  <firefox directory="" profiles="pyqone" download_save_directory="D:\下载内容\火狐下载\自动化下载\"/>  
+  <!-- 设置禅道的访问地址 -->  
+  <url url="http://116.10.187.227:88/zentao/user-login.html"/>  
+  <!-- 设置进入禅道的用户名及密码 -->  
+  <user username="pengyuqi" password="123456"/>  
+  <!-- 设置通过搜索能得到的项目关键词，请保证通过该关键词搜索到的项目是唯一的 -->  
+  <project name="汽车共享"/>  
+  <!-- 设置测试报告的内容 -->  
+  <report days="10" range="全面测试" download_file_name="1" print_name="HP LaserJet Professional M1216nfh MFP"> 
+    <!-- 设置测试人员，属性participation表示是否参与 -->  
+    <testperson> 
+      <person name="彭宇琦" participation="true" mail="465615774@qq.com"/>  
+      <person name="李健梅" participation="false" mail="1150327894@qq.com"/>  
+      <person name="赵莉宽" participation="false" mail="1632262743@qq.com"/> 
+    </testperson>  
+    <!-- 设置测试报告内容，在自动发送邮件且需要更改测试报告内容时在此进行编辑，若无需自动发送邮件，可不更改此处内容 -->  
+    <content> 
+      <!-- 修改测试时间，若自动生成的时间正确，则设置is_change为false，当其设置为true时，则读取该标签的测试时间填入模版 -->  
+      <!-- 时间的格式为：yyyy.MM.dd，例如“2018.4.23” -->  
+      <time is_change="false"> 
+        <starttime>2018.5.4</starttime>  
+        <endtime>2018.5.5</endtime> 
+      </time>  
+      <!-- 修改测试目的 -->  
+      <purpose> 
+        <step>验证版本的基本功能点</step>  
+        <step>验证版本稳定性</step> 
+      </purpose>  
+      <!-- 修改测试依据，需要使用程序中的字段或参数时，请用${XXX}将其作为标记 -->  
+      <gist> 
+        <step>${name}软件需求规格说明书</step>  
+        <step>${name}测试用例</step> 
+      </gist> 
+    </content> 
+  </report>  
+  <!-- 设置发送邮件的参数，邮箱信息，若无特殊要求，请勿更改此处内容 -->  
+  <mail smtp="smtp.163.com" username="15877163862@163.com" password="Syh123456" name="彭宇琦"> 
+    <!-- 设置收信人 -->  
+    <to project="隆安县公安局办公OA项目"> 
+      <person name="苏政彪" mail="492538422@qq.com" remark="技术经理"/>  
+      <person name="梁增杰" mail="2839525326@qq.com" remark="项目经理"/> 
+    </to>  
+    <to project="隆安OA扶贫项目"> 
+      <person name="苏政彪" mail="492538422@qq.com" remark="技术经理"/>  
+      <person name="梁增杰" mail="2839525326@qq.com" remark="项目经理"/> 
+    </to>  
+    <to project="那坡县精准扶贫管理系统三期"> 
+      <person name="董志伟" mail="272001838@qq.com" remark="技术经理"/>  
+      <person name="蓝石玉" mail="395464985@qq.com" remark="项目经理"/> 
+    </to>  
+    <to project="泰滴项目"> 
+      <person name='彭沙为' mail='pyqone@outlook.com' remark='测试帐号1' />
+	  <person name='濮蛤' mail='1097273754@qq.com' remark='测试帐号2' />
+    </to>  
+    <to project="12320项目"> 
+      <person name="苏政彪" mail="492538422@qq.com" remark="技术经理"/>  
+      <person name="吴琰堂" mail="9941126@qq.com" remark="运维科技术经理"/> 
+    </to>  
+    <!-- 设置抄送人，测试组人员可在程序中自动添加，此处则无需放入，若无特殊要求时，也请勿更改此处内容   -->  
+    <!-- 
+    <cc> 
+      <person name="刘勇" mail="390272048@qq.com" remark="软件部经理"/>  
+      <person name="韦青权" mail="124055091@qq.com" remark="软件部副经理（兼开发科科长）"/>  
+      <person name="彭宇琦" mail="465615774@qq.com" remark="品控科科长"/> 
+    </cc> 
+    -->   
+    <!-- 测试帐号   -->  
+    <cc> 
+      <person name="奚夕木" mail="pyqone@163.com" remark="测试帐号4"/>  
+      <person name="彭宇琦" mail="465615774@qq.com" remark="品控科科长"/> 
+    </cc>  
+    
+    <addcontent></addcontent>
+  </mail> 
+</test>
+<!-- 
+<person name='彭沙为' mail='710557391@qq.com' remark='测试帐号1' />
+<person name='濮蛤' mail='1097273754@qq.com' remark='测试帐号2' />
+<person name='邴句弱' mail='pyqone@outlook.com' remark='测试帐号3' />
+<person name='奚夕木' mail='pyqone@163.com' remark='测试帐号4' />
+
+<person name='刘勇' mail='390272048@qq.com' remark='软件部经理' />
+<person name='韦青权' mail='124055091@qq.com' remark='软件部副经理（兼开发科科长）' />
+<person name='吴琰堂' mail='9941126@qq.com' remark='运维科技术经理' />
+<person name='蓝石玉' mail='395464985@qq.com' remark='项目经理' />
+<person name='梁增杰' mail='2839525326@qq.com' remark='项目经理' />
+<person name='董志伟' mail='272001838@qq.com' remark='技术经理' />
+<person name='苏政彪' mail='492538422@qq.com' remark='技术经理' />
+<person name='甘露' mail='38432741@qq.com' remark='项目经理' />
+ -->
