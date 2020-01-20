@@ -18,18 +18,14 @@ import org.openqa.selenium.interactions.Actions;
  */
 public class Logic {
 	/**
-	 * 用于定义条件组名称开始标记
+	 * 用于标记对信息的分隔
 	 */
-	private final String GROUP_NAME_START_SINGN = "&{";
-	/**
-	 * 用于定义条件组名称结束标记
-	 */
-	private final String GROUP_NAME_END_SINGN = "}&";
+	private final String GROUP_SIGN = "group=";
 	
 	/**
-	 * 拼接条件
+	 * 表示逻辑的入口
 	 */
-	private StringBuilder logic = new StringBuilder("");
+	private String mainGroup = "";
 	
 	/**
 	 * 存储条件组
@@ -45,23 +41,18 @@ public class Logic {
 	public Logic(String conditionGroupName, Condition<?> condition, boolean not) {
 		//定义条件组，并加上根条件
 		conditionGroupMap.put(conditionGroupName, new ConditionGroup(condition, not));
-		//向逻辑中添加条件组名称
-		logic.append(GROUP_NAME_START_SINGN + conditionGroupName + GROUP_NAME_END_SINGN);
+		//将逻辑类的入口定义为相应的条件组
+		mainGroup = GROUP_SIGN + conditionGroupName;
 	}
 	
 	/**
-	 * 向条件组中添加条件，需要先添加根条件
+	 * 向逻辑中添加一个条件组，并向条件组中添加一个根条件
+	 * @param groupName 条件组名称
 	 * @param condition 条件类对象
-	 * @param relationType 条件间关系（RelationType枚举）
-	 * @throws GroupNotFoundException 未添加根条件时调用该方法将抛出该异常
 	 */
-//	public void addCondition(String groupName, Condition<?> condition, RelationType relationType) {
-//		if (!conditionGroupMap.containsKey(groupName)) {
-//			throw new GroupNotFoundException("不存在的条件组：" + groupName);
-//		}
-//		
-//		conditionGroupMap.get(groupName).addCondition(condition, relationType);
-//	}
+	public void addGroup(String groupName, Condition<?> condition) {
+		
+	}
 	
 	/**
 	 * 返回条件组，可通过该方法对条件组进行增减条件的操作
@@ -128,7 +119,13 @@ public class Logic {
 			}
 			
 			//添加条件组，并用开始和结束标志来标记条件组名称
-			conditions.add(GROUP_NAME_START_SINGN + groupName + GROUP_NAME_END_SINGN);
+			//判断是否需要对条件进行取反
+			if (not) {
+				//添加条件组，并用开始和结束标志来标记条件组名称
+				conditions.add(NOT + GROUP_SIGN + groupName);
+			} else {
+				conditions.add(GROUP_SIGN + groupName);
+			}
 		}
 
 		
@@ -164,9 +161,9 @@ public class Logic {
 			//判断是否需要对条件进行取反
 			if (not) {
 				//添加条件组，并用开始和结束标志来标记条件组名称
-				conditions.add(NOT + GROUP_NAME_START_SINGN + groupName + GROUP_NAME_END_SINGN);
+				conditions.add(NOT + GROUP_SIGN + groupName);
 			} else {
-				conditions.add(GROUP_NAME_START_SINGN + groupName + GROUP_NAME_END_SINGN);
+				conditions.add(GROUP_SIGN + groupName);
 			}
 			relations.add(relationType);
 		}
@@ -224,7 +221,6 @@ public class Logic {
 		 * @return 条件集合
 		 */
 		public ArrayList<String> getConditions() {
-			new Actions(new ChromeDriver()).doubleClick().perform();
 			return conditions;
 		}
 		
