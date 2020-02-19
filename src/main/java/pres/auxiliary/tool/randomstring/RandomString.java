@@ -130,10 +130,19 @@ public class RandomString {
 	 * @param modes
 	 *            需要加入到字符串池中的模型
 	 */
-	public void addMode(StringMode... modes) {
+	/**
+	 * 该方法用于向字符串池中添加模型，通过该方法添加的模型将不检查字符串池中是否存在与之重复的元素
+	 * 
+	 * @param modes
+	 *            需要加入到字符串池中的模型
+	 * @return 返回类本身，以便于链式操作
+	 */
+	public RandomString addMode(StringMode... modes) {
 		for (StringMode m : modes) {
 			stringSeed.append(m.getSeed());
 		}
+		
+		return this;
 	}
 
 	/**
@@ -143,8 +152,10 @@ public class RandomString {
 	 *            字符串池中的元素是否可重复
 	 * @param mode
 	 *            需要加入到字符串池中的模型
+	 *            
+	 * @return 返回类本身，以便于链式操作
 	 */
-	public void addMode(boolean isRepeat, StringMode... modes) {
+	public RandomString addMode(boolean isRepeat, StringMode... modes) {
 		// 判断传入的参数是否允许字符串池中元素重复，若为true，则等同于调用addMode(StringMode... modes)
 		if (!isRepeat) {
 			// 循环，读取所有传入的模型
@@ -159,6 +170,8 @@ public class RandomString {
 		} else {
 			addMode(modes);
 		}
+		
+		return this;
 	}
 
 	/**
@@ -166,9 +179,13 @@ public class RandomString {
 	 * 
 	 * @param mode
 	 *            需要加入到字符串池中的模型
+	 *            
+	 * @return 返回类本身，以便于链式操作
 	 */
-	public void addMode(String mode) {
+	public RandomString addMode(String mode) {
 		stringSeed.append(mode);
+		
+		return this;
 	}
 
 	/**
@@ -178,19 +195,23 @@ public class RandomString {
 	 *            字符串池中的元素是否可重复
 	 * @param mode
 	 *            需要加入到字符串池中的模型
+	 * 
+	 * @return 返回类本身，以便于链式操作
 	 */
-	public void addMode(boolean isRepeat, String mode) {
+	public RandomString addMode(boolean isRepeat, String mode) {
 		// 判断传入的参数是否允许字符串池中元素重复，若为true，则等同于调用addMode(StringMode... modes)
 		if (!isRepeat) {
 			// 判断模型整体是否已经存在，若存在则不进行添加
 			if (stringSeed.indexOf(mode) > -1) {
-				return;
+				return this;
 			}
 
 			packageString(mode);
 		} else {
 			addMode(mode);
 		}
+		
+		return this;
 	}
 
 	/**
