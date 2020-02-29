@@ -510,18 +510,39 @@ public class WriteTestCase {
 	 * @return 字段对应的内容
 	 */
 	@SuppressWarnings("unchecked")
-	private String writeContext(Element fieldElement) {
+	private void writeContext(XSSFWorkbook xw, XSSFCell xc, Element fieldElement) {
+		//存储文本内容
 		StringBuilder sb = new StringBuilder();
 		//获取所有text标签
 		List<Element> textList = fieldElement.elements("text");
 		
-		
-		textList.forEach(e -> {
-			sb.append(e.attributeValue("value") + "\n");
-		});
-		
-		//返回不带最后一个空行的内容
-		return sb.substring(0, sb.lastIndexOf("\n"));
+		//定位当前段落文本的位置
+		int startIndex = 0;
+		int endIndex = 0;
+		//遍历text标签
+		for (int index = 0; index < textList.size(); index++) {
+			//将上一段文本结束的段落结束的位置存储至开始位置上
+			startIndex = endIndex;
+			//存储标签内的内容
+			sb.append(textList.get(index).attributeValue("value") + "\n");
+			//将sb中文本的长度存储至endIndex中
+			endIndex = sb.length();
+			
+			//获取text标签的colors属性
+			String colorsText = textList.get(index).attributeValue("colors");
+			//判断获取到的元素是否为null，即该属性是否存在，若不存在，则继续循环
+			if (colorsText == null) {
+				continue;
+			}
+			
+			//将colorsText转换为short类型，以标记文本的颜色
+			short colors = Short.valueOf(colorsText);
+			XSSFFont xf = xw.createFont();
+	
+			// 设置颜色
+			xf.setColor(colors);
+			xc.getRichStringCellValue().applyFont(startIndex, endIndex, xf);
+		}
 	}
 
 	/**
