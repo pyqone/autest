@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
+  <test name="Default test(failed)">
+    <classes>
+      <class name="pres.auxiliary.work.testcase.WriteTestCaseTest">
+        <methods>
+          <include name="addPreconditionTest"/>
+          <include name="addStepTest"/>
+          <include name="markTest"/>
+          <include name="markTextTest"/>
+          <include name="fieldBackgroundTest"/>
+          <include name="endCase"/>
+          <include name="markFieldTest"/>
+          <include name="addRankTest_NotData"/>
+          <include name="createTemplet"/>
+          <include name="rowBackgroundTest"/>
+          <include name="addContext"/>
+          <include name="endTest"/>
+          <include name="addExceptTest"/>
+          <include name="addTitleTest"/>
+          <include name="markStepAndExceptTest"/>
+          <include name="setRankTest"/>
+          <include name="setReplactWordTest"/>
+        </methods>
+      </class> <!-- pres.auxiliary.work.testcase.WriteTestCaseTest -->
+    </classes>
+  </test> <!-- Default test(failed) -->
+</suite> <!-- Failed suite [Default suite] -->

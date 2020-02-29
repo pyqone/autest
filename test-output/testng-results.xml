@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results total="15" passed="15" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2020-02-28T03:29:56Z" name="Default suite" finished-at="2020-02-28T03:29:58Z" duration-ms="2234">
+    <groups>
+    </groups>
+    <test started-at="2020-02-28T03:29:56Z" name="Default test" finished-at="2020-02-28T03:29:58Z" duration-ms="2234">
+      <class name="pres.auxiliary.work.testcase.WriteTestCaseTest">
+        <test-method is-config="true" signature="createTemplet()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:56Z" name="createTemplet" finished-at="2020-02-28T11:29:57Z" duration-ms="1305" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- createTemplet -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.addContextTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="addContextTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContextTest" finished-at="2020-02-28T11:29:57Z" duration-ms="6" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContextTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="12" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.addExceptTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="addExceptTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addExceptTest" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addExceptTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="0" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.addPreconditionTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="addPreconditionTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addPreconditionTest" finished-at="2020-02-28T11:29:57Z" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addPreconditionTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.addRankTest_NotData()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="addRankTest_NotData()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addRankTest_NotData" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addRankTest_NotData -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="14" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.addStepTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="addStepTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addStepTest" finished-at="2020-02-28T11:29:57Z" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addStepTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="9" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method signature="addTitleTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addTitleTest" finished-at="2020-02-28T11:29:57Z" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addTitleTest -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="0" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.addTitleTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method signature="endTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endTest" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endTest -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="0" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.endTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="0" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.fieldBackgroundTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="fieldBackgroundTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="fieldBackgroundTest" finished-at="2020-02-28T11:29:57Z" duration-ms="8" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- fieldBackgroundTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.markFieldTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="markFieldTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="markFieldTest" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- markFieldTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="0" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.markStepAndExceptTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="markStepAndExceptTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="markStepAndExceptTest" finished-at="2020-02-28T11:29:57Z" duration-ms="7" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- markStepAndExceptTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.markTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="markTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="markTest" finished-at="2020-02-28T11:29:57Z" duration-ms="8" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- markTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="2" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.markTextTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="markTextTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="markTextTest" finished-at="2020-02-28T11:29:57Z" duration-ms="9" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- markTextTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="4" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.rowBackgroundTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="rowBackgroundTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="rowBackgroundTest" finished-at="2020-02-28T11:29:57Z" duration-ms="4" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- rowBackgroundTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="0" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.setRankTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="setRankTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="setRankTest" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setRankTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="addContext(java.lang.reflect.Method)[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="addContext" finished-at="2020-02-28T11:29:57Z" duration-ms="1" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void pres.auxiliary.work.testcase.WriteTestCaseTest.setReplactWordTest()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- addContext -->
+        <test-method signature="setReplactWordTest()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="setReplactWordTest" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setReplactWordTest -->
+        <test-method is-config="true" signature="endCase()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="endCase" finished-at="2020-02-28T11:29:57Z" duration-ms="3" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- endCase -->
+        <test-method is-config="true" signature="openFolder()[pri:0, instance:pres.auxiliary.work.testcase.WriteTestCaseTest@3d8314f0]" started-at="2020-02-28T11:29:57Z" name="openFolder" finished-at="2020-02-28T11:29:58Z" duration-ms="749" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- openFolder -->
+      </class> <!-- pres.auxiliary.work.testcase.WriteTestCaseTest -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
