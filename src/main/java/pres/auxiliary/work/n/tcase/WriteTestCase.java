@@ -783,7 +783,7 @@ public class WriteTestCase {
 		 * @return 类本身
 		 */
 		@SuppressWarnings("unchecked")
-		public CaseMark fieldBackground(String field, MarkColorsType colors) {
+		public CaseMark changeFieldBackground(String field, MarkColorsType color) {
 			// 判断字段是否存在，若不存在，则抛出异常
 			if (!fieldMap.containsKey(field)) {
 				throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
@@ -791,7 +791,7 @@ public class WriteTestCase {
 
 			// 向包含uuid的标签下添加相应的属性
 			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("name").equals(field))
-					.forEach(e -> e.addAttribute("background", String.valueOf(colors.getColorsValue())));
+					.forEach(e -> e.addAttribute("background", String.valueOf(color.getColorsValue())));
 
 			return this;
 		}
@@ -803,10 +803,27 @@ public class WriteTestCase {
 		 * @return 类本身
 		 */
 		@SuppressWarnings("unchecked")
-		public CaseMark rowBackground(MarkColorsType colors) {
+		public CaseMark changeRowBackground(MarkColorsType color) {
 			// 将case下所有标签的name属性传至fieldBackground方法
 			((List<Element>) (caseElement.elements())).stream()
-					.forEach(e -> fieldBackground(e.attributeValue("name"), colors));
+					.forEach(e -> changeFieldBackground(e.attributeValue("name"), color));
+
+			return this;
+		}
+		
+		/**
+		 * 该方法用于对整行用例文本的颜色进行标记
+		 * @param color {@link MarkColorsType}类枚举
+		 * @return 类本身
+		 */
+		@SuppressWarnings("unchecked")
+		public CaseMark changeRowTextColor(MarkColorsType color) {
+			// 将case下所有标签的name属性传至fieldBackground方法
+			((List<Element>) (caseElement.elements()))
+					.forEach(fieldElement -> {
+						List<Element> textElements = fieldElement.elements();
+						changeTextColor(fieldElement.attributeValue("name"), 0, textElements.size(), color);
+					});
 
 			return this;
 		}
@@ -821,7 +838,23 @@ public class WriteTestCase {
 		 * @return 类本身
 		 */
 		@SuppressWarnings("unchecked")
-		public CaseMark markText(String field, int index, MarkColorsType colors) {
+		public CaseMark changeTextColor(String field, int index, MarkColorsType color) {
+			return changeTextColor(field, index, index, color);
+		}
+		
+		/**
+		 * 用于对字段的多段文本进行颜色标记，下标从0开始计算，若下标小于0时，则标记第一段；
+		 * 若下标大于最大段落数时，则编辑最后一段。若所传字段下不存在文本标签，则不进行标记。
+		 * 注意，标记的段落包括开始段落，但不包括结束段落；若开始与结束的段落数相同，则标记对应的一行
+		 * 
+		 * @param field 字段id
+		 * @param startIndex 字段文本的开始段标（段落）
+		 * @param endIndex 字段文本的结束段标（段落）
+		 * @param color {@link MarkColorsType}类枚举
+		 * @return 类本身
+		 */
+		@SuppressWarnings("unchecked")
+		public CaseMark changeTextColor(String field, int startIndex, int endIndex, MarkColorsType color) {
 			// 获取case下的name属性与所传参数相同的field标签
 			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("name").equals(field))
 					.forEach(fieldElement -> {
@@ -829,24 +862,44 @@ public class WriteTestCase {
 						List<Element> textElements = (List<Element>) (fieldElement.elements());
 						// 判断是否存在text标签，若不存在，则结束
 						if (textElements.size() != 0) {
-							// 判断传入的index参数：
-							// 若参数小于0，则标记第一个标签
-							// 若参数大于0且小于text最大标签数，则标记相应的标签
-							// 若参数大于text最大标签数，则标记最后一个标签
-							Element textElement;
-							if (index < 0) {
-								textElement = textElements.get(0);
-							} else if (index >= 0 && index < textElements.size()) {
-								textElement = textElements.get(index);
-							} else {
-								textElement = textElements.get(textElements.size() - 1);
+							//处理最大与最小值，保证数据不会错误
+							boolean endIndexBig = startIndex < endIndex;
+							int smallIndex = endIndexBig ? startIndex : endIndex;
+							int bigIndex = endIndexBig ? endIndex : startIndex;
+							//判断最大最小值是否相同，相同则最大值+1
+							bigIndex = bigIndex == smallIndex? (bigIndex + 1) : bigIndex;
+							
+							for (int index = smallIndex; index < bigIndex; index++) {
+								setTextColor(textElements, index, color);
 							}
-							textElement.addAttribute("colors", String.valueOf(colors.getColorsValue()));
 						}
 					});
 			return this;
 		}
-
+		
+		/**
+		 * 用于对文本标签加上颜色属性
+		 * @param textElements 字段标签下的文本标签
+		 * @param index 标签的位置
+		 * @param color 颜色
+		 * @return 颜色是否正常进行设置，即传入的index是否正常
+		 */
+		private void setTextColor(List<Element> textElements, int index, MarkColorsType color) {
+			// 判断传入的index参数：
+			// 若参数小于0，则标记第一个标签
+			// 若参数大于0且小于text最大标签数，则标记相应的标签
+			// 若参数大于text最大标签数，则标记最后一个标签
+			Element textElement;
+			if (index < 0) {
+				textElement = textElements.get(0);
+			} else if (index >= 0 && index < textElements.size()) {
+				textElement = textElements.get(index);
+			} else {
+				textElement = textElements.get(textElements.size() - 1);
+			}
+			textElement.addAttribute("colors", String.valueOf(color.getColorsValue()));
+		}
+		
 		/**
 		 * 用于对步骤和预期同时进行标记，使用该方法前需要调用{@link WriteTestCase#setPresupposeField(FieldType, String)}
 		 * 方法对字段的步骤（{@link FieldType#STEP}枚举值）和预期（{@link FieldType#EXPECT}枚举值）进行标记。
@@ -859,9 +912,9 @@ public class WriteTestCase {
 		 */
 		public CaseMark markStepAndExcept(int stepIndex, MarkColorsType colors) {
 			// 标记步骤
-			markText(FieldType.STEP.getValue(), stepIndex, colors);
+			changeTextColor(FieldType.STEP.getValue(), stepIndex, colors);
 			// 标记预期
-			markText(FieldType.EXPECT.getValue(), stepIndex, colors);
+			changeTextColor(FieldType.EXPECT.getValue(), stepIndex, colors);
 
 			return this;
 		}

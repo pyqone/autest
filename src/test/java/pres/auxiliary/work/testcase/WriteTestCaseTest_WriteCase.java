@@ -59,17 +59,17 @@ public class WriteTestCaseTest_WriteCase {
 		wtc.addStep("第一步", "第二部", "第三部", "第三部").addExcept("预期1", "预期2", "预期3").addTitle("用例1").end();
 
 		wtc.addStep("第一步", "第二部", "第三部").addExcept("预期1", "预期2", "预期3").addTitle("用例2").end()
-				.markText(FieldType.STEP.getValue(), 0, MarkColorsType.RED);
+				.changeTextColor(FieldType.STEP.getValue(), 0, MarkColorsType.RED);
 
 		wtc.addStep("第一步", "第二部").addExcept("预期1", "预期2").addTitle("用例3").end()
-				.markText(FieldType.STEP.getValue(), 1, MarkColorsType.BLUE)
-				.markText(FieldType.STEP.getValue(), 0, MarkColorsType.YELLOW);
+				.changeTextColor(FieldType.STEP.getValue(), 1, MarkColorsType.BLUE)
+				.changeTextColor(FieldType.STEP.getValue(), 0, MarkColorsType.YELLOW);
 
 		wtc.addStep("第一步", "第二部", "第三部").addExcept("预期1", "预期2", "预期3").addTitle("用例4").end();
 
 		wtc.addStep("第一步", "第二").addExcept("预期1", "预期2").addTitle("用例5").end()
-		.markText(FieldType.STEP.getValue(), 0, MarkColorsType.GREEN);
+		.changeTextColor(FieldType.STEP.getValue(), 0, MarkColorsType.GREEN);
 		
-		wtc.addStep("第一步", "第二部").addExcept("预期1", "预期2").addTitle("用例6").end();
+		wtc.addStep("第一步", "第二部").addExcept("预期1", "预期2").addTitle("用例6").end().changeRowTextColor(MarkColorsType.RED);
 	}
 }

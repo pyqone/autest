@@ -217,9 +217,9 @@ public class WriteTestCaseTest {
 	 */
 	@Test
 	public void fieldBackgroundTest() {
-		CaseMark cm = wtc.end().fieldBackground("步骤", MarkColorsType.BLUE).fieldBackground(FieldType.EXPECT.getValue(),
+		CaseMark cm = wtc.end().changeFieldBackground("步骤", MarkColorsType.BLUE).changeFieldBackground(FieldType.EXPECT.getValue(),
 				MarkColorsType.RED);
-		cm.fieldBackground("目的", MarkColorsType.GREEN);
+		cm.changeFieldBackground("目的", MarkColorsType.GREEN);
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class WriteTestCaseTest {
 	 */
 	@Test
 	public void rowBackgroundTest() {
-		wtc.end().rowBackground(MarkColorsType.YELLOW);
+		wtc.end().changeRowBackground(MarkColorsType.YELLOW);
 	}
 
 	/**
@@ -235,7 +235,7 @@ public class WriteTestCaseTest {
 	 */
 	@Test
 	public void markTextTest() {
-		wtc.end().markText("目的", 0, MarkColorsType.YELLOW);
+		wtc.end().changeTextColor("目的", 0, MarkColorsType.YELLOW);
 	}
 
 	/**
@@ -251,7 +251,7 @@ public class WriteTestCaseTest {
 	 */
 	@Test
 	public void markTest() {
-		wtc.end().markStepAndExcept(2, MarkColorsType.RED).markField("目的", "目的标记").fieldBackground("设计者",
+		wtc.end().markStepAndExcept(2, MarkColorsType.RED).markField("目的", "目的标记").changeFieldBackground("设计者",
 				MarkColorsType.YELLOW);
 	}
 }
