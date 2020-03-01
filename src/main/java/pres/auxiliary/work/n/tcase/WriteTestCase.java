@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -50,6 +51,11 @@ import org.dom4j.io.SAXReader;
  *
  */
 public class WriteTestCase {
+	/**
+	 * 用于指向用例的XSSFWorkbook对象
+	 */
+	XSSFWorkbook xw;
+	
 	/**
 	 * 用于对待替换词语的标记
 	 */
@@ -99,7 +105,7 @@ public class WriteTestCase {
 	/**
 	 * 用于控制写入多少条步骤后换一新行来继续写入步骤
 	 */
-	private int stepNum = 1;
+	private int stepNum = -1;
 
 	/**
 	 * 通过测试文件模板xml配置文件和测试用例文件来构造WriteTestCase类。当配置文件中
@@ -138,22 +144,11 @@ public class WriteTestCase {
 	}
 
 	/**
-	 * 用于控制一个单元格中写入多少条步骤（预期）<br>
-	 * 例如，设置为2，用例的步骤（预期）有4条时，则该用例占两行（每行写2条步骤）
-	 * 
-	 * @param stepNum 步骤数量
-	 */
-	public void setStepNumber(int stepNum) {
-		this.stepNum = stepNum;
-	}
-
-	/**
 	 * 该方法用于切换sheet，以在另一个sheet中添加信息
 	 * 
 	 * @param sheetName xml配置文件中sheet的name字段内容
 	 */
 	public void switchSheet(String sheetName) {
-		// TODO 由于可以添加多个sheet，故需要实现切换sheet的方法，
 		// 每次切换sheet时，要重新获取一次sheet下的字段id。
 		// 切换sheet后需要清空预设字段中的内容
 		// 重新获取id，包括清空fieldMap
@@ -167,6 +162,19 @@ public class WriteTestCase {
 
 		// 将相应的sheet标签的name属性存储至sheetName中
 		this.sheetName = sheetName;
+	}
+	
+	/**
+	 * 用于控制一个单元格中写入多少条步骤（预期），当设置为0或以下时，则不生效。<br>
+	 * 例如，设置为2，用例的步骤（预期）有4条时，则该用例占两行（每行写2条步骤）<br>
+	 * <b><i>注意：</i></b>当设置值为0或以下时，则不会校验枚举值；若值大于0时，则必须要通过{@link #setPresupposeField(FieldType, String)}方法指
+	 * 定<b>步骤</b>和<b>预期</b>在{@link FieldType}枚举的{@link FieldType#STEP}和{@link FieldType#EXPECT}
+	 * 的指向，否则在调用{@link #writeFile()}方法时会抛出异常。
+	 * 
+	 * @param stepNum 步骤数量
+	 */
+	public void setStepNumber(int stepNum) {
+		this.stepNum = stepNum;
 	}
 
 	/**
@@ -456,7 +464,7 @@ public class WriteTestCase {
 		// 定义输入流，用于读取模版文件
 		FileInputStream fip = new FileInputStream(caseFile);
 		// 通过输入流，使XSSFWorkbook对象指向模版文件
-		XSSFWorkbook xw = new XSSFWorkbook(fip);
+		xw = new XSSFWorkbook(fip);
 		// 关闭流
 		fip.close();
 
@@ -475,23 +483,25 @@ public class WriteTestCase {
 			// 获取用例标签，将用例标签中的内容写入到文件中
 			List<Element> caseElements = sheetElement.elements("case");
 			for (Element caseElement : caseElements) {
-				// 创建行
-				XSSFRow xr = xs.createRow(index++);
+				index = writeCase(index, xs, caseElement) + 1;
+//				// 创建行
+//				XSSFRow xr = xs.createRow(index++);
 
 				// 获取字段元素，需要获取配置xml文件中的以及用例xml文件中的字段
-				List<Element> fieldElements = caseElement.elements("field");
-				for (Element fieldElement : fieldElements) {
-					//获取相应的Field对象
-					String fieldId = fieldElement.attributeValue("name");
-					Field field = fieldMap.get(fieldId);
-					
-					//创建字段所在的列相应的单元格
-					XSSFCell xc = xr.createCell(field.index);
-					//将字段内容写入单元格
-					xc.setCellValue(getFieldText(fieldElement));
-					// 设置单元格格式	
-					xc.setCellStyle(field.getCellStyle(xw));
-				}
+//				List<Element> fieldElements = caseElement.elements("field");
+//				for (Element fieldElement : fieldElements) {
+//					//获取相应的Field对象
+//					String fieldId = fieldElement.attributeValue("name");
+//					Field field = fieldMap.get(fieldId);
+//					
+//					//创建字段所在的列相应的单元格
+//					XSSFCell xc = xr.createCell(field.index);
+//					
+//					//将字段内容写入单元格
+//					writeCellContext(xc, fieldElement);
+//					// 设置单元格格式	
+//					xc.setCellStyle(field.getCellStyle());
+//				}
 			}
 		}
 		
@@ -503,46 +513,145 @@ public class WriteTestCase {
 		fop.close();
 		xw.close();
 	}
+	
+	@SuppressWarnings("unchecked")
+	private int writeCase(int index, XSSFSheet xs, Element caseElement) {
+		//判断每行步骤数是否大于0，大于零则是否有设置步骤和预期的枚举值，若同时满足，则抛出异常
+		boolean sepStep = stepNum > 0;
+		if (sepStep && (FieldType.STEP.getValue().isEmpty() || FieldType.EXPECT.getValue().isEmpty())) {
+			throw new LabelNotFoundException("步骤或预期未设置枚举值");
+		}
+		
+		//创建一行，编写测试用例的第一行内容
+		XSSFRow xr = xs.createRow(index);
+		// 获取字段元素，需要获取配置xml文件中的以及用例xml文件中的字段
+		List<Element> fieldElements = caseElement.elements("field");
+		//存储读取到的步骤和预期
+		ArrayList<Element> stepAndExceptList = new ArrayList<Element>();
+		//遍历所有的field标签，若需要对步骤预期进行分行显示，则不读取步骤和预期
+		for (Element fieldElement : fieldElements) {
+			//获取相应的Field对象
+			String fieldId = fieldElement.attributeValue("name");
+			//获取字段的field对象
+			Field field = fieldMap.get(fieldId);
+			//创建字段所在的列相应的单元格
+			XSSFCell xc = xr.createCell(field.index);
+			List<Element> textList = fieldElement.elements("text");
+			
+			//判断标签是否为步骤或预期，若为该标签则跳过获取步骤
+			if (sepStep && (FieldType.STEP.getValue().equals(fieldId) || FieldType.EXPECT.getValue().equals(fieldId))) {
+				//若步骤与预期的数量小于stepNum，则无需后期处理，若大于相应的数量，则先将第一行的元素进行写入
+				if (textList.size() > stepNum) {
+					ArrayList<Element> tempList = new ArrayList<Element>();
+					for (int i = 0; i < stepNum; i++) {
+						//存储第一行需要写入的元素
+						tempList.add(textList.get(i));
+						
+						//删除stepNum以后的元素，该方法调用后会把xml文件中的标签也一并删除，不能使用
+						//textList.remove(i--);
+					}
+					//将临时集合赋给textList
+					textList = tempList;
+					stepAndExceptList.add(fieldElement);
+				}
+			}
+			
+			//将字段内容写入单元格
+			writeCellContext(xc, textList);
+			// 设置单元格格式	
+			xc.setCellStyle(field.getCellStyle());
+		}
+		
+		//判断stepAndExceptList是否有存储内容，若存储了内容，则对步骤和预期进行分别操作
+		if (stepAndExceptList.size() != 0) {
+			for (Element element : stepAndExceptList) {
+				//获取相应的Field对象
+				String fieldId = element.attributeValue("name");
+				//获取字段的field对象
+				Field field = fieldMap.get(fieldId);
+				//获取text标签
+				List<Element> textList = element.elements("text");
+				
+				//用于控制当前斜土步骤的行位于标题行下降的行数
+				int nowRowIndex = 1;
+				//若需要通过该方法写入用例，则必然有数据需要写入，则先写入数据，再做判断
+				//判断的方法为，以单元格较原位置下降的多少进行判断，例如有以下几个场景（设置的stepNum为2）：
+				//1.字段中存储了5个text标签
+				//2.字段中存储了3个text标签
+				//3.字段中存储了4个text标签
+				//由于在前面的代码已经运行并存储了2个text标签的内容，故
+				//针对场景1：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了4条，但写入的数据少于text数量，故需要继续循环
+				//针对场景2、3：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了3或4条，写入的数据等于text数量，故结束循环
+				//综合考虑，得到公式(stepNum * ++nowRowIndex)正好等于当前写入用例的条数，且nowRowIndex自增后可以作为下一次循环开始
+				//使用公式的值与用例总数判断，当公式值大于或等于text数量时，则结束循环
+				do {
+					//判断当前行是否被创建，若未被创建，则读取相应的行号
+					xr = xs.getRow(index + nowRowIndex) == null ? xs.createRow(index + nowRowIndex) : xs.getRow(index + nowRowIndex);
+					//创建字段所在的列相应的单元格
+					XSSFCell xc = xr.createCell(field.index);
+					
+					//存储裁剪后的text元素
+					ArrayList<Element> subTextList = new ArrayList<Element>();
+					//其中步骤数乘当前写入行的行数正好可以得到应该从哪个元素开始裁剪，例如
+					//字段中存储了5个text标签，此时设置的stepNum为2，在运行该代码前已经写入了2个text的内容，故循环从2开始（表示从第3个元素元素开始）
+					//当下一次循环时，nowRowIndex为2，此时2 * 2 = 4，正好可以得到从第5个元素开始，此时在写入时也只会写入一次
+					for (int i = 0; i < stepNum; i++) {
+						//若剩余内容数小于stepNum时，此时循环在读取textList会抛出数组越界异常，则捕捉抛出异常后直接结束循环
+						try {
+							subTextList.add(textList.get(stepNum * nowRowIndex + i));
+						} catch (IndexOutOfBoundsException e) {
+							break;
+						}
+					}
+					
+					//将字段内容写入单元格
+					writeCellContext(xc, subTextList);
+					// 设置单元格格式	
+					xc.setCellStyle(field.getCellStyle());
+				} while(stepNum * ++nowRowIndex < textList.size());
+			}
+		}
+		
+		//返回sheet最后一行的行号
+		return xs.getLastRowNum();
+	}
 
 	/**
 	 * 获取并返回字段对应的内容
-	 * @param fieldElement 字段元素
+	 * @param textList 字段的文本元素
 	 * @return 字段对应的内容
 	 */
-	@SuppressWarnings("unchecked")
-	private void writeContext(XSSFWorkbook xw, XSSFCell xc, Element fieldElement) {
-		//存储文本内容
-		StringBuilder sb = new StringBuilder();
-		//获取所有text标签
-		List<Element> textList = fieldElement.elements("text");
+	private void writeCellContext(XSSFCell xc, List<Element> textList) {
+		//存储文本内容，由于文本可能带颜色，故使用富文本来存储文本内容
+		XSSFRichTextString xrts = new XSSFRichTextString("");
 		
-		//定位当前段落文本的位置
-		int startIndex = 0;
-		int endIndex = 0;
 		//遍历text标签
 		for (int index = 0; index < textList.size(); index++) {
-			//将上一段文本结束的段落结束的位置存储至开始位置上
-			startIndex = endIndex;
-			//存储标签内的内容
-			sb.append(textList.get(index).attributeValue("value") + "\n");
-			//将sb中文本的长度存储至endIndex中
-			endIndex = sb.length();
+			//为每一行添加回车，若在第一行，则不加入回车
+			if (index != 0) {
+				xrts.append("\n");
+			}
+			
+			//创建字体
+			XSSFFont xf = xw.createFont();
+			// 设置字体名称
+			xf.setFontName("宋体");
+			// 设置字体大小，注意，字体大小单位为磅，小四字体对应12磅
+			xf.setFontHeightInPoints((short) 12);
 			
 			//获取text标签的colors属性
 			String colorsText = textList.get(index).attributeValue("colors");
-			//判断获取到的元素是否为null，即该属性是否存在，若不存在，则继续循环
-			if (colorsText == null) {
-				continue;
+			//判断获取到的元素是否为null，即该属性是否存在，若存在，则加入相应的颜色到字体中
+			if (colorsText != null) {
+				//设置颜色
+				xf.setColor(Short.valueOf(colorsText));
 			}
-			
-			//将colorsText转换为short类型，以标记文本的颜色
-			short colors = Short.valueOf(colorsText);
-			XSSFFont xf = xw.createFont();
-	
-			// 设置颜色
-			xf.setColor(colors);
-			xc.getRichStringCellValue().applyFont(startIndex, endIndex, xf);
+			//拼接文本
+			xrts.append(textList.get(index).attributeValue("value"), xf);
 		}
+		
+		//将文本值设置入单元格中
+		xc.setCellValue(xrts);
 	}
 
 	/**
@@ -727,7 +836,7 @@ public class WriteTestCase {
 							Element textElement;
 							if (index < 0) {
 								textElement = textElements.get(0);
-							} else if (index > 0 && index < textElements.size()) {
+							} else if (index >= 0 && index < textElements.size()) {
 								textElement = textElements.get(index);
 							} else {
 								textElement = textElements.get(textElements.size() - 1);
@@ -830,7 +939,7 @@ public class WriteTestCase {
 		 * @param xw XSSFWorkbook对象
 		 * @return XSSFCellStyle对象
 		 */
-		public XSSFCellStyle getCellStyle(XSSFWorkbook xw) {
+		public XSSFCellStyle getCellStyle() {
 			// 创建样式
 			XSSFCellStyle xcs = xw.createCellStyle();
 			// 设置单元格水平对其方式
@@ -845,17 +954,9 @@ public class WriteTestCase {
 			default:
 				xcs.setAlignment(HorizontalAlignment.LEFT);
 			}
-
+			
 			// 设置单元格垂直居中
 			xcs.setVerticalAlignment(VerticalAlignment.CENTER);
-			// 创建字体样式
-			XSSFFont xf = xw.createFont();
-			// 设置字体名称
-			xf.setFontName("宋体");
-			// 设置字体大小，注意，字体大小单位为磅，小四字体对应12磅
-			xf.setFontHeightInPoints((short) 12);
-			// 设置字体的样式
-			xcs.setFont(xf);
 			// 设置单元格自动换行
 			xcs.setWrapText(true);
 
@@ -865,7 +966,7 @@ public class WriteTestCase {
 		/**
 		 * 用于创建表格的数据有效性，若当前字段无数据有效性或文件中无数据有效性 相应的内容时，则不创建数据有效性
 		 */
-		public void addDataValidation(XSSFWorkbook xw, XSSFSheet caseSheet, int startRowIndex, int endRowIndex) {
+		public void addDataValidation(XSSFSheet caseSheet, int startRowIndex, int endRowIndex) {
 			// 判断当前是否存在数据有效性，不存在，则结束
 			if (!datas) {
 				return;
