@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddressList;
@@ -55,7 +56,7 @@ public class WriteTestCase {
 	 * 用于指向用例的XSSFWorkbook对象
 	 */
 	XSSFWorkbook xw;
-	
+
 	/**
 	 * 用于对待替换词语的标记
 	 */
@@ -101,11 +102,6 @@ public class WriteTestCase {
 	 * 指向存储测试用例的Document类，该类将不创建xml文件，但最终用于将doucument中的内容写入excel中
 	 */
 	private Document caseXml;
-
-	/**
-	 * 用于控制写入多少条步骤后换一新行来继续写入步骤
-	 */
-	private int stepNum = -1;
 
 	/**
 	 * 通过测试文件模板xml配置文件和测试用例文件来构造WriteTestCase类。当配置文件中
@@ -162,19 +158,6 @@ public class WriteTestCase {
 
 		// 将相应的sheet标签的name属性存储至sheetName中
 		this.sheetName = sheetName;
-	}
-	
-	/**
-	 * 用于控制一个单元格中写入多少条步骤（预期），当设置为0或以下时，则不生效。<br>
-	 * 例如，设置为2，用例的步骤（预期）有4条时，则该用例占两行（每行写2条步骤）<br>
-	 * <b><i>注意：</i></b>当设置值为0或以下时，则不会校验枚举值；若值大于0时，则必须要通过{@link #setPresupposeField(FieldType, String)}方法指
-	 * 定<b>步骤</b>和<b>预期</b>在{@link FieldType}枚举的{@link FieldType#STEP}和{@link FieldType#EXPECT}
-	 * 的指向，否则在调用{@link #writeFile()}方法时会抛出异常。
-	 * 
-	 * @param stepNum 步骤数量
-	 */
-	public void setStepNumber(int stepNum) {
-		this.stepNum = stepNum;
 	}
 
 	/**
@@ -484,27 +467,9 @@ public class WriteTestCase {
 			List<Element> caseElements = sheetElement.elements("case");
 			for (Element caseElement : caseElements) {
 				index = writeCase(index, xs, caseElement) + 1;
-//				// 创建行
-//				XSSFRow xr = xs.createRow(index++);
-
-				// 获取字段元素，需要获取配置xml文件中的以及用例xml文件中的字段
-//				List<Element> fieldElements = caseElement.elements("field");
-//				for (Element fieldElement : fieldElements) {
-//					//获取相应的Field对象
-//					String fieldId = fieldElement.attributeValue("name");
-//					Field field = fieldMap.get(fieldId);
-//					
-//					//创建字段所在的列相应的单元格
-//					XSSFCell xc = xr.createCell(field.index);
-//					
-//					//将字段内容写入单元格
-//					writeCellContext(xc, fieldElement);
-//					// 设置单元格格式	
-//					xc.setCellStyle(field.getCellStyle());
-//				}
 			}
 		}
-		
+
 		// 向excel中写入数据
 		FileOutputStream fop = new FileOutputStream(caseFile);
 		// 写入模版
@@ -513,144 +478,283 @@ public class WriteTestCase {
 		fop.close();
 		xw.close();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private int writeCase(int index, XSSFSheet xs, Element caseElement) {
-		//判断每行步骤数是否大于0，大于零则是否有设置步骤和预期的枚举值，若同时满足，则抛出异常
-		boolean sepStep = stepNum > 0;
-		if (sepStep && (FieldType.STEP.getValue().isEmpty() || FieldType.EXPECT.getValue().isEmpty())) {
-			throw new LabelNotFoundException("步骤或预期未设置枚举值");
-		}
+//		// 判断每行步骤数是否大于0，大于零则是否有设置步骤和预期的枚举值，若同时满足，则抛出异常
+//		boolean sepStep = stepNum > 0;
+//		if (sepStep && (FieldType.STEP.getValue().isEmpty() || FieldType.EXPECT.getValue().isEmpty())) {
+//			throw new LabelNotFoundException("步骤或预期未设置枚举值");
+//		}
+//
+//		// 创建一行，编写测试用例的第一行内容
+//		XSSFRow xr = xs.createRow(index);
+//		// 获取字段元素，需要获取配置xml文件中的以及用例xml文件中的字段
+//		List<Element> fieldElements = caseElement.elements("field");
+//		// 存储读取到的步骤和预期
+//		ArrayList<Element> stepAndExceptList = new ArrayList<Element>();
+//		// 遍历所有的field标签，若需要对步骤预期进行分行显示，则不读取步骤和预期
+//		for (Element fieldElement : fieldElements) {
+//			// 获取相应的Field对象
+//			String fieldId = fieldElement.attributeValue("name");
+//			// 获取字段的field对象
+//			Field field = fieldMap.get(fieldId);
+//			// 创建字段所在的列相应的单元格
+//			XSSFCell xc = xr.createCell(field.index);
+//			field.addDataValidation(xs, index, index);
+//
+//			List<Element> textList = fieldElement.elements("text");
+//
+//			// 判断标签是否为步骤或预期，若为该标签则跳过获取步骤
+//			if (sepStep && (FieldType.STEP.getValue().equals(fieldId) || FieldType.EXPECT.getValue().equals(fieldId))) {
+//				// 若步骤与预期的数量小于stepNum，则无需后期处理，若大于相应的数量，则先将第一行的元素进行写入
+//				if (textList.size() > stepNum) {
+//					ArrayList<Element> tempList = new ArrayList<Element>();
+//					for (int i = 0; i < stepNum; i++) {
+//						// 存储第一行需要写入的元素
+//						tempList.add(textList.get(i));
+//
+//						// 删除stepNum以后的元素，该方法调用后会把xml文件中的标签也一并删除，不能使用
+//						// textList.remove(i--);
+//					}
+//					// 将临时集合赋给textList
+//					textList = tempList;
+//					stepAndExceptList.add(fieldElement);
+//				}
+//			}
+//
+//			// 将字段内容写入单元格
+//			writeText(xc, textList);
+//			// 设置单元格格式
+//			xc.setCellStyle(getFieldStyle(field, fieldElement));
+//		}
+//
+//		// 判断stepAndExceptList是否有存储内容，若存储了内容，则对步骤和预期进行分别操作
+//		if (stepAndExceptList.size() != 0) {
+//			for (Element element : stepAndExceptList) {
+//				// 获取相应的Field对象
+//				String fieldId = element.attributeValue("name");
+//				// 获取字段的field对象
+//				Field field = fieldMap.get(fieldId);
+//				// 获取text标签
+//				List<Element> textList = element.elements("text");
+//
+//				// 用于控制当前斜土步骤的行位于标题行下降的行数
+//				int nowRowIndex = 1;
+//				// 若需要通过该方法写入用例，则必然有数据需要写入，则先写入数据，再做判断
+//				// 判断的方法为，以单元格较原位置下降的多少进行判断，例如有以下几个场景（设置的stepNum为2）：
+//				// 1.字段中存储了5个text标签
+//				// 2.字段中存储了3个text标签
+//				// 3.字段中存储了4个text标签
+//				// 由于在前面的代码已经运行并存储了2个text标签的内容，故
+//				// 针对场景1：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了4条，但写入的数据少于text数量，故需要继续循环
+//				// 针对场景2、3：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了3或4条，写入的数据等于text数量，故结束循环
+//				// 综合考虑，得到公式(stepNum * ++nowRowIndex)正好等于当前写入用例的条数，且nowRowIndex自增后可以作为下一次循环开始
+//				// 使用公式的值与用例总数判断，当公式值大于或等于text数量时，则结束循环
+//				do {
+//					// 判断当前行是否被创建，若未被创建，则读取相应的行号
+//					xr = xs.getRow(index + nowRowIndex) == null ? xs.createRow(index + nowRowIndex)
+//							: xs.getRow(index + nowRowIndex);
+//					// 创建字段所在的列相应的单元格
+//					XSSFCell xc = xr.createCell(field.index);
+//
+//					// 存储裁剪后的text元素
+//					ArrayList<Element> subTextList = new ArrayList<Element>();
+//					// 其中步骤数乘当前写入行的行数正好可以得到应该从哪个元素开始裁剪，例如
+//					// 字段中存储了5个text标签，此时设置的stepNum为2，在运行该代码前已经写入了2个text的内容，故循环从2开始（表示从第3个元素元素开始）
+//					// 当下一次循环时，nowRowIndex为2，此时2 * 2 = 4，正好可以得到从第5个元素开始，此时在写入时也只会写入一次
+//					for (int i = 0; i < stepNum; i++) {
+//						// 若剩余内容数小于stepNum时，此时循环在读取textList会抛出数组越界异常，则捕捉抛出异常后直接结束循环
+//						try {
+//							subTextList.add(textList.get(stepNum * nowRowIndex + i));
+//						} catch (IndexOutOfBoundsException e) {
+//							break;
+//						}
+//					}
+//
+//					// 将字段内容写入单元格
+//					writeText(xc, subTextList);
+//					// 设置单元格格式
+//					xc.setCellStyle(getFieldStyle(field, element));
+//				} while (stepNum * ++nowRowIndex < textList.size());
+//			}
+//		}
 		
-		//创建一行，编写测试用例的第一行内容
-		XSSFRow xr = xs.createRow(index);
 		// 获取字段元素，需要获取配置xml文件中的以及用例xml文件中的字段
 		List<Element> fieldElements = caseElement.elements("field");
-		//存储读取到的步骤和预期
-		ArrayList<Element> stepAndExceptList = new ArrayList<Element>();
-		//遍历所有的field标签，若需要对步骤预期进行分行显示，则不读取步骤和预期
+		// 遍历所有的field标签，将标签的内容写入到文件中
 		for (Element fieldElement : fieldElements) {
-			//获取相应的Field对象
+			// 获取相应的Field对象
 			String fieldId = fieldElement.attributeValue("name");
-			//获取字段的field对象
+			// 获取字段的field对象
 			Field field = fieldMap.get(fieldId);
-			//创建字段所在的列相应的单元格
-			XSSFCell xc = xr.createCell(field.index);
+			// 获取text标签
 			List<Element> textList = fieldElement.elements("text");
 			
-			//判断标签是否为步骤或预期，若为该标签则跳过获取步骤
-			if (sepStep && (FieldType.STEP.getValue().equals(fieldId) || FieldType.EXPECT.getValue().equals(fieldId))) {
-				//若步骤与预期的数量小于stepNum，则无需后期处理，若大于相应的数量，则先将第一行的元素进行写入
-				if (textList.size() > stepNum) {
-					ArrayList<Element> tempList = new ArrayList<Element>();
-					for (int i = 0; i < stepNum; i++) {
-						//存储第一行需要写入的元素
-						tempList.add(textList.get(i));
-						
-						//删除stepNum以后的元素，该方法调用后会把xml文件中的标签也一并删除，不能使用
-						//textList.remove(i--);
-					}
-					//将临时集合赋给textList
-					textList = tempList;
-					stepAndExceptList.add(fieldElement);
-				}
+			//判断当前字段是否需要分行编写内容
+			if (field.rowText < 1) {
+				writeCommonField(xs, fieldElement, fieldId, field, textList, index);
+			} else {
+				writeSpecificField(xs, fieldElement, fieldId, field, textList, index);
 			}
 			
-			//将字段内容写入单元格
-			writeCellContext(xc, textList);
-			// 设置单元格格式	
-			xc.setCellStyle(field.getCellStyle());
 		}
 		
-		//判断stepAndExceptList是否有存储内容，若存储了内容，则对步骤和预期进行分别操作
-		if (stepAndExceptList.size() != 0) {
-			for (Element element : stepAndExceptList) {
-				//获取相应的Field对象
-				String fieldId = element.attributeValue("name");
-				//获取字段的field对象
-				Field field = fieldMap.get(fieldId);
-				//获取text标签
-				List<Element> textList = element.elements("text");
-				
-				//用于控制当前斜土步骤的行位于标题行下降的行数
-				int nowRowIndex = 1;
-				//若需要通过该方法写入用例，则必然有数据需要写入，则先写入数据，再做判断
-				//判断的方法为，以单元格较原位置下降的多少进行判断，例如有以下几个场景（设置的stepNum为2）：
-				//1.字段中存储了5个text标签
-				//2.字段中存储了3个text标签
-				//3.字段中存储了4个text标签
-				//由于在前面的代码已经运行并存储了2个text标签的内容，故
-				//针对场景1：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了4条，但写入的数据少于text数量，故需要继续循环
-				//针对场景2、3：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了3或4条，写入的数据等于text数量，故结束循环
-				//综合考虑，得到公式(stepNum * ++nowRowIndex)正好等于当前写入用例的条数，且nowRowIndex自增后可以作为下一次循环开始
-				//使用公式的值与用例总数判断，当公式值大于或等于text数量时，则结束循环
-				do {
-					//判断当前行是否被创建，若未被创建，则读取相应的行号
-					xr = xs.getRow(index + nowRowIndex) == null ? xs.createRow(index + nowRowIndex) : xs.getRow(index + nowRowIndex);
-					//创建字段所在的列相应的单元格
-					XSSFCell xc = xr.createCell(field.index);
-					
-					//存储裁剪后的text元素
-					ArrayList<Element> subTextList = new ArrayList<Element>();
-					//其中步骤数乘当前写入行的行数正好可以得到应该从哪个元素开始裁剪，例如
-					//字段中存储了5个text标签，此时设置的stepNum为2，在运行该代码前已经写入了2个text的内容，故循环从2开始（表示从第3个元素元素开始）
-					//当下一次循环时，nowRowIndex为2，此时2 * 2 = 4，正好可以得到从第5个元素开始，此时在写入时也只会写入一次
-					for (int i = 0; i < stepNum; i++) {
-						//若剩余内容数小于stepNum时，此时循环在读取textList会抛出数组越界异常，则捕捉抛出异常后直接结束循环
-						try {
-							subTextList.add(textList.get(stepNum * nowRowIndex + i));
-						} catch (IndexOutOfBoundsException e) {
-							break;
-						}
-					}
-					
-					//将字段内容写入单元格
-					writeCellContext(xc, subTextList);
-					// 设置单元格格式	
-					xc.setCellStyle(field.getCellStyle());
-				} while(stepNum * ++nowRowIndex < textList.size());
-			}
-		}
-		
-		//返回sheet最后一行的行号
+		// 返回sheet最后一行的行号
 		return xs.getLastRowNum();
 	}
 
 	/**
+	 * 写入无需多行编辑（每段分行）的字段信息
+	 * 
+	 * @param xs           sheet类对象
+	 * @param fieldElement 字段元素
+	 * @param fieldId 字段的id
+	 * @param field 字段的Field对象
+	 * @param textList 字段对应的内容
+	 * @param index        写入的行下标
+	 */
+	private void writeCommonField(XSSFSheet xs, Element fieldElement, String fieldId, Field field, List<Element> textList, int index) {
+		// 创建或读取测试用例所在的行
+		XSSFRow xr;
+		if ((xr = xs.getRow(index)) == null) {
+			xr = xs.createRow(index);
+		}
+
+		// 创建字段所在的列相应的单元格
+		XSSFCell xc = xr.createCell(field.index);
+		
+		//TODO 对单元格进行操作
+		// 设置单元格的样式
+		xc.setCellStyle(getFieldStyle(field, fieldElement));
+		//向单元格中添加数据有效性
+		field.addDataValidation(xs, index, index);
+		
+		// 将字段内容写入单元格
+		writeText(xc, textList);
+	}
+	
+	/**
+	 * 写入需要多行编辑（每段分行）的字段信息
+	 * 
+	 * @param xs           sheet类对象
+	 * @param fieldElement 字段元素
+	 * @param fieldId 字段的id
+	 * @param field 字段的Field对象
+	 * @param textList 字段对应的内容
+	 * @param index        写入的行下标
+	 */
+	private void writeSpecificField(XSSFSheet xs, Element fieldElement, String fieldId, Field field, List<Element> textList, int index) {
+		// 创建或读取测试用例所在的行
+		XSSFRow xr;
+		if ((xr = xs.getRow(index)) == null) {
+			xr = xs.createRow(index);
+		}
+				
+		// 用于控制当前斜土步骤的行位于标题行下降的行数
+		int nowRowIndex = 0;
+		// 若需要通过该方法写入用例，则必然有数据需要写入，则先写入数据，再做判断
+		// 判断的方法为，以单元格较原位置下降的多少进行判断，例如有以下几个场景（设置的stepNum为2）：
+		// 1.字段中存储了5个text标签
+		// 2.字段中存储了3个text标签
+		// 3.字段中存储了4个text标签
+		// 由于在前面的代码已经运行并存储了2个text标签的内容，故
+		// 针对场景1：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了4条，但写入的数据少于text数量，故需要继续循环
+		// 针对场景2、3：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了3或4条，写入的数据等于text数量，故结束循环
+		// 综合考虑，得到公式(stepNum * ++nowRowIndex)正好等于当前写入用例的条数，且nowRowIndex自增后可以作为下一次循环开始
+		// 使用公式的值与用例总数判断，当公式值大于或等于text数量时，则结束循环
+		do {
+			// 判断当前行是否被创建，若未被创建，则读取相应的行号
+			xr = xs.getRow(index + nowRowIndex) == null ? xs.createRow(index + nowRowIndex)
+					: xs.getRow(index + nowRowIndex);
+			// 创建字段所在的列相应的单元格
+			XSSFCell xc = xr.createCell(field.index);
+			
+			//TODO 对单元格进行操作
+			// 设置单元格的样式
+			xc.setCellStyle(getFieldStyle(field, fieldElement));
+			//向单元格中添加数据有效性
+			field.addDataValidation(xs, index, index);
+			
+			// 存储裁剪后的text元素
+			ArrayList<Element> subTextList = new ArrayList<Element>();
+			// 其中步骤数乘当前写入行的行数正好可以得到应该从哪个元素开始裁剪，例如
+			// 字段中存储了5个text标签，此时设置的stepNum为2，在运行该代码前已经写入了2个text的内容，故循环从2开始（表示从第3个元素元素开始）
+			// 当下一次循环时，nowRowIndex为2，此时2 * 2 = 4，正好可以得到从第5个元素开始，此时在写入时也只会写入一次
+			for (int i = 0; i < field.rowText; i++) {
+				// 若剩余内容数小于stepNum时，此时循环在读取textList会抛出数组越界异常，则捕捉抛出异常后直接结束循环
+				try {
+					subTextList.add(textList.get(field.rowText * nowRowIndex + i));
+				} catch (IndexOutOfBoundsException e) {
+					break;
+				}
+			}
+			
+			// 将字段内容写入单元格
+			writeText(xc, subTextList);
+		} while (field.rowText * ++nowRowIndex < textList.size());
+	}
+
+	/**
+	 * 返回文本中字段对应的样式，可在该方法中添加字段需要添加的相应样式
+	 * 
+	 * @param field        字段id
+	 * @param fieldElement 字段元素
+	 * @return 字段对应的样式
+	 */
+	private XSSFCellStyle getFieldStyle(Field field, Element fieldElement) {
+		// 获取字段最基本的样式
+		XSSFCellStyle xcs = field.getCellStyle();
+
+		// 判断字段上是否需要添加背景色，若需要添加背景色，则将相应参数写入到xcs中
+		String backgroundColorText;
+		if ((backgroundColorText = fieldElement.attributeValue("background")) != null) {
+			short backgroundcolor = Short.valueOf(backgroundColorText);
+
+			// 为保证添加背景后仍能看清单元格中的文本，故背景采用细左斜线
+			xcs.setFillPattern(FillPatternType.THIN_FORWARD_DIAG);
+			xcs.setFillForegroundColor(backgroundcolor);
+		}
+
+		return xcs;
+	}
+
+	/**
 	 * 获取并返回字段对应的内容
+	 * 
 	 * @param textList 字段的文本元素
 	 * @return 字段对应的内容
 	 */
-	private void writeCellContext(XSSFCell xc, List<Element> textList) {
-		//存储文本内容，由于文本可能带颜色，故使用富文本来存储文本内容
+	private void writeText(XSSFCell xc, List<Element> textList) {
+		// 存储文本内容，由于文本可能带颜色，故使用富文本来存储文本内容
 		XSSFRichTextString xrts = new XSSFRichTextString("");
-		
-		//遍历text标签
+
+		// 遍历text标签
 		for (int index = 0; index < textList.size(); index++) {
-			//为每一行添加回车，若在第一行，则不加入回车
+			// 为每一行添加回车，若在第一行，则不加入回车
 			if (index != 0) {
 				xrts.append("\n");
 			}
-			
-			//创建字体
+
+			// 创建字体
 			XSSFFont xf = xw.createFont();
 			// 设置字体名称
 			xf.setFontName("宋体");
 			// 设置字体大小，注意，字体大小单位为磅，小四字体对应12磅
 			xf.setFontHeightInPoints((short) 12);
-			
-			//获取text标签的colors属性
+
+			// 获取text标签的colors属性
 			String colorsText = textList.get(index).attributeValue("colors");
-			//判断获取到的元素是否为null，即该属性是否存在，若存在，则加入相应的颜色到字体中
+			// 判断获取到的元素是否为null，即该属性是否存在，若存在，则加入相应的颜色到字体中
 			if (colorsText != null) {
-				//设置颜色
+				// 设置颜色
 				xf.setColor(Short.valueOf(colorsText));
 			}
-			//拼接文本
+			// 拼接文本
 			xrts.append(textList.get(index).attributeValue("value"), xf);
 		}
-		
-		//将文本值设置入单元格中
+
+		// 将文本值设置入单元格中
 		xc.setCellValue(xrts);
 	}
 
@@ -690,10 +794,9 @@ public class WriteTestCase {
 			}
 
 			// 存储字段信息
-			fieldMap.put(column.get(index).attributeValue("id"),
-					new Field(column.get(index).attributeValue("id"), column.get(index).attributeValue("align"), index, datas));
+			fieldMap.put(column.get(index).attributeValue("id"), new Field(column.get(index).attributeValue("id"),
+					column.get(index).attributeValue("align"), index, column.get(index).attributeValue("row_text"), datas));
 		}
-//		column.forEach(e -> fieldMap.put(e.attributeValue("id"), null));
 	}
 
 	/**
@@ -810,20 +913,20 @@ public class WriteTestCase {
 
 			return this;
 		}
-		
+
 		/**
 		 * 该方法用于对整行用例文本的颜色进行标记
+		 * 
 		 * @param color {@link MarkColorsType}类枚举
 		 * @return 类本身
 		 */
 		@SuppressWarnings("unchecked")
 		public CaseMark changeRowTextColor(MarkColorsType color) {
 			// 将case下所有标签的name属性传至fieldBackground方法
-			((List<Element>) (caseElement.elements()))
-					.forEach(fieldElement -> {
-						List<Element> textElements = fieldElement.elements();
-						changeTextColor(fieldElement.attributeValue("name"), 0, textElements.size(), color);
-					});
+			((List<Element>) (caseElement.elements())).forEach(fieldElement -> {
+				List<Element> textElements = fieldElement.elements();
+				changeTextColor(fieldElement.attributeValue("name"), 0, textElements.size(), color);
+			});
 
 			return this;
 		}
@@ -837,20 +940,19 @@ public class WriteTestCase {
 		 * @param colors {@link MarkColorsType}类枚举
 		 * @return 类本身
 		 */
-		@SuppressWarnings("unchecked")
 		public CaseMark changeTextColor(String field, int index, MarkColorsType color) {
 			return changeTextColor(field, index, index, color);
 		}
-		
+
 		/**
 		 * 用于对字段的多段文本进行颜色标记，下标从0开始计算，若下标小于0时，则标记第一段；
 		 * 若下标大于最大段落数时，则编辑最后一段。若所传字段下不存在文本标签，则不进行标记。
 		 * 注意，标记的段落包括开始段落，但不包括结束段落；若开始与结束的段落数相同，则标记对应的一行
 		 * 
-		 * @param field 字段id
+		 * @param field      字段id
 		 * @param startIndex 字段文本的开始段标（段落）
-		 * @param endIndex 字段文本的结束段标（段落）
-		 * @param color {@link MarkColorsType}类枚举
+		 * @param endIndex   字段文本的结束段标（段落）
+		 * @param color      {@link MarkColorsType}类枚举
 		 * @return 类本身
 		 */
 		@SuppressWarnings("unchecked")
@@ -862,13 +964,13 @@ public class WriteTestCase {
 						List<Element> textElements = (List<Element>) (fieldElement.elements());
 						// 判断是否存在text标签，若不存在，则结束
 						if (textElements.size() != 0) {
-							//处理最大与最小值，保证数据不会错误
+							// 处理最大与最小值，保证数据不会错误
 							boolean endIndexBig = startIndex < endIndex;
 							int smallIndex = endIndexBig ? startIndex : endIndex;
 							int bigIndex = endIndexBig ? endIndex : startIndex;
-							//判断最大最小值是否相同，相同则最大值+1
-							bigIndex = bigIndex == smallIndex? (bigIndex + 1) : bigIndex;
-							
+							// 判断最大最小值是否相同，相同则最大值+1
+							bigIndex = bigIndex == smallIndex ? (bigIndex + 1) : bigIndex;
+
 							for (int index = smallIndex; index < bigIndex; index++) {
 								setTextColor(textElements, index, color);
 							}
@@ -876,12 +978,13 @@ public class WriteTestCase {
 					});
 			return this;
 		}
-		
+
 		/**
 		 * 用于对文本标签加上颜色属性
+		 * 
 		 * @param textElements 字段标签下的文本标签
-		 * @param index 标签的位置
-		 * @param color 颜色
+		 * @param index        标签的位置
+		 * @param color        颜色
 		 * @return 颜色是否正常进行设置，即传入的index是否正常
 		 */
 		private void setTextColor(List<Element> textElements, int index, MarkColorsType color) {
@@ -899,7 +1002,7 @@ public class WriteTestCase {
 			}
 			textElement.addAttribute("colors", String.valueOf(color.getColorsValue()));
 		}
-		
+
 		/**
 		 * 用于对步骤和预期同时进行标记，使用该方法前需要调用{@link WriteTestCase#setPresupposeField(FieldType, String)}
 		 * 方法对字段的步骤（{@link FieldType#STEP}枚举值）和预期（{@link FieldType#EXPECT}枚举值）进行标记。
@@ -952,6 +1055,10 @@ public class WriteTestCase {
 		 * 用于存储字段所在单元格的位置（xml文件中标签的位置）
 		 */
 		public int index;
+		/**
+		 * 用于标记每行写入的段落数，默认为0，当数字小于1时，则认为不分行
+		 */
+		public int rowText = 0;
 
 		/**
 		 * 用于存储字段在用例中对应的内容
@@ -971,13 +1078,14 @@ public class WriteTestCase {
 		 * @param index 字段在单元格中的位置
 		 * @param datas 字段是否存在数据有效性
 		 */
-		public Field(String id, String align, int index, boolean datas) {
+		public Field(String id, String align, int index, String rowText, boolean datas) {
 			this.id = id;
 			this.align = align;
 			this.index = index;
 			this.datas = datas;
+			this.rowText = rowText == null ? -1 : Integer.valueOf(rowText);
 		}
-		
+
 		/**
 		 * 用于清空context中的内容
 		 */
@@ -1007,7 +1115,7 @@ public class WriteTestCase {
 			default:
 				xcs.setAlignment(HorizontalAlignment.LEFT);
 			}
-			
+
 			// 设置单元格垂直居中
 			xcs.setVerticalAlignment(VerticalAlignment.CENTER);
 			// 设置单元格自动换行

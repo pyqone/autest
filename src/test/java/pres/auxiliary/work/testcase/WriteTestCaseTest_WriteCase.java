@@ -38,8 +38,6 @@ public class WriteTestCaseTest_WriteCase {
 		wtc.setPresupposeField(FieldType.RANK, "优先级");
 		wtc.setPresupposeField(FieldType.STEP, "步骤");
 		wtc.setPresupposeField(FieldType.TITLE, "标题");
-		
-		wtc.setStepNumber(10);
 	}
 
 	/**
@@ -56,7 +54,7 @@ public class WriteTestCaseTest_WriteCase {
 
 	@Test
 	public void step_01() {
-		wtc.addStep("第一步", "第二部", "第三部", "第三部").addExcept("预期1", "预期2", "预期3").addTitle("用例1").end();
+		wtc.addStep("第一步", "第二部", "第三部", "第三部").addExcept("预期1", "预期2", "预期3").addTitle("用例1").end().changeFieldBackground("步骤", MarkColorsType.BLUE);
 
 		wtc.addStep("第一步", "第二部", "第三部").addExcept("预期1", "预期2", "预期3").addTitle("用例2").end()
 				.changeTextColor(FieldType.STEP.getValue(), 0, MarkColorsType.RED);
@@ -68,8 +66,8 @@ public class WriteTestCaseTest_WriteCase {
 		wtc.addStep("第一步", "第二部", "第三部").addExcept("预期1", "预期2", "预期3").addTitle("用例4").end();
 
 		wtc.addStep("第一步", "第二").addExcept("预期1", "预期2").addTitle("用例5").end()
-		.changeTextColor(FieldType.STEP.getValue(), 0, MarkColorsType.GREEN);
-		
+				.changeTextColor(FieldType.STEP.getValue(), 0, MarkColorsType.GREEN);
+
 		wtc.addStep("第一步", "第二部").addExcept("预期1", "预期2").addTitle("用例6").end().changeRowTextColor(MarkColorsType.RED);
 	}
 }

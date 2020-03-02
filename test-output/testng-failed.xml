@@ -3,27 +3,12 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test name="Default test(failed)">
     <classes>
-      <class name="pres.auxiliary.work.testcase.WriteTestCaseTest">
+      <class name="pres.auxiliary.work.testcase.WriteTestCaseTest_WriteCase">
         <methods>
-          <include name="addPreconditionTest"/>
-          <include name="addStepTest"/>
-          <include name="markTest"/>
-          <include name="markTextTest"/>
-          <include name="fieldBackgroundTest"/>
-          <include name="endCase"/>
-          <include name="markFieldTest"/>
-          <include name="addRankTest_NotData"/>
+          <include name="step_01"/>
           <include name="createTemplet"/>
-          <include name="rowBackgroundTest"/>
-          <include name="addContext"/>
-          <include name="endTest"/>
-          <include name="addExceptTest"/>
-          <include name="addTitleTest"/>
-          <include name="markStepAndExceptTest"/>
-          <include name="setRankTest"/>
-          <include name="setReplactWordTest"/>
         </methods>
-      </class> <!-- pres.auxiliary.work.testcase.WriteTestCaseTest -->
+      </class> <!-- pres.auxiliary.work.testcase.WriteTestCaseTest_WriteCase -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
