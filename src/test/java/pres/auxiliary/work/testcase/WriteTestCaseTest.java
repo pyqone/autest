@@ -81,18 +81,18 @@ public class WriteTestCaseTest {
 	}
 
 	@BeforeMethod
-	public void addContext(Method method) {
+	public void addContent(Method method) {
 		System.out.println("=======正在运行：" + method.getName() + "=======");
 		wtc.addRank(1);
 		wtc.addStep("步骤1", "步骤2", "步骤3");
 		wtc.addTitle("这是标题");
 		wtc.addPrecondition("前置条件1", "前置条件2", "前置条件3");
 		wtc.addExcept("预期1", "预期2", "预期3");
-		wtc.addContext("目的", "这是目的1", "这是目的2");
-		wtc.addContext("模块", "这是模块");
-		wtc.addContext("状态", "这是状态");
-		wtc.addContext("项目", "这是项目");
-		wtc.addContext("设计者", "这是设计者");
+		wtc.addContent("目的", "这是目的1", "这是目的2");
+		wtc.addContent("模块", "这是模块");
+		wtc.addContent("状态", "这是状态");
+		wtc.addContent("项目", "这是项目");
+		wtc.addContent("设计者", "这是设计者");
 	}
 
 	/**
@@ -104,11 +104,11 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#addContext(String, String)}方法
+	 * 测试{@link WriteTestCase#addContent(String, String)}方法
 	 */
 	@Test
-	public void addContextTest() {
-		wtc.addContext("标题", "这是标题").addContext("目的", "这是目的");
+	public void addContentTest() {
+		wtc.addContent("标题", "这是标题").addContent("目的", "这是目的");
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class WriteTestCaseTest {
 	 */
 	@Test
 	public void addStepTest() {
-		wtc.addStep("步骤1", "步骤2", "步骤3");
+		wtc.addStep("步骤1", "2020-03-03", "2020/03/03");
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class WriteTestCaseTest {
 	 */
 	@Test
 	public void addTitleTest() {
-		wtc.addTitle("前置条件标题");
+		wtc.addTitle("2020-02-03");
 	}
 
 	/**
@@ -204,12 +204,12 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link CaseMark#markField(String, String)}方法
+	 * 测试{@link CaseMark#fieldComment(String, String)}方法
 	 */
 	@Test
 	public void markFieldTest() {
-		CaseMark cm = wtc.end().markField("步骤", "步骤标记").markField(FieldType.EXPECT.getValue(), "预期标记");
-		cm.markField("目的", "目的标记");
+		CaseMark cm = wtc.end().fieldComment("步骤", "步骤标记").fieldComment(FieldType.EXPECT.getValue(), "预期标记");
+		cm.fieldComment("目的", "目的标记");
 	}
 
 	/**
@@ -251,7 +251,7 @@ public class WriteTestCaseTest {
 	 */
 	@Test
 	public void markTest() {
-		wtc.end().markStepAndExcept(2, MarkColorsType.RED).markField("目的", "目的标记").changeFieldBackground("设计者",
+		wtc.end().markStepAndExcept(2, MarkColorsType.RED).fieldComment("目的", "目的标记").changeFieldBackground("设计者",
 				MarkColorsType.YELLOW);
 	}
 }

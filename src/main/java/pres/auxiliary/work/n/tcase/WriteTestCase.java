@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -223,17 +225,17 @@ public class WriteTestCase {
 	 * 设置字段名称的常值，通过该设置，则之后该字段将直接填入设置的值，无需再次写入字段的值
 	 * 
 	 * @param field   字段id
-	 * @param context 相应字段的内容
+	 * @param content 相应字段的内容
 	 * 
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
-	public void setFieldValue(String field, String context) {
+	public void setFieldValue(String field, String content) {
 		// 为保证在写用例的时候也能生效，故将值设置进入fieldMap
-		addContext(field, context);
+		addContent(field, content);
 
 		// 先将值设置入fieldMap中可以保证field字段是存在于fieldMap中，以减少此处再做判断
 		// 将字段内容写入caseValueMap
-		caseValueMap.put(field, context);
+		caseValueMap.put(field, content);
 	}
 
 	/**
@@ -264,7 +266,7 @@ public class WriteTestCase {
 			steps[i] = ((i + 1) + "." + steps[i]);
 		}
 
-		return addContext(FieldType.STEP.getValue(), steps);
+		return addContent(FieldType.STEP.getValue(), steps);
 	}
 
 	/**
@@ -284,7 +286,7 @@ public class WriteTestCase {
 			excepts[i] = ((i + 1) + "." + excepts[i]);
 		}
 
-		return addContext(FieldType.EXPECT.getValue(), excepts);
+		return addContent(FieldType.EXPECT.getValue(), excepts);
 	}
 
 	/**
@@ -304,7 +306,7 @@ public class WriteTestCase {
 			preconditions[i] = ((i + 1) + "." + preconditions[i]);
 		}
 
-		return addContext(FieldType.PRECONDITION.getValue(), preconditions);
+		return addContent(FieldType.PRECONDITION.getValue(), preconditions);
 	}
 
 	/**
@@ -319,7 +321,7 @@ public class WriteTestCase {
 	 * @return 类本身，以方便链式编码
 	 */
 	public WriteTestCase addTitle(String title) {
-		return addContext(FieldType.TITLE.getValue(), title);
+		return addContent(FieldType.TITLE.getValue(), title);
 	}
 
 	/**
@@ -346,9 +348,9 @@ public class WriteTestCase {
 				text = this.rank[this.rank.length - 1];
 			}
 
-			return addContext(FieldType.RANK.getValue(), text);
+			return addContent(FieldType.RANK.getValue(), text);
 		} else {
-			return addContext(FieldType.RANK.getValue(), String.valueOf(rank));
+			return addContent(FieldType.RANK.getValue(), String.valueOf(rank));
 		}
 	}
 
@@ -360,11 +362,11 @@ public class WriteTestCase {
 	 * test#ing#
 	 * 
 	 * @param field   字段id
-	 * @param context 相应字段的内容
+	 * @param content 相应字段的内容
 	 * @return 类本身，以方便链式编码
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
-	public WriteTestCase addContext(String field, String... contexts) {
+	public WriteTestCase addContent(String field, String... contents) {
 		// 判断字段是否存在，若不存在，则抛出异常
 		if (!fieldMap.containsKey(field)) {
 			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
@@ -373,14 +375,14 @@ public class WriteTestCase {
 		// 查找特殊词语，并对词语进行替换
 		for (String word : replaceWordMap.keySet()) {
 			// 查找所有的内容，并将特殊词语进行替换
-			for (int i = 0; i < contexts.length; i++) {
-				contexts[i] = contexts[i].replaceAll(word, replaceWordMap.get(word));
+			for (int i = 0; i < contents.length; i++) {
+				contents[i] = contents[i].replaceAll(word, replaceWordMap.get(word));
 			}
 		}
 
 		// 将字段内容写入fieldMap
-		fieldMap.get(field).context = contexts;
-//		fieldMap.put(field, contexts);
+		fieldMap.get(field).content = contents;
+//		fieldMap.put(field, contents);
 
 		return this;
 	}
@@ -411,9 +413,9 @@ public class WriteTestCase {
 			// dom4j当属性值传入null时，则直接不会创建该属性，故此处无需做判断字段id是否在fieldMarkMap中
 			Element fieldElement = caseElement.addElement("field").addAttribute("name", id);
 			// 判断当前是否有添加内容，若未添加内容，则创建一个value属性为空的text标签
-			if (field.context != null) {
+			if (field.content != null) {
 				// 读取所有texts（字符串数组）的所有内容，并为每一元素创建一个text标签，将值加入属性中
-				Arrays.stream(field.context).forEach(text -> {
+				Arrays.stream(field.content).forEach(text -> {
 					fieldElement.addElement("text").addAttribute("value", text);
 				});
 			} else {
@@ -422,12 +424,12 @@ public class WriteTestCase {
 		});
 
 		// 清空fieldMap中的内容
-		clearFieldContext();
+		clearFieldContent();
 		// 将字段常值设置入fieldMap中，若抛出异常，则不进行处理
 		if (caseValueMap != null && caseValueMap.size() != 0) {
-			caseValueMap.forEach((field, context) -> {
+			caseValueMap.forEach((field, content) -> {
 				try {
-					addContext(field, context);
+					addContent(field, content);
 				} catch (LabelNotFoundException e) {
 				}
 			});
@@ -460,13 +462,10 @@ public class WriteTestCase {
 			if (xs == null) {
 				throw new IncorrectFileException("不存在sheet名称：" + sheetElement.attributeValue("name"));
 			}
-			// 获取当前sheet的最后一行的行号，并从其下一行开始编写
-			int index = xs.getLastRowNum() + 1;
-
 			// 获取用例标签，将用例标签中的内容写入到文件中
 			List<Element> caseElements = sheetElement.elements("case");
 			for (Element caseElement : caseElements) {
-				index = writeCase(index, xs, caseElement) + 1;
+				writeCase(xs.getLastRowNum() + 1, xs, caseElement);
 			}
 		}
 
@@ -479,107 +478,15 @@ public class WriteTestCase {
 		xw.close();
 	}
 
+	/**
+	 * 用于将case标签的内容写入到文本中
+	 * @param index 写入行号
+	 * @param xs sheet
+	 * @param caseElement case标签对应的elemenet对象
+	 * @return 当前行号
+	 */
 	@SuppressWarnings("unchecked")
-	private int writeCase(int index, XSSFSheet xs, Element caseElement) {
-//		// 判断每行步骤数是否大于0，大于零则是否有设置步骤和预期的枚举值，若同时满足，则抛出异常
-//		boolean sepStep = stepNum > 0;
-//		if (sepStep && (FieldType.STEP.getValue().isEmpty() || FieldType.EXPECT.getValue().isEmpty())) {
-//			throw new LabelNotFoundException("步骤或预期未设置枚举值");
-//		}
-//
-//		// 创建一行，编写测试用例的第一行内容
-//		XSSFRow xr = xs.createRow(index);
-//		// 获取字段元素，需要获取配置xml文件中的以及用例xml文件中的字段
-//		List<Element> fieldElements = caseElement.elements("field");
-//		// 存储读取到的步骤和预期
-//		ArrayList<Element> stepAndExceptList = new ArrayList<Element>();
-//		// 遍历所有的field标签，若需要对步骤预期进行分行显示，则不读取步骤和预期
-//		for (Element fieldElement : fieldElements) {
-//			// 获取相应的Field对象
-//			String fieldId = fieldElement.attributeValue("name");
-//			// 获取字段的field对象
-//			Field field = fieldMap.get(fieldId);
-//			// 创建字段所在的列相应的单元格
-//			XSSFCell xc = xr.createCell(field.index);
-//			field.addDataValidation(xs, index, index);
-//
-//			List<Element> textList = fieldElement.elements("text");
-//
-//			// 判断标签是否为步骤或预期，若为该标签则跳过获取步骤
-//			if (sepStep && (FieldType.STEP.getValue().equals(fieldId) || FieldType.EXPECT.getValue().equals(fieldId))) {
-//				// 若步骤与预期的数量小于stepNum，则无需后期处理，若大于相应的数量，则先将第一行的元素进行写入
-//				if (textList.size() > stepNum) {
-//					ArrayList<Element> tempList = new ArrayList<Element>();
-//					for (int i = 0; i < stepNum; i++) {
-//						// 存储第一行需要写入的元素
-//						tempList.add(textList.get(i));
-//
-//						// 删除stepNum以后的元素，该方法调用后会把xml文件中的标签也一并删除，不能使用
-//						// textList.remove(i--);
-//					}
-//					// 将临时集合赋给textList
-//					textList = tempList;
-//					stepAndExceptList.add(fieldElement);
-//				}
-//			}
-//
-//			// 将字段内容写入单元格
-//			writeText(xc, textList);
-//			// 设置单元格格式
-//			xc.setCellStyle(getFieldStyle(field, fieldElement));
-//		}
-//
-//		// 判断stepAndExceptList是否有存储内容，若存储了内容，则对步骤和预期进行分别操作
-//		if (stepAndExceptList.size() != 0) {
-//			for (Element element : stepAndExceptList) {
-//				// 获取相应的Field对象
-//				String fieldId = element.attributeValue("name");
-//				// 获取字段的field对象
-//				Field field = fieldMap.get(fieldId);
-//				// 获取text标签
-//				List<Element> textList = element.elements("text");
-//
-//				// 用于控制当前斜土步骤的行位于标题行下降的行数
-//				int nowRowIndex = 1;
-//				// 若需要通过该方法写入用例，则必然有数据需要写入，则先写入数据，再做判断
-//				// 判断的方法为，以单元格较原位置下降的多少进行判断，例如有以下几个场景（设置的stepNum为2）：
-//				// 1.字段中存储了5个text标签
-//				// 2.字段中存储了3个text标签
-//				// 3.字段中存储了4个text标签
-//				// 由于在前面的代码已经运行并存储了2个text标签的内容，故
-//				// 针对场景1：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了4条，但写入的数据少于text数量，故需要继续循环
-//				// 针对场景2、3：先执行一次存储，此时表格的行较原来下降了1行，用例实际写入了3或4条，写入的数据等于text数量，故结束循环
-//				// 综合考虑，得到公式(stepNum * ++nowRowIndex)正好等于当前写入用例的条数，且nowRowIndex自增后可以作为下一次循环开始
-//				// 使用公式的值与用例总数判断，当公式值大于或等于text数量时，则结束循环
-//				do {
-//					// 判断当前行是否被创建，若未被创建，则读取相应的行号
-//					xr = xs.getRow(index + nowRowIndex) == null ? xs.createRow(index + nowRowIndex)
-//							: xs.getRow(index + nowRowIndex);
-//					// 创建字段所在的列相应的单元格
-//					XSSFCell xc = xr.createCell(field.index);
-//
-//					// 存储裁剪后的text元素
-//					ArrayList<Element> subTextList = new ArrayList<Element>();
-//					// 其中步骤数乘当前写入行的行数正好可以得到应该从哪个元素开始裁剪，例如
-//					// 字段中存储了5个text标签，此时设置的stepNum为2，在运行该代码前已经写入了2个text的内容，故循环从2开始（表示从第3个元素元素开始）
-//					// 当下一次循环时，nowRowIndex为2，此时2 * 2 = 4，正好可以得到从第5个元素开始，此时在写入时也只会写入一次
-//					for (int i = 0; i < stepNum; i++) {
-//						// 若剩余内容数小于stepNum时，此时循环在读取textList会抛出数组越界异常，则捕捉抛出异常后直接结束循环
-//						try {
-//							subTextList.add(textList.get(stepNum * nowRowIndex + i));
-//						} catch (IndexOutOfBoundsException e) {
-//							break;
-//						}
-//					}
-//
-//					// 将字段内容写入单元格
-//					writeText(xc, subTextList);
-//					// 设置单元格格式
-//					xc.setCellStyle(getFieldStyle(field, element));
-//				} while (stepNum * ++nowRowIndex < textList.size());
-//			}
-//		}
-		
+	private void writeCase(int index, XSSFSheet xs, Element caseElement) {
 		// 获取字段元素，需要获取配置xml文件中的以及用例xml文件中的字段
 		List<Element> fieldElements = caseElement.elements("field");
 		// 遍历所有的field标签，将标签的内容写入到文件中
@@ -599,9 +506,6 @@ public class WriteTestCase {
 			}
 			
 		}
-		
-		// 返回sheet最后一行的行号
-		return xs.getLastRowNum();
 	}
 
 	/**
@@ -629,6 +533,8 @@ public class WriteTestCase {
 		xc.setCellStyle(getFieldStyle(field, fieldElement));
 		//向单元格中添加数据有效性
 		field.addDataValidation(xs, index, index);
+		//向单元格中添加Comment注解
+		addComment(xs, xc, fieldElement);
 		
 		// 将字段内容写入单元格
 		writeText(xc, textList);
@@ -675,6 +581,8 @@ public class WriteTestCase {
 			xc.setCellStyle(getFieldStyle(field, fieldElement));
 			//向单元格中添加数据有效性
 			field.addDataValidation(xs, index, index);
+			//向单元格中添加Comment注解
+			addComment(xs, xc, fieldElement);
 			
 			// 存储裁剪后的text元素
 			ArrayList<Element> subTextList = new ArrayList<Element>();
@@ -717,6 +625,31 @@ public class WriteTestCase {
 		}
 
 		return xcs;
+	}
+	
+	/**
+	 * 用于向单元格上添加Comment标注
+	 * @param xs sheet对象
+	 * @param xc 相应单元格对象
+	 * @param fieldElement 字段元素
+	 */
+	private void addComment(XSSFSheet xs, XSSFCell xc, Element fieldElement) {
+		//获取字段的comment标签内容
+		String commentContent = fieldElement.attributeValue("comment");
+		//判断内容是否存在，若不存在，则结束方法运行，不添加标注
+		if (commentContent == null) {
+			return;
+		}
+		
+		// 创建一个标注，并确定其在一个单元格的左上角和右下角
+		Comment com = xs.createDrawingPatriarch().createCellComment(
+				xw.getCreationHelper().createClientAnchor());
+		// 创建标注的内容
+		com.setString(xw.getCreationHelper().createRichTextString(commentContent));
+		// 创建标注的作者(作者为计算机名称)
+		com.setAuthor(System.getenv().get("COMPUTERNAME"));
+		// 将标注附加到单元格上
+		xc.setCellComment(com);
 	}
 
 	/**
@@ -761,8 +694,8 @@ public class WriteTestCase {
 	/**
 	 * 清空fieldMap内的存储字段信息，不清除字段
 	 */
-	private void clearFieldContext() {
-		fieldMap.forEach((key, value) -> value.clearContext());
+	private void clearFieldContent() {
+		fieldMap.forEach((key, value) -> value.clearContent());
 	}
 
 	/**
@@ -861,11 +794,11 @@ public class WriteTestCase {
 		 * 向单元格（字段）上添加一个标记（备注），以记录内容
 		 * 
 		 * @param field   字段id
-		 * @param context 标记中记录的内容
+		 * @param content 标记中记录的内容
 		 * @return 类本身
 		 */
 		@SuppressWarnings("unchecked")
-		public CaseMark markField(String field, String context) {
+		public CaseMark fieldComment(String field, String content) {
 			// 判断字段是否存在，若不存在，则抛出异常
 			if (!fieldMap.containsKey(field)) {
 				throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
@@ -873,7 +806,7 @@ public class WriteTestCase {
 
 			// 向包含uuid的标签下添加相应的属性
 			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("name").equals(field))
-					.forEach(e -> e.addAttribute("mark", context));
+					.forEach(e -> e.addAttribute("comment", content));
 
 			return this;
 		}
@@ -1063,7 +996,7 @@ public class WriteTestCase {
 		/**
 		 * 用于存储字段在用例中对应的内容
 		 */
-		public String[] context = null;
+		public String[] content = null;
 
 		/**
 		 * 存储字段是否包含数据有效性（由于在创建模板时数据有效性已被写入到模板文件中，故此处无需存储）
@@ -1087,10 +1020,10 @@ public class WriteTestCase {
 		}
 
 		/**
-		 * 用于清空context中的内容
+		 * 用于清空content中的内容
 		 */
-		public void clearContext() {
-			context = null;
+		public void clearContent() {
+			content = null;
 		}
 
 		/**
