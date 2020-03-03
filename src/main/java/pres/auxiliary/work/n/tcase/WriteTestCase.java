@@ -3,7 +3,6 @@ package pres.auxiliary.work.n.tcase;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
@@ -67,7 +65,6 @@ public class WriteTestCase {
 	/**
 	 * 用于存储一条用例的信息，第一个参数指向配置文件中的字段id，第二个字段为xml文件中字段的相应信息
 	 */
-//	private HashMap<String, String[]> fieldMap = new HashMap<>(16);
 	private HashMap<String, Field> fieldMap = new HashMap<>(16);
 
 	/**
@@ -405,8 +402,8 @@ public class WriteTestCase {
 		}
 
 		// 创建case标签
-		String caseUUID = UUID.randomUUID().toString();
-		Element caseElement = sheetElement.addElement("case").addAttribute("id", caseUUID);
+		String caseUuid = UUID.randomUUID().toString();
+		Element caseElement = sheetElement.addElement("case").addAttribute("id", caseUuid);
 		// 为fieldMap中的所有key创建field标签，并记录相应的value
 		fieldMap.forEach((id, field) -> {
 			// 添加field标签，并设置name属性（字段名称），mark属性（备注内容）
@@ -435,7 +432,7 @@ public class WriteTestCase {
 			});
 		}
 
-		return new CaseMark(caseUUID);
+		return new CaseMark(caseUuid);
 	}
 
 	/**
@@ -480,8 +477,9 @@ public class WriteTestCase {
 
 	/**
 	 * 用于将case标签的内容写入到文本中
-	 * @param index 写入行号
-	 * @param xs sheet
+	 * 
+	 * @param index       写入行号
+	 * @param xs          sheet
 	 * @param caseElement case标签对应的elemenet对象
 	 * @return 当前行号
 	 */
@@ -497,14 +495,14 @@ public class WriteTestCase {
 			Field field = fieldMap.get(fieldId);
 			// 获取text标签
 			List<Element> textList = fieldElement.elements("text");
-			
-			//判断当前字段是否需要分行编写内容
+
+			// 判断当前字段是否需要分行编写内容
 			if (field.rowText < 1) {
 				writeCommonField(xs, fieldElement, fieldId, field, textList, index);
 			} else {
 				writeSpecificField(xs, fieldElement, fieldId, field, textList, index);
 			}
-			
+
 		}
 	}
 
@@ -513,12 +511,13 @@ public class WriteTestCase {
 	 * 
 	 * @param xs           sheet类对象
 	 * @param fieldElement 字段元素
-	 * @param fieldId 字段的id
-	 * @param field 字段的Field对象
-	 * @param textList 字段对应的内容
+	 * @param fieldId      字段的id
+	 * @param field        字段的Field对象
+	 * @param textList     字段对应的内容
 	 * @param index        写入的行下标
 	 */
-	private void writeCommonField(XSSFSheet xs, Element fieldElement, String fieldId, Field field, List<Element> textList, int index) {
+	private void writeCommonField(XSSFSheet xs, Element fieldElement, String fieldId, Field field,
+			List<Element> textList, int index) {
 		// 创建或读取测试用例所在的行
 		XSSFRow xr;
 		if ((xr = xs.getRow(index)) == null) {
@@ -527,36 +526,37 @@ public class WriteTestCase {
 
 		// 创建字段所在的列相应的单元格
 		XSSFCell xc = xr.createCell(field.index);
-		
-		//TODO 对单元格进行操作
+
+		// TODO 对单元格进行操作
 		// 设置单元格的样式
 		xc.setCellStyle(getFieldStyle(field, fieldElement));
-		//向单元格中添加数据有效性
+		// 向单元格中添加数据有效性
 		field.addDataValidation(xs, index, index);
-		//向单元格中添加Comment注解
+		// 向单元格中添加Comment注解
 		addComment(xs, xc, fieldElement);
-		
+
 		// 将字段内容写入单元格
 		writeText(xc, textList);
 	}
-	
+
 	/**
 	 * 写入需要多行编辑（每段分行）的字段信息
 	 * 
 	 * @param xs           sheet类对象
 	 * @param fieldElement 字段元素
-	 * @param fieldId 字段的id
-	 * @param field 字段的Field对象
-	 * @param textList 字段对应的内容
+	 * @param fieldId      字段的id
+	 * @param field        字段的Field对象
+	 * @param textList     字段对应的内容
 	 * @param index        写入的行下标
 	 */
-	private void writeSpecificField(XSSFSheet xs, Element fieldElement, String fieldId, Field field, List<Element> textList, int index) {
+	private void writeSpecificField(XSSFSheet xs, Element fieldElement, String fieldId, Field field,
+			List<Element> textList, int index) {
 		// 创建或读取测试用例所在的行
 		XSSFRow xr;
 		if ((xr = xs.getRow(index)) == null) {
 			xr = xs.createRow(index);
 		}
-				
+
 		// 用于控制当前斜土步骤的行位于标题行下降的行数
 		int nowRowIndex = 0;
 		// 若需要通过该方法写入用例，则必然有数据需要写入，则先写入数据，再做判断
@@ -575,15 +575,15 @@ public class WriteTestCase {
 					: xs.getRow(index + nowRowIndex);
 			// 创建字段所在的列相应的单元格
 			XSSFCell xc = xr.createCell(field.index);
-			
-			//TODO 对单元格进行操作
+
+			// TODO 对单元格进行操作
 			// 设置单元格的样式
 			xc.setCellStyle(getFieldStyle(field, fieldElement));
-			//向单元格中添加数据有效性
+			// 向单元格中添加数据有效性
 			field.addDataValidation(xs, index, index);
-			//向单元格中添加Comment注解
+			// 向单元格中添加Comment注解
 			addComment(xs, xc, fieldElement);
-			
+
 			// 存储裁剪后的text元素
 			ArrayList<Element> subTextList = new ArrayList<Element>();
 			// 其中步骤数乘当前写入行的行数正好可以得到应该从哪个元素开始裁剪，例如
@@ -597,7 +597,7 @@ public class WriteTestCase {
 					break;
 				}
 			}
-			
+
 			// 将字段内容写入单元格
 			writeText(xc, subTextList);
 		} while (field.rowText * ++nowRowIndex < textList.size());
@@ -626,24 +626,24 @@ public class WriteTestCase {
 
 		return xcs;
 	}
-	
+
 	/**
 	 * 用于向单元格上添加Comment标注
-	 * @param xs sheet对象
-	 * @param xc 相应单元格对象
+	 * 
+	 * @param xs           sheet对象
+	 * @param xc           相应单元格对象
 	 * @param fieldElement 字段元素
 	 */
 	private void addComment(XSSFSheet xs, XSSFCell xc, Element fieldElement) {
-		//获取字段的comment标签内容
+		// 获取字段的comment标签内容
 		String commentContent = fieldElement.attributeValue("comment");
-		//判断内容是否存在，若不存在，则结束方法运行，不添加标注
+		// 判断内容是否存在，若不存在，则结束方法运行，不添加标注
 		if (commentContent == null) {
 			return;
 		}
-		
+
 		// 创建一个标注，并确定其在一个单元格的左上角和右下角
-		Comment com = xs.createDrawingPatriarch().createCellComment(
-				xw.getCreationHelper().createClientAnchor());
+		Comment com = xs.createDrawingPatriarch().createCellComment(xw.getCreationHelper().createClientAnchor());
 		// 创建标注的内容
 		com.setString(xw.getCreationHelper().createRichTextString(commentContent));
 		// 创建标注的作者(作者为计算机名称)
@@ -727,8 +727,9 @@ public class WriteTestCase {
 			}
 
 			// 存储字段信息
-			fieldMap.put(column.get(index).attributeValue("id"), new Field(column.get(index).attributeValue("id"),
-					column.get(index).attributeValue("align"), index, column.get(index).attributeValue("row_text"), datas));
+			fieldMap.put(column.get(index).attributeValue("id"),
+					new Field(column.get(index).attributeValue("id"), column.get(index).attributeValue("align"), index,
+							column.get(index).attributeValue("row_text"), datas));
 		}
 	}
 
@@ -740,23 +741,23 @@ public class WriteTestCase {
 	 */
 
 	/**
-	 * TODO 用于测试rank中的内容，编码结束后删除
+	 * 用于测试rank中的内容，编码结束后删除
 	 */
-	public String[] getRank() {
-		return rank;
-	}
+	/*
+	 * public String[] getRank() { return rank; }
+	 */
 
 	/**
-	 * TODO 用于测试caseXml文件，编码结束后删除
+	 * 用于测试caseXml文件，编码结束后删除
 	 */
-	public File getCaseXml() throws IOException {
-		File file = new File("src/test/java/pres/auxiliary/work/testcase/用例xml文件.xml");
-		FileWriter fw = new FileWriter(file);
-		caseXml.write(fw);
-		fw.close();
-
-		return file;
-	}
+//	public File getCaseXml() throws IOException {
+//		File file = new File("src/test/java/pres/auxiliary/work/testcase/用例xml文件.xml");
+//		FileWriter fw = new FileWriter(file);
+//		caseXml.write(fw);
+//		fw.close();
+//
+//		return file;
+//	}
 
 	/**
 	 * <p>

@@ -48,7 +48,7 @@ public class WriteTestCaseTest_WriteCase {
 	@AfterClass
 	public void openFolder() throws IOException {
 		wtc.writeFile();
-		wtc.getCaseXml();
+//		wtc.getCaseXml();
 		java.awt.Desktop.getDesktop().open(tempFile.getParentFile());
 	}
 

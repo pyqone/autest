@@ -74,8 +74,8 @@ public class WriteTestCaseTest {
 		wtc.writeFile();
 		System.out.println("-".repeat(20));
 		System.out.println("优先级：");
-		Arrays.stream(wtc.getRank()).forEach(System.out::println);
-		wtc.getCaseXml();
+//		Arrays.stream(wtc.getRank()).forEach(System.out::println);
+//		wtc.getCaseXml();
 //		java.awt.Desktop.getDesktop().open(wtc.getCaseXml());
 		java.awt.Desktop.getDesktop().open(tempFile.getParentFile());
 	}
