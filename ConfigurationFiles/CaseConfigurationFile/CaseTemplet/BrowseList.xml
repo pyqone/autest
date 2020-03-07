@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="GBK"?>
 <cases project="BrowseList">
-	<case function="addAppBrowseListCase">
+	<case name="addAppBrowseListCase">
 		<title value="浏览*{name}*列表" />
 		<keyword value="*{name}*列表,刷新,加载" />
 		<rank value="1" />
@@ -23,7 +23,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addWebBrowseListCase">
+	<case name="addWebBrowseListCase">
 	<title value="浏览*{name}*列表" />
 		<keyword value="*{name}*列表,刷新,加载" />
 		<rank value="1" />
@@ -48,7 +48,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addInputSearchCase">
+	<case name="addInputSearchCase">
 		<title value="通过*{condition}*对*{information}*进行搜索" />
 		<keyword value="*{information}*列表,搜索" />
 		<rank value="1" />
@@ -69,7 +69,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addSelectSearchCase">
+	<case name="addSelectSearchCase">
 		<title value="通过*{condition}*对*{information}*进行搜索" />
 		<keyword value="*{information}*列表,搜索" />
 		<rank value="1" />
@@ -92,7 +92,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addDateSearchCase">
+	<case name="addDateSearchCase">
 		<title value="通过*{condition}*对*{information}*进行搜索" />
 		<keyword value="*{information}*列表,搜索" />
 		<rank value="1" />
@@ -117,7 +117,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addListSortCase">
+	<case name="addListSortCase">
 		<title value="对*{information}*列表按照*{condition}*进行排序" />
 		<keyword value="*{information}*列表,排序" />
 		<rank value="1" />
@@ -136,7 +136,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addExportListCase">
+	<case name="addExportListCase">
 		<title value="导出*{information}*列表的数据" />
 		<keyword value="*{information}*列表,导出" />
 		<rank value="1" />
@@ -159,7 +159,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addImportListCase">
+	<case name="addImportListCase">
 		<title value="导入*{information}*列表的数据" />
 		<keyword value="*{information}*列表,导入" />
 		<rank value="1" />
@@ -177,7 +177,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addResetSearchCase">
+	<case name="addResetSearchCase">
 		<title value="重置搜索" />
 		<keyword value="重置,搜索" />
 		<rank value="1" />
@@ -192,7 +192,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addSwitchListShowDataCase">
+	<case name="addSwitchListShowDataCase">
 		<title value="修改列表每页显示的数据量" />
 		<keyword value="切换,数据量" />
 		<rank value="1" />

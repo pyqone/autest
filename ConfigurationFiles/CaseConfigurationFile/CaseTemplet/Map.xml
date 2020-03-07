@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="GBK"?>
 <cases project="Map">
-	<case function="addRangeFindingCase">
+	<case name="addRangeFindingCase">
 		<title value="在地图上进行测距" />
 		<keyword value="地图,测距" />
 		<rank value="3" />
@@ -26,7 +26,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addMapPointCase">
+	<case name="addMapPointCase">
 		<title value="查看地图*{pointName}*定位点信息" />
 		<keyword value="地图,*{pointName}*,定位点" />
 		<rank value="2" />
@@ -43,7 +43,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addMapSearchInformationCase">
+	<case name="addMapSearchInformationCase">
 		<title value="通过*{condition}*在地图上搜索*{name}*信息" />
 		<keyword value="地图,*{name}*,搜索" />
 		<rank value="1" />
@@ -64,7 +64,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addCarLocusPlaybackCase">
+	<case name="addCarLocusPlaybackCase">
 		<title value="回放车辆轨迹" />
 		<keyword value="车辆轨迹" />
 		<rank value="1" />
@@ -87,7 +87,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addShowLocusCase">
+	<case name="addShowLocusCase">
 		<title value="地图上显示车辆轨迹点" />
 		<keyword value="车辆轨迹" />
 		<rank value="1" />

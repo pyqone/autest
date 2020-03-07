@@ -43,7 +43,7 @@ import org.dom4j.io.SAXReader;
  * <b>编码时间：</b>2020年2月17日下午9:36:00
  * </p>
  * <p>
- * <b>修改时间：</b>2020年2月17日下午9:36:00
+ * <b>修改时间：</b>2020年3月3日下午8:07:23
  * </p>
  * 
  * @author 彭宇琦
@@ -107,19 +107,16 @@ public class WriteTestCase {
 	 * 只存在一个sheet标签时，则直接获取其对应sheet下所有column标签的id属性；若存在
 	 * 多个sheet标签时，则读取第一个sheet标签，如需切换sheet标签，则可调用{@link #switchSheet(String)} 方法。
 	 * 
-	 * @param configurationFile 测试文件模板xml配置文件类对象
+	 * @param configFile 测试文件模板xml配置文件类对象
 	 * @param caseFile          测试用例文件类对象
-	 * @throws DocumentException      xml文件内容不正确时抛出的异常
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
-	public WriteTestCase(File configurationFile, File caseFile) throws DocumentException {
-		// 判断传入的configurationFile是否为一个文件类对象，若非文件类对象，则抛出异常（isFile()方法包含判断文件是否存在）
-		// 再判断文件是否包含文件路径是否包含“.xml”
-		if (configurationFile.isFile() && configurationFile.getAbsolutePath().indexOf(".xml") > -1) {
-			// 读取xml文件的信息
-			configXml = new SAXReader().read(configurationFile);
-		} else {
-			throw new IncorrectFileException("不正确的文件格式：" + configurationFile.getAbsolutePath());
+	public WriteTestCase(File configFile, File caseFile) {
+		// 判断传入的configurationFile是否为一个文件类对象，若非文件类对象，则抛出异常
+		try {
+			configXml = new SAXReader().read(configFile);
+		} catch (DocumentException e) {
+			throw new IncorrectFileException("用例xml文件有误" );
 		}
 
 		// 获取xml文件中的第一个sheet标签，则将该标签的name属性内容传入getColumnId中

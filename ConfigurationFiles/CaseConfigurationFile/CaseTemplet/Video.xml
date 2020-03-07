@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="GBK"?>
 <cases project="Video">
-	<case function="addPlayVideoCase">
+	<case name="addPlayVideoCase">
 		<title value="播放/暂停*{videoType}*" />
 		<keyword value="播放/暂停" />
 		<rank value="1" />
@@ -24,7 +24,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addVideoScreenshotCase">
+	<case name="addVideoScreenshotCase">
 		<title value="对*{videoType}*进行截图" />
 		<keyword value="*{videoType}*,截图" />
 		<rank value="2" />
@@ -44,7 +44,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addVideoAdvanceCase">
+	<case name="addVideoAdvanceCase">
 		<title value="快进/快退*{videoType}*" />
 		<keyword value="*{videoType}*,快进,快退" />
 		<rank value="2" />
@@ -76,7 +76,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addVideoSpeedCase">
+	<case name="addVideoSpeedCase">
 		<title value="快放/慢放*{videoType}*" />
 		<keyword value="*{videoType}*,快放,慢放" />
 		<rank value="2" />
@@ -96,7 +96,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addVideoProgressBarCase">
+	<case name="addVideoProgressBarCase">
 		<title value="拖动进度条" />
 		<keyword value="进度条" />
 		<rank value="2" />
@@ -117,7 +117,7 @@
 		</expectations>
 	</case>
 	
-	<case function="addFullScreenPlayCase">
+	<case name="addFullScreenPlayCase">
 		<title value="全屏播放*{videoType}*" />
 		<keyword value="全屏*{videoType}*" />
 		<rank value="2" />
