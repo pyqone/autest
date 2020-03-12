@@ -259,13 +259,13 @@ public abstract class Case {
 				"[@" + labelIdAttribute + "='" + id +"']";
 		
 		//获取相应的文本内容
-		String text = ((Element)(configXml.selectSingleNode(xpath))).attributeValue(labelValueAttribute);
+		Element textElement = (Element)(configXml.selectSingleNode(xpath));
 		//判断获取的内容是否为空，为空则跑出异常
-		if (text == null) {
+		if (textElement == null) {
 			throw new LabelNotFoundException("不存在的标签：" + xpath);
 		}
 		
 		//返回相应的文本
-		return text;
+		return textElement.attributeValue(labelValueAttribute);
 	}
 }
