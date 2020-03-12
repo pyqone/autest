@@ -57,6 +57,11 @@ public abstract class Case {
 	final String END_SIGN = "}*";
 	
 	/**
+	 * 用于存储传入到正则表达式中的开始标记
+	 */
+	final String START_SIGN_REGIX = "\\*\\{";
+	
+	/**
 	 * 优先级
 	 */
 	private int rank;
@@ -78,6 +83,9 @@ public abstract class Case {
 	 */
 	@SuppressWarnings("unchecked")
 	public Case(File configXmlFile) {
+		//定义能获取到文本的属性，以便于后续的调整
+		String textAttribute = "value";
+		
 		// 判断传入的configurationFile是否为一个文件类对象，若非文件类对象，则抛出异常
 		try {
 			configXml = new SAXReader().read(configXmlFile);
@@ -86,17 +94,17 @@ public abstract class Case {
 		}
 		
 		//获取xml中包含value的元素，并将其中包含需要替换的词语存储至textMap\
-		List<Element> textElement = configXml.selectNodes("//*[@value]");
+		List<Element> textElement = configXml.selectNodes("//*[@" + textAttribute + "]");
 		textElement.stream().
 		//获取元素的value属性，将其转换为文本对象	
-		map(e -> e.attributeValue("value")).
+		map(e -> e.attributeValue(textAttribute)).
 		//筛选包含*{的文本
-		filter(e -> e.indexOf("*{") > -1).forEach(e -> {
+		filter(e -> e.indexOf(START_SIGN) > -1).forEach(e -> {
 			//对文本按照*{切割，并筛选包含}*的文本
-			Arrays.asList(e.split("\\*\\{")).stream().filter(s -> s.indexOf("}*") > -1).
+			Arrays.asList(e.split(START_SIGN_REGIX)).stream().filter(s -> s.indexOf(END_SIGN) > -1).
 			forEach(s -> {
 				//将需要存储的替换词语存入textMap中
-				textMap.put(s.substring(0, s.indexOf("}*")), "");
+				textMap.put(s.substring(0, s.indexOf(END_SIGN)), "");
 			});
 		});
 	}
@@ -202,13 +210,13 @@ public abstract class Case {
 	 * @param word 测试用例xml库中需要替换的词语
 	 * @param value 被替换的词语
 	 */
-	public void setReplaceWord(String word, String value) {
+	public void setReplaceWord(String word, String text) {
 		//判断该词语是否存在于textMap中，若不存在，则抛出异常
 		if (!textMap.containsKey(word)) {
 			throw new IncorrectFileException("未找到需要替换的词语：" + word);
 		}
 		//存储替换的词语
-		textMap.put(word, value);
+		textMap.put(word, text);
 	}
 	
 	/**
@@ -229,5 +237,35 @@ public abstract class Case {
 		}
 		
 		return sb.toString();
+	}
+	
+	/**
+	 * 用于获取用例xml中对应用例的标签内的文本
+	 * @param caseName 用例名称
+	 * @param label 标签枚举
+	 * @param id 对应标签的id属性
+	 * @return 标签中存储的值
+	 */
+	String getText(String caseName, LabelType label, int id) {
+		//定位case标签的名称属性名
+		String caseLabelNameAttribute = "name";
+		String labelIdAttribute = "id";
+		String labelValueAttribute = "value";
+		
+		//拼接xpath，规则"//case[@name='caseName']//标签名称[@id='id']"
+		String xpath = "//" + LabelType.CASE.getName() + 
+				"[@" + caseLabelNameAttribute + "='" + 
+				caseName + "']//" + label.getName() + 
+				"[@" + labelIdAttribute + "='" + id +"']";
+		
+		//获取相应的文本内容
+		String text = ((Element)(configXml.selectSingleNode(xpath))).attributeValue(labelValueAttribute);
+		//判断获取的内容是否为空，为空则跑出异常
+		if (text == null) {
+			throw new LabelNotFoundException("不存在的标签：" + xpath);
+		}
+		
+		//返回相应的文本
+		return text;
 	}
 }
