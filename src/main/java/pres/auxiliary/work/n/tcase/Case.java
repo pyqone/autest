@@ -1,6 +1,7 @@
 package pres.auxiliary.work.n.tcase;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -83,9 +84,6 @@ public abstract class Case {
 	 */
 	@SuppressWarnings("unchecked")
 	public Case(File configXmlFile) {
-		//定义能获取到文本的属性，以便于后续的调整
-		String textAttribute = "value";
-		
 		// 判断传入的configurationFile是否为一个文件类对象，若非文件类对象，则抛出异常
 		try {
 			configXml = new SAXReader().read(configXmlFile);
@@ -93,20 +91,8 @@ public abstract class Case {
 			throw new IncorrectFileException("用例xml文件有误" );
 		}
 		
-		//获取xml中包含value的元素，并将其中包含需要替换的词语存储至textMap\
-		List<Element> textElement = configXml.selectNodes("//*[@" + textAttribute + "]");
-		textElement.stream().
-		//获取元素的value属性，将其转换为文本对象	
-		map(e -> e.attributeValue(textAttribute)).
-		//筛选包含*{的文本
-		filter(e -> e.indexOf(START_SIGN) > -1).forEach(e -> {
-			//对文本按照*{切割，并筛选包含}*的文本
-			Arrays.asList(e.split(START_SIGN_REGIX)).stream().filter(s -> s.indexOf(END_SIGN) > -1).
-			forEach(s -> {
-				//将需要存储的替换词语存入textMap中
-				textMap.put(s.substring(0, s.indexOf(END_SIGN)), "");
-			});
-		});
+		//查找并存储替换的词语
+		saveWord();
 	}
 
 	/**
@@ -121,9 +107,9 @@ public abstract class Case {
 	 * 根据调用方法的不同设置相应的步骤文本
 	 * @param step 步骤文本
 	 */
-	void setStep(String[] step) {
-		this.step = step;
-	}
+//	void setStep(String[] step) {
+//		this.step = step;
+//	}
 
 	/**
 	 * 返回预期文本
@@ -137,9 +123,9 @@ public abstract class Case {
 	 * 根据调用方法的不同设置相应的预期文本
 	 * @param except 预期文本
 	 */
-	void setExcept(String[] except) {
-		this.except = except;
-	}
+//	void setExcept(String[] except) {
+//		this.except = except;
+//	}
 
 	/**
 	 * 返回标题文本
@@ -153,9 +139,9 @@ public abstract class Case {
 	 * 根据调用方法的不同设置相应的标题文本
 	 * @param title 标题文本
 	 */
-	void setTitle(String title) {
-		this.title = title;
-	}
+//	void setTitle(String title) {
+//		this.title = title;
+//	}
 
 	/**
 	 * 返回关键词文本
@@ -169,9 +155,9 @@ public abstract class Case {
 	 * 根据调用方法的不同设置相应的关键词文本
 	 * @param keyWord 关键词文本
 	 */
-	void setKeyWord(String keyWord) {
-		this.keyWord = keyWord;
-	}
+//	void setKeyWord(String keyWord) {
+//		this.keyWord = keyWord;
+//	}
 
 	/**
 	 * 返回关键词文本
@@ -185,9 +171,9 @@ public abstract class Case {
 	 * 根据调用方法的不同设置相应的前置条件文本
 	 * @param keyWord 前置条件文本
 	 */
-	void setPrecondition(String[] precondition) {
-		this.precondition = precondition;
-	}
+//	void setPrecondition(String[] precondition) {
+//		this.precondition = precondition;
+//	}
 
 	/**
 	 * 返回优先级文本
@@ -201,9 +187,9 @@ public abstract class Case {
 	 * 根据调用方法的不同设置相应的优先级文本
 	 * @param keyWord 优先级文本
 	 */
-	void setRank(int rank) {
-		this.rank = rank;
-	}
+//	void setRank(int rank) {
+//		this.rank = rank;
+//	}
 	
 	/**
 	 * 用于设置需要替换的词语
@@ -217,6 +203,36 @@ public abstract class Case {
 		}
 		//存储替换的词语
 		textMap.put(word, text);
+	}
+	
+	/**
+	 * 用于设置测试用例相应的所有信息
+	 * @param title 标题
+	 * @param step 步骤
+	 * @param except 预期
+	 * @param precondition 前置条件
+	 * @param keyWord 关键词
+	 * @param rank 优先级
+	 */
+	void setAllContent(String title, String[] step, String[] except, String[] precondition, String keyWord, int rank) {
+		this.step = step;
+		this.except = except;
+		this.title = title;
+		this.keyWord = keyWord;
+		this.precondition = precondition;
+		this.rank = rank;
+	}
+	
+	/**
+	 * 用于初始化所有的内容
+	 */
+	public void clearAllContent() {
+		step = null;
+		except = null;
+		title = "";
+		keyWord = "";
+		precondition = null;
+		rank = 1;
 	}
 	
 	/**
@@ -240,16 +256,18 @@ public abstract class Case {
 	}
 	
 	/**
-	 * 用于获取用例xml中对应用例的标签内的文本
+	 * 用于获取用例xml中对应用例的标签内的文本，并返回替换词语后的文本
 	 * @param caseName 用例名称
 	 * @param label 标签枚举
 	 * @param id 对应标签的id属性
-	 * @return 标签中存储的值
+	 * @return 标签中存储的文本，并进行处理
 	 */
-	String getText(String caseName, LabelType label, int id) {
+	String getLabelText(String caseName, LabelType label, String id) {
 		//定位case标签的名称属性名
 		String caseLabelNameAttribute = "name";
+		//定位标签中能指向调用用例的属性（id）
 		String labelIdAttribute = "id";
+		//定位相应标签中存储用例内容的属性
 		String labelValueAttribute = "value";
 		
 		//拼接xpath，规则"//case[@name='caseName']//标签名称[@id='id']"
@@ -261,11 +279,68 @@ public abstract class Case {
 		//获取相应的文本内容
 		Element textElement = (Element)(configXml.selectSingleNode(xpath));
 		//判断获取的内容是否为空，为空则跑出异常
+		
+		//判断集合是否存在元素，若不存在元素，则抛出异常
 		if (textElement == null) {
-			throw new LabelNotFoundException("不存在的标签：" + xpath);
+			throw new LabelNotFoundException("不存在的标签：<" + label.getName() + " " + labelIdAttribute + "='" + id +"'...>");
 		}
 		
-		//返回相应的文本
+		//返回处理替换的单词后相应的文本，若集合存在多个元素，则只取第一个元素
 		return textElement.attributeValue(labelValueAttribute);
+		
+	}
+	
+	/**
+	 * 用于获取用例xml中对应用例的标签内所有的文本，并返回替换词语后的文本
+	 * @param caseName 用例名称
+	 * @param label 标签枚举
+	 * @return 标签中存储的文本，并进行处理
+	 */
+	@SuppressWarnings("unchecked")
+	String[] getAllLabelText(String caseName, LabelType label) {
+		//定位case标签的名称属性名
+		String caseLabelNameAttribute = "name";
+		//定位相应标签中存储用例内容的属性
+		String labelValueAttribute = "value";
+		
+		//拼接xpath，规则"//case[@name='caseName']//标签名称[@id='id']"
+		String xpath = "//" + LabelType.CASE.getName() + 
+				"[@" + caseLabelNameAttribute + "='" + 
+				caseName + "']//" + label.getName();
+
+		//获取所有的节点
+		List<Element> textElements = configXml.selectNodes(xpath);
+		//存储节点中的value属性内的文本
+		String[] texts = new String[textElements.size()];
+		//存储节点值
+		for (int i = 0; i < textElements.size(); i++) {
+			texts[i] = textElements.get(i).attributeValue(labelValueAttribute);
+		}
+		
+		return texts;
+	}
+	
+	/**
+	 * 用于获取并存储需要替换的词语
+	 */
+	@SuppressWarnings("unchecked")
+	private void saveWord() {
+		//定义能获取到文本的属性，以便于后续的调整
+		String textAttribute = "value";
+				
+		//获取xml中包含value的元素，并将其中包含需要替换的词语存储至textMap\
+		List<Element> textElement = configXml.selectNodes("//*[@" + textAttribute + "]");
+		textElement.stream().
+		//获取元素的value属性，将其转换为文本对象	
+		map(e -> e.attributeValue(textAttribute)).
+		//筛选包含*{的文本
+		filter(e -> e.indexOf(START_SIGN) > -1).forEach(e -> {
+			//对文本按照*{切割，并筛选包含}*的文本
+			Arrays.asList(e.split(START_SIGN_REGIX)).stream().filter(s -> s.indexOf(END_SIGN) > -1).
+			forEach(s -> {
+				//将需要存储的替换词语存入textMap中
+				textMap.put(s.substring(0, s.indexOf(END_SIGN)), "");
+			});
+		});
 	}
 }

@@ -80,32 +80,39 @@ public class InformationCase extends Case {
 	 * @return Tab对象
 	 * @throws IOException
 	 */
-//	public Case addWholeInformationCase() throws IOException {
-//		// 存储方法名
-//		String methodName = "addWholeInformationCase";
-//		// 存储需要使用的变量
-//		textMap.put("buttonName", getButtonName());
-//		// 用于存储读取测试用例的id号
-//		ArrayList<Integer> l = new ArrayList<>();
-//				
-//		// 清空步骤与预期中存储的信息
-//		//st.delete(0, st.length());
-//		ex.delete(0, ex.length());
-//
-//		// 用于存储步骤数
-//		int step = 1;
-//
-//		// 添加步骤
-//		l.add(1);
-////		st.append(step + ".正确填写所有的信息，点击“" + getButtonName() + "”按钮\r\n");
-//		ex.append(step++ + "." + successExpectation.toString() + "\r\n");
-//
-//		// 将ArrayList转换成数组
-//		int[] id = new int[l.size()];
-//		for (int i = 0; i < l.size(); i++) {
-//			id[i] = l.get(i);
-//		}
-//		return after(("添加信息完整的" + getInformationName()), new StringBuilder(getStep(methodName, id)[0]), ex, ("信息完整," + getInformationName()), 1,
-//				getPrecondition());
-//	}
+	public Case addWholeInformationCase() throws IOException {
+		// 存储case标签的name属性内容
+		String caseName = "addWholeInformationCase";
+		
+		//存储标题信息
+		String title = replaceText(getText(caseName, LabelType.TITLE, 1));
+		//存储步骤信息
+		ArrayList<String> step = new ArrayList<>();
+		
+		
+		// 存储需要使用的变量
+		textMap.put("buttonName", getButtonName());
+		// 用于存储读取测试用例的id号
+		ArrayList<Integer> l = new ArrayList<>();
+				
+		// 清空步骤与预期中存储的信息
+		//st.delete(0, st.length());
+		ex.delete(0, ex.length());
+
+		// 用于存储步骤数
+		int step = 1;
+
+		// 添加步骤
+		l.add(1);
+//		st.append(step + ".正确填写所有的信息，点击“" + getButtonName() + "”按钮\r\n");
+		ex.append(step++ + "." + successExpectation.toString() + "\r\n");
+
+		// 将ArrayList转换成数组
+		int[] id = new int[l.size()];
+		for (int i = 0; i < l.size(); i++) {
+			id[i] = l.get(i);
+		}
+		return after(("添加信息完整的" + getInformationName()), new StringBuilder(getStep(methodName, id)[0]), ex, ("信息完整," + getInformationName()), 1,
+				getPrecondition());
+	}
 }
