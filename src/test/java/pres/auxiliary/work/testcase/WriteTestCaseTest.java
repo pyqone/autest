@@ -15,8 +15,8 @@ import org.testng.annotations.Test;
 import pres.auxiliary.work.n.tcase.FieldType;
 import pres.auxiliary.work.n.tcase.MarkColorsType;
 import pres.auxiliary.work.n.tcase.TestCaseTemplet;
-import pres.auxiliary.work.n.tcase.WriteTestCase;
-import pres.auxiliary.work.n.tcase.WriteTestCase.CaseMark;
+import pres.auxiliary.work.n.tcase.TestCaseWrite;
+import pres.auxiliary.work.n.tcase.TestCaseWrite.CaseMark;
 
 /**
  * <p>
@@ -38,7 +38,7 @@ import pres.auxiliary.work.n.tcase.WriteTestCase.CaseMark;
  *
  */
 public class WriteTestCaseTest {
-	WriteTestCase wtc;
+	TestCaseWrite wtc;
 
 	/**
 	 * 配置文件类对象
@@ -55,7 +55,7 @@ public class WriteTestCaseTest {
 		temp.setCoverFile(true);
 		temp.create();
 
-		wtc = new WriteTestCase(conFile, tempFile);
+		wtc = new TestCaseWrite(conFile, tempFile);
 
 		wtc.setPresupposeField(FieldType.EXPECT, "预期");
 		wtc.setPresupposeField(FieldType.PRECONDITION, "前置条件");
@@ -104,7 +104,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#addContent(String, String)}方法
+	 * 测试{@link TestCaseWrite#addContent(String, String)}方法
 	 */
 	@Test
 	public void addContentTest() {
@@ -112,7 +112,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#setPresupposeField(FieldType, String)}方法
+	 * 测试{@link TestCaseWrite#setPresupposeField(FieldType, String)}方法
 	 */
 	@Test(enabled = false)
 	public void setPresupposeFieldTest() {
@@ -124,7 +124,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#setRank(String...)}方法
+	 * 测试{@link TestCaseWrite#setRank(String...)}方法
 	 */
 	@Test
 	public void setRankTest() {
@@ -133,7 +133,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#addStep(String...)}方法
+	 * 测试{@link TestCaseWrite#addStep(String...)}方法
 	 */
 	@Test
 	public void addStepTest() {
@@ -141,7 +141,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#addExcept(String...)}方法
+	 * 测试{@link TestCaseWrite#addExcept(String...)}方法
 	 */
 	@Test
 	public void addExceptTest() {
@@ -149,7 +149,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#addPrecondition(String...)}方法
+	 * 测试{@link TestCaseWrite#addPrecondition(String...)}方法
 	 */
 	@Test
 	public void addPreconditionTest() {
@@ -157,7 +157,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#addTitle(String)}方法
+	 * 测试{@link TestCaseWrite#addTitle(String)}方法
 	 */
 	@Test
 	public void addTitleTest() {
@@ -165,7 +165,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#addRank(int)}方法
+	 * 测试{@link TestCaseWrite#addRank(int)}方法
 	 */
 	@Test
 	public void addRankTest_NotData() {
@@ -175,7 +175,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#end()}方法
+	 * 测试{@link TestCaseWrite#end()}方法
 	 */
 	@Test
 	public void endTest() {
@@ -189,7 +189,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link WriteTestCase#setReplactWord(String, String)}方法
+	 * 测试{@link TestCaseWrite#setReplactWord(String, String)}方法
 	 */
 	@Test
 	public void setReplactWordTest() {

@@ -22,7 +22,6 @@ import org.dom4j.io.SAXReader;
  *
  */
 public abstract class Case {
-	
 	/**
 	 * 步骤
 	 */
@@ -75,14 +74,18 @@ public abstract class Case {
 	/**
 	 * 存储xml文件中其需要替换的词语
 	 */
-	HashMap<String, String> textMap = new HashMap<String, String>();
+	HashMap<String, String> wordMap = new HashMap<String, String>(16);
+	
+	/**
+	 * 存储字段的文本内容
+	 */
+	HashMap<String, ArrayList<String>> fieldTextMap = new HashMap<String, ArrayList<String>>(16);
 	
 	/**
 	 * 根据用例xml文件来构造Case类
 	 * @param configXmlFile xml配置文件
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
-	@SuppressWarnings("unchecked")
 	public Case(File configXmlFile) {
 		// 判断传入的configurationFile是否为一个文件类对象，若非文件类对象，则抛出异常
 		try {
@@ -93,6 +96,8 @@ public abstract class Case {
 		
 		//查找并存储替换的词语
 		saveWord();
+		//保存字段的词语
+		saveField();
 	}
 
 	/**
@@ -198,11 +203,11 @@ public abstract class Case {
 	 */
 	public void setReplaceWord(String word, String text) {
 		//判断该词语是否存在于textMap中，若不存在，则抛出异常
-		if (!textMap.containsKey(word)) {
+		if (!wordMap.containsKey(word)) {
 			throw new IncorrectFileException("未找到需要替换的词语：" + word);
 		}
 		//存储替换的词语
-		textMap.put(word, text);
+		wordMap.put(word, text);
 	}
 	
 	/**
@@ -249,7 +254,7 @@ public abstract class Case {
 			//存储待替换的变量名
 			String var = sb.substring(index + START_SIGN.length(), sb.indexOf(END_SIGN));
 			//替换该变量名
-			sb.replace(index, sb.indexOf(END_SIGN) + END_SIGN.length(), textMap.get(var));
+			sb.replace(index, sb.indexOf(END_SIGN) + END_SIGN.length(), wordMap.get(var));
 		}
 		
 		return sb.toString();
@@ -285,8 +290,8 @@ public abstract class Case {
 			throw new LabelNotFoundException("不存在的标签：<" + label.getName() + " " + labelIdAttribute + "='" + id +"'...>");
 		}
 		
-		//返回处理替换的单词后相应的文本，若集合存在多个元素，则只取第一个元素
-		return textElement.attributeValue(labelValueAttribute);
+		//返回处理替换的单词后相应的文本
+		return replaceText(textElement.attributeValue(labelValueAttribute));
 		
 	}
 	
@@ -297,7 +302,7 @@ public abstract class Case {
 	 * @return 标签中存储的文本，并进行处理
 	 */
 	@SuppressWarnings("unchecked")
-	String[] getAllLabelText(String caseName, LabelType label) {
+	ArrayList<String> getAllLabelText(String caseName, LabelType label) {
 		//定位case标签的名称属性名
 		String caseLabelNameAttribute = "name";
 		//定位相应标签中存储用例内容的属性
@@ -311,10 +316,10 @@ public abstract class Case {
 		//获取所有的节点
 		List<Element> textElements = configXml.selectNodes(xpath);
 		//存储节点中的value属性内的文本
-		String[] texts = new String[textElements.size()];
+		ArrayList<String> texts = new ArrayList<String>();
 		//存储节点值
 		for (int i = 0; i < textElements.size(); i++) {
-			texts[i] = textElements.get(i).attributeValue(labelValueAttribute);
+			texts.add(replaceText(textElements.get(i).attributeValue(labelValueAttribute)));
 		}
 		
 		return texts;
@@ -328,7 +333,7 @@ public abstract class Case {
 		//定义能获取到文本的属性，以便于后续的调整
 		String textAttribute = "value";
 				
-		//获取xml中包含value的元素，并将其中包含需要替换的词语存储至textMap\
+		//获取xml中包含value的元素，并将其中包含需要替换的词语存储至wordMap
 		List<Element> textElement = configXml.selectNodes("//*[@" + textAttribute + "]");
 		textElement.stream().
 		//获取元素的value属性，将其转换为文本对象	
@@ -339,8 +344,58 @@ public abstract class Case {
 			Arrays.asList(e.split(START_SIGN_REGIX)).stream().filter(s -> s.indexOf(END_SIGN) > -1).
 			forEach(s -> {
 				//将需要存储的替换词语存入textMap中
-				textMap.put(s.substring(0, s.indexOf(END_SIGN)), "");
+				wordMap.put(s.substring(0, s.indexOf(END_SIGN)), "");
 			});
 		});
+	}
+	
+	/**
+	 * 用于保存xml文件中的字段
+	 */
+	@SuppressWarnings("unchecked")
+	void saveField() {
+		//获取case标签下所有的标签，存储至fieldTextMap，以初始化所有的字段名称
+		((List<Element>) (configXml.getRootElement().elements("case"))).forEach(caseElement -> {
+			((List<Element>) caseElement.elements()).forEach(labelElement -> {
+				//去掉末尾的s
+				String name = labelElement.getName();
+				fieldTextMap.put(name.substring(0, name.length() - 1), new ArrayList<String>());
+			});
+		});
+	}
+	
+	/**
+	 * 用于添加一行文本
+	 * @param label 标签名称（枚举）
+	 * @param text 相应内容
+	 */
+	void addFieldText(LabelType label, String text) {
+		fieldTextMap.get(label.getName()).add(text);
+	}
+	
+	/**
+	 * 用于整体替换当前存储的内容
+	 * @param label 标签名称（枚举）
+	 * @param texts 一组内容
+	 */
+	void addFieldText(LabelType label, ArrayList<String> texts) {
+		fieldTextMap.put(label.getName(), texts);
+	}
+	
+	/**
+	 * 用于清空字段的内容，以避免存储上一次输入的用例
+	 */
+	void clearFieldText() {
+		fieldTextMap.forEach((key, value) -> {
+			fieldTextMap.get(key).clear();
+		});
+	}
+	
+	/**
+	 * 返回字段内容Map，测试使用
+	 * @return
+	 */
+	public HashMap<String, ArrayList<String>> getFieldTextMap() {
+		return fieldTextMap;
 	}
 }

@@ -1,11 +1,8 @@
 package pres.auxiliary.work.n.tcase;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import pres.auxiliary.work.testcase.change.Tab;
-import pres.auxiliary.work.testcase.writecase.InputType;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p><b>文件名：</b>InformationCase.java</p>
@@ -58,16 +55,16 @@ public class InformationCase extends Case {
 		//若传入的参数为成功或失败预期的前文时，则在文本后加上逗号
 		if (SUCCESS_EXCEPT_TEXT_START.equals(word) || FAIL_EXCEPT_TEXT_START.equals(word)) {
 			//判断文本最后一个字符是否为逗号，若不是逗号，则将逗号拼接上
-			if (text.lastIndexOf("，") == text.length() - 1) {
-				text += ",";
+			if (text.lastIndexOf("，") != text.length() - 1) {
+				text += "，";
 			}
 		}
 		
 		//若传入的参数为成功或失败预期的后文时，则在文本前加上逗号
 		if (SUCCESS_EXCEPT_TEXT_END.equals(word) || FAIL_EXCEPT_TEXT_END.equals(word)) {
 			//判断文本第一个字符是否为逗号，若不是逗号，则将逗号拼接上
-			if (text.indexOf("，") == 0) {
-				text = "," + text;
+			if (text.indexOf("，") != 0) {
+				text = "，" + text;
 			}
 		}
 		
@@ -75,44 +72,119 @@ public class InformationCase extends Case {
 	}
 	
 	/**
-	 * 该方法用于生成正确填写所有信息的用例
+	 * 用于生成正确填写所有信息的用例
 	 * 
-	 * @return Tab对象
-	 * @throws IOException
+	 * @return 类本身
 	 */
-	public Case addWholeInformationCase() throws IOException {
+	public Case addWholeInformationCase() {
+		//清空字段的内容
+		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addWholeInformationCase";
 		
 		//存储标题信息
-		String title = replaceText(getText(caseName, LabelType.TITLE, 1));
+		addFieldText(LabelType.TITLE, getAllLabelText(caseName, LabelType.TITLE));
 		//存储步骤信息
-		ArrayList<String> step = new ArrayList<>();
+		addFieldText(LabelType.STEP, getAllLabelText(caseName, LabelType.STEP));
+		//存储预期信息
+		addFieldText(LabelType.EXCEPT, getAllLabelText(caseName, LabelType.EXCEPT));
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getAllLabelText(caseName, LabelType.RANK));
 		
+		return this;
+	}
+	
+	/**
+	 * 该方法用于生成不完全填写所有信息的用例
+	 * 
+	 * @return 类本身
+	 */
+	public Case addUnWholeInformationCase() {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addUnWholeInformationCase";
 		
-		// 存储需要使用的变量
-		textMap.put("buttonName", getButtonName());
-		// 用于存储读取测试用例的id号
-		ArrayList<Integer> l = new ArrayList<>();
-				
-		// 清空步骤与预期中存储的信息
-		//st.delete(0, st.length());
-		ex.delete(0, ex.length());
-
-		// 用于存储步骤数
-		int step = 1;
-
-		// 添加步骤
-		l.add(1);
-//		st.append(step + ".正确填写所有的信息，点击“" + getButtonName() + "”按钮\r\n");
-		ex.append(step++ + "." + successExpectation.toString() + "\r\n");
-
-		// 将ArrayList转换成数组
-		int[] id = new int[l.size()];
-		for (int i = 0; i < l.size(); i++) {
-			id[i] = l.get(i);
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getAllLabelText(caseName, LabelType.TITLE));
+		
+		//存储步骤与预期信息
+		//不填写任何信息
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		//只填写所有的必填项信息
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		//只填写所有的非必填项信息
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getAllLabelText(caseName, LabelType.RANK));
+		
+		return this;
+	}
+	
+	/**
+	 * 该方法用于生成正确填写所有信息的用例
+	 * 
+	 * @return 类本身
+	 */
+	public Case addBasicTextboxCase(String name, boolean isMust, boolean isRepeat, InputRuleType... inputRuleTypes) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addTextboxCase";
+		//添加控件名称
+		wordMap.put("控件名称", name);
+		//转换输入限制为集合类型
+		List<InputRuleType> inputRules = Arrays.asList(inputRuleTypes);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//存储步骤与预期信息
+		//不填写或只输入空格
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		//根据是否必填来判断填入成功或失败预期
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		
+		//填写特殊字符或HTML代码
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		//根据是否存在输入
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, inputRules.size() == 0 || inputRules.contains(InputRuleType.SPE) ? "1" : "2"));
+		
+		//输入非限制的字符
+		if (inputRules.size() != 0) {
+			String inputRuleText = "";
+			for (InputRuleType inputRule : inputRules) {
+				inputRuleText += (inputRule.getName() + "、");
+			}
+			wordMap.put("输入限制", inputRuleText.substring(0, inputRuleText.length() - 1));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		}
-		return after(("添加信息完整的" + getInformationName()), new StringBuilder(getStep(methodName, id)[0]), ex, ("信息完整," + getInformationName()), 1,
-				getPrecondition());
+		
+		//填写存在的内容
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "12"));
+		//根据是否必填来判断填入成功或失败预期
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isRepeat ? "2" : "1"));
+				
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, isMust ? "1" : "2"));
+		
+		return this;
 	}
 }

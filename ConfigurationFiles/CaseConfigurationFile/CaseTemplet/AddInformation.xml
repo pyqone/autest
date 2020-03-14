@@ -361,19 +361,16 @@
 			<except id='1' value='*{成功预期前文}**{信息}*创建成功，界面返回到列表页，其*{信息}*列表上显示新增的信息*{成功预期后文}*'/>
 		</excepts>
 		<titles>
-			<title id='1' value='新增不同*{控件名称}*的*{信息}*' />
+			<title id='1' value='添加信息完整的的*{信息}*' />
 		</titles>
 		<preconditions>
 			<precondition id='1' value='已在新增*{信息}*的页面上' />
-			<precondition id='2' value='除*{控件名称}*外，其他信息均正确填写' />
 		</preconditions>
 		<ranks>
 			<rank id='1' value='1' />
-			<rank id='2' value='2' />
-			<rank id='3' value='3' />
 		</ranks>
 		<keys>
-			<key id='1' value='*{控件名称}*、*{信息}*、新增' />
+			<key id='1' value='*{信息}*、新增' />
 		</keys>
 	</case>
 	
@@ -388,19 +385,16 @@
 			<except id='2' value='*{失败预期前文}**{信息}*创建失败，并给出相应的提示*{失败预期后文}*'/>
 		</excepts>
 		<titles>
-			<title id='1' value='新增不同*{控件名称}*的*{信息}*' />
+			<title id='1' value='添加信息不完整的*{信息}*' />
 		</titles>
 		<preconditions>
 			<precondition id='1' value='已在新增*{信息}*的页面上' />
-			<precondition id='2' value='除*{控件名称}*外，其他信息均正确填写' />
 		</preconditions>
 		<ranks>
 			<rank id='1' value='1' />
-			<rank id='2' value='2' />
-			<rank id='3' value='3' />
 		</ranks>
 		<keys>
-			<key id='1' value='*{控件名称}*、*{信息}*、新增' />
+			<key id='1' value='*{信息}*、新增' />
 		</keys>
 	</case>
 </cases>

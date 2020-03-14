@@ -11,10 +11,10 @@ import org.testng.annotations.Test;
 import pres.auxiliary.work.n.tcase.FieldType;
 import pres.auxiliary.work.n.tcase.MarkColorsType;
 import pres.auxiliary.work.n.tcase.TestCaseTemplet;
-import pres.auxiliary.work.n.tcase.WriteTestCase;
+import pres.auxiliary.work.n.tcase.TestCaseWrite;
 
 public class WriteTestCaseTest_WriteCase {
-	WriteTestCase wtc;
+	TestCaseWrite wtc;
 
 	/**
 	 * 配置文件类对象
@@ -31,7 +31,7 @@ public class WriteTestCaseTest_WriteCase {
 		temp.setCoverFile(true);
 		temp.create();
 
-		wtc = new WriteTestCase(conFile, tempFile);
+		wtc = new TestCaseWrite(conFile, tempFile);
 
 		wtc.setPresupposeField(FieldType.EXPECT, "预期");
 		wtc.setPresupposeField(FieldType.PRECONDITION, "前置条件");
