@@ -51,7 +51,7 @@ import org.dom4j.io.SAXReader;
  * @since JDK 12
  *
  */
-public class WriteTestCase {
+public class TestCaseWrite {
 	/**
 	 * 用于指向用例的XSSFWorkbook对象
 	 */
@@ -111,7 +111,7 @@ public class WriteTestCase {
 	 * @param caseFile          测试用例文件类对象
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
-	public WriteTestCase(File configFile, File caseFile) {
+	public TestCaseWrite(File configFile, File caseFile) {
 		// 判断传入的configurationFile是否为一个文件类对象，若非文件类对象，则抛出异常
 		try {
 			configXml = new SAXReader().read(configFile);
@@ -254,7 +254,7 @@ public class WriteTestCase {
 	 * @param steps 步骤参数
 	 * @return 类本身，以方便链式编码
 	 */
-	public WriteTestCase addStep(String... steps) {
+	public TestCaseWrite addStep(String... steps) {
 		// 为每一段添加标号
 		for (int i = 0; i < steps.length; i++) {
 			steps[i] = ((i + 1) + "." + steps[i]);
@@ -274,7 +274,7 @@ public class WriteTestCase {
 	 * @param excepts 预期参数
 	 * @return 类本身，以方便链式编码
 	 */
-	public WriteTestCase addExcept(String... excepts) {
+	public TestCaseWrite addExcept(String... excepts) {
 		// 为每一段添加标号
 		for (int i = 0; i < excepts.length; i++) {
 			excepts[i] = ((i + 1) + "." + excepts[i]);
@@ -294,7 +294,7 @@ public class WriteTestCase {
 	 * @param preconditions 前置条件参数
 	 * @return 类本身，以方便链式编码
 	 */
-	public WriteTestCase addPrecondition(String... preconditions) {
+	public TestCaseWrite addPrecondition(String... preconditions) {
 		// 为每一段添加标号
 		for (int i = 0; i < preconditions.length; i++) {
 			preconditions[i] = ((i + 1) + "." + preconditions[i]);
@@ -314,7 +314,7 @@ public class WriteTestCase {
 	 * @param title 标题参数
 	 * @return 类本身，以方便链式编码
 	 */
-	public WriteTestCase addTitle(String title) {
+	public TestCaseWrite addTitle(String title) {
 		return addContent(FieldType.TITLE.getValue(), title);
 	}
 
@@ -326,7 +326,7 @@ public class WriteTestCase {
 	 * @param titles 优先级参数
 	 * @return 类本身，以方便链式编码
 	 */
-	public WriteTestCase addRank(int rank) {
+	public TestCaseWrite addRank(int rank) {
 		// 若有设置优先级文本映射，则将优先级对应到文本中，若未设置，则直接传入数字
 		if (this.rank != null) {
 			String text = "";
@@ -360,7 +360,7 @@ public class WriteTestCase {
 	 * @return 类本身，以方便链式编码
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
-	public WriteTestCase addContent(String field, String... contents) {
+	public TestCaseWrite addContent(String field, String... contents) {
 		// 判断字段是否存在，若不存在，则抛出异常
 		if (!fieldMap.containsKey(field)) {
 			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
@@ -935,7 +935,7 @@ public class WriteTestCase {
 		}
 
 		/**
-		 * 用于对步骤和预期同时进行标记，使用该方法前需要调用{@link WriteTestCase#setPresupposeField(FieldType, String)}
+		 * 用于对步骤和预期同时进行标记，使用该方法前需要调用{@link TestCaseWrite#setPresupposeField(FieldType, String)}
 		 * 方法对字段的步骤（{@link FieldType#STEP}枚举值）和预期（{@link FieldType#EXPECT}枚举值）进行标记。
 		 * 若步骤和预期中一项未添加时，则只标记存在的文本；若均不存在，则不进行标记。下标从0开始计算，若下标小于0时，
 		 * 则标记第一段；若下标大于最大段落数时，则编辑最后一段。
