@@ -283,14 +283,14 @@ public class InformationCase extends Case {
 	 * @param isMust 是否必填
 	 * @param isRepeat 是否可以与存在的内容重复
 	 * @param isClear 是否有按钮可以清空文本框
-	 * @param isDecimals 数字是否是小数
+	 * @param decimals 小数位数
 	 * @param minNum 最小数字限制
 	 * @param maxNum 最大数字限制
 	 * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
 	 * @return 类本身
 	 * @throws CaseContentException 当限制参数传入有误时抛出
 	 */
-	public Case addNumberRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear, boolean isDecimals, int minNum, int maxNum) {
+	public Case addNumberRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear, int decimals, int minNum, int maxNum) {
 		//清空字段的内容
 		clearFieldText();
 		// 存储case标签的name属性内容
@@ -316,7 +316,7 @@ public class InformationCase extends Case {
 		int max = minNum < maxNum ?  maxNum : minNum;
 		
 		//存储数字限制
-		wordMap.put(WordType.INPUT_MAX_LENGTH.getName(), String.valueOf(min));
+		wordMap.put(WordType.INPUT_MIN_NUMBER.getName(), String.valueOf(min));
 		wordMap.put(WordType.INPUT_MAX_NUMBER.getName(), String.valueOf(max));
 		
 		//根据两个值的结果添加相应的用例
@@ -338,7 +338,7 @@ public class InformationCase extends Case {
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最小限制
-			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "11"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//大于最大正数限制
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
@@ -348,13 +348,28 @@ public class InformationCase extends Case {
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最小限制
-			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "11"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//大于最大限制
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最大限制
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "11"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		}
+		
+		//若传入的小数位数大于0，则添加小数位相关的用例
+		if (decimals > 0) {
+			//存储小数位数
+			wordMap.put(WordType.INPUT_DECIMALS.getName(), String.valueOf(decimals));
+			//等于最小限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "14"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "6"));
+			//大于最大限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "15"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			//等于最大限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "16"));
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		}
 		
@@ -472,6 +487,10 @@ public class InformationCase extends Case {
 		 * 最小数字输入限制
 		 */
 		INPUT_MIN_NUMBER("数字最小限制"), 
+		/**
+		 * 小数位数
+		 */
+		INPUT_DECIMALS("小数位数"), 
 		;
 		/**
 		 * 存储需要替换的单词名称

@@ -109,4 +109,52 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	public void aaddLengthRuleTextboxCaseTest_6() {
 		ic.addLengthRuleTextboxCase("测试控件8", false, false, false, -54, 0);
 	}
+	
+	/**
+	 * 测试{@link InformationCase#addNumberRuleTextboxCase(String, boolean, boolean, boolean, int, int, int)}方法
+	 */
+	@Test
+	public void addNumberRuleTextboxCaseTest_1() {
+		ic.addNumberRuleTextboxCase("测试控件9", true, false, false, 2, 0, 100);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addNumberRuleTextboxCase(String, boolean, boolean, boolean, int, int, int)}方法
+	 */
+	@Test
+	public void addNumberRuleTextboxCaseTest_2() {
+		ic.addNumberRuleTextboxCase("测试控件10", false, true, true, -1, InformationCase.MIN_NUMBER, 100);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addNumberRuleTextboxCase(String, boolean, boolean, boolean, int, int, int)}方法
+	 */
+	@Test
+	public void addNumberRuleTextboxCaseTest_3() {
+		ic.addNumberRuleTextboxCase("测试控件11", true, false, false, 2, 20, InformationCase.MAX_NUMBER);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addNumberRuleTextboxCase(String, boolean, boolean, boolean, int, int, int)}方法
+	 */
+	@Test(expectedExceptions = {CaseContentException.class})
+	public void addNumberRuleTextboxCaseTest_4() {
+		ic.addNumberRuleTextboxCase("测试控件12", true, false, false, 0, 100, 100);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addNumberRuleTextboxCase(String, boolean, boolean, boolean, int, int, int)}方法
+	 */
+	@Test(expectedExceptions = {CaseContentException.class})
+	public void addNumberRuleTextboxCaseTest_5() {
+		ic.addNumberRuleTextboxCase("测试控件13", true, false, false, 0, InformationCase.MIN_NUMBER, InformationCase.MAX_NUMBER);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addNumberRuleTextboxCase(String, boolean, boolean, boolean, int, int, int)}方法
+	 */
+	@Test
+	public void addNumberRuleTextboxCaseTest_6() {
+		ic.addNumberRuleTextboxCase("测试控件14", true, false, false, 2, InformationCase.MAX_NUMBER, 20);
+	}
 }
