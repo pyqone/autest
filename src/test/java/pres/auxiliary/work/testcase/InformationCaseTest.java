@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.n.tcase.CaseContentException;
 import pres.auxiliary.work.n.tcase.InformationCase;
-import pres.auxiliary.work.n.tcase.InputRuleType;
+import pres.auxiliary.work.n.tcase.InformationCase.InputRuleType;
 
 public class InformationCaseTest {
 InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/AddInformation.xml"));
@@ -49,7 +49,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addBasicTextboxCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.tcase.InputRuleType...)}方法
+	 * 测试{@link InformationCase#addBasicTextboxCase(String, boolean, boolean, boolean, pres.auxiliary.tool.web.InputRuleType...)}方法
 	 */
 	@Test
 	public void addBasicTextboxCaseTest_NotRule() {
@@ -57,11 +57,11 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addBasicTextboxCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.tcase.InputRuleType...)}方法
+	 * 测试{@link InformationCase#addBasicTextboxCase(String, boolean, boolean, boolean, pres.auxiliary.tool.web.InputRuleType...)}方法
 	 */
 	@Test
 	public void addBasicTextboxCaseTest_HaveRule() {
-		ic.addBasicTextboxCase("测试控件2", false, false, false, InputRuleType.EN, InputRuleType.NUM);
+		ic.addBasicTextboxCase("测试控件2", false, false, false, InformationCase.InputRuleType.EN, InformationCase.InputRuleType.NUM);
 	}
 	
 	/**
@@ -76,8 +76,8 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	 * 测试{@link InformationCase#addLengthRuleTextboxCase(String, boolean, boolean, boolean, int, int, InputRuleType...)}方法
 	 */
 	@Test
-	public void aaddLengthRuleTextboxCaseTest_2() {
-		ic.addLengthRuleTextboxCase("测试控件4", false, false, true, 5, 5, InputRuleType.EN, InputRuleType.NUM);
+	public void addLengthRuleTextboxCaseTest_2() {
+		ic.addLengthRuleTextboxCase("测试控件4", false, false, true, 5, 5, InformationCase.InputRuleType.EN, InformationCase.InputRuleType.NUM);
 	}
 	/**
 	 * 测试{@link InformationCase#addLengthRuleTextboxCase(String, boolean, boolean, boolean, int, int, InputRuleType...)}方法

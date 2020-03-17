@@ -146,7 +146,7 @@ public class InformationCase extends Case {
 	
 	/**
 	 * 用于生成普通文本框测试用例
-	 * @param name 文本框名称（控件名称）
+	 * @param name 控件名称
 	 * @param isMust 是否必填
 	 * @param isRepeat 是否可以与存在的内容重复
 	 * @param isClear 是否有按钮可以清空文本框
@@ -166,7 +166,7 @@ public class InformationCase extends Case {
 		
 		//----------------------------------------------------------------
 		//存储步骤与预期信息
-		textboxCommonCase(caseName, isMust, isRepeat, isClear, inputRuleTypes);
+		textboxCommonCase(isMust, isRepeat, isClear, inputRuleTypes);
 		
 		//----------------------------------------------------------------
 		
@@ -191,7 +191,7 @@ public class InformationCase extends Case {
 	 * 2.输入长度限制为最多输入10个字符时：addLengthRuleTextboxCase(..., 0, 10, ...)<br>
 	 * 3.输入长度限制为最少输入2个字符时：addLengthRuleTextboxCase(..., 2, 0, ...)<br>
 	 * 注意：若两个参数传入一样，且都不为0，则等价于第2中情况；若两个参数都小于等于0时，则抛出异常
-	 * @param name 文本框名称（控件名称）
+	 * @param name 控件名称
 	 * @param isMust 是否必填
 	 * @param isRepeat 是否可以与存在的内容重复
 	 * @param isClear 是否有按钮可以清空文本框
@@ -215,7 +215,7 @@ public class InformationCase extends Case {
 		//----------------------------------------------------------------------
 		//存储步骤与预期信息
 		//添加通用用例
-		textboxCommonCase(caseName, isMust, isRepeat, isClear, inputRuleTypes);
+		textboxCommonCase(isMust, isRepeat, isClear, inputRuleTypes);
 		
 		//添加输入长度限制相关的测试用例
 		//判断传入的限制参数是否有小于0的参数，参数小于0则直接转换为0
@@ -279,7 +279,7 @@ public class InformationCase extends Case {
 	 * 2.输入限制数字最大输入10时：addLengthRuleTextboxCase(..., InformationCase.MIN_NUMBER, 10, ...)<br>
 	 * 3.输入限制数字为2~10之间时：addLengthRuleTextboxCase(..., 2, 10, ...)<br>
 	 * 注意：若两个参数传入一样或最小参数为{@link #MIN_NUMBER}， 最大参数为{@link #MAX_NUMBER}，则抛出异常
-	 * @param name 文本框名称（控件名称）
+	 * @param name 控件名称
 	 * @param isMust 是否必填
 	 * @param isRepeat 是否可以与存在的内容重复
 	 * @param isClear 是否有按钮可以清空文本框
@@ -304,7 +304,7 @@ public class InformationCase extends Case {
 		//----------------------------------------------------------------------
 		//存储步骤与预期信息
 		//添加通用用例
-		textboxCommonCase(caseName, isMust, isRepeat, isClear, InputRuleType.NUM);
+		textboxCommonCase(isMust, isRepeat, isClear, InputRuleType.NUM);
 		
 		//添加输入数字限制相关的测试用例
 		//判断最大最小值是否一致，一致则抛出异常
@@ -386,15 +386,349 @@ public class InformationCase extends Case {
 	}
 	
 	/**
+	 * 用于生成与号码相关的测试用例，通过{@link PhoneType}来控制传入号码类型
+	 * @param name 控件名称
+	 * @param isMust 是否必填
+	 * @param isRepeat 是否可以与存在的内容重复
+	 * @param isClear 是否有按钮可以清空文本框
+	 * @param phoneTypes 号码类型枚举，可通过类名进行调用
+	 * @return 类本身
+	 */
+	public Case addPhoneCase(String name, boolean isMust, boolean isRepeat, boolean isClear, PhoneType...phoneTypes) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addPhoneCase";
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		//转换输入限制为集合类型
+		List<PhoneType> phoneRules = Arrays.asList(phoneTypes);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//添加通用用例
+		textboxCommonCase(isMust, isRepeat, isClear, InputRuleType.NUM);
+		
+		//添加手机相关的测试用例
+		if (phoneRules.contains(PhoneType.MOBLE)) {
+			//大于11位
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			//小于11位
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		}
+		
+		//添加座机相关的测试用例
+		if (phoneRules.contains(PhoneType.FIXED)) {
+			//大于7位
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			//小于7位
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			//区位号
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		}
+		
+		//长度符合但不和规则的用例
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		//----------------------------------------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, isMust ? "1" : "2"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成身份证相关的测试用例
+	 * @param name 控件名称
+	 * @param isMust 是否必填
+	 * @param isRepeat 是否可以与存在的内容重复
+	 * @param isClear 是否有按钮可以清空文本框
+	 * @return 类本身
+	 */
+	public Case addIDCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addIDCardCase";
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//添加通用用例
+		textboxCommonCase(isMust, isRepeat, isClear, InputRuleType.NUM);
+		
+		//输入15位
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		//输入18位
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		//输入末尾带“X”或“x”
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//输入大于18位
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		//输入小于18位大于15位
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		//输入小于15位
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		
+		//输入不符合规则
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		//----------------------------------------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, isMust ? "1" : "2"));
+		
+		return this;
+	}
+	
+	/**
+	 * 该方法用于生成下拉框的测试用例
+	 * @param name 控件名称
+	 * @param isMust 是否必填
+	 * @param hasEmpty 是否存在空选项
+	 * @param isClear 是否有按钮可以清空文本框
+	 * @return 类本身
+	 */
+	public Case addSelectboxCase(String name, boolean isMust, boolean hasEmpty, boolean isClear) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addSelectboxCase";
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//选择选项后清空
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, hasEmpty ? "4" : "3"));
+		
+		//添加空选项用例
+		if (hasEmpty) {
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "1" : "2"));
+		}
+		
+		//添加选择第一个选项
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//添加选择最后一个选项
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		//----------------------------------------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, isMust ? "1" : "2"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成单选按钮的测试用例
+	 * @param name 控件名称
+	 * @return 类本身
+	 */
+	public Case addRadioButtonCase(String name) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addRadioButtonCase";
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//选择选项后清空
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "4"));
+		
+		//依次选择选项
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "3"));
+		
+		//不改变默认选项
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//选第一个
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//选最后一个
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//----------------------------------------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成多选按钮的测试用例
+	 * @param name 控件名称
+	 * @param isMust 是否必填
+	 * @return 类本身
+	 */
+	public Case addCheckboxCase(String name, boolean isMust) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addCheckboxCase";
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//依次选择选项
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "3"));
+		//再次依次选择选项
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "4"));
+		
+		//不进行选择
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		
+		//选择第一个
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//选择最后一个
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//选择多个
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//----------------------------------------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成与日期相关的测试用例
+	 * @param name 控件名称
+	 * @param isMust 是否必填
+	 * @param isInput 是否可以输入
+	 * @param isClear 是否可以清除
+	 * @return 类本身
+	 */
+	public Case addDateCase(String name, boolean isMust, boolean isInput, boolean isClear) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addDateCase";
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//依次选择选项
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "3"));
+		//再次依次选择选项
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "4"));
+		
+		//不进行选择
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		
+		//选择第一个
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//选择最后一个
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//选择多个
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		
+		//----------------------------------------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
 	 * 用于生成文本框类型共同的测试用例步骤与预期（即普通文本框测试用例的步骤与预期）
-	 * @param name 文本框名称（控件名称）
+	 * @param name 控件名称
 	 * @param isMust 是否必填
 	 * @param isRepeat 是否可以与存在的内容重复
 	 * @param isClear 是否有按钮可以清空文本框
 	 */
-	private void textboxCommonCase(String name, boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
+	private void textboxCommonCase(boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
 		// 存储case标签的name属性内容
-		String caseName = "addTextboxCase";
+		String caseName = "textboxBasicCase";
 		//转换输入限制为集合类型
 		List<InputRuleType> inputRules = Arrays.asList(inputRuleTypes);
 		
@@ -425,6 +759,42 @@ public class InformationCase extends Case {
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "13"));
 			//根据是否必填来判断填入成功或失败预期
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "4" : "3"));
+		}
+	}
+	
+	/**
+	 * 添加日期相关的基本用例
+	 * @param isMust 是否必填
+	 * @param isInput 是否可输入
+	 * @param isClear 是否可清空
+	 */
+	private void dateboxCommonCase(boolean isMust, boolean isInput, boolean isClear) {
+		// 存储case标签的name属性内容
+		String caseName = "addDateCase";
+		
+		//不填写
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		//根据是否必填来判断填入成功或失败预期
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		
+		//选择当前时间
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		
+		//选择时间后清除时间
+		if (isClear) {
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		}
+		
+		//手动输入时间
+		if (isInput) {
+			//输入正确格式
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			//输入不正确的格式
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		}
 	}
 	
@@ -512,5 +882,80 @@ public class InformationCase extends Case {
 		public String getName() {
 			return name;
 		}
+	}
+	
+	/**
+	 * <p><b>文件名：</b>InputRuleType.java</p>
+	 * <p><b>用途：</b>用于枚举控件中可输入字符类型的限制</p>
+	 * <p><b>编码时间：</b>2020年3月14日 下午9:14:30</p>
+	 * <p><b>修改时间：</b>2020年3月14日 下午9:14:30</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 12
+	 */
+	public enum InputRuleType {
+		/**
+		 * 中文
+		 */
+		CH("中文"), 
+		/**
+		 * 英文
+		 */
+		EN("英文"), 
+		/**
+		 * 数字
+		 */
+		NUM("数字"),
+		/**
+		 * 特殊字符
+		 */
+		SPE("特殊字符"), 
+		/**
+		 * 小写字母
+		 */
+		LOW("小写字母"), 
+		/**
+		 * 大写字母
+		 */
+		CAP("大写字母");
+		
+		/**
+		 * 枚举名称
+		 */
+		private String name;
+		/**
+		 * 初始化枚举名称
+		 * @param name 枚举名称
+		 */
+		private InputRuleType(String name) {
+			this.name = name;
+		}
+		/**
+		 * 返回枚举名称
+		 * @return 枚举名称
+		 */
+		public String getName() {
+			return name;
+		}
+	}
+	
+	/**
+	 * <p><b>文件名：</b>InputRuleType.java</p>
+	 * <p><b>用途：</b>用于枚举号码限制</p>
+	 * <p><b>编码时间：</b>2020年3月14日 下午9:14:30</p>
+	 * <p><b>修改时间：</b>2020年3月14日 下午9:14:30</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 12
+	 */
+	public enum PhoneType {
+		/**
+		 * 设置类型为移动电话（手机）
+		 */
+		MOBLE, 
+		/**
+		 * 设置类型为固定电话（座机）
+		 */
+		FIXED;
 	}
 }
