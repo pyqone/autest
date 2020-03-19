@@ -170,11 +170,6 @@ public class InformationCase extends Case {
 		
 		//----------------------------------------------------------------
 		
-		//填写存在的内容
-		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "12"));
-		//根据是否必填来判断填入成功或失败预期
-		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isRepeat ? "2" : "1"));
-				
 		//存储前置条件信息
 		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
 		//存储关键词信息
@@ -190,7 +185,8 @@ public class InformationCase extends Case {
 	 * 1.输入长度限制为2~10个字符时：addLengthRuleTextboxCase(..., 2, 10, ...)<br>
 	 * 2.输入长度限制为最多输入10个字符时：addLengthRuleTextboxCase(..., 0, 10, ...)<br>
 	 * 3.输入长度限制为最少输入2个字符时：addLengthRuleTextboxCase(..., 2, 0, ...)<br>
-	 * 注意：若两个参数传入一样，且都不为0，则等价于第2中情况；若两个参数都小于等于0时，则抛出异常
+	 * 4.输入长度限制仅能输入2个字符时：addLengthRuleTextboxCase(..., 2, 2, ...)<br>
+	 * 注意：若两个参数都小于等于0时，则抛出异常
 	 * @param name 控件名称
 	 * @param isMust 是否必填
 	 * @param isRepeat 是否可以与存在的内容重复
@@ -234,7 +230,7 @@ public class InformationCase extends Case {
 			//等于最小限制
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
-		} else if ((minLen == 0 && maxLen != 0) || minLen == maxLen) {
+		} else if (minLen == 0 && maxLen != 0) {
 			//存储最大输入限制
 			wordMap.put(WordType.INPUT_MAX_LENGTH.getName(), String.valueOf(maxLen));
 			//大于最大限制
@@ -257,9 +253,12 @@ public class InformationCase extends Case {
 			//大于最大限制
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
 			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
-			//等于最大限制
-			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			//若最大最小限制相等，则不添加该条用例
+			if (minLen != maxLen) {
+				//等于最大限制
+				addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+				addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			}
 		}
 		//----------------------------------------------------------------------
 		
@@ -458,7 +457,7 @@ public class InformationCase extends Case {
 	 * @param isClear 是否有按钮可以清空文本框
 	 * @return 类本身
 	 */
-	public Case addIDCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
+	public Case addIdCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
 		//清空字段的内容
 		clearFieldText();
 		// 存储case标签的name属性内容
@@ -684,29 +683,248 @@ public class InformationCase extends Case {
 		
 		//----------------------------------------------------------------------
 		//存储步骤与预期信息
-		//依次选择选项
-		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
-		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "3"));
-		//再次依次选择选项
-		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
-		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "4"));
+		//添加基本用例
+		dateboxCommonCase(isMust, isInput, isClear);
+		//----------------------------------------------------------------------
 		
-		//不进行选择
-		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成与日期相关的测试用例
+	 * @param name 控件名称
+	 * @param isMust 是否必填
+	 * @param isInput 是否可以输入
+	 * @param isClear 是否可以清除
+	 * @return 类本身
+	 */
+	public Case addStartDateCase(String name, String endDateName, boolean isMust, boolean isInput, boolean isClear) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addDateCase";
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//添加基本用例
+		dateboxCommonCase(isMust, isInput, isClear);
+		
+		wordMap.put(WordType.END_DATE.getName(), endDateName);
+		//大于结束时间
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		
+		//等于结束时间
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		//----------------------------------------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成与日期相关的测试用例
+	 * @param name 控件名称
+	 * @param isMust 是否必填
+	 * @param isInput 是否可以输入
+	 * @param isClear 是否可以清除
+	 * @return 类本身
+	 */
+	public Case addEndDateCase(String name, String startDateName, boolean isMust, boolean isInput, boolean isClear) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addDateCase";
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//添加基本用例
+		dateboxCommonCase(isMust, isInput, isClear);
+		
+		wordMap.put(WordType.START_DATE.getName(), startDateName);
+		//小于开始时间
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+		
+		//等于开始时间
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		//----------------------------------------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getAllLabelText(caseName, LabelType.KEY));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成上传文件或图片相关的测试用例，当只有单边限制时，则其中一个参数传入小于等于0的数字即可，例如：<br>
+	 * 1.输入文件个数限制为2~10个字符时：addUploadFileCase(..., 2, 10, ...)<br>
+	 * 2.输入文件个数限制为最多输入10个字符时：addUploadFileCase(..., 0, 10, ...)<br>
+	 * 3.输入文件个数限制为最少输入2个字符时：addUploadFileCase(..., 2, 0, ...)<br>
+	 * 4.输入文件个数限制仅能输入2个字符时：addUploadFileCase(..., 2, 2, ...)<br>
+	 * 5.若两个参数都小于等于0时，则不对文件数量进行限制
+	 * @param name 控件名称
+	 * @param isMust 是否必填
+	 * @param isDelete 是否可以删除
+	 * @param isPreview 是否可以预览
+	 * @param fileSize 文件大小限制（单位为M），传参大于0时表示有文件大小限制
+	 * @param minLen 最小文件个数限制
+	 * @param maxLen 最大文件个数限制
+	 * @param uploadFileType 上传的文件类型
+	 * @param fileRuleTypes 文件格式限制
+	 * @return 类本身
+	 */
+	public Case addUploadFileCase(String name, boolean isMust, boolean isDelete, boolean isPreview, int fileSize, int minLen, int maxLen, UploadFileType uploadFileType, FileRuleType...fileRuleTypes) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addUploadFileCase";
+				
+		//添加控件名称
+		wordMap.put(WordType.CONTROL_NAME.getName(), name);
+		//转换输入限制为集合类型
+		List<FileRuleType> fileRules = Arrays.asList(fileRuleTypes);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------------------------------------
+		//存储步骤与预期信息
+		//添加文件类型
+		wordMap.put(WordType.FILE_TYPE.getName(), uploadFileType.getName());
+				
+		//预览文件
+		if (isPreview) {
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "11"));
+			//根据枚举类型选择相应的预期
+			switch (uploadFileType) {
+			case FILE:
+				addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "6"));
+				break;
+			case IMAGE:
+				addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "5"));
+				break;
+			default:
+				throw new IllegalArgumentException("不支持的类型：" + uploadFileType.getName());
+			}
+		}
+		
+		//不上传文件
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
 		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		
-		//选择第一个
-		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
-		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		//删除文件用例
+		if (isDelete) {
+			//删除文件点保存
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		
-		//选择最后一个
-		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
-		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			//删除文件再上传
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, uploadFileType.equals(UploadFileType.IMAGE) ? "4" : "3"));
+		}
 		
-		//选择多个
-		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
-		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		//上传文件个数限制
+		//判断传入的限制参数是否有小于0的参数，参数小于0则直接转换为0
+		minLen = minLen < 0 ? 0 : minLen;
+		maxLen = maxLen < 0 ? 0 : maxLen;
+		//判断两个限制参数是否其中一个大于0，若是，则添加上传文件个数限制的用例
+		//判断长度是否都为0，若都为0，则抛出异常
+		if (minLen != 0 && maxLen == 0) {
+			//存储最小上传限制
+			wordMap.put(WordType.UPLOAD_MIN_LENGTH.getName(), String.valueOf(minLen));
+			
+			//小于最小限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			//等于最小限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		} else if (minLen == 0 && maxLen != 0) {
+			//存储最大输入限制
+			wordMap.put(WordType.UPLOAD_MAX_LENGTH.getName(), String.valueOf(maxLen));
+			//大于最大限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			//等于最大限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		} else if (minLen != 0 && maxLen != 0) {
+			//若都不为0，则将相应的内容进行存储，且判断最大长度与最小长度是否传反，若传反，则调换顺序
+			wordMap.put(WordType.UPLOAD_MIN_LENGTH.getName(), String.valueOf(minLen < maxLen ? minLen : maxLen));
+			wordMap.put(WordType.UPLOAD_MAX_LENGTH.getName(), String.valueOf(minLen < maxLen ? maxLen : minLen));
+			
+			//小于最小限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			//等于最小限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			//大于最大限制
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			//若最大最小限制相等，则不添加等于最大限制
+			if (minLen != maxLen) {
+				//等于最大限制
+				addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
+				addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			}
+		} else {
+			//若均等于0，则不进行处理
+		}
 		
+		//上传大于限制的文件
+		if (fileSize > 0) {
+			//存储大小限制
+			wordMap.put(WordType.FILE_SIZE.getName(), String.valueOf(fileSize));
+			//超过大小限制的用例
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "7"));
+		} else {
+			//超过大小限制的用例
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "8"));
+		}
+		
+		//上传非限制格式文件
+		if (fileRules.size() != 0) {
+			String fileRulesText = "";
+			for (FileRuleType fileRule : fileRules) {
+				fileRulesText += (fileRule.getName() + "、");
+			}
+			wordMap.put(WordType.FILE_RULE.getName(), fileRulesText.substring(0, fileRulesText.length() - 1));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "9"));
+		}
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
@@ -861,6 +1079,34 @@ public class InformationCase extends Case {
 		 * 小数位数
 		 */
 		INPUT_DECIMALS("小数位数"), 
+		/**
+		 * 结束日期
+		 */
+		END_DATE("结束日期"), 
+		/**
+		 * 开始日期
+		 */
+		START_DATE("开始日期"), 
+		/**
+		 * 文件类型
+		 */
+		FILE_TYPE("文件类型"),
+		/**
+		 * 最长文件个数限制
+		 */
+		UPLOAD_MAX_LENGTH("文件最大个数"), 
+		/**
+		 * 最短文件个数限制
+		 */
+		UPLOAD_MIN_LENGTH("文件最小个数"), 
+		/**
+		 * 文件大小
+		 */
+		FILE_SIZE("文件大小"), 
+		/**
+		 * 文件格式
+		 */
+		FILE_RULE("文件格式"), 
 		;
 		/**
 		 * 存储需要替换的单词名称
@@ -957,5 +1203,125 @@ public class InformationCase extends Case {
 		 * 设置类型为固定电话（座机）
 		 */
 		FIXED;
+	}
+	
+	/**
+	 * <p><b>文件名：</b>InformationCase.java</p>
+	 * <p><b>用途：</b>用于枚举上传文件的格式</p>
+	 * <p><b>编码时间：</b>2020年3月18日上午9:30:34</p>
+	 * <p><b>修改时间：</b>2020年3月18日上午9:30:34</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 12
+	 *
+	 */
+	public enum FileRuleType {
+		/**
+		 * jpg格式
+		 */
+		JPG("jpg"), 
+		/**
+		 * gif格式
+		 */
+		GIF("gif"), 
+		/**
+		 * png格式
+		 */
+		PNG("png"), 
+		/**
+		 * bmp格式
+		 */
+		BMP("bmp"), 
+		/**
+		 * doc格式
+		 */
+		DOC("doc"), 
+		/**
+		 * docx格式
+		 */
+		DOCX("docx"), 
+		/**
+		 * txt格式
+		 */
+		TXT("txt"), 
+		/**
+		 * xls格式
+		 */
+		XLS("xls"), 
+		/**
+		 * xlsx格式
+		 */
+		XLSX("xlsx"), 
+		/**
+		 * pdf格式
+		 */
+		PDF("pdf"),
+		/**
+		 * csv格式
+		 */
+		CSV("csv"),
+		;
+		
+		/**
+		 * 文件格式名称
+		 */
+		private String name;
+		/**
+		 * 初始化枚举名称
+		 * @param name 枚举名称
+		 */
+		private FileRuleType(String name) {
+			this.name = name;
+		}
+		
+		/**
+		 * 返回格式名称
+		 */
+		public String getName() {
+			return name;
+		}
+	}
+	
+	/**
+	 * <p><b>文件名：</b>InformationCase.java</p>
+	 * <p><b>用途：</b>用于枚举上传文件的类型</p>
+	 * <p><b>编码时间：</b>2020年3月18日上午9:56:51</p>
+	 * <p><b>修改时间：</b>2020年3月18日上午9:56:51</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 12
+	 *
+	 */
+	public enum UploadFileType {
+		/**
+		 * 上传文件
+		 */
+		FILE("文件"), 
+		/**
+		 * 上传图片
+		 */
+		IMAGE("图片")
+		;
+		
+		/**
+		 * 上传文件类型名称
+		 */
+		private String name;
+
+		/**
+		 * 返回枚举名称
+		 * @return 枚举名称
+		 */
+		public String getName() {
+			return name;
+		}
+
+		/**
+		 * 初始化枚举值名称
+		 * @param name 枚举值名称
+		 */
+		private UploadFileType(String name) {
+			this.name = name;
+		}
 	}
 }

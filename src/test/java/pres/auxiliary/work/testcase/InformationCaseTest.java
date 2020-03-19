@@ -1,6 +1,7 @@
 package pres.auxiliary.work.testcase;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -8,7 +9,9 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.n.tcase.CaseContentException;
 import pres.auxiliary.work.n.tcase.InformationCase;
+import pres.auxiliary.work.n.tcase.InformationCase.FileRuleType;
 import pres.auxiliary.work.n.tcase.InformationCase.InputRuleType;
+import pres.auxiliary.work.n.tcase.InformationCase.UploadFileType;
 
 public class InformationCaseTest {
 InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/AddInformation.xml"));
@@ -16,7 +19,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	@BeforeClass
 	public void start() {
 		ic.setReplaceWord(InformationCase.BUTTON_NAME, "保存");
-		ic.setReplaceWord(InformationCase.ADD_INFORMATION, "用户列表");
+		ic.setReplaceWord(InformationCase.ADD_INFORMATION, "用户");
 		ic.setReplaceWord(InformationCase.FAIL_EXCEPT_TEXT_START, "测试*失败*预期前文");
 		ic.setReplaceWord(InformationCase.FAIL_EXCEPT_TEXT_END, "测试*失败*预期后文");
 		ic.setReplaceWord(InformationCase.SUCCESS_EXCEPT_TEXT_START, "测试*成功*预期前文");
@@ -27,8 +30,12 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	public void outputInformation() {
 		System.out.println("------------------------------");
 		ic.getFieldTextMap().forEach((k, v) -> {
+			//可生成序号，类封装了普通的自增等操作
+			AtomicInteger commitCount = new AtomicInteger(1);
 			System.out.println(k + ":");
-			v.forEach(System.out :: println);
+			v.forEach(s -> {
+				System.out.println(commitCount.getAndIncrement() + "." + s);
+			});
 		});
 	}
 	
@@ -156,5 +163,141 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	@Test
 	public void addNumberRuleTextboxCaseTest_6() {
 		ic.addNumberRuleTextboxCase("测试控件14", true, false, false, 2, InformationCase.MAX_NUMBER, 20);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.tcase.InformationCase.PhoneType...)}方法
+	 */
+	@Test
+	public void addPhoneCaseTest_Fixed() {
+		ic.addPhoneCase("测试控件15", true, false, false, InformationCase.PhoneType.FIXED);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.tcase.InformationCase.PhoneType...)}方法
+	 */
+	@Test
+	public void addPhoneCaseTest_Moble() {
+		ic.addPhoneCase("测试控件16", true, false, false, InformationCase.PhoneType.MOBLE);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.tcase.InformationCase.PhoneType...)}方法
+	 */
+	@Test
+	public void addPhoneCaseTest_All() {
+		ic.addPhoneCase("测试控件17", true, false, false, InformationCase.PhoneType.values());
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addIDCardCase(String, boolean, boolean, boolean)}方法
+	 */
+	@Test
+	public void addIDCardCaseTest() {
+		ic.addIdCardCase("测试控件18", true, false, false);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addSelectboxCase(String, boolean, boolean, boolean)}方法
+	 */
+	@Test
+	public void addSelectboxCaseTest_HasEmpty() {
+		ic.addSelectboxCase("测试控件19", true, true, true);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addSelectboxCase(String, boolean, boolean, boolean)}方法
+	 */
+	@Test
+	public void addSelectboxCaseTest_NotEmpty() {
+		ic.addSelectboxCase("测试控件20", true, false, false);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addRadioButtonCase(String)}方法
+	 */
+	@Test
+	public void addRadioButtonCaseTest() {
+		ic.addRadioButtonCase("测试控件22");
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addCheckboxCase(String, boolean)}方法
+	 */
+	@Test
+	public void addCheckboxCaseTest() {
+		ic.addCheckboxCase("测试控件22", true);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addDateCase(String, boolean, boolean, boolean)}方法
+	 */
+	@Test
+	public void addDateCaseTest_1() {
+		ic.addDateCase("测试控件22", true, true, true);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addDateCase(String, boolean, boolean, boolean)}方法
+	 */
+	@Test
+	public void addDateCaseTest_2() {
+		ic.addDateCase("测试控件23", false, false, false);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addStartDateCase(String, String, boolean, boolean, boolean)}方法
+	 */
+	@Test
+	public void addStartDateCaseTest() {
+		ic.addStartDateCase("测试控件23", "测试控件24", false, false, false);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addEndDateCaseTest(String, String, boolean, boolean, boolean)}方法
+	 */
+	@Test
+	public void addEndDateCaseTest() {
+		ic.addEndDateCase("测试控件24", "测试控件23", true, true, true);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 */
+	@Test
+	public void addUploadFileCaseTest_1() {
+		ic.addUploadFileCase("测试控件25", true, true, true, 10, 2, 10, UploadFileType.FILE, FileRuleType.CSV, FileRuleType.XLS, FileRuleType.XLSX);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 */
+	@Test
+	public void addUploadFileCaseTest_2() {
+		ic.addUploadFileCase("测试控件26", false, false, false, 0, 0, 10, UploadFileType.IMAGE);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 */
+	@Test
+	public void addUploadFileCaseTest_3() {
+		ic.addUploadFileCase("测试控件27", true, true, true, -1, 2, 0, UploadFileType.IMAGE);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 */
+	@Test
+	public void addUploadFileCaseTest_4() {
+		ic.addUploadFileCase("测试控件28", false, false, false, -1, 2, 2, UploadFileType.IMAGE);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 */
+	@Test
+	public void addUploadFileCaseTest_5() {
+		ic.addUploadFileCase("测试控件29", false, false, false, -1, -1, -1, UploadFileType.IMAGE);
 	}
 }
