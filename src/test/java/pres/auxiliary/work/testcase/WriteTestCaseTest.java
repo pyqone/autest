@@ -3,7 +3,6 @@ package pres.auxiliary.work.testcase;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import org.dom4j.DocumentException;
 import org.testng.annotations.AfterClass;
@@ -13,6 +12,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pres.auxiliary.work.n.tcase.FieldType;
+import pres.auxiliary.work.n.tcase.InformationCase;
+import pres.auxiliary.work.n.tcase.LabelType;
 import pres.auxiliary.work.n.tcase.MarkColorsType;
 import pres.auxiliary.work.n.tcase.TestCaseTemplet;
 import pres.auxiliary.work.n.tcase.TestCaseWrite;
@@ -62,6 +63,12 @@ public class WriteTestCaseTest {
 		wtc.setPresupposeField(FieldType.RANK, "优先级");
 		wtc.setPresupposeField(FieldType.STEP, "步骤");
 		wtc.setPresupposeField(FieldType.TITLE, "标题");
+		
+		wtc.relevanceCase("步骤", LabelType.STEP.getName());
+		wtc.relevanceCase("预期", LabelType.EXCEPT.getName());
+		wtc.relevanceCase("优先级", LabelType.RANK.getName());
+		wtc.relevanceCase("前置条件", LabelType.PRECONDITION.getName());
+		wtc.relevanceCase("标题", LabelType.TITLE.getName());
 	}
 
 	/**
@@ -73,7 +80,7 @@ public class WriteTestCaseTest {
 	public void openFolder() throws IOException {
 		wtc.writeFile();
 		System.out.println("-".repeat(20));
-		System.out.println("优先级：");
+//		System.out.println("优先级：");
 //		Arrays.stream(wtc.getRank()).forEach(System.out::println);
 //		wtc.getCaseXml();
 //		java.awt.Desktop.getDesktop().open(wtc.getCaseXml());
@@ -83,16 +90,16 @@ public class WriteTestCaseTest {
 	@BeforeMethod
 	public void addContent(Method method) {
 		System.out.println("=======正在运行：" + method.getName() + "=======");
-		wtc.addRank(1);
-		wtc.addStep("步骤1", "步骤2", "步骤3");
-		wtc.addTitle("这是标题");
-		wtc.addPrecondition("前置条件1", "前置条件2", "前置条件3");
-		wtc.addExcept("预期1", "预期2", "预期3");
-		wtc.addContent("目的", "这是目的1", "这是目的2");
-		wtc.addContent("模块", "这是模块");
-		wtc.addContent("状态", "这是状态");
-		wtc.addContent("项目", "这是项目");
-		wtc.addContent("设计者", "这是设计者");
+//		wtc.addRank(1);
+//		wtc.addStep("步骤1", "步骤2", "步骤3");
+//		wtc.addTitle("这是标题");
+//		wtc.addPrecondition("前置条件1", "前置条件2", "前置条件3");
+//		wtc.addExcept("预期1", "预期2", "预期3");
+//		wtc.addContent("目的", false, "这是目的1", "这是目的2");
+//		wtc.addContent("模块", false, "这是模块");
+//		wtc.addContent("状态", false, "这是状态");
+//		wtc.addContent("项目", false, "这是项目");
+//		wtc.addContent("设计者", false, "这是设计者");
 	}
 
 	/**
@@ -108,7 +115,7 @@ public class WriteTestCaseTest {
 	 */
 	@Test
 	public void addContentTest() {
-		wtc.addContent("标题", "这是标题").addContent("目的", "这是目的");
+		wtc.addContent("标题", false, "这是标题").addContent("目的", false, "这是目的");
 	}
 
 	/**
@@ -156,6 +163,16 @@ public class WriteTestCaseTest {
 		wtc.addPrecondition("前置条件1", "前置条件2", "前置条件3");
 	}
 
+	/**
+	 * 测试{@link TestCaseWrite#addCase(pres.auxiliary.work.n.tcase.Case)}方法
+	 */
+	@Test
+	public void addCaseTest() {
+		InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/AddInformation.xml"));
+		
+		wtc.addCase(ic.addRadioButtonCase("测试控件")).end();
+	}
+	
 	/**
 	 * 测试{@link TestCaseWrite#addTitle(String)}方法
 	 */
@@ -245,7 +262,7 @@ public class WriteTestCaseTest {
 	public void markStepAndExceptTest() {
 		wtc.end().markStepAndExcept(2, MarkColorsType.RED);
 	}
-
+	
 	/**
 	 * 综合测试标记方法
 	 */

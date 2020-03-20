@@ -78,6 +78,11 @@ public class TestCaseWrite {
 	private HashMap<String, String> replaceWordMap = new HashMap<>(16);
 
 	/**
+	 * 用于存储与测试用例生成类关联的字段，参数1为用例文件中的字段，参数2为测试用例生成方法中的字段
+	 */
+	private HashMap<String, String> relevanceMap = new HashMap<>(16);
+	
+	/**
 	 * 用于存储数据有效性的内容
 	 */
 	private String[] rank;
@@ -225,7 +230,7 @@ public class TestCaseWrite {
 	 */
 	public void setFieldValue(String field, String content) {
 		// 为保证在写用例的时候也能生效，故将值设置进入fieldMap
-		addContent(field, content);
+		addContent(field, false, content);
 
 		// 先将值设置入fieldMap中可以保证field字段是存在于fieldMap中，以减少此处再做判断
 		// 将字段内容写入caseValueMap
@@ -241,6 +246,23 @@ public class TestCaseWrite {
 	public void setReplactWord(String word, String replactWord) {
 		word = WORD_SIGN + word + WORD_SIGN;
 		replaceWordMap.put(word, replactWord);
+	}
+	
+	/**
+	 * 用于将测试用例文件模板中的字段名与测试用例生成类（继承自{@link Case}的测试用例生成类）中
+	 * 的字段进行关联，通过该方法设置关联字段后，可将生成的测试用例写入到测试用例文件中
+	 * @param field 测试用例文件字段
+	 * @param caseLabel 测试用例生成方法的字段
+	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
+	 */
+	public void relevanceCase(String field, String caseLabel) {
+		//判断字段是否存在，若不存在，则抛出异常
+		if (!fieldMap.containsKey(field)) {
+			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
+		}
+		
+		//添加字段
+		relevanceMap.put(field, caseLabel);
 	}
 
 	/**
@@ -260,7 +282,7 @@ public class TestCaseWrite {
 			steps[i] = ((i + 1) + "." + steps[i]);
 		}
 
-		return addContent(FieldType.STEP.getValue(), steps);
+		return addContent(FieldType.STEP.getValue(), false, steps);
 	}
 
 	/**
@@ -280,7 +302,7 @@ public class TestCaseWrite {
 			excepts[i] = ((i + 1) + "." + excepts[i]);
 		}
 
-		return addContent(FieldType.EXPECT.getValue(), excepts);
+		return addContent(FieldType.EXPECT.getValue(), false, excepts);
 	}
 
 	/**
@@ -295,12 +317,7 @@ public class TestCaseWrite {
 	 * @return 类本身，以方便链式编码
 	 */
 	public TestCaseWrite addPrecondition(String... preconditions) {
-		// 为每一段添加标号
-		for (int i = 0; i < preconditions.length; i++) {
-			preconditions[i] = ((i + 1) + "." + preconditions[i]);
-		}
-
-		return addContent(FieldType.PRECONDITION.getValue(), preconditions);
+		return addContent(FieldType.PRECONDITION.getValue(), true, preconditions);
 	}
 
 	/**
@@ -315,7 +332,7 @@ public class TestCaseWrite {
 	 * @return 类本身，以方便链式编码
 	 */
 	public TestCaseWrite addTitle(String title) {
-		return addContent(FieldType.TITLE.getValue(), title);
+		return addContent(FieldType.TITLE.getValue(), false, title);
 	}
 
 	/**
@@ -342,9 +359,9 @@ public class TestCaseWrite {
 				text = this.rank[this.rank.length - 1];
 			}
 
-			return addContent(FieldType.RANK.getValue(), text);
+			return addContent(FieldType.RANK.getValue(), false, text);
 		} else {
-			return addContent(FieldType.RANK.getValue(), String.valueOf(rank));
+			return addContent(FieldType.RANK.getValue(), false, String.valueOf(rank));
 		}
 	}
 
@@ -360,7 +377,7 @@ public class TestCaseWrite {
 	 * @return 类本身，以方便链式编码
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
-	public TestCaseWrite addContent(String field, String... contents) {
+	public TestCaseWrite addContent(String field, boolean hasindex, String... contents) {
 		// 判断字段是否存在，若不存在，则抛出异常
 		if (!fieldMap.containsKey(field)) {
 			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
@@ -370,14 +387,40 @@ public class TestCaseWrite {
 		for (String word : replaceWordMap.keySet()) {
 			// 查找所有的内容，并将特殊词语进行替换
 			for (int i = 0; i < contents.length; i++) {
-				contents[i] = contents[i].replaceAll(word, replaceWordMap.get(word));
+				contents[i] = hasindex ? (String.valueOf(i + 1) + ".") : "" + contents[i].replaceAll(word, replaceWordMap.get(word));
 			}
 		}
 
 		// 将字段内容写入fieldMap
 		fieldMap.get(field).content = contents;
-//		fieldMap.put(field, contents);
 
+		return this;
+	}
+	
+	/**
+	 * 用于将生成测试用例方法（继承自{@link Case}类的方法）所成成的测试用例添加到测试用例文件中
+	 * @param testCase 测试用例生成方法
+	 * @return 类本身
+	 */
+	public TestCaseWrite addCase(Case testCase) {
+		//获取用例内容
+		HashMap<String, ArrayList<String>> labelMap = testCase.getFieldTextMap();
+		
+		//遍历relevanceMap，将用例字段内容写入到xml中
+		relevanceMap.forEach((field, label) -> {
+			//若字段为优先级字段，则进行特殊处理
+			if (FieldType.RANK.getValue().equals(field)) {
+				//添加优先级字段，若可以转换，则使用内置的添加优先级方法，若不能转换，则直接存储
+				try {
+					addRank(Integer.valueOf(labelMap.get(label).get(0)));
+				} catch (Exception e) {
+					addContent(field, false, labelMap.get(label).get(0));
+				}
+			} else {
+				addContent(field, false, labelMap.get(label).toArray(new String[] {}));
+			}
+		});
+		
 		return this;
 	}
 
@@ -423,7 +466,7 @@ public class TestCaseWrite {
 		if (caseValueMap != null && caseValueMap.size() != 0) {
 			caseValueMap.forEach((field, content) -> {
 				try {
-					addContent(field, content);
+					addContent(field, false, content);
 				} catch (LabelNotFoundException e) {
 				}
 			});

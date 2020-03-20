@@ -7,15 +7,18 @@ import java.util.Set;
 
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import pres.auxiliary.selenium.event.inter.ClearInter;
 import pres.auxiliary.selenium.event.inter.ClickInter;
 import pres.auxiliary.selenium.event.inter.DataListEventInter;
 import pres.auxiliary.selenium.event.inter.DoubleClickInter;
 import pres.auxiliary.selenium.event.inter.GetAttributeValueInter;
 import pres.auxiliary.selenium.event.inter.GetTextInter;
+import pres.auxiliary.selenium.event.inter.InputInter;
 import pres.auxiliary.selenium.event.inter.JudgeKeyInter;
 import pres.auxiliary.selenium.event.inter.JudgeTextInter;
 import pres.auxiliary.selenium.event.inter.RightClickInter;
@@ -646,6 +649,74 @@ public class DataListEvent extends ListElementEvent {
 			}
 
 			// 返回Event类
+			return Event.newInstance(getDriver());
+		}
+
+		@Override
+		public Event clear() {
+			//自动记录异常
+			try {
+				// 为避免出现抛出StaleElementReferenceException（页面过期异常），则通过循环的方式，
+				// 当抛出异常时，则重新获取并操作，若未抛出，则结束循环
+				while (true) {
+					try {
+						//获取元素
+						element = judgeElementMode(name);
+						
+						//修饰元素
+						elementHight(element);
+						
+						//操作元素
+						//调用ClearInter接口的静态方法，将从页面上搜索到的控件元素对象传入其中
+						ClearInter.clear(element);
+						break;
+					} catch (StaleElementReferenceException e) {
+						continue;
+					}
+				}
+			} catch (Exception exception) {
+				//捕捉到异常后将异常信息记录在工具中，并将异常抛出
+				RecordTool.recordException(exception);
+				throw exception;
+			} finally {
+				RecordTool.recordStep("清空“" + name + "”对应控件中的内容");
+			}
+			
+			//返回Event类
+			return Event.newInstance(getDriver());
+		}
+
+		@Override
+		public Event input(String text) {
+			//自动记录异常
+			try {
+				// 为避免出现抛出StaleElementReferenceException（页面过期异常），则通过循环的方式，
+				// 当抛出异常时，则重新获取并操作，若未抛出，则结束循环
+				while (true) {
+					try {
+						//获取元素
+						element = judgeElementMode(name);
+						
+						//修饰元素
+						elementHight(element);
+						
+						//操作元素
+						//调用InputInter接口的静态方法，将从页面上搜索到的控件元素对象传入其中
+						InputInter.input(element, text);
+						break;
+					} catch (StaleElementReferenceException e) {
+						continue;
+					}
+				}
+			} catch (Exception exception) {
+				//捕捉到异常后将异常信息记录在工具中，并将异常抛出
+				RecordTool.recordException(exception);
+				throw exception;
+			} finally {
+				RecordTool.recordStep("向“" + name + "”对应控件中输入“" + text + "”");
+			}
+					
+			//返回Event类
 			return Event.newInstance(getDriver());
 		}
 	}

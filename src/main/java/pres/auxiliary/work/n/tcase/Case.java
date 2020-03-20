@@ -374,12 +374,12 @@ public abstract class Case {
 	}
 	
 	/**
-	 * 用于整体替换当前存储的内容
+	 * 用于添加带序号的一行文本
 	 * @param label 标签名称（枚举）
-	 * @param texts 一组内容
+	 * @param text 相应内容
 	 */
-	void addFieldText(LabelType label, ArrayList<String> texts) {
-		fieldTextMap.put(label.getName(), texts);
+	void addFieldText(LabelType label, int index, String text) {
+		fieldTextMap.get(label.getName()).add(index + "." + text);
 	}
 	
 	/**

@@ -10,7 +10,7 @@ package pres.auxiliary.work.n.tcase;
  * @since JDK 12
  *
  */
-enum LabelType {
+public enum LabelType {
 	/**
 	 * 用例标签
 	 */

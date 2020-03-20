@@ -1,7 +1,6 @@
 package pres.auxiliary.work.testcase;
 
 import java.io.File;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -31,10 +30,9 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 		System.out.println("------------------------------");
 		ic.getFieldTextMap().forEach((k, v) -> {
 			//可生成序号，类封装了普通的自增等操作
-			AtomicInteger commitCount = new AtomicInteger(1);
 			System.out.println(k + ":");
 			v.forEach(s -> {
-				System.out.println(commitCount.getAndIncrement() + "." + s);
+				System.out.println(s);
 			});
 		});
 	}

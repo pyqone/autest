@@ -21,6 +21,6 @@ package pres.auxiliary.selenium.event.inter;
  */
 public interface DataListEventInter extends ListElementClickInter, ListElementDoubleClickInter,
 		ListElementRightClickInter, ListElementGetAttributeValueInter, ListElementGetTextInter,
-		ListElementJudgeKeyInter, ListElementJudgeTextInter {
+		ListElementJudgeKeyInter, ListElementJudgeTextInter, ListElementClearInter, ListElementInputInter {
 
 }
