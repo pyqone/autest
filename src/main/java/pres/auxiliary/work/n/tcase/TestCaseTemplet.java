@@ -126,10 +126,11 @@ public class TestCaseTemplet {
 	/**
 	 * 根据xml配置文件中的内容，生成相应的测试用例模板文件
 	 * 
+	 * @return 生成的模板类文件对象
 	 * @throws IOException       文件路径有误时抛出的异常
 	 * @throws DocumentException xml配置文件有误时抛出的异常
 	 */
-	public void create() throws IOException {
+	public File create() throws IOException {
 		// 判断文件是否已经存在，若存在且设置为不可覆盖时，则抛出异常；若允不存在，则创建路径
 		if (templetFile.exists()) {
 			if (!cover) {
@@ -158,6 +159,8 @@ public class TestCaseTemplet {
 		// 关闭流
 		fop.close();
 		xw.close();
+		
+		return templetFile;
 	}
 
 	/**

@@ -184,10 +184,13 @@ public class Time {
 	 */
 	public String getFormatTime(String pattern) {
 		if (pattern.matches(REGEX_DATE)) {
+			dateFormat = pattern;
 			return new SimpleDateFormat(getDateFormat(pattern)).format(date);
 		} else {
 			try {
-				return new SimpleDateFormat(pattern).format(date);
+				String dateText = new SimpleDateFormat(pattern).format(date);
+				dateFormat = pattern;
+				return dateText;
 			} catch (IllegalArgumentException e) {
 				return new SimpleDateFormat(dateFormat).format(date);
 			}

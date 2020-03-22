@@ -43,7 +43,7 @@ import org.dom4j.io.SAXReader;
  * <b>编码时间：</b>2020年2月17日下午9:36:00
  * </p>
  * <p>
- * <b>修改时间：</b>2020年3月3日下午8:07:23
+ * <b>修改时间：</b>2020年3月22日 下午10:29:37
  * </p>
  * 
  * @author 彭宇琦
@@ -81,11 +81,6 @@ public class TestCaseWrite {
 	 * 用于存储与测试用例生成类关联的字段，参数1为用例文件中的字段，参数2为测试用例生成方法中的字段
 	 */
 	private HashMap<String, String> relevanceMap = new HashMap<>(16);
-	
-	/**
-	 * 用于存储数据有效性的内容
-	 */
-	private String[] rank;
 
 	/**
 	 * 用于存储当前对应的sheet名称
@@ -113,7 +108,7 @@ public class TestCaseWrite {
 	 * 多个sheet标签时，则读取第一个sheet标签，如需切换sheet标签，则可调用{@link #switchSheet(String)} 方法。
 	 * 
 	 * @param configFile 测试文件模板xml配置文件类对象
-	 * @param caseFile          测试用例文件类对象
+	 * @param caseFile   测试用例文件类对象
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
 	public TestCaseWrite(File configFile, File caseFile) {
@@ -121,7 +116,7 @@ public class TestCaseWrite {
 		try {
 			configXml = new SAXReader().read(configFile);
 		} catch (DocumentException e) {
-			throw new IncorrectFileException("用例xml文件有误" );
+			throw new IncorrectFileException("用例xml文件有误");
 		}
 
 		// 获取xml文件中的第一个sheet标签，则将该标签的name属性内容传入getColumnId中
@@ -161,64 +156,6 @@ public class TestCaseWrite {
 		this.sheetName = sheetName;
 	}
 
-	/**
-	 * 用于指定特殊字段在xml文件中对应的字段id，可预设的字段详见{@link FieldType}。
-	 * 若设置的是优先级字段，则自动读取数据有效性标签中对优先级的数据内容，添加至优先级映射中，其顺序
-	 * 按照标签的顺序，可参建方法{@link #setRank(String...)}
-	 * 
-	 * @param fieldType 预设字段枚举对象
-	 * @param fieldId   xml文件中字段对应的id
-	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
-	 */
-	@SuppressWarnings("unchecked")
-	public void setPresupposeField(FieldType fieldType, String field) {
-		// 当字段id在fieldMap中查不到时，则抛出异常
-		if (!fieldMap.containsKey(field)) {
-			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
-		}
-
-		fieldType.setValue(field);
-
-		// 当设置的字段为优先级字段时，则直接查找字段id对应的数据有效性，若存在，则直接对其进行设置
-		if (fieldType == FieldType.RANK) {
-			Element datas = null;
-			if ((datas = (Element) (configXml
-					.selectSingleNode("//sheet[@name='" + sheetName + "']/datas[@id='" + field + "']"))) != null) {
-				// 获取datas标签下所有的data标签
-				List<Element> dataList = datas.elements();
-				// 设置优先级
-				setRank(dataList.stream().map(e -> e.attributeValue("name")).collect(Collectors.toList()));
-			}
-		}
-	}
-
-	/**
-	 * 用于设置优先级的等级映射值，若未使用预设的优先级添加方法可无需进行设置。优先级映射根据传入的参数 的前后顺序进行排序，例如：<br>
-	 * 传入的参数为：高、中、低<br>
-	 * 则相应的映射关系为：1→高、2→中、1→低<br>
-	 * 若未对其映射进行设置，则按照默认的优先级数字写入到文件中
-	 * 
-	 * @param ranks 优先级映射文本
-	 */
-	public void setRank(String... ranks) {
-		rank = ranks;
-	}
-
-	/**
-	 * 用于设置优先级的等级映射值，若未使用预设的优先级添加方法可无需进行设置。优先级映射根据传入的参数 的前后顺序进行排序，例如：<br>
-	 * 传入的参数为：高、中、低<br>
-	 * 则相应的映射关系为：1→高、2→中、1→低<br>
-	 * 若未对其映射进行设置，则按照默认的优先级数字写入到文件中
-	 * 
-	 * @param ranks 优先级映射文本
-	 */
-	public void setRank(List<String> ranks) {
-		rank = new String[ranks.size()];
-
-		for (int i = 0; i < ranks.size(); i++) {
-			rank[i] = ranks.get(i);
-		}
-	}
 
 	/**
 	 * 设置字段名称的常值，通过该设置，则之后该字段将直接填入设置的值，无需再次写入字段的值
@@ -230,7 +167,7 @@ public class TestCaseWrite {
 	 */
 	public void setFieldValue(String field, String content) {
 		// 为保证在写用例的时候也能生效，故将值设置进入fieldMap
-		addContent(field, false, content);
+		addContent(field, content);
 
 		// 先将值设置入fieldMap中可以保证field字段是存在于fieldMap中，以减少此处再做判断
 		// 将字段内容写入caseValueMap
@@ -247,180 +184,186 @@ public class TestCaseWrite {
 		word = WORD_SIGN + word + WORD_SIGN;
 		replaceWordMap.put(word, replactWord);
 	}
-	
+
 	/**
 	 * 用于将测试用例文件模板中的字段名与测试用例生成类（继承自{@link Case}的测试用例生成类）中
 	 * 的字段进行关联，通过该方法设置关联字段后，可将生成的测试用例写入到测试用例文件中
-	 * @param field 测试用例文件字段
+	 * 
+	 * @param field     测试用例文件字段
 	 * @param caseLabel 测试用例生成方法的字段
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
 	public void relevanceCase(String field, String caseLabel) {
-		//判断字段是否存在，若不存在，则抛出异常
-		if (!fieldMap.containsKey(field)) {
-			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
-		}
-		
-		//添加字段
-		relevanceMap.put(field, caseLabel);
-	}
-
-	/**
-	 * 向用例中添加步骤，可传入多个参数，每一个参数表示一个步骤，通过该方法传入后将自动对数据进行编号和换行。
-	 * 若需要调用该方法，则需要对步骤对应的标签id调用{@link #setPresupposeField(FieldType, String)}方法
-	 * 映射到{@link FieldType}枚举中。 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
-	 * testing<br>
-	 * 需要替换其中的“ing”，则传参：<br>
-	 * test#ing#
-	 * 
-	 * @param steps 步骤参数
-	 * @return 类本身，以方便链式编码
-	 */
-	public TestCaseWrite addStep(String... steps) {
-		// 为每一段添加标号
-		for (int i = 0; i < steps.length; i++) {
-			steps[i] = ((i + 1) + "." + steps[i]);
-		}
-
-		return addContent(FieldType.STEP.getValue(), false, steps);
-	}
-
-	/**
-	 * 向用例中添加预期，可传入多个参数，每一个参数表示一个预期，通过该方法传入后将自动对数据进行编号和换行。
-	 * 若需要调用该方法，则需要对预期对应的标签id调用{@link #setPresupposeField(FieldType, String)}方法
-	 * 映射到{@link FieldType}枚举中。 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
-	 * testing<br>
-	 * 需要替换其中的“ing”，则传参：<br>
-	 * test#ing#
-	 * 
-	 * @param excepts 预期参数
-	 * @return 类本身，以方便链式编码
-	 */
-	public TestCaseWrite addExcept(String... excepts) {
-		// 为每一段添加标号
-		for (int i = 0; i < excepts.length; i++) {
-			excepts[i] = ((i + 1) + "." + excepts[i]);
-		}
-
-		return addContent(FieldType.EXPECT.getValue(), false, excepts);
-	}
-
-	/**
-	 * 向用例中添加前置条件，可传入多个参数，每一个参数表示一个前置条件，通过该方法传入后将自动对数据进行编号和换行。
-	 * 若需要调用该方法，则需要对预期对应的标签id调用{@link #setPresupposeField(FieldType, String)}方法
-	 * 映射到{@link FieldType}枚举中。 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
-	 * testing<br>
-	 * 需要替换其中的“ing”，则传参：<br>
-	 * test#ing#
-	 * 
-	 * @param preconditions 前置条件参数
-	 * @return 类本身，以方便链式编码
-	 */
-	public TestCaseWrite addPrecondition(String... preconditions) {
-		return addContent(FieldType.PRECONDITION.getValue(), true, preconditions);
-	}
-
-	/**
-	 * 向用例中添加标题。若需要调用该方法，则需要对预期对应的
-	 * 标签id调用{@link #setPresupposeField(FieldType, String)}方法映射到{@link FieldType}枚举中。
-	 * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
-	 * testing<br>
-	 * 需要替换其中的“ing”，则传参：<br>
-	 * test#ing#
-	 * 
-	 * @param title 标题参数
-	 * @return 类本身，以方便链式编码
-	 */
-	public TestCaseWrite addTitle(String title) {
-		return addContent(FieldType.TITLE.getValue(), false, title);
-	}
-
-	/**
-	 * 向用例中添加优先级，若有通过{@link #setRank(String...)}等方法设置了优先级文本映射时，则
-	 * 将传入的数字转义成设置的文本，若未设置，则直接传入数字。若需要调用该方法，则需要对预期对应
-	 * 的标签id调用{@link #setPresupposeField(FieldType, String)}方法映射到{@link FieldType}枚举中
-	 * 
-	 * @param titles 优先级参数
-	 * @return 类本身，以方便链式编码
-	 */
-	public TestCaseWrite addRank(int rank) {
-		// 若有设置优先级文本映射，则将优先级对应到文本中，若未设置，则直接传入数字
-		if (this.rank != null) {
-			String text = "";
-			// 转义优先级
-			if (rank < 1) {
-				// 若优先级小于1，则直接设置优先级第一个项目
-				text = this.rank[0];
-			} else if (rank >= 1 && rank <= this.rank.length) {
-				// 若优先级大于1，且小于数组的长度时，则直接设置相应优先级文字（由于传入的数字从1开始，故实际值为传入的数字-1）
-				text = this.rank[rank - 1];
-			} else {
-				// 若优先级大于数组长度，则直接设置最后一个项目
-				text = this.rank[this.rank.length - 1];
-			}
-
-			return addContent(FieldType.RANK.getValue(), false, text);
-		} else {
-			return addContent(FieldType.RANK.getValue(), false, String.valueOf(rank));
-		}
-	}
-
-	/**
-	 * 通过传入的字段id，将对应的字段内容写入到用例中，字段id对应xml配置文件中的单元格标签的id属性。
-	 * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
-	 * testing<br>
-	 * 需要替换其中的“ing”，则传参：<br>
-	 * test#ing#
-	 * 
-	 * @param field   字段id
-	 * @param content 相应字段的内容
-	 * @return 类本身，以方便链式编码
-	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
-	 */
-	public TestCaseWrite addContent(String field, boolean hasindex, String... contents) {
 		// 判断字段是否存在，若不存在，则抛出异常
 		if (!fieldMap.containsKey(field)) {
 			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
 		}
 
-		// 查找特殊词语，并对词语进行替换
-		for (String word : replaceWordMap.keySet()) {
-			// 查找所有的内容，并将特殊词语进行替换
-			for (int i = 0; i < contents.length; i++) {
-				contents[i] = hasindex ? (String.valueOf(i + 1) + ".") : "" + contents[i].replaceAll(word, replaceWordMap.get(word));
-			}
+		// 添加字段
+		relevanceMap.put(field, caseLabel);
+	}
+
+
+	/**
+	 * 通过传入的字段id，将对应的字段内容写入到用例最后的段落中，字段id对应xml配置文件中的单元格标签的id属性。
+	 * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
+	 * testing<br>
+	 * 需要替换其中的“ing”，则传参：<br>
+	 * test#ing#<br>
+	 * 添加数据时，其亦可对存在数据有效性的数据进行转换，在传值时，只需要传入相应的字段值即可，例如：<br>
+	 * 当字段存在两个数据有效性：“测试1”和“测试2”时，则，可传入addContent(..., "1")（注意，下标从1开始），
+	 * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容。具体说明可以参见{@link Field#getDataValidation(String)}
+	 * 
+	 * @param field   字段id
+	 * @param contents 相应字段的内容
+	 * @return 类本身，以方便链式编码
+	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
+	 */
+	public TestCaseWrite addContent(String field, String... contents) {
+		return insertContent(field, fieldMap.get(field).content.size(), contents);
+	}
+	
+	/**
+	 * 用于对已存储的内容进行移除，若传入的下标超出当前的内容的段落数时，则不做处理
+	 * @param field 字段id
+	 * @param indexs 需要删除的段落下标
+	 * @return 类本身，以方便链式编码
+	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
+	 */
+	public TestCaseWrite removeContent(String field, int...indexs) {
+		// 判断字段是否存在，若不存在，则抛出异常
+		if (!fieldMap.containsKey(field)) {
+			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
 		}
-
-		// 将字段内容写入fieldMap
-		fieldMap.get(field).content = contents;
-
+		
+		//移除相关的内容，若输入的序号不存在，则不进行
+		Arrays.stream(indexs).forEach(index -> {
+			try {
+				fieldMap.get(field).content.remove(index);
+			} catch (Exception e) {
+			}
+		});
+		
 		return this;
 	}
 	
 	/**
+	 * 通过传入的字段id，将对应的字段内容写入到用例文本的相应段落中，字段id对应xml配置文件中的单元格标签的id属性。
+	 * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
+	 * testing<br>
+	 * 需要替换其中的“ing”，则传参：<br>
+	 * test#ing#<br>
+	 * 添加数据时，其亦可对存在数据有效性的数据进行转换，在传值时，只需要传入相应的字段值即可，例如：<br>
+	 * 当字段存在两个数据有效性：“测试1”和“测试2”时，则，可传入insertContent(..., "1")（注意，下标从1开始），
+	 * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容。具体说明可以参见{@link Field#getDataValidation(String)}
+	 * 
+	 * @param field   字段id
+	 * @param index 需要插入的段落
+	 * @param contents 相应字段的内容
+	 * @return 类本身，以方便链式编码
+	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
+	 */
+	public TestCaseWrite insertContent(String field, int index, String... contents) {
+		// 判断字段是否存在，若不存在，则抛出异常
+		if (!fieldMap.containsKey(field)) {
+			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
+		}
+		
+		//若未传值或传入null，则直接结束
+		if (contents == null || contents.length == 0) {
+			return this;
+		}
+		
+		//若传入的下标大于相应的最大段落数时，则直接结束
+		if (index > fieldMap.get(field).content.size()) {
+			return this;
+		}
+		
+		
+		if (fieldMap.get(field).datas.size() != 0) {
+			//查找数据有效性，若当前字段存在数据有效性，则将数据有效性转义，若添加的字段无法转义，则存储原内容
+			contents = dataValidityChange(contents, fieldMap.get(field));
+		}
+		// 查找特殊词语，并对词语进行替换
+		contents = replaceWord(contents);
+		
+		// 将字段内容写入fieldMap，若插入的下标不正确，则不做任何处理
+		try {
+			fieldMap.get(field).content.addAll(index, Arrays.asList(contents));
+		} catch (Exception e) {
+		}
+		
+		return this;
+	}
+	
+	/**
+	 * 通过传入的字段id，将对应的字段相应段落的内容替换成传入的文本或文本组，字段id对应xml配置文件中的单元格标签的id属性。
+	 * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
+	 * testing<br>
+	 * 需要替换其中的“ing”，则传参：<br>
+	 * test#ing#
+	 * @param field   字段id
+	 * @param index 需要插入的段落
+	 * @param contents 相应字段的内容
+	 * @return 类本身，以方便链式编码
+	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
+	 */
+	public TestCaseWrite replaceContent(String field, int index, String... contents) {
+		// 判断字段是否存在，若不存在，则抛出异常
+		if (!fieldMap.containsKey(field)) {
+			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
+		}
+		
+		//若未传值或传入null，则直接结束
+		if (contents == null || contents.length == 0) {
+			return this;
+		}
+		
+		//若传入的下标大于相应的最大段落数时，则直接结束
+		if (index >= fieldMap.get(field).content.size()) {
+			return this;
+		}
+		
+		//移除相应的段落
+		removeContent(field, index);
+		//在原位置上插入相应的内容
+		insertContent(field, index, contents);
+		
+		return this;
+	}
+	
+	/**
+	 * 用于清空字段中存储的内容
+	 * @param field   字段id
+	 * @return 类本身，以方便链式编码
+	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
+	 */
+	public TestCaseWrite clearContent(String field) {
+		// 判断字段是否存在，若不存在，则抛出异常
+		if (!fieldMap.containsKey(field)) {
+			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
+		}
+		
+		fieldMap.get(field).content.clear();
+		
+		return this;
+	}
+
+	/**
 	 * 用于将生成测试用例方法（继承自{@link Case}类的方法）所成成的测试用例添加到测试用例文件中
+	 * 
 	 * @param testCase 测试用例生成方法
 	 * @return 类本身
 	 */
 	public TestCaseWrite addCase(Case testCase) {
-		//获取用例内容
+		// 获取用例内容
 		HashMap<String, ArrayList<String>> labelMap = testCase.getFieldTextMap();
-		
-		//遍历relevanceMap，将用例字段内容写入到xml中
+
+		// 遍历relevanceMap，将用例字段内容写入到xml中
 		relevanceMap.forEach((field, label) -> {
-			//若字段为优先级字段，则进行特殊处理
-			if (FieldType.RANK.getValue().equals(field)) {
-				//添加优先级字段，若可以转换，则使用内置的添加优先级方法，若不能转换，则直接存储
-				try {
-					addRank(Integer.valueOf(labelMap.get(label).get(0)));
-				} catch (Exception e) {
-					addContent(field, false, labelMap.get(label).get(0));
-				}
-			} else {
-				addContent(field, false, labelMap.get(label).toArray(new String[] {}));
-			}
+			addContent(field, labelMap.get(label).toArray(new String[] {}));
 		});
-		
+
 		return this;
 	}
 
@@ -440,19 +383,24 @@ public class TestCaseWrite {
 		} else {
 			sheetElement = caseXml.getRootElement().addElement("sheet").addAttribute("name", sheetName);
 		}
-
+		
 		// 创建case标签
 		String caseUuid = UUID.randomUUID().toString();
 		Element caseElement = sheetElement.addElement("case").addAttribute("id", caseUuid);
 		// 为fieldMap中的所有key创建field标签，并记录相应的value
 		fieldMap.forEach((id, field) -> {
+			//判断字段是否需要进行编号，若需要编号，则调用编号方法
+			if (field.serialNumber) {
+				addSerialNumber(field);
+			}
+			
 			// 添加field标签，并设置name属性（字段名称），mark属性（备注内容）
 			// dom4j当属性值传入null时，则直接不会创建该属性，故此处无需做判断字段id是否在fieldMarkMap中
 			Element fieldElement = caseElement.addElement("field").addAttribute("name", id);
 			// 判断当前是否有添加内容，若未添加内容，则创建一个value属性为空的text标签
 			if (field.content != null) {
 				// 读取所有texts（字符串数组）的所有内容，并为每一元素创建一个text标签，将值加入属性中
-				Arrays.stream(field.content).forEach(text -> {
+				field.content.forEach(text -> {
 					fieldElement.addElement("text").addAttribute("value", text);
 				});
 			} else {
@@ -466,7 +414,7 @@ public class TestCaseWrite {
 		if (caseValueMap != null && caseValueMap.size() != 0) {
 			caseValueMap.forEach((field, content) -> {
 				try {
-					addContent(field, false, content);
+					addContent(field, content);
 				} catch (LabelNotFoundException e) {
 				}
 			});
@@ -535,7 +483,7 @@ public class TestCaseWrite {
 			Field field = fieldMap.get(fieldId);
 			// 获取text标签
 			List<Element> textList = fieldElement.elements("text");
-
+			
 			// 判断当前字段是否需要分行编写内容
 			if (field.rowText < 1) {
 				writeCommonField(xs, fieldElement, fieldId, field, textList, index);
@@ -723,6 +671,7 @@ public class TestCaseWrite {
 				// 设置颜色
 				xf.setColor(Short.valueOf(colorsText));
 			}
+			
 			// 拼接文本
 			xrts.append(textList.get(index).attributeValue("value"), xf);
 		}
@@ -757,11 +706,14 @@ public class TestCaseWrite {
 		for (int index = 0; index < column.size(); index++) {
 			// 查找xml文件中数据有效性标签
 			List<Element> datasList = sheetElement.elements("datas");
-			boolean datas = false;
+			ArrayList<String> datas = new ArrayList<String>();
 			// 遍历所有的数据有效性标签，若存在，则将datas设置为true
 			for (Element datasElemenet : datasList) {
 				if (datasElemenet.attributeValue("id").equals(column.get(index).attributeValue("id"))) {
-					datas = true;
+					//存储当前的数据有效性的内容
+					((List<Element>)(datasElemenet.elements())).forEach(textElement -> {
+						datas.add(textElement.attributeValue("name"));
+					});
 					break;
 				}
 			}
@@ -769,10 +721,59 @@ public class TestCaseWrite {
 			// 存储字段信息
 			fieldMap.put(column.get(index).attributeValue("id"),
 					new Field(column.get(index).attributeValue("id"), column.get(index).attributeValue("align"), index,
-							column.get(index).attributeValue("row_text"), datas));
+							column.get(index).attributeValue("row_text"), datas,
+							Boolean.valueOf(column.get(index).attributeValue("index"))));
 		}
 	}
-
+	
+	/**
+	 * 用于对需要进行替换的特殊词语进行替换
+	 * @param contents 文本内容
+	 */
+	private String[] replaceWord(String[] contents) {
+		// 查找特殊词语，并对词语进行替换
+		for (String word : replaceWordMap.keySet()) {
+			// 查找所有的内容，并将特殊词语进行替换
+			for (int i = 0; i < contents.length; i++) {
+				// 若需要添加序号，则先获取当前列表中的字段个数，以便于继续编号
+				contents[i] = contents[i].replaceAll(word, replaceWordMap.get(word));
+			}
+		}
+		
+		return contents;
+	}
+	
+	/**
+	 * 将数据转化为相应的数据有效性中的内容，当不存在数据有效性或传入的数据无法转换时，则返回原串
+	 * @param contents 文本内容
+	 * @param field 字段相应的对象
+	 * @return 转换后的文本内容
+	 */
+	private String[] dataValidityChange(String[] contents, Field field) {
+		//判断字段是否有数据有效性，若没有，则直接返回原串
+		if (field.datas.size() == 0) {
+			return contents;
+		}
+		
+		// 查找所有的内容，并将特殊词语进行替换
+		for (int i = 0; i < contents.length; i++) {
+			// 若需要添加序号，则先获取当前列表中的字段个数，以便于继续编号
+			contents[i] = field.getDataValidation(contents[i]);
+		}
+		
+		return contents;
+	}
+	
+	/**
+	 * 对段落的文本进行编号
+	 * @param field 段落类对象
+	 */
+	private void addSerialNumber(Field field) {
+		for (int index = 0; index < field.content.size(); index++) {
+			field.content.set(index, String.valueOf(index + 1) + "." + field.content.get(index));
+		}
+	}
+	
 	/**
 	 * 用于测试fieldMap中的内容，编码结束后删除
 	 */
@@ -1033,16 +1034,20 @@ public class TestCaseWrite {
 		 * 用于标记每行写入的段落数，默认为0，当数字小于1时，则认为不分行
 		 */
 		public int rowText = 0;
+		/**
+		 * 用于标记是否对字段进行编号
+		 */
+		public boolean serialNumber = false;
 
 		/**
 		 * 用于存储字段在用例中对应的内容
 		 */
-		public String[] content = null;
+		public ArrayList<String> content = new ArrayList<>();
 
 		/**
 		 * 存储字段是否包含数据有效性（由于在创建模板时数据有效性已被写入到模板文件中，故此处无需存储）
 		 */
-		public boolean datas;
+		public ArrayList<String> datas = new ArrayList<>();
 
 		/**
 		 * 用于构造Field
@@ -1052,19 +1057,30 @@ public class TestCaseWrite {
 		 * @param index 字段在单元格中的位置
 		 * @param datas 字段是否存在数据有效性
 		 */
-		public Field(String id, String align, int index, String rowText, boolean datas) {
+		/**
+		 * 用于构造Field
+		 * 
+		 * @param id         字段id
+		 * @param align      单元格对齐方式
+		 * @param index      字段在单元格中的位置
+		 * @param rowText    换行段落数
+		 * @param datas      字段是否存在数据有效性
+		 * @param numberSign 字段是否需要编号
+		 */
+		public Field(String id, String align, int index, String rowText, ArrayList<String> datas, boolean numberSign) {
 			this.id = id;
 			this.align = align;
 			this.index = index;
 			this.datas = datas;
 			this.rowText = rowText == null ? -1 : Integer.valueOf(rowText);
+			this.serialNumber = numberSign;
 		}
 
 		/**
 		 * 用于清空content中的内容
 		 */
 		public void clearContent() {
-			content = null;
+			content.clear();
 		}
 
 		/**
@@ -1097,13 +1113,48 @@ public class TestCaseWrite {
 
 			return xcs;
 		}
-
+		
+		/**
+		 * 用于返回当前字段相应需要填入表格中的数据（数据有效性中的内容），该方法只能接收能转换为数字的字符串，
+		 * 若字符串无法转换为数字，则返回原串；若可以转换，则将其转换为数字后，通过方法获取数据有效性中的数据。
+		 * 存在以下三种情况：
+		 * <ol> 
+		 * 	<li>当转换的数值小于0时，则获取数据有效性中的第一个数据</li>
+		 * 	<li>当转换的数值大于数据有效性集合内容的最大数值时，则获取数据有效性中的最后一个数据</li>
+		 * 	<li>当转换的数值大于0小于数据有效性集合内容的最大数值时，则获取对应的数据</li>
+		 * </ol>
+		 * <b>注意：</b>数据有效性的为与优先级接轨，故下标将从1开始，即传入1时表示获取第1个元素，而不是第2个
+		 * @param indexText 下标字符串
+		 * @return 数据有效性中对应的数据，无法转换则返回传入的字符串
+		 */
+		public String getDataValidation(String indexText) {
+			//若数据有效性字段内容为空，则直接返回传入的值
+			if (datas.size() == 0) {
+				return indexText;
+			}
+			
+			//若存在数据有效性，则将传入的数值字符串进行转换，若无法转换为数字，则直接返回所填字段
+			try {
+				int index = Integer.valueOf(indexText) - 1;
+				//再次判断转换的数字是否符合要求，若小于0，则返回第一个数据，若大于集合长度，则返回最后一个数据
+				if (index < 0) {
+					return datas.get(0);
+				} else if (index > datas.size()) {
+					return datas.get(datas.size() - 1);
+				} else {
+					return datas.get(index);
+				}
+			} catch (NumberFormatException e) {
+				return indexText;
+			}
+		}
+		
 		/**
 		 * 用于创建表格的数据有效性，若当前字段无数据有效性或文件中无数据有效性 相应的内容时，则不创建数据有效性
 		 */
 		public void addDataValidation(XSSFSheet caseSheet, int startRowIndex, int endRowIndex) {
 			// 判断当前是否存在数据有效性，不存在，则结束
-			if (!datas) {
+			if (datas.size() == 0) {
 				return;
 			}
 

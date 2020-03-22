@@ -23,31 +23,6 @@ import org.dom4j.io.SAXReader;
  */
 public abstract class Case {
 	/**
-	 * 步骤
-	 */
-	private String[] step;
-	
-	/**
-	 * 预期
-	 */
-	private String[] except;
-	
-	/**
-	 * 标题
-	 */
-	private String title;
-	
-	/**
-	 * 关键词
-	 */
-	private String keyWord;
-	
-	/**
-	 * 前置条件
-	 */
-	private String[] precondition;
-	
-	/**
 	 * 用于存储需要替换的词语的开始标记
 	 */
 	final String START_SIGN = "*{";
@@ -60,11 +35,6 @@ public abstract class Case {
 	 * 用于存储传入到正则表达式中的开始标记
 	 */
 	final String START_SIGN_REGIX = "\\*\\{";
-	
-	/**
-	 * 优先级
-	 */
-	private int rank;
 	
 	/**
 	 * 用于指向测试用例xml文件的Document对象
@@ -101,102 +71,6 @@ public abstract class Case {
 	}
 
 	/**
-	 * 返回步骤文本
-	 * @return 步骤文本
-	 */
-	public String[] getStep() {
-		return step;
-	}
-
-	/**
-	 * 根据调用方法的不同设置相应的步骤文本
-	 * @param step 步骤文本
-	 */
-//	void setStep(String[] step) {
-//		this.step = step;
-//	}
-
-	/**
-	 * 返回预期文本
-	 * @return 预期文本
-	 */
-	public String[] getExcept() {
-		return except;
-	}
-
-	/**
-	 * 根据调用方法的不同设置相应的预期文本
-	 * @param except 预期文本
-	 */
-//	void setExcept(String[] except) {
-//		this.except = except;
-//	}
-
-	/**
-	 * 返回标题文本
-	 * @return 标题文本
-	 */
-	public String getTitle() {
-		return title;
-	}
-
-	/**
-	 * 根据调用方法的不同设置相应的标题文本
-	 * @param title 标题文本
-	 */
-//	void setTitle(String title) {
-//		this.title = title;
-//	}
-
-	/**
-	 * 返回关键词文本
-	 * @return 关键词文本
-	 */
-	public String getKeyWord() {
-		return keyWord;
-	}
-
-	/**
-	 * 根据调用方法的不同设置相应的关键词文本
-	 * @param keyWord 关键词文本
-	 */
-//	void setKeyWord(String keyWord) {
-//		this.keyWord = keyWord;
-//	}
-
-	/**
-	 * 返回关键词文本
-	 * @return 关键词文本
-	 */
-	public String[] getPrecondition() {
-		return precondition;
-	}
-
-	/**
-	 * 根据调用方法的不同设置相应的前置条件文本
-	 * @param keyWord 前置条件文本
-	 */
-//	void setPrecondition(String[] precondition) {
-//		this.precondition = precondition;
-//	}
-
-	/**
-	 * 返回优先级文本
-	 * @return 优先级文本
-	 */
-	public int getRank() {
-		return rank;
-	}
-
-	/**
-	 * 根据调用方法的不同设置相应的优先级文本
-	 * @param keyWord 优先级文本
-	 */
-//	void setRank(int rank) {
-//		this.rank = rank;
-//	}
-	
-	/**
 	 * 用于设置需要替换的词语
 	 * @param word 测试用例xml库中需要替换的词语
 	 * @param value 被替换的词语
@@ -208,36 +82,6 @@ public abstract class Case {
 		}
 		//存储替换的词语
 		wordMap.put(word, text);
-	}
-	
-	/**
-	 * 用于设置测试用例相应的所有信息
-	 * @param title 标题
-	 * @param step 步骤
-	 * @param except 预期
-	 * @param precondition 前置条件
-	 * @param keyWord 关键词
-	 * @param rank 优先级
-	 */
-	void setAllContent(String title, String[] step, String[] except, String[] precondition, String keyWord, int rank) {
-		this.step = step;
-		this.except = except;
-		this.title = title;
-		this.keyWord = keyWord;
-		this.precondition = precondition;
-		this.rank = rank;
-	}
-	
-	/**
-	 * 用于初始化所有的内容
-	 */
-	public void clearAllContent() {
-		step = null;
-		except = null;
-		title = "";
-		keyWord = "";
-		precondition = null;
-		rank = 1;
 	}
 	
 	/**
@@ -371,15 +215,6 @@ public abstract class Case {
 	 */
 	void addFieldText(LabelType label, String text) {
 		fieldTextMap.get(label.getName()).add(text);
-	}
-	
-	/**
-	 * 用于添加带序号的一行文本
-	 * @param label 标签名称（枚举）
-	 * @param text 相应内容
-	 */
-	void addFieldText(LabelType label, int index, String text) {
-		fieldTextMap.get(label.getName()).add(index + "." + text);
 	}
 	
 	/**

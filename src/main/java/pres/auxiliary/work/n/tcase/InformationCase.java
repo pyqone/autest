@@ -3,7 +3,6 @@ package pres.auxiliary.work.n.tcase;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p><b>文件名：</b>InformationCase.java</p>
@@ -96,22 +95,22 @@ public class InformationCase extends Case {
 		
 		//存储标题信息
 		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		getAllLabelText(caseName, LabelType.STEP).forEach(text -> {
-			addFieldText(LabelType.STEP, index.getAndIncrement(), text);
+			addFieldText(LabelType.STEP, text);
 		});
 		
 		//存储预期信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.EXCEPT).forEach(text -> {
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), text);
+			addFieldText(LabelType.EXCEPT, text);
 		});
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		
 		//存储关键词信息
@@ -132,27 +131,27 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addUnWholeInformationCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//存储标题信息
 		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
 		
 		//存储步骤与预期信息
 		//不填写任何信息
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "1"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		//只填写所有的必填项信息
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "2"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		//只填写所有的非必填项信息
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -176,8 +175,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addTextboxCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 				
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -192,9 +191,9 @@ public class InformationCase extends Case {
 		//----------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -226,8 +225,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addTextboxCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -252,47 +251,47 @@ public class InformationCase extends Case {
 			wordMap.put(WordType.INPUT_MIN_LENGTH.getName(), String.valueOf(minLen));
 			
 			//小于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "5"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		} else if (minLen == 0 && maxLen != 0) {
 			//存储最大输入限制
 			wordMap.put(WordType.INPUT_MAX_LENGTH.getName(), String.valueOf(maxLen));
 			//大于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "6"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "7"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		} else {
 			//若都不为0，则将相应的内容进行存储，且判断最大长度与最小长度是否传反，若传反，则调换顺序
 			wordMap.put(WordType.INPUT_MIN_LENGTH.getName(), String.valueOf(minLen < maxLen ? minLen : maxLen));
 			wordMap.put(WordType.INPUT_MAX_LENGTH.getName(), String.valueOf(minLen < maxLen ? maxLen : minLen));
 			
 			//小于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "5"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//大于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "6"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//若最大最小限制相等，则不添加该条用例
 			if (minLen != maxLen) {
 				//等于最大限制
-				addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "7"));
-				addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+				addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+				addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			}
 		}
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -324,8 +323,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addTextboxCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -357,37 +356,37 @@ public class InformationCase extends Case {
 			throw new CaseContentException("大小限制不能同时为极值");
 		} else if (min == MIN_NUMBER && max != MAX_NUMBER) {
 			//大于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "10"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "11"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "11"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//小于最小负数限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "8"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "5"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "5"));
 		} else if (min != MIN_NUMBER && max == MAX_NUMBER) {
 			//小于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "8"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "9"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//大于最大正数限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "10"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "5"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "5"));
 		} else {
 			//小于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "8"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "9"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//大于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "10"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "11"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "11"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		}
 		
 		//若传入的小数位数大于0，则添加小数位相关的用例
@@ -395,22 +394,22 @@ public class InformationCase extends Case {
 			//存储小数位数
 			wordMap.put(WordType.INPUT_DECIMALS.getName(), String.valueOf(decimals));
 			//等于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "14"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "6"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "14"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "6"));
 			//大于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "15"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "15"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//等于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "16"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "16"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		}
 		
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -434,8 +433,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addPhoneCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -453,35 +452,35 @@ public class InformationCase extends Case {
 		//添加手机相关的测试用例
 		if (phoneRules.contains(PhoneType.MOBLE)) {
 			//大于11位
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//小于11位
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		}
 		
 		//添加座机相关的测试用例
 		if (phoneRules.contains(PhoneType.FIXED)) {
 			//大于7位
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "5"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//小于7位
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "6"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//区位号
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "1"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		}
 		
 		//长度符合但不和规则的用例
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "7"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -504,8 +503,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addIDCardCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -519,34 +518,34 @@ public class InformationCase extends Case {
 		textboxCommonCase(isMust, isRepeat, isClear, InputRuleType.NUM);
 		
 		//输入15位
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		//输入18位
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		//输入末尾带“X”或“x”
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "5"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		
 		//输入大于18位
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "6"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		//输入小于18位大于15位
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "7"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		//输入小于15位
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "8"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		
 		//输入不符合规则
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "9"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -569,8 +568,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addSelectboxCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -581,28 +580,28 @@ public class InformationCase extends Case {
 		//----------------------------------------------------------------------
 		//存储步骤与预期信息
 		//选择选项后清空
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, hasEmpty ? "4" : "3"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, hasEmpty ? "4" : "3"));
 		
 		//添加空选项用例
 		if (hasEmpty) {
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "1"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "1" : "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "1" : "2"));
 		}
 		
 		//添加选择第一个选项
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "2"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		
 		//添加选择最后一个选项
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -622,8 +621,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addRadioButtonCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -634,31 +633,31 @@ public class InformationCase extends Case {
 		//----------------------------------------------------------------------
 		//存储步骤与预期信息
 		//选择选项后清空
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "5"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "4"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "4"));
 		
 		//依次选择选项
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "1"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "3"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "3"));
 		
 		//不改变默认选项
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "2"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		
 		//选第一个
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		
 		//选最后一个
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -679,8 +678,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addCheckboxCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -691,34 +690,34 @@ public class InformationCase extends Case {
 		//----------------------------------------------------------------------
 		//存储步骤与预期信息
 		//依次选择选项
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "1"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "3"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "3"));
 		//再次依次选择选项
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "2"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "4"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "4"));
 		
 		//不进行选择
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		
 		//选择第一个
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		
 		//选择最后一个
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "5"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		
 		//选择多个
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "6"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -741,8 +740,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addDateCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -757,9 +756,9 @@ public class InformationCase extends Case {
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -782,8 +781,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addDateCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -798,18 +797,18 @@ public class InformationCase extends Case {
 		
 		wordMap.put(WordType.END_DATE.getName(), endDateName);
 		//大于结束时间
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "6"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		
 		//等于结束时间
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "7"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -832,8 +831,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addDateCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -848,18 +847,18 @@ public class InformationCase extends Case {
 		
 		wordMap.put(WordType.START_DATE.getName(), startDateName);
 		//小于开始时间
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "8"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		
 		//等于开始时间
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "9"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
+		
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -892,8 +891,8 @@ public class InformationCase extends Case {
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addUploadFileCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 				
 		//添加控件名称
 		wordMap.put(WordType.CONTROL_NAME.getName(), name);
@@ -910,14 +909,14 @@ public class InformationCase extends Case {
 				
 		//预览文件
 		if (isPreview) {
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "11"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "11"));
 			//根据枚举类型选择相应的预期
 			switch (uploadFileType) {
 			case FILE:
-				addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "6"));
+				addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "6"));
 				break;
 			case IMAGE:
-				addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "5"));
+				addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "5"));
 				break;
 			default:
 				throw new IllegalArgumentException("不支持的类型：" + uploadFileType.getName());
@@ -925,18 +924,18 @@ public class InformationCase extends Case {
 		}
 		
 		//不上传文件
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "1"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		
 		//删除文件用例
 		if (isDelete) {
 			//删除文件点保存
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		
 			//删除文件再上传
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "2"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, uploadFileType.equals(UploadFileType.IMAGE) ? "4" : "3"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, uploadFileType.equals(UploadFileType.IMAGE) ? "4" : "3"));
 		}
 		
 		//上传文件个数限制
@@ -950,39 +949,39 @@ public class InformationCase extends Case {
 			wordMap.put(WordType.UPLOAD_MIN_LENGTH.getName(), String.valueOf(minLen));
 			
 			//小于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "7"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "8"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		} else if (minLen == 0 && maxLen != 0) {
 			//存储最大输入限制
 			wordMap.put(WordType.UPLOAD_MAX_LENGTH.getName(), String.valueOf(maxLen));
 			//大于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "9"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "10"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 		} else if (minLen != 0 && maxLen != 0) {
 			//若都不为0，则将相应的内容进行存储，且判断最大长度与最小长度是否传反，若传反，则调换顺序
 			wordMap.put(WordType.UPLOAD_MIN_LENGTH.getName(), String.valueOf(minLen < maxLen ? minLen : maxLen));
 			wordMap.put(WordType.UPLOAD_MAX_LENGTH.getName(), String.valueOf(minLen < maxLen ? maxLen : minLen));
 			
 			//小于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "7"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "7"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//等于最小限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "8"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//大于最大限制
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "9"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "9"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 			//若最大最小限制相等，则不添加等于最大限制
 			if (minLen != maxLen) {
 				//等于最大限制
-				addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "10"));
-				addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+				addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "10"));
+				addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			}
 		} else {
 			//若均等于0，则不进行处理
@@ -993,12 +992,12 @@ public class InformationCase extends Case {
 			//存储大小限制
 			wordMap.put(WordType.FILE_SIZE.getName(), String.valueOf(fileSize));
 			//超过大小限制的用例
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "7"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "7"));
 		} else {
 			//超过大小限制的用例
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "5"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "8"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "8"));
 		}
 		
 		//上传非限制格式文件
@@ -1008,15 +1007,14 @@ public class InformationCase extends Case {
 				fileRulesText += (fileRule.getName() + "、");
 			}
 			wordMap.put(WordType.FILE_RULE.getName(), fileRulesText.substring(0, fileRulesText.length() - 1));
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "6"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "9"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "9"));
 		}
 		//----------------------------------------------------------------------
 		
 		//存储前置条件信息
-		index.set(1);
 		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, index.getAndIncrement(), text);
+			addFieldText(LabelType.PRECONDITION, text);
 		});
 		//存储关键词信息
 		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
@@ -1036,21 +1034,21 @@ public class InformationCase extends Case {
 	private void textboxCommonCase(boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
 		// 存储case标签的name属性内容
 		String caseName = "textboxBasicCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
+		
+		
 		
 		//转换输入限制为集合类型
 		List<InputRuleType> inputRules = Arrays.asList(inputRuleTypes);
 		
 		//不填写或只输入空格
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
 		//根据是否必填来判断填入成功或失败预期
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		
 		//填写特殊字符或HTML代码
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
 		//根据是否存在输入
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, inputRules.size() == 0 || inputRules.contains(InputRuleType.SPE) ? "1" : "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, inputRules.size() == 0 || inputRules.contains(InputRuleType.SPE) ? "1" : "2"));
 		
 		//输入非限制的字符
 		if (inputRules.size() != 0) {
@@ -1059,16 +1057,16 @@ public class InformationCase extends Case {
 				inputRuleText += (inputRule.getName() + "、");
 			}
 			wordMap.put(WordType.INPUT_RULE.getName(), inputRuleText.substring(0, inputRuleText.length() - 1));
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		}
 		
 		//清空输入的内容
 		if (isClear) {
 			//不填写或只输入空格
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "13"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "13"));
 			//根据是否必填来判断填入成功或失败预期
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "4" : "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "4" : "3"));
 		}
 	}
 	
@@ -1081,32 +1079,30 @@ public class InformationCase extends Case {
 	private void dateboxCommonCase(boolean isMust, boolean isInput, boolean isClear) {
 		// 存储case标签的name属性内容
 		String caseName = "addDateCase";
-		//存储步骤信息
-		AtomicInteger index = new AtomicInteger(1);
 		
 		//不填写
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
 		//根据是否必填来判断填入成功或失败预期
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		
 		//选择当前时间
-		addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "2"));
-		addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
+		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		
 		//选择时间后清除时间
 		if (isClear) {
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "2" : "1"));
 		}
 		
 		//手动输入时间
 		if (isInput) {
 			//输入正确格式
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "4"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
 			//输入不正确的格式
-			addFieldText(LabelType.STEP, index.get(), getLabelText(caseName, LabelType.STEP, "5"));
-			addFieldText(LabelType.EXCEPT, index.getAndIncrement(), getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
 		}
 	}
 	

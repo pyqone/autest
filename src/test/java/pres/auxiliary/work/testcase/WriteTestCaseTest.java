@@ -58,12 +58,6 @@ public class WriteTestCaseTest {
 
 		wtc = new TestCaseWrite(conFile, tempFile);
 
-		wtc.setPresupposeField(FieldType.EXPECT, "预期");
-		wtc.setPresupposeField(FieldType.PRECONDITION, "前置条件");
-		wtc.setPresupposeField(FieldType.RANK, "优先级");
-		wtc.setPresupposeField(FieldType.STEP, "步骤");
-		wtc.setPresupposeField(FieldType.TITLE, "标题");
-		
 		wtc.relevanceCase("步骤", LabelType.STEP.getName());
 		wtc.relevanceCase("预期", LabelType.EXCEPT.getName());
 		wtc.relevanceCase("优先级", LabelType.RANK.getName());
@@ -85,21 +79,12 @@ public class WriteTestCaseTest {
 //		wtc.getCaseXml();
 //		java.awt.Desktop.getDesktop().open(wtc.getCaseXml());
 		java.awt.Desktop.getDesktop().open(tempFile.getParentFile());
+		java.awt.Desktop.getDesktop().open(tempFile);
 	}
 
 	@BeforeMethod
 	public void addContent(Method method) {
 		System.out.println("=======正在运行：" + method.getName() + "=======");
-//		wtc.addRank(1);
-//		wtc.addStep("步骤1", "步骤2", "步骤3");
-//		wtc.addTitle("这是标题");
-//		wtc.addPrecondition("前置条件1", "前置条件2", "前置条件3");
-//		wtc.addExcept("预期1", "预期2", "预期3");
-//		wtc.addContent("目的", false, "这是目的1", "这是目的2");
-//		wtc.addContent("模块", false, "这是模块");
-//		wtc.addContent("状态", false, "这是状态");
-//		wtc.addContent("项目", false, "这是项目");
-//		wtc.addContent("设计者", false, "这是设计者");
 	}
 
 	/**
@@ -114,53 +99,16 @@ public class WriteTestCaseTest {
 	 * 测试{@link TestCaseWrite#addContent(String, String)}方法
 	 */
 	@Test
-	public void addContentTest() {
-		wtc.addContent("标题", false, "这是标题").addContent("目的", false, "这是目的");
+	public void addContentTest_NotDataValidetion() {
+		wtc.addContent("标题", "这是标题").addContent("目的", "这是目的");
 	}
-
+	
 	/**
-	 * 测试{@link TestCaseWrite#setPresupposeField(FieldType, String)}方法
-	 */
-	@Test(enabled = false)
-	public void setPresupposeFieldTest() {
-		wtc.setPresupposeField(FieldType.EXPECT, "预期");
-		wtc.setPresupposeField(FieldType.PRECONDITION, "前置条件");
-		wtc.setPresupposeField(FieldType.RANK, "优先级");
-		wtc.setPresupposeField(FieldType.STEP, "步骤");
-		wtc.setPresupposeField(FieldType.TITLE, "标题");
-	}
-
-	/**
-	 * 测试{@link TestCaseWrite#setRank(String...)}方法
+	 * 测试{@link TestCaseWrite#addContent(String, String)}方法
 	 */
 	@Test
-	public void setRankTest() {
-		wtc.setRank("hehe", "haha", "xixi");
-		wtc.addRank(2);
-	}
-
-	/**
-	 * 测试{@link TestCaseWrite#addStep(String...)}方法
-	 */
-	@Test
-	public void addStepTest() {
-		wtc.addStep("步骤1", "2020-03-03", "2020/03/03");
-	}
-
-	/**
-	 * 测试{@link TestCaseWrite#addExcept(String...)}方法
-	 */
-	@Test
-	public void addExceptTest() {
-		wtc.addExcept("预期1", "预期2", "预期3");
-	}
-
-	/**
-	 * 测试{@link TestCaseWrite#addPrecondition(String...)}方法
-	 */
-	@Test
-	public void addPreconditionTest() {
-		wtc.addPrecondition("前置条件1", "前置条件2", "前置条件3");
+	public void addContentTest_hasDataValidetion() {
+		wtc.addContent("优先级", "1").addContent("状态", "2", "3", "5", "-1", "哈哈哈");
 	}
 
 	/**
@@ -173,37 +121,6 @@ public class WriteTestCaseTest {
 		wtc.addCase(ic.addRadioButtonCase("测试控件")).end();
 	}
 	
-	/**
-	 * 测试{@link TestCaseWrite#addTitle(String)}方法
-	 */
-	@Test
-	public void addTitleTest() {
-		wtc.addTitle("2020-02-03");
-	}
-
-	/**
-	 * 测试{@link TestCaseWrite#addRank(int)}方法
-	 */
-	@Test
-	public void addRankTest_NotData() {
-		wtc.addRank(1);
-		wtc.addRank(-1);
-		wtc.addRank(100);
-	}
-
-	/**
-	 * 测试{@link TestCaseWrite#end()}方法
-	 */
-	@Test
-	public void endTest() {
-		wtc.addRank(1);
-		wtc.addStep("步骤1", "步骤2", "步骤3");
-		wtc.addTitle("这是标题");
-		wtc.addPrecondition("前置条件1", "前置条件2", "前置条件3");
-		wtc.addExcept("预期1", "预期2", "预期3");
-
-		wtc.end();
-	}
 
 	/**
 	 * 测试{@link TestCaseWrite#setReplactWord(String, String)}方法
@@ -213,11 +130,10 @@ public class WriteTestCaseTest {
 		wtc.setReplactWord("特别", "TB");
 		wtc.setReplactWord("BT", "变态");
 
-		wtc.addRank(1);
-		wtc.addStep("#特别#1", "步骤#BT#", "步骤3");
-		wtc.addTitle("这是#特别#标题#BT#");
-		wtc.addPrecondition("#特别#前置条#BT#件1", "前#特别#置条#BT#件2", "前置条#BT#件3#特别#");
-		wtc.addExcept("预#特别#1", "预#特别#期2", "预期3#BT#");
+		wtc.addContent("步骤", "#特别#1", "步骤#BT#", "步骤3");
+		wtc.addContent("标题", "这是#特别#标题#BT#");
+		wtc.addContent("前置条件", "#特别#前置条#BT#件1", "前#特别#置条#BT#件2", "前置条#BT#件3#特别#");
+		wtc.addContent("预期" ,"预#特别#1", "预#特别#期2", "预期3#BT#");
 	}
 
 	/**
@@ -270,5 +186,119 @@ public class WriteTestCaseTest {
 	public void markTest() {
 		wtc.end().markStepAndExcept(2, MarkColorsType.RED).fieldComment("目的", "目的标记").changeFieldBackground("设计者",
 				MarkColorsType.YELLOW);
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#removeContent(String, int...)}方法
+	 */
+	@Test
+	public void removeContentTest_1() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").removeContent("步骤", 2).end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").removeContent("前置条件", 2).end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#removeContent(String, int...)}方法
+	 */
+	@Test
+	public void removeContentTest_2() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").removeContent("前置条件", 2).end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#removeContent(String, int...)}方法
+	 */
+	@Test
+	public void removeContentTest_3() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").removeContent("步骤", 5).end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").removeContent("前置条件", 5).end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#insertContent(String, int, String...)}方法
+	 */
+	@Test
+	public void insertContentTest_1() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").insertContent("步骤", 2, "2.1", "2.2").end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").insertContent("前置条件", 2, "2.1", "2.2").end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#insertContent(String, int, String...)}方法
+	 */
+	@Test
+	public void insertContentTest_2() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").insertContent("前置条件", 2, "2.1", "2.2").end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#insertContent(String, int, String...)}方法
+	 */
+	@Test
+	public void insertContentTest_3() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").insertContent("步骤", 2).end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").insertContent("前置条件", 2).end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#insertContent(String, int, String...)}方法
+	 */
+	@Test
+	public void insertContentTest_4() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").insertContent("步骤", 6, "2.1", "2.2").end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").insertContent("前置条件", 6, "2.1", "2.2").end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#insertContent(String, int, String...)}方法
+	 */
+	@Test
+	public void insertContentTest_5() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").insertContent("步骤", 5, "2.1", "2.2").end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").insertContent("前置条件", 5, "2.1", "2.2").end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#replaceContent(String, int, String...)}方法
+	 */
+	@Test
+	public void replaceContentTest_1() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").replaceContent("步骤", 2, "2.1", "2.2").end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").replaceContent("前置条件", 2, "2.1", "2.2").end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#replaceContent(String, int, String...)}方法
+	 */
+	@Test
+	public void replaceContentTest_2() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").replaceContent("前置条件", 2, "2.1", "2.2").end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#replaceContent(String, int, String...)}方法
+	 */
+	@Test
+	public void replaceContentTest_3() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").replaceContent("步骤", 2).end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").replaceContent("前置条件", 2).end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#replaceContent(String, int, String...)}方法
+	 */
+	@Test
+	public void replaceContentTest_4() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").replaceContent("步骤", 6, "2.1", "2.2").end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").replaceContent("前置条件", 6, "2.1", "2.2").end();
+	}
+	
+	/**
+	 * 测试{@link TestCaseWrite#replaceContent(String, int, String...)}方法
+	 */
+	@Test
+	public void replaceContentTest_5() {
+		wtc.addContent("步骤", "1", "2", "3", "4", "5").replaceContent("步骤", 5, "2.1", "2.2").end();
+		wtc.addContent("前置条件", "1", "2", "3", "4", "5").replaceContent("前置条件", 5, "2.1", "2.2").end();
 	}
 }
