@@ -23,6 +23,11 @@ import org.dom4j.io.SAXReader;
  */
 public abstract class Case {
 	/**
+	 * 用于标记获取标签下所有的文本
+	 */
+	final String ALL = "-1:getAllText";
+	
+	/**
 	 * 用于存储需要替换的词语的开始标记
 	 */
 	final String START_SIGN = "*{";
@@ -96,7 +101,12 @@ public abstract class Case {
 		//循环，替换content中所有需要替换的信息
 		while( (index = sb.indexOf(START_SIGN)) != -1 ) {
 			//存储待替换的变量名
-			String var = sb.substring(index + START_SIGN.length(), sb.indexOf(END_SIGN));
+			String var = "";
+			try {
+				var = sb.substring(index + START_SIGN.length(), sb.indexOf(END_SIGN));
+			} catch (StringIndexOutOfBoundsException e) {
+				throw new CaseContentException("词语替换错误，无效的标记字符：" + text);
+			}
 			//替换该变量名
 			sb.replace(index, sb.indexOf(END_SIGN) + END_SIGN.length(), wordMap.get(var));
 		}
@@ -218,6 +228,15 @@ public abstract class Case {
 	}
 	
 	/**
+	 * 用于添加多行文本
+	 * @param label 标签名称（枚举）
+	 * @param texts 相应内容
+	 */
+	void addFieldText(LabelType label, List<String> texts) {
+		fieldTextMap.get(label.getName()).addAll(texts);
+	}
+	
+	/**
 	 * 用于清空字段的内容，以避免存储上一次输入的用例
 	 */
 	void clearFieldText() {
@@ -232,5 +251,34 @@ public abstract class Case {
 	 */
 	public HashMap<String, ArrayList<String>> getFieldTextMap() {
 		return fieldTextMap;
+	}
+	
+	/**`	
+	 * 由于添加与参数相关的数据时需要将关联的字段（如步骤及结果）都添加至其中，
+	 * 若后期关联字段增加，则代码量将是成倍的增加，故将关联的内容提取出来，在
+	 * 外部进行添加，之后修改关联字段时只需修改该方法即可。若传入-1，则表示
+	 * 获取xml中该标签下的所有的信息<br>
+	 * 参数表：
+	 * <ol>
+	 * <li>步骤</li>
+	 * <li>预期</li>
+	 * </ol>
+	 * @param caseName 读取的用例名称
+	 * @param ids id参数串
+	 */
+	void relevanceAddData(String caseName, String...ids) {
+		//添加步骤
+		if (ids[0].equals(ALL)) {
+			addFieldText(LabelType.STEP, getAllLabelText(caseName, LabelType.STEP));
+		} else {
+			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, ids[0]));
+		}
+		
+		//添加预期
+		if (ids[0].equals(ALL)) {
+			addFieldText(LabelType.EXCEPT, getAllLabelText(caseName, LabelType.EXCEPT));
+		} else {
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, ids[0]));
+		}
 	}
 }
