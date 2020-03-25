@@ -70,6 +70,22 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
+	 * 测试{@link InformationCase#editBasicTextboxCase(String, boolean, boolean, boolean, pres.auxiliary.tool.web.InputRuleType...)}方法
+	 */
+	@Test
+	public void editBasicTextboxCaseTest_NotRule() {
+		ic.editBasicTextboxCase("测试控件1", true, true, true);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#editBasicTextboxCase(String, boolean, boolean, boolean, pres.auxiliary.tool.web.InputRuleType...)}方法
+	 */
+	@Test
+	public void editBasicTextboxCaseCaseTest_HaveRule() {
+		ic.editBasicTextboxCase("测试控件2", false, false, false, InformationCase.InputRuleType.EN, InformationCase.InputRuleType.NUM);
+	}
+	
+	/**
 	 * 测试{@link InformationCase#addLengthRuleTextboxCase(String, boolean, boolean, boolean, int, int, InputRuleType...)}方法
 	 */
 	@Test
@@ -244,6 +260,14 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
+	 * 测试{@link InformationCase#editDateCase(String, boolean, boolean, boolean)}方法
+	 */
+	@Test
+	public void editDateCaseTest_2() {
+		ic.editDateCase("测试控件23", false, false, false);
+	}
+	
+	/**
 	 * 测试{@link InformationCase#addStartDateCase(String, String, boolean, boolean, boolean)}方法
 	 */
 	@Test
@@ -297,5 +321,29 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	@Test
 	public void addUploadFileCaseTest_5() {
 		ic.addUploadFileCase("测试控件29", false, false, false, -1, -1, -1, UploadFileType.IMAGE);
+	}
+	
+	/**
+	 * 测试{@link InformationCase#browseEditPageCase()}方法
+	 */
+	@Test
+	public void browseEditPageCaseTest() {
+		ic.browseEditPageCase();
+	}
+	
+	/**
+	 * 测试{@link InformationCase#cencelSaveAddDataCase(String)}方法
+	 */
+	@Test
+	public void cencelSaveAddDataCaseTest() {
+		ic.cencelSaveAddDataCase("取消");
+	}
+	
+	/**
+	 * 测试{@link InformationCase#cencelSaveEditDataCase(String)}方法
+	 */
+	@Test
+	public void cencelSaveEditDataCaseTest() {
+		ic.cencelSaveEditDataCase("取消");
 	}
 }
