@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.tcase;
+package pres.auxiliary.work.n.testcase;
 
 /**
  * <p><b>文件名：</b>IncorrectFileException.java</p>

@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.tcase;
+package pres.auxiliary.work.n.testcase;
 
 public class LabelNotFoundException extends RuntimeException {
 

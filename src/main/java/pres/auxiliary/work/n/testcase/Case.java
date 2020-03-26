@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.tcase;
+package pres.auxiliary.work.n.testcase;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -275,10 +275,10 @@ public abstract class Case {
 		}
 		
 		//添加预期
-		if (ids[0].equals(ALL)) {
+		if (ids[1].equals(ALL)) {
 			addFieldText(LabelType.EXCEPT, getAllLabelText(caseName, LabelType.EXCEPT));
 		} else {
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, ids[0]));
+			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, ids[1]));
 		}
 	}
 }

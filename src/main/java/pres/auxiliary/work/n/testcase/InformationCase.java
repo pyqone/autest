@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.tcase;
+package pres.auxiliary.work.n.testcase;
 
 import java.io.File;
 import java.util.Arrays;

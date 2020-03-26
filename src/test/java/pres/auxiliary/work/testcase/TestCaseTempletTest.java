@@ -9,8 +9,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.n.tcase.IncorrectFileException;
-import pres.auxiliary.work.n.tcase.TestCaseTemplet;
+import pres.auxiliary.work.n.testcase.IncorrectFileException;
+import pres.auxiliary.work.n.testcase.TestCaseTemplet;
 
 public class TestCaseTempletTest {
 	/**

@@ -11,13 +11,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.n.tcase.FieldType;
-import pres.auxiliary.work.n.tcase.InformationCase;
-import pres.auxiliary.work.n.tcase.LabelType;
-import pres.auxiliary.work.n.tcase.MarkColorsType;
-import pres.auxiliary.work.n.tcase.TestCaseTemplet;
-import pres.auxiliary.work.n.tcase.TestCaseWrite;
-import pres.auxiliary.work.n.tcase.TestCaseWrite.CaseMark;
+import pres.auxiliary.work.n.testcase.FieldType;
+import pres.auxiliary.work.n.testcase.InformationCase;
+import pres.auxiliary.work.n.testcase.LabelType;
+import pres.auxiliary.work.n.testcase.MarkColorsType;
+import pres.auxiliary.work.n.testcase.TestCaseTemplet;
+import pres.auxiliary.work.n.testcase.TestCaseWrite;
+import pres.auxiliary.work.n.testcase.TestCaseWrite.CaseMark;
 
 /**
  * <p>
@@ -112,7 +112,7 @@ public class WriteTestCaseTest {
 	}
 
 	/**
-	 * 测试{@link TestCaseWrite#addCase(pres.auxiliary.work.n.tcase.Case)}方法
+	 * 测试{@link TestCaseWrite#addCase(pres.auxiliary.work.n.testcase.Case)}方法
 	 */
 	@Test
 	public void addCaseTest() {

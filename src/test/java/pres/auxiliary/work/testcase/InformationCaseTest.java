@@ -6,14 +6,14 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.n.tcase.CaseContentException;
-import pres.auxiliary.work.n.tcase.InformationCase;
-import pres.auxiliary.work.n.tcase.InformationCase.FileRuleType;
-import pres.auxiliary.work.n.tcase.InformationCase.InputRuleType;
-import pres.auxiliary.work.n.tcase.InformationCase.UploadFileType;
+import pres.auxiliary.work.n.testcase.CaseContentException;
+import pres.auxiliary.work.n.testcase.InformationCase;
+import pres.auxiliary.work.n.testcase.InformationCase.FileRuleType;
+import pres.auxiliary.work.n.testcase.InformationCase.InputRuleType;
+import pres.auxiliary.work.n.testcase.InformationCase.UploadFileType;
 
 public class InformationCaseTest {
-InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/AddInformation.xml"));
+	InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/AddInformation.xml"));
 	
 	@BeforeClass
 	public void start() {
@@ -180,7 +180,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.tcase.InformationCase.PhoneType...)}方法
+	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.testcase.InformationCase.PhoneType...)}方法
 	 */
 	@Test
 	public void addPhoneCaseTest_Fixed() {
@@ -188,7 +188,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.tcase.InformationCase.PhoneType...)}方法
+	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.testcase.InformationCase.PhoneType...)}方法
 	 */
 	@Test
 	public void addPhoneCaseTest_Moble() {
@@ -196,7 +196,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.tcase.InformationCase.PhoneType...)}方法
+	 * 测试{@link InformationCase#addPhoneCase(String, boolean, boolean, boolean, pres.auxiliary.work.n.testcase.InformationCase.PhoneType...)}方法
 	 */
 	@Test
 	public void addPhoneCaseTest_All() {
@@ -284,7 +284,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.testcase.InformationCase.UploadFileType, pres.auxiliary.work.n.testcase.InformationCase.FileRuleType...)}方法
 	 */
 	@Test
 	public void addUploadFileCaseTest_1() {
@@ -292,7 +292,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.testcase.InformationCase.UploadFileType, pres.auxiliary.work.n.testcase.InformationCase.FileRuleType...)}方法
 	 */
 	@Test
 	public void addUploadFileCaseTest_2() {
@@ -300,7 +300,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.testcase.InformationCase.UploadFileType, pres.auxiliary.work.n.testcase.InformationCase.FileRuleType...)}方法
 	 */
 	@Test
 	public void addUploadFileCaseTest_3() {
@@ -308,7 +308,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.testcase.InformationCase.UploadFileType, pres.auxiliary.work.n.testcase.InformationCase.FileRuleType...)}方法
 	 */
 	@Test
 	public void addUploadFileCaseTest_4() {
@@ -316,7 +316,7 @@ InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfig
 	}
 	
 	/**
-	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.tcase.InformationCase.UploadFileType, pres.auxiliary.work.n.tcase.InformationCase.FileRuleType...)}方法
+	 * 测试{@link InformationCase#addUploadFileCase(String, boolean, boolean, boolean, int, int, int, pres.auxiliary.work.n.testcase.InformationCase.UploadFileType, pres.auxiliary.work.n.testcase.InformationCase.FileRuleType...)}方法
 	 */
 	@Test
 	public void addUploadFileCaseTest_5() {

@@ -1,6 +1,7 @@
-package pres.auxiliary.work.n.tcase;
+package pres.auxiliary.work.n.testcase;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * <p><b>文件名：</b>DataListCase.java</p>
@@ -100,9 +101,6 @@ public class DataListCase extends Case {
 		//添加步骤与预期
 		relevanceAddData(caseName, ALL, ALL);
 		
-		//存储预期信息
-		addFieldText(LabelType.EXCEPT, getAllLabelText(caseName, LabelType.EXCEPT));
-		
 		//存储前置条件信息
 		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
 		
@@ -123,7 +121,7 @@ public class DataListCase extends Case {
 		//清空字段的内容
 		clearFieldText();
 		// 存储case标签的name属性内容
-		String caseName = "addInputSearchCase";
+		String caseName = "addSelectSearchCase";
 		
 		//添加替换词语
 		wordMap.put(WordType.SEARCH_CONDITION.getName(), condition);
@@ -132,7 +130,60 @@ public class DataListCase extends Case {
 		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
 		
 		//添加步骤与预期
-		relevanceAddData(caseName, ALL, ALL);
+		//选择第一个选项
+		relevanceAddData(caseName, "1", "1");
+		//选择中间选项
+		relevanceAddData(caseName, "2", "1");
+		//选择最后选项
+		relevanceAddData(caseName, "3", "1");
+		//不选择
+		relevanceAddData(caseName, "4", "4");
+		//选择都不包含
+		relevanceAddData(caseName, "5", "5");
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于添加联动选择条件对列表进行搜索的测试用例，当存在联动选项时可使用该方法生成用例。
+	 * 若搜索条件为最下级时，相当于普通下拉选择框，可以考虑调用{@link #selectSearchCase(String)}方法
+	 * @param condition 搜索条件（控件）名称
+	 * @param downCondition 下级搜索条件（控件）名称
+	 * @return 类本身
+	 */
+	public Case selectSearchCase(String condition, String downCondition) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addSelectSearchCase";
+		
+		//添加替换词语
+		wordMap.put(WordType.SEARCH_CONDITION.getName(), condition);
+		//添加替换词语
+		wordMap.put(WordType.DONW_CONDITION.getName(), downCondition);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//添加步骤与预期
+		//选择第一个选项
+		relevanceAddData(caseName, "1", "2");
+		//选择中间选项
+		relevanceAddData(caseName, "2", "2");
+		//选择最后选项
+		relevanceAddData(caseName, "3", "2");
+		//不选择
+		relevanceAddData(caseName, "4", "3");
+		//选择都不包含
+		relevanceAddData(caseName, "5", "5");
 		
 		//存储前置条件信息
 		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
@@ -239,6 +290,9 @@ public class DataListCase extends Case {
 		// 存储case标签的name属性内容
 		String caseName = "addListSortCase";
 		
+		//添加替换词语
+		wordMap.put(WordType.SEARCH_CONDITION.getName(), condition);
+				
 		//存储标题信息
 		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
 		
@@ -268,7 +322,10 @@ public class DataListCase extends Case {
 		//清空字段的内容
 		clearFieldText();
 		// 存储case标签的name属性内容
-		String caseName = "addListSortCase";
+		String caseName = "addExportListCase";
+		
+		//添加替换词语
+		wordMap.put(WordType.EXPORT_BUTTON_NAME.getName(), exportButton);
 		
 		//存储标题信息
 		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
@@ -285,6 +342,141 @@ public class DataListCase extends Case {
 			relevanceAddData(caseName, "4", "4");
 		}
 		
+		//----------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于添加导入信息的测试用例
+	 * @return 类本身
+	 */
+	public Case importListCase() {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addImportListCase";
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------
+		//添加步骤与预期
+		relevanceAddData(caseName, ALL, ALL);
+		//----------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成重置搜索功能的测试用例
+	 * @return 类本身
+	 */
+	public Case resetSearchCase() {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addResetSearchCase";
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------
+		//添加步骤与预期
+		relevanceAddData(caseName, ALL, ALL);
+		//----------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 该方法用于生成切换列表单页数据显示量的用例
+	 * @return
+	 * @throws IOException
+	 */
+	public Case switchListShowDataCase() {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "addSwitchListShowDataCase";
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------
+		//添加步骤与预期
+		relevanceAddData(caseName, ALL, ALL);
+		//----------------------------------------
+		
+		//存储前置条件信息
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		
+		//存储关键词信息
+		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+		//存储优先级信息
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		
+		return this;
+	}
+	
+	/**
+	 * 用于生成删除列表数据相关的测试用例
+	 * @param delectButton 删除按钮名称
+	 * @return 类本身
+	 */
+	public Case delectDataCase(String delectButton) {
+		//清空字段的内容
+		clearFieldText();
+		// 存储case标签的name属性内容
+		String caseName = "delectDataCase";
+		
+		//添加替换词语
+		wordMap.put(WordType.DELECT_BUTTON.getName(), delectButton);
+		
+		//存储标题信息
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		
+		//----------------------------------------
+		//不选择
+		relevanceAddData(caseName, "1", "1");
+		//选择第一条删除
+		relevanceAddData(caseName, "2", "2");
+		//选择最后删除
+		relevanceAddData(caseName, "3", "2");
+		//选择多条删除
+		relevanceAddData(caseName, "4", "2");
+		//选择一页数据删除
+		relevanceAddData(caseName, "5", "3");
+		//在只有一页数据的情况下，全选
+		relevanceAddData(caseName, "6", "4");
+		//列表搜索后勾选部分数据
+		relevanceAddData(caseName, "7", "2");
+		//列表搜索后数据全选
+		relevanceAddData(caseName, "8", "5");
 		//----------------------------------------
 		
 		//存储前置条件信息
@@ -329,6 +521,14 @@ public class DataListCase extends Case {
 		 * 导出按钮
 		 */
 		EXPORT_BUTTON_NAME("导出按钮"), 
+		/**
+		 * 下级选项
+		 */
+		DONW_CONDITION("下级选项"), 
+		/**
+		 * 删除按钮
+		 */
+		DELECT_BUTTON("删除按钮"), 
 		;
 		/**
 		 * 存储需要替换的单词名称
