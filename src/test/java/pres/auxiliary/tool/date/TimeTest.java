@@ -29,7 +29,7 @@ public class TimeTest {
 		time = new Time(new Date(1575387550000L));
 		System.out.println(time.getTime());
 		System.out.println("-".repeat(20));
-		time = new Time(1575387800000L);
+		time = new Time(1585290323214L);
 		System.out.println(time.getTime());
 		System.out.println("-".repeat(20));
 		time = new Time("2019-12-04 03:03:20");
@@ -218,7 +218,6 @@ public class TimeTest {
 		bw.write("\"personTime\":\"" + time.getTime() + "\"\r\n");
 		bw.write("},\r\n");
 		
-		/*
 		bw.write("{\r\n");
 		time.setNowTime();
 		bw.write("\"equName\":\"");
@@ -275,7 +274,6 @@ public class TimeTest {
 		time.addTime("-6.5h");
 		bw.write("\"personTime\":\"" + time.getTime() + "\"\r\n");
 		bw.write("}\r\n");
-		*/
 		bw.write("]\r\n");
 		
 		bw.close();

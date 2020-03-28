@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.testcase;
+package pres.auxiliary.work.n.testcase.templet;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,6 +10,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
+import pres.auxiliary.work.n.testcase.IncorrectFileException;
 
 /**
  * <p><b>文件名：</b>AbstractCase.java</p>

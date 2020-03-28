@@ -1,106 +1,140 @@
-<?xml version="1.0" encoding="GBK"?>
-<cases project="Map">
-	<case name="addRangeFindingCase">
-		<title value="ÔÚµØÍ¼ÉÏ½øÐÐ²â¾à" />
-		<keyword value="µØÍ¼,²â¾à" />
-		<rank value="3" />
+<?xml version='1.0' encoding='UTF-8'?>
+<cases project='Map'>
+	<case name='addRangeFindingCase'>
+		<titles>
+			<title id='1' value='åœ¨åœ°å›¾ä¸Šè¿›è¡Œæµ‹è·' />
+		</titles>
+		<keys>
+			<key id='1' value='åœ°å›¾,æµ‹è·' />
+		</keys>
+		<ranks>
+			<rank id='1' value='3' />
+		</ranks>
 		<preconditions>
 		</preconditions>
 		<steps>
-			<step id="1" value="ÉèÖÃ»­ÏßµÄÆðµãºóÍÏ¶¯Êó±ê" />
-			<step id="2" value="ÔÚµØÍ¼ÉÏ»­Ïßºóµ¥»÷Êó±ê×ó¼ü" />
-			<step id="3" value="ÔÚµØÍ¼ÉÏ»­ÏßºóË«»÷Êó±ê×ó¼ü" />
-			<step id="4" value="Í£Ö¹»­ÏßºóËõ·ÅµØÍ¼" />
-			<step id="5" value="ÉèÖÃÆðµãºóÖ±½ÓË«»÷×ó¼ü" />
-			<step id="6" value="ÔÚ²»Í¬µÄµØÍ¼±ÈÀýÉÏ»­µÈ³¤µÄÏß¶Î" />
-			<step id="7" value="ÔÚ»­ºÃµÄÏß¶ÎÉÏ£¬µã»÷¡°¡Á¡±°´Å¥" />
+			<step id='1' value='è®¾ç½®ç”»çº¿çš„èµ·ç‚¹åŽæ‹–åŠ¨é¼ æ ‡' />
+			<step id='2' value='åœ¨åœ°å›¾ä¸Šç”»çº¿åŽå•å‡»é¼ æ ‡å·¦é”®' />
+			<step id='3' value='åœ¨åœ°å›¾ä¸Šç”»çº¿åŽåŒå‡»é¼ æ ‡å·¦é”®' />
+			<step id='4' value='åœæ­¢ç”»çº¿åŽç¼©æ”¾åœ°å›¾' />
+			<step id='5' value='è®¾ç½®èµ·ç‚¹åŽç›´æŽ¥åŒå‡»å·¦é”®' />
+			<step id='6' value='åœ¨ä¸åŒçš„åœ°å›¾æ¯”ä¾‹ä¸Šç”»ç­‰é•¿çš„çº¿æ®µ' />
+			<step id='7' value='åœ¨ç”»å¥½çš„çº¿æ®µä¸Šï¼Œç‚¹å‡»â€œÃ—â€æŒ‰é’®' />
 		</steps>
-		<expectations>
-			<expectation id="1" value="ÏßËæÊó±êµÄÒÆ¶¯¶øÔö³¤£¬ÇÒ±ê×¢ÖÐÏÔÊ¾µÄ¾àÀëËæÊó±êµÄÒÆ¶¯¶ø¸Ä±ä"/>
-			<expectation id="2" value="»¹ÄÜ¼ÌÐø»­Ïß²â¾à£¬ÇÒ±ê×¢ÖÐÏÔÊ¾µÄ¾àÀëÓ¦ÀÛ¼ÓÉÏÒ»´Î¶¨Î»µÄ¾àÀë"/>
-			<expectation id="3" value="Í£Ö¹»­Ïß£¬ÇÒÏß¶ÎÁôÔÚµØÍ¼ÉÏ"/>
-			<expectation id="4" value="Ïß¶ÎËæµØÍ¼µÄËõ·Å¶ø¸Ä±äÆä³¤¶È£¬ÇÒ·½¿òÖÐµÄÄÚÈÝÏÔÊ¾²»±ä"/>
-			<expectation id="5" value="Í£Ö¹»­Ïß"/>
-			<expectation id="6" value="ËæµØÍ¼Ëõ·Å³Ì¶È²»Í¬£¬Æä²»Í¬±ÈÀý³ßÏÂ»­³öµÄµÈ³¤µÄÏß¶ÎÔÚ±ê×¢ÖÐÏÔÊ¾µÄ¾àÀë²»Í¬"/>
-			<expectation id="7" value="Ïß¶Î±»Çå³ý"/>
-		</expectations>
+		<excepts>
+			<except id='1' value='çº¿éšé¼ æ ‡çš„ç§»åŠ¨è€Œå¢žé•¿ï¼Œä¸”æ ‡æ³¨ä¸­æ˜¾ç¤ºçš„è·ç¦»éšé¼ æ ‡çš„ç§»åŠ¨è€Œæ”¹å˜'/>
+			<except id='2' value='è¿˜èƒ½ç»§ç»­ç”»çº¿æµ‹è·ï¼Œä¸”æ ‡æ³¨ä¸­æ˜¾ç¤ºçš„è·ç¦»åº”ç´¯åŠ ä¸Šä¸€æ¬¡å®šä½çš„è·ç¦»'/>
+			<except id='3' value='åœæ­¢ç”»çº¿ï¼Œä¸”çº¿æ®µç•™åœ¨åœ°å›¾ä¸Š'/>
+			<except id='4' value='çº¿æ®µéšåœ°å›¾çš„ç¼©æ”¾è€Œæ”¹å˜å…¶é•¿åº¦ï¼Œä¸”æ–¹æ¡†ä¸­çš„å†…å®¹æ˜¾ç¤ºä¸å˜'/>
+			<except id='5' value='åœæ­¢ç”»çº¿'/>
+			<except id='6' value='éšåœ°å›¾ç¼©æ”¾ç¨‹åº¦ä¸åŒï¼Œå…¶ä¸åŒæ¯”ä¾‹å°ºä¸‹ç”»å‡ºçš„ç­‰é•¿çš„çº¿æ®µåœ¨æ ‡æ³¨ä¸­æ˜¾ç¤ºçš„è·ç¦»ä¸åŒ'/>
+			<except id='7' value='çº¿æ®µè¢«æ¸…é™¤'/>
+		</excepts>
 	</case>
 	
-	<case name="addMapPointCase">
-		<title value="²é¿´µØÍ¼*{pointName}*¶¨Î»µãÐÅÏ¢" />
-		<keyword value="µØÍ¼,*{pointName}*,¶¨Î»µã" />
-		<rank value="2" />
+	<case name='addMapPointCase'>
+		<titles>
+			<title id='1' value='æŸ¥çœ‹åœ°å›¾*{æ ‡è®°ç‚¹åç§°}*å®šä½ç‚¹ä¿¡æ¯' />
+		</titles>
+		<keys>
+			<key id='1' value='åœ°å›¾,*{æ ‡è®°ç‚¹åç§°}*,å®šä½ç‚¹' />
+		</keys>
+		<ranks>
+			<rank id='1' value='2' />
+		</ranks>
 		<preconditions>
-			<precondition value="µØÍ¼ÉÏÓÐ¶à¸ö*{pointName}*¶¨Î»µãÒÔ¼°¾ÛºÏµã´æÔÚ" />
+			<precondition id='1' value='åœ°å›¾ä¸Šæœ‰å¤šä¸ª*{æ ‡è®°ç‚¹åç§°}*å®šä½ç‚¹ä»¥åŠèšåˆç‚¹å­˜åœ¨' />
 		</preconditions>
 		<steps>
-			<step id="1" value="ÔÚµØÍ¼ÉÏµã»÷*{pointName}*µÄ¶¨Î»µã" />
-			<step id="2" value="ÔÚµØÍ¼ÉÏµã»÷*{pointName}*µÄ¾ÛºÏµã" />
+			<step id='1' value='åœ¨åœ°å›¾ä¸Šç‚¹å‡»*{æ ‡è®°ç‚¹åç§°}*çš„å®šä½ç‚¹' />
+			<step id='2' value='åœ¨åœ°å›¾ä¸Šç‚¹å‡»*{æ ‡è®°ç‚¹åç§°}*çš„èšåˆç‚¹' />
 		</steps>
-		<expectations>
-			<expectation id="1" value="ÄÜ²é¿´µ½¸Ã*{pointName}*µÄÏêÏ¸ÐÅÏ¢"/>
-			<expectation id="2" value="µØÍ¼ÄÜ×Ô¶¯Ëõ·Åµ½ÄÜ¿´µ½*{pointName}*¶¨Î»µãµÄ±ÈÀý"/>
-		</expectations>
+		<excepts>
+			<except id='1' value='èƒ½æŸ¥çœ‹åˆ°è¯¥*{æ ‡è®°ç‚¹åç§°}*çš„è¯¦ç»†ä¿¡æ¯'/>
+			<except id='2' value='åœ°å›¾èƒ½è‡ªåŠ¨ç¼©æ”¾åˆ°èƒ½çœ‹åˆ°*{æ ‡è®°ç‚¹åç§°}*å®šä½ç‚¹çš„æ¯”ä¾‹'/>
+		</excepts>
 	</case>
 	
-	<case name="addMapSearchInformationCase">
-		<title value="Í¨¹ý*{condition}*ÔÚµØÍ¼ÉÏËÑË÷*{name}*ÐÅÏ¢" />
-		<keyword value="µØÍ¼,*{name}*,ËÑË÷" />
-		<rank value="1" />
+	<case name='addMapSearchInformationCase'>
+		<titles>
+			<title id='1' value='é€šè¿‡*{æœç´¢æ¡ä»¶}*åœ¨åœ°å›¾ä¸Šçš„*{ä¿¡æ¯}*ä¿¡æ¯è¿›è¡Œæœç´¢' />
+		</titles>
+		<keys>
+			<key id='1' value='åœ°å›¾,*{ä¿¡æ¯}*,æœç´¢' />
+		</keys>
+		<ranks>
+			<rank id='1' value='1' />
+		</ranks>
 		<preconditions>
-			<precondition value="µØÍ¼ÉÏÓÐ*{name}*ÐÅÏ¢´æÔÚ" />
+			<precondition id='1' value='åœ°å›¾ä¸Šæœ‰*{ä¿¡æ¯}*ä¿¡æ¯å­˜åœ¨' />
 		</preconditions>
 		<steps>
-			<step id="1" value="Í¨¹ý*{condition}*¶Ô*{name}*½øÐÐÄ£ºýËÑË÷" />
-			<step id="2" value="Í¨¹ý*{condition}*¶Ô*{name}*½øÐÐ¾«×¼ËÑË÷" />
-			<step id="3" value="²»ÊäÈëÐÅÏ¢½øÐÐËÑË÷" />
-			<step id="4" value="ÊäÈë*{name}*ÖÐ¶¼²»°üº¬µÄ¹Ø¼ü´Ê½øÐÐËÑË÷" />
+			<step id='1' value='é€šè¿‡*{æœç´¢æ¡ä»¶}*å¯¹*{ä¿¡æ¯}*è¿›è¡Œæ¨¡ç³Šæœç´¢' />
+			<step id='2' value='é€šè¿‡*{æœç´¢æ¡ä»¶}*å¯¹*{ä¿¡æ¯}*è¿›è¡Œç²¾å‡†æœç´¢' />
+			<step id='3' value='ä¸è¾“å…¥ä¿¡æ¯è¿›è¡Œæœç´¢' />
+			<step id='4' value='è¾“å…¥*{ä¿¡æ¯}*ä¸­éƒ½ä¸åŒ…å«çš„å…³é”®è¯è¿›è¡Œæœç´¢' />
 		</steps>
-		<expectations>
-			<expectation id="1" value="µØÍ¼ÉÏÏÔÊ¾ËùÓÐ·ûºÏÌõ¼þµÄ*{name}*¶¨Î»µã"/>
-			<expectation id="2" value="µØÍ¼ÉÏÏÔÊ¾*{name}*¶ÔÓ¦µÄ¶¨Î»µã"/>
-			<expectation id="3" value="µØÍ¼½çÃæ±£³Ö²»±ä"/>
-			<expectation id="4" value="ÌáÊ¾ÎÞËÑË÷½á¹û"/>
-		</expectations>
+		<excepts>
+			<except id='1' value='åœ°å›¾ä¸Šæ˜¾ç¤ºæ‰€æœ‰ç¬¦åˆæ¡ä»¶çš„*{ä¿¡æ¯}*å®šä½ç‚¹'/>
+			<except id='2' value='åœ°å›¾ä¸Šæ˜¾ç¤º*{ä¿¡æ¯}*å¯¹åº”çš„å®šä½ç‚¹'/>
+			<except id='3' value='åœ°å›¾ç•Œé¢ä¿æŒä¸å˜'/>
+			<except id='4' value='æç¤ºæ— æœç´¢ç»“æžœ'/>
+		</excepts>
 	</case>
 	
-	<case name="addCarLocusPlaybackCase">
-		<title value="»Ø·Å³µÁ¾¹ì¼£" />
-		<keyword value="³µÁ¾¹ì¼£" />
-		<rank value="1" />
+	<case name='addCarLocusPlaybackCase'>
+		<titles>
+			<title id='1' value='å›žæ”¾è½¦è¾†è½¨è¿¹' />
+		</titles>
+		<keys>
+			<key id='1' value='è½¦è¾†è½¨è¿¹' />
+		</keys>
+		<ranks>
+			<rank id='1' value='1' />
+		</ranks>
 		<preconditions>
-			<precondition value="³µÁ¾ÓÐ¹ì¼£´æÔÚ" />
+			<precondition id='1' value='è½¦è¾†æœ‰è½¨è¿¹å­˜åœ¨' />
 		</preconditions>
 		<steps>
-			<step id="1" value="²éÑ¯µ½³µÁ¾µÄ¹ì¼£ºóµã»÷»Ø·Å»ò²¥·Å°´Å¥" />
-			<step id="2" value="´Ó×îÐ¡µÄ»Ø·ÅËÙ¶È¿ªÊ¼ÒÀ´Îµã»÷µ½×î´óµÄ²¥·ÅËÙ¶È" />
-			<step id="3" value="ÔÚ¹ì¼£²¥·ÅÊ±µã»÷²¥·Å°´Å¥" />
-			<step id="4" value="ÔÚ¹ì¼£²¥·ÅÊ±µã»÷ÔÝÍ£°´Å¥£¬ÔÙµã»÷»Ø·Å°´Å¥" />
-			<step id="5" value="ÔÚ¹ì¼£²¥·ÅÊ±µã»÷Í£Ö¹°´Å¥£¬ÔÙµã»÷»Ø·Å°´Å¥" />
+			<step id='1' value='æŸ¥è¯¢åˆ°è½¦è¾†çš„è½¨è¿¹åŽç‚¹å‡»å›žæ”¾æˆ–æ’­æ”¾æŒ‰é’®' />
+			<step id='2' value='ä»Žæœ€å°çš„å›žæ”¾é€Ÿåº¦å¼€å§‹ä¾æ¬¡ç‚¹å‡»åˆ°æœ€å¤§çš„æ’­æ”¾é€Ÿåº¦' />
+			<step id='3' value='åœ¨è½¨è¿¹æ’­æ”¾æ—¶ç‚¹å‡»æ’­æ”¾æŒ‰é’®' />
+			<step id='4' value='åœ¨è½¨è¿¹æ’­æ”¾æ—¶ç‚¹å‡»æš‚åœæŒ‰é’®ï¼Œå†ç‚¹å‡»å›žæ”¾æŒ‰é’®' />
+			<step id='5' value='åœ¨è½¨è¿¹æ’­æ”¾æ—¶ç‚¹å‡»åœæ­¢æŒ‰é’®ï¼Œå†ç‚¹å‡»å›žæ”¾æŒ‰é’®' />
 		</steps>
-		<expectations>
-			<expectation id="1" value="µØÍ¼ÉÏµÄ³µÁ¾µãÒÔÄ¬ÈÏËÙ¶ÈÑØ×Å¹ì¼£ÔÚµØÍ¼ÉÏÒÆ¶¯"/>
-			<expectation id="2" value="³µÁ¾µãµÄ»Ø·ÅËÙ¶ÈÒÀ´Î¼Ó¿ì"/>
-			<expectation id="3" value="³µÁ¾µãÒÆ¶¯ºó²»ÊÜÈÎºÎÓ°Ïì£¬ÇÒÔÚ¼ÌÐøÒÆ¶¯"/>
-			<expectation id="4" value="³µÁ¾µãÍ£Ö¹ÒÆ¶¯ºóÓÖÖØÐÂÔÚÍ£Ö¹µÄÎ»ÖÃ¼ÌÐøÒÆ¶¯"/>
-			<expectation id="5" value="³µÁ¾µãÍ£Ö¹ÒÆ¶¯ºóÓÖ´ÓÆðµã¿ªÊ¼ÖØÐÂÒÆ¶¯"/>
-		</expectations>
+		<excepts>
+			<except id='1' value='åœ°å›¾ä¸Šçš„è½¦è¾†ç‚¹ä»¥é»˜è®¤é€Ÿåº¦æ²¿ç€è½¨è¿¹åœ¨åœ°å›¾ä¸Šç§»åŠ¨'/>
+			<except id='2' value='è½¦è¾†ç‚¹çš„å›žæ”¾é€Ÿåº¦ä¾æ¬¡åŠ å¿«'/>
+			<except id='3' value='è½¦è¾†ç‚¹ç§»åŠ¨åŽä¸å—ä»»ä½•å½±å“ï¼Œä¸”åœ¨ç»§ç»­ç§»åŠ¨'/>
+			<except id='4' value='è½¦è¾†ç‚¹åœæ­¢ç§»åŠ¨åŽåˆé‡æ–°åœ¨åœæ­¢çš„ä½ç½®ç»§ç»­ç§»åŠ¨'/>
+			<except id='5' value='è½¦è¾†ç‚¹åœæ­¢ç§»åŠ¨åŽåˆä»Žèµ·ç‚¹å¼€å§‹é‡æ–°ç§»åŠ¨'/>
+		</excepts>
 	</case>
 	
-	<case name="addShowLocusCase">
-		<title value="µØÍ¼ÉÏÏÔÊ¾³µÁ¾¹ì¼£µã" />
-		<keyword value="³µÁ¾¹ì¼£" />
-		<rank value="1" />
+	<case name='mapGraphSignCase'>
+		<title id='1' value='åœ¨åœ°å›¾ä¸Šç»˜åˆ¶*{æ ‡è®°åç§°}*' />
+		<key id='1' value='*{æ ‡è®°åç§°}*' />
+		<rank id='1' value='1' />
 		<preconditions>
-			<precondition value="³µÁ¾ÓÐ¹ì¼£´æÔÚ" />
 		</preconditions>
 		<steps>
-			<step id="1" value="ÒÀ´Îµã»÷*{pointType}*" />
-			<step id="2" value="µã»÷¡°Çå³ý¹ì¼£¡±°´Å¥" />
+			<step id='1' value='ç‚¹å‡»*{å›¾å½¢ç±»åž‹}*å›¾å½¢ï¼Œåœ¨åœ°å›¾ä¸­ç»˜åˆ¶ç›¸åº”çš„å›¾å½¢' />
+			<step id='2' value='ç‚¹å‡»å¤šè¾¹å½¢å›¾å½¢ï¼Œåœ¨èµ·å§‹ä½ç½®åŒå‡»ç»“æŸç»˜åˆ¶' />
+			<step id='3' value='ç‚¹å‡»å¤šè¾¹å½¢å›¾å½¢ï¼Œå¼€å§‹ç»˜åˆ¶åŽï¼Œä¸åŒå‡»ç»“æŸç»˜åˆ¶ï¼Œç›´æŽ¥ç‚¹å‡»åˆ‡æ¢å…¶ä»–å›¾å½¢æˆ–åœ°å›¾å¤–ç©ºç™½å¤„' />
+			<step id='4' value='ç»˜åˆ¶å¤šä¸ªå›¾å½¢' />
+			<step id='5' value='ç»˜åˆ¶å›¾å½¢æ—¶ï¼Œæ¡†ç”»å¤§ç‰‡åŒºåŸŸï¼Œä¿å­˜ç»˜åˆ¶' />
+			<step id='6' value='ç»˜åˆ¶å›¾å½¢åŽï¼Œå…³é—­å¼¹çª—æˆ–å–æ¶ˆä¿å­˜å¼¹çª—' />
+			<step id='7' value='ç»˜åˆ¶å›¾å½¢åŽï¼Œæ¸…é™¤å›¾å½¢' />
 		</steps>
-		<expectations>
-			<expectation id="1" value="µØÍ¼ÉÏÏÔÊ¾µÄ³µÁ¾¹ì¼£Ëæµã»÷µÄ¹ì¼£ÑùÊ½²»Í¬¶ø±ä»¯"/>
-			<expectation id="2" value="µØÍ¼ÉÏ²»ÔÙÏÔÊ¾¹ì¼£"/>
-		</expectations>
+		<excepts>
+			<except id='1' value='åœ°å›¾ä¸Šèƒ½ç»˜åˆ¶å‡ºç›¸åº”çš„å›¾å½¢'/>
+			<except id='2' value='è‹¥å…è®¸ç»˜åˆ¶ï¼Œåˆ™æ˜¾ç¤ºä¸€ä¸ªç‚¹åœ¨åœ°å›¾ï¼›è‹¥æ— æ³•ç»˜åˆ¶ï¼Œåˆ™åº”ç»™å‡ºæç¤º'/>
+			<except id='3' value='å¤šè¾¹å½¢ç»˜åˆ¶åœæ­¢ï¼Œä¸”åœ°å›¾ä¸ä¼šä¸æ–­å¾—å‘é¼ æ ‡ç§»åŠ¨æ–¹å‘ç§»åŠ¨'/>
+			<except id='4' value='å›¾å½¢ç»˜åˆ¶æˆåŠŸï¼Œåœ°å›¾ä¸Šæ˜¾ç¤ºç›¸åº”çš„å›¾å½¢'/>
+			<except id='5' value='å›¾å½¢ç»˜åˆ¶å¤±è´¥ï¼Œå¹¶ç»™å‡ºæ— æ³•ç»˜åˆ¶å¤šä¸ªå›¾å½¢ç›¸å…³çš„æç¤º'/>
+			<except id='6' value='è‹¥å…è®¸ç»˜åˆ¶ï¼Œåˆ™åœ¨åœ°å›¾ä¸Šæ˜¾ç¤ºç›¸åº”çš„å›¾å½¢ï¼›è‹¥æ— æ³•ç»˜åˆ¶ï¼Œåˆ™åº”ç»™å‡ºæç¤º'/>
+			<except id='7' value='ç»˜åˆ¶çš„å›¾å½¢æ— æ³•ä¿å­˜'/>
+			<except id='8' value='ç»˜åˆ¶çš„å›¾å½¢æ¶ˆå¤±'/>
+		</excepts>
 	</case>
 </cases>

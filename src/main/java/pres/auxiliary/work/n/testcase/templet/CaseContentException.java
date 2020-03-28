@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.testcase;
+package pres.auxiliary.work.n.testcase.templet;
 
 /**
  * <p><b>文件名：</b>CaseContentException.java</p>

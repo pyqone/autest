@@ -32,6 +32,9 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import pres.auxiliary.work.n.testcase.templet.Case;
+import pres.auxiliary.work.n.testcase.templet.LabelNotFoundException;
+
 /**
  * <p>
  * <b>文件名：</b>WriteTestCase.java

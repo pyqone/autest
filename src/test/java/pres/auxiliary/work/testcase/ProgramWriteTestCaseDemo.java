@@ -10,12 +10,12 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.n.testcase.InformationCase;
-import pres.auxiliary.work.n.testcase.LabelType;
 import pres.auxiliary.work.n.testcase.MarkColorsType;
 import pres.auxiliary.work.n.testcase.TestCaseTemplet;
 import pres.auxiliary.work.n.testcase.TestCaseWrite;
-import pres.auxiliary.work.n.testcase.InformationCase.InputRuleType;
+import pres.auxiliary.work.n.testcase.templet.InformationCase;
+import pres.auxiliary.work.n.testcase.templet.LabelType;
+import pres.auxiliary.work.n.testcase.templet.InformationCase.InputRuleType;
 
 public class ProgramWriteTestCaseDemo {
 	/**

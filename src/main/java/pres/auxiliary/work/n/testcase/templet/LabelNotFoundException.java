@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.testcase;
+package pres.auxiliary.work.n.testcase.templet;
 
 public class LabelNotFoundException extends RuntimeException {
 

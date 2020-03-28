@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.testcase;
+package pres.auxiliary.work.n.testcase.templet;
 
 import java.io.File;
 import java.io.IOException;
