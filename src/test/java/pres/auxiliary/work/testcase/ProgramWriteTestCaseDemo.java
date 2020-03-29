@@ -10,9 +10,9 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.n.testcase.MarkColorsType;
-import pres.auxiliary.work.n.testcase.TestCaseTemplet;
-import pres.auxiliary.work.n.testcase.TestCaseWrite;
+import pres.auxiliary.work.n.testcase.file.MarkColorsType;
+import pres.auxiliary.work.n.testcase.file.TestCaseTemplet;
+import pres.auxiliary.work.n.testcase.file.TestCaseWrite;
 import pres.auxiliary.work.n.testcase.templet.InformationCase;
 import pres.auxiliary.work.n.testcase.templet.LabelType;
 import pres.auxiliary.work.n.testcase.templet.InformationCase.InputRuleType;

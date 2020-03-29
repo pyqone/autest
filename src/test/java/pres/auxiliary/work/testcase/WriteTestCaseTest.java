@@ -11,11 +11,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.n.testcase.FieldType;
-import pres.auxiliary.work.n.testcase.MarkColorsType;
-import pres.auxiliary.work.n.testcase.TestCaseTemplet;
-import pres.auxiliary.work.n.testcase.TestCaseWrite;
-import pres.auxiliary.work.n.testcase.TestCaseWrite.CaseMark;
+import pres.auxiliary.work.n.testcase.file.FieldType;
+import pres.auxiliary.work.n.testcase.file.MarkColorsType;
+import pres.auxiliary.work.n.testcase.file.TestCaseTemplet;
+import pres.auxiliary.work.n.testcase.file.TestCaseWrite;
+import pres.auxiliary.work.n.testcase.file.TestCaseWrite.CaseMark;
 import pres.auxiliary.work.n.testcase.templet.InformationCase;
 import pres.auxiliary.work.n.testcase.templet.LabelType;
 

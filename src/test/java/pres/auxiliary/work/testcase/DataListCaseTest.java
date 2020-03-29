@@ -7,8 +7,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.n.testcase.TestCaseTemplet;
-import pres.auxiliary.work.n.testcase.TestCaseWrite;
+import pres.auxiliary.work.n.testcase.file.TestCaseTemplet;
+import pres.auxiliary.work.n.testcase.file.TestCaseWrite;
 import pres.auxiliary.work.n.testcase.templet.DataListCase;
 import pres.auxiliary.work.n.testcase.templet.LabelType;
 

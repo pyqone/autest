@@ -1,4 +1,4 @@
-package pres.auxiliary.work.n.testcase;
+package pres.auxiliary.work.n.testcase.file;
 
 import java.io.File;
 import java.io.FileInputStream;
