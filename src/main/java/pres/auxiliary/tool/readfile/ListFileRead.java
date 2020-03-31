@@ -12,7 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.hwpf.usermodel.Paragraph;
+import org.apache.poi.hwpf.usermodel.Range;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -47,7 +48,7 @@ public class ListFileRead {
 	 * 外层ArrayList：存在多列的情况，存储每一列<br>
 	 * 内层ArrayList：存储每一列的所有词语
 	 */
-	private ArrayList<List<String>> wordList = new ArrayList<List<String>>();
+	private ArrayList<ArrayList<String>> wordList = new ArrayList<ArrayList<String>>();
 	
 	/**
 	 * 存储对文本分词处理的分隔符
@@ -57,36 +58,52 @@ public class ListFileRead {
 	/**
 	 * 存储当前获取到的内容组成的表格最大行数
 	 */
-	private int maxRowNum = -1;
+	private int maxRowNum = 0;
 	/**
 	 * 存储当前获取到的内容组成的表格最大列数
 	 */
-	private int maxColumnNum = -1;
+	private int maxColumnNum = 0;
 	
 	/**
-	 * 根据传入文件格式，将文件的内容进行转换
-	 * @param file
-	 * @throws IOException
+	 * 根据传入文件格式，将文件的内容进行转换。若读取的是Excel文件，则通过该方法构造时
+	 * 默认读取第一个sheet的内容，若需要读取其他的sheet，参见构造方法{@link #ListFileRead(File, String)}
+	 * @param file 待读取的文件对象
+	 * @throws IOException 文件状态或路径不正确时抛出的异常
 	 */
 	public ListFileRead(File file) throws IOException {
+		this(file, "");
+	}
+	
+	/**
+	 * 根据传入文件格式，将文件的内容进行转换。该构造方法主要在用于读取Excel文件和文本文件上：
+	 * <ol>
+	 * 	<li>当读取的文件为Excel文件（xls/xlsx格式）时，其传入的regex表示需要读取的sheet名称</li>
+	 * 	<li>当读取的文件为文本文件（doc/docx/txt格式）时，其传入的regex表示对每一行文本的切分规则，以得到一个列表</li>
+	 * </ol>
+	 * 除上述两种文件类型外，其他的文件调用该构造方法时，则等同于调用{@link #ListFileRead(File, String)}
+	 * @param file 待读取的文件对象
+	 * @param regex sheet名称或切分文本的规则
+	 * @throws IOException 文件状态或路径不正确时抛出的异常
+	 */
+	public ListFileRead(File file, String regex) throws IOException {
 		// 存储文件的名称
 		String fileName = file.getName();
 		//存储文件名的后缀，并根据后缀来判断采用哪一种读取方式
 		switch ((suffix = fileName.substring(fileName.lastIndexOf(".") + 1))) {
 		case "doc":
 		case "docx":
-			readWord(file);
+			readWord(file, regex);
 			break;
-
+		
 		case "xls":
 		case "xlsx":
-			readExcel(file);
+			readExcel(file, regex);
 			break;
-
+		
 		case "txt":
-			readTxt(file);
+			readTxt(file, regex);
 			break;
-
+		
 		case "csv":
 			readCsv(file);
 			break;
@@ -96,16 +113,103 @@ public class ListFileRead {
 	}
 	
 	/**
-	 * 用于返回一列数据
+	 * 用于返回一列数据，若传入的下标大于最大列数，则返回最后一列数据；若传值小于0，则返回第一列数据
 	 * @param columnIndex 列下标
 	 * @return 相应一列的数据
 	 */
 	public List<String> getColumn(int columnIndex) {
-		if (columnIndex > maxColumnNum) {
-			return null;
-		}
+		columnIndex = columnIndex >= maxColumnNum ? maxColumnNum : columnIndex;
+		columnIndex = columnIndex < 0 ? 0 : columnIndex;
 		
 		return wordList.get(columnIndex);
+	}
+	
+	/**
+	 * 用于返回一列数据中某几行元素，若传入的下标大于最大列数，则返回最后一列数据；若传值小于0，则返回第一行数据。
+	 * 同样，若传入的行标于列表最大行标时，返回最后一行数据；若行标小于0，则返回第一行数据。<br>
+	 * 注意，返回的数据不包括endRowIndex行，但允许两个参数相同
+	 * @param columnIndex 列下标
+	 * @param startRowIndex 开始行下标
+	 * @param endRowIndex 结束行下标
+	 * @return 相应的数据
+	 */
+	public List<String> getColumn(int columnIndex, int startRowIndex, int endRowIndex) {
+		columnIndex = columnIndex >= maxColumnNum ? maxColumnNum : columnIndex;
+		columnIndex = columnIndex < 0 ? 0 : columnIndex;
+		
+		//若传值大于最大maxRowNum时，则直接赋予maxRowNum
+		startRowIndex = (startRowIndex > maxRowNum) ? maxRowNum : startRowIndex;
+		startRowIndex = startRowIndex < 0 ? 0 : startRowIndex;
+		endRowIndex = (endRowIndex > maxRowNum) ? maxRowNum : endRowIndex;
+		endRowIndex = endRowIndex < 0 ? 0 : endRowIndex;
+		
+		//若两个传值相同，则endRowIndex+1
+		endRowIndex = (endRowIndex == startRowIndex) ? (endRowIndex + 1) : endRowIndex;
+		
+		//存储获取的内容
+		ArrayList<String> texts = new ArrayList<>(); 
+		
+		int minRowIndex = startRowIndex < endRowIndex ? startRowIndex : endRowIndex;
+		int maxRowIndex = startRowIndex < endRowIndex ? endRowIndex :  endRowIndex;
+		//获取数据
+		for (int rowIndex = startRowIndex; rowIndex < endRowIndex; rowIndex++) {
+			texts.add(wordList.get(columnIndex).get(rowIndex));
+		}
+		
+		return texts;
+	}
+	
+	/**
+	 * 用于返回从文件中读取的整个列表
+	 * @return 整个列表数据
+	 */
+	public ArrayList<ArrayList<String>> getTable() {
+		return wordList;
+	}
+	
+	/**
+	 * 用于根据参数，返回从文件中读取的制定区域列表。当传入的参数大于最大行或列数时，则返回最后
+	 * 一行列或行；若传入的参数小于0，则返回第一列或行
+	 * @param startColumnIndex 开始列下标
+	 * @param endColumnIndex 结束列下标
+	 * @param startRowIndex 开始行下标
+	 * @param endRowIndex 结束行下标
+	 * @return 相应列表的数据
+	 */
+	public ArrayList<ArrayList<String>> getTable(int startColumnIndex, int endColumnIndex, int startRowIndex, int endRowIndex) {
+		ArrayList<ArrayList<String>> newWordList = new ArrayList<>();
+		
+		//若传值大于最大maxColumnNum时，则直接赋予maxColumnNum，小于0，则直接赋予0
+		startColumnIndex = startColumnIndex >= maxColumnNum ? maxColumnNum : startColumnIndex;
+		startColumnIndex = startColumnIndex < 0 ? 0 : startColumnIndex;
+		endColumnIndex = endColumnIndex >= maxColumnNum ? maxColumnNum : endColumnIndex;
+		endColumnIndex = endColumnIndex < 0 ? 0 : endColumnIndex;
+		
+		//若传值大于最大maxRowNum时，则直接赋予maxRowNum，小于0，则直接赋予0
+		startRowIndex = (startRowIndex > maxRowNum) ? maxRowNum : startRowIndex;
+		startRowIndex = startRowIndex < 0 ? 0 : startRowIndex;
+		endRowIndex = (endRowIndex > maxRowNum) ? maxRowNum : endRowIndex;
+		endRowIndex = endRowIndex < 0 ? 0 : endRowIndex;
+		
+		//若两个传值相同，则endXXXIndex+1
+		endColumnIndex = (endColumnIndex == startColumnIndex) ? (endColumnIndex + 1) : endColumnIndex;
+		endRowIndex = (endRowIndex == startRowIndex) ? (endRowIndex + 1) : endRowIndex;
+		
+		//取值
+		int minColumnIndex = startColumnIndex < endColumnIndex ? startColumnIndex : endColumnIndex;
+		int maxColumnIndex = startColumnIndex < endColumnIndex ? endColumnIndex :  startColumnIndex;
+		int minRowIndex = startRowIndex < endRowIndex ? startRowIndex : endRowIndex;
+		int maxRowIndex = startRowIndex < endRowIndex ? endRowIndex :  endRowIndex;
+		//获取数据
+		for (int columnIndex = minColumnIndex; columnIndex < maxColumnIndex; columnIndex++) {
+			ArrayList<String> columnTextList = new ArrayList<>();
+			for (int rowIndex = minRowIndex; rowIndex < maxRowIndex; rowIndex++) {
+				columnTextList.add(wordList.get(columnIndex).get(rowIndex));
+			}
+			newWordList.add(columnTextList);
+		}
+		
+		return newWordList;
 	}
 	
 	/**
@@ -119,7 +223,7 @@ public class ListFileRead {
 		}
 		
 		//存储转置后的文本
-		ArrayList<List<String>> newWordList = new ArrayList<List<String>>();
+		ArrayList<ArrayList<String>> newWordList = new ArrayList<ArrayList<String>>();
 		
 		//读取wordList的一列，将该列内容作为newWordList的一行
 		for (int row = 0; row < maxRowNum; row++) {
@@ -145,17 +249,32 @@ public class ListFileRead {
 		maxColumnNum = maxRowNum;
 		maxRowNum = temp;
 	}
+	
+	/**
+	 * 该方法用于返回最大行数
+	 * @return 最大行数
+	 */
+	public int getMaxRowNumber() {
+		return maxRowNum;
+	}
+	
+	/**
+	 * 该方法用于返回最大列数
+	 * @return 最大列数
+	 */
+	public int getMaxColumnNumber() {
+		return maxColumnNum;
+	}
 
 	/**
-	 * 该方法用于读取并处理csv文件
+	 * 该方法用于读取并处理csv格式文件
 	 * 
-	 * @param f 待读取的文件
-	 * @return 读取的文本
-	 * @throws IOException
+	 * @param file 文件
+	 * @throws IOException 文件格式或路径不正确时抛出
 	 */
-	private void readCsv(File f) throws IOException {
+	private void readCsv(File file) throws IOException {
 		// 定义CSV文件对象
-		CSVReader csv = new CSVReader(new FileReader(f));
+		CSVReader csv = new CSVReader(new FileReader(file));
 		//存储获取到的内容中一行最大的长度
 		AtomicInteger maxSizeNum = new AtomicInteger(-1);
 		
@@ -164,7 +283,7 @@ public class ListFileRead {
 			//获取整行内容
 			List<String> text = Arrays.asList(texts);
 			//存储该行内容
-			wordList.add(text);
+			wordList.add(new ArrayList<>(text));
 			
 			//判断当前内容的元素个数，若大于之前存储的内容，则将该行的元素个数最为最大值存储
 			maxSizeNum.set(maxSizeNum.get() > text.size() ? maxSizeNum.get() : text.size());
@@ -181,48 +300,69 @@ public class ListFileRead {
 	}
 
 	/**
-	 * 该方法用于读取并处理txt文件
-	 * 
-	 * @param f 待读取的文件
-	 * @return 读取的文本
-	 * @throws IOException
+	 * 该方法用于读取并处理txt格式的文件，可通过切分规则对文本每一行的内容进行切分
+	 * @param file 文件
+	 * @param regex 切分规则
+	 * @throws IOException 文件格式或路径不正确时抛出
 	 */
-	private void readTxt(File f) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(f));
-		/*
-		// 用于存储读取到的
-		String text = "";
+	private void readTxt(File file, String regex) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
 		// 定义临时读取文件时得到的字符串
-		String temp = "";
-		// 循环，读取文件中所有的文本
+		String text = "";
+		
 		// 循环，按行读取文本
-		while ((temp = br.readLine()) != null) {
-			// 拼接字符串
-			text += (temp + LINE);
+		while ((text = br.readLine()) != null) {
+			//存储读取的文本
+			ArrayList<String> texts = new ArrayList<>();
+			
+			try {
+				//若传入的regex为空，则不进行切分
+				if (!regex.isEmpty()) {
+					// 对获取的文本按照传入的规则进行切分
+					String[] words = text.split(regex);
+					//存储切分后的词语
+					texts.addAll(Arrays.asList(words));
+				} else {
+					texts.add(text);
+				}
+			} catch (Exception e) {
+				//若抛出异常，则直接存储一整行
+				texts.add(text);
+			}
+			//查找每一个texts的长度，若该长度大于maxRowNum存储的长度，则替换maxRowNum
+			maxRowNum = (maxRowNum > texts.size()) ? maxRowNum : texts.size();
+			
+			//将存储的文本放入wordList中
+			wordList.add(texts);
 		}
+		
+		//记录最大行列数
+		maxColumnNum = wordList.size();
+		
+		//为满足输出要求，则对文本进行转置
+		tableTransposition();
 
 		br.close();
-		return text;
-		*/
 	}
 
 	/**
-	 * 该方法用于读取并处理excel文件，根据后缀名选择不同的读取方式
+	 * 该方法用于读取并处理excel文件，根据传入的sheet名称来读取不同的sheet
 	 * 
-	 * @param f 待读取的文件
-	 * @return 读取的文本
-	 * @throws IOException
+	 * @param file 待读取的文件
+	 * @param sheetName 需要读取的sheet名称
+	 * @throws IOException 文件格式或路径不正确时抛出
 	 */
-	private void readExcel(File f) throws IOException {
+	private void readExcel(File file, String sheetName) throws IOException {
 		String xlsx = "xlsx";
 		
 		// 读取文件流
-		FileInputStream fip = new FileInputStream(f);
+		FileInputStream fip = new FileInputStream(file);
 
 		// 用于读取excel
 		Workbook excel = null;
+		
 		// 根据文件名的后缀，对其判断文件的格式，并按照相应的格式构造对象
-		if (f.getName().indexOf(xlsx) > -1) {
+		if (file.getName().indexOf(xlsx) > -1) {
 			// 通过XSSFWorkbook对表格文件进行操作
 			excel = new XSSFWorkbook(fip);
 		} else {
@@ -233,68 +373,118 @@ public class ListFileRead {
 		// 关闭流
 		fip.close();
 
-		// 用于存储文本
-		String text = "";
-
-		// 读取excel中的内容
-		// 读取方式为，将列与行的内容一同写在一列文本中，不考虑分列
-		Sheet sheet = excel.getSheetAt(0);
-		for (int i = 0; i < sheet.getLastRowNum(); i++) {
-			Row row = sheet.getRow(i);
-			for (int j = 0; j < row.getLastCellNum(); j++) {
+		// 读取excel中的内容，若未存储读取的sheet名称，则读取第一个sheet
+		Sheet sheet = sheetName.isEmpty() ? excel.getSheetAt(0) : excel.getSheet(sheetName);
+		//判断获取的sheet是否为null，为Null则同样获取第一个sheet
+		sheet = (sheet == null) ? excel.getSheetAt(0) : sheet;
+		//遍历所有单元格，将单元格内容存储至wordList中
+		maxColumnNum = sheet.getLastRowNum() + 1;
+		for (int rowNum = 0; rowNum < maxColumnNum; rowNum++) {
+			//获取指向的行
+			Row row = sheet.getRow(rowNum);
+			ArrayList<String> texts = new ArrayList<>();
+			for (int cellNum = 0; cellNum < row.getLastCellNum(); cellNum++) {
+				//存储单元格的内容，若单元格为null，则存储空串
 				try {
-					Cell cell = row.getCell(j);
-//					text += (cell.toString() + LINE);
-				} catch(NullPointerException e) {
-					//当读取到的列表为空时，则会抛出空指针的异常，此时不对该行进行存储
+					texts.add(row.getCell(cellNum).toString());
+				}catch (NullPointerException e) {
+					texts.add("");
 				}
+				
+				//对比当前行单元格的最大个数，若大于当前存储的，则存储为当前的最大值
+				maxRowNum = (maxRowNum > row.getLastCellNum()) ? maxRowNum : row.getLastCellNum();
 			}
+			wordList.add(texts);
 		}
-
+		
+		//转置，使列表返回符合规则
+		tableTransposition();
+		
 		excel.close();
 	}
 
 	/**
-	 * 该方法用于读取并处理word文件，根据后缀名选择不同的读取方式
+	 * 该方法用于读取并处理word文件，可通过切分规则对文本每一行的内容进行切分
 	 * 
-	 * @param f 待读取的文件
-	 * @return 读取的文本
-	 * @throws IOException
+	 * @param file 文件
+	 * @param regex 切分规则
+	 * @throws IOException 文件格式或路径不正确时抛出
 	 */
-	private void readWord(File f) throws IOException {
+	private void readWord(File file, String regex) throws IOException {
 		String docx = "docx";
 		
-		// 用于存储读取到的文本
-		String text = "";
 		// 读取文件流
-		FileInputStream fip = new FileInputStream(f);
+		FileInputStream fip = new FileInputStream(file);
 		// 由于读取doc与docx的类不继承自同一个类，所以无法直接写在一起，只能通过判断语句隔开
-		if (f.getName().indexOf(docx) > -1) {
-			XWPFDocument word = new XWPFDocument(fip);
+		if (file.getName().indexOf(docx) > -1) {
+			XWPFDocument wordFile = new XWPFDocument(fip);
 			// 07版本相较麻烦，需要分段读取
-			for (XWPFParagraph pa : word.getParagraphs()) {
-//				text += (pa.getText() + LINE);
-			}
-			word.close();
-		} else {
-			HWPFDocument word = new HWPFDocument(fip);
-			// 由于03版的word可通过getText()方法直接返回文本内容，故可直接写
-			StringBuilder temp = word.getText();
-			while (true) {
-				int i = -1;
-				// 判断是否存在/r，若存在/r则替换成/n
-				if ((i = temp.indexOf("\r")) > -1) {
-					temp.replace(i, i + 1, "\n");
-					continue;
+			for (XWPFParagraph pa : wordFile.getParagraphs()) {
+				//存储文本内容
+				ArrayList<String> texts = new ArrayList<>();
+				
+				try {
+					//若传入的regex为空，则不进行切分
+					if (!regex.isEmpty()) {
+						// 对获取的文本按照传入的规则进行切分
+						String[] words = pa.getText().split(regex);
+						//存储切分后的词语
+						texts.addAll(Arrays.asList(words));
+					} else {
+						texts.add(pa.getText());
+					}
+				} catch (Exception e) {
+					//若抛出异常，则直接存储一整行
+					texts.add(pa.getText());
 				}
-				// 若未搜索到/r则结束循环
-				break;
+				
+				//查找每一个texts的长度，若该长度大于maxRowNum存储的长度，则替换maxRowNum
+				maxRowNum = (maxRowNum > texts.size()) ? maxRowNum : texts.size();
+				wordList.add(texts);
 			}
-
+			//关闭文件
+			wordFile.close();
+		} else {
+			HWPFDocument wordFile = new HWPFDocument(fip);
+			Range wordFileRange = wordFile.getRange();
+			
+			//根据段落读取相应的文本
+			for (int paragraphIndex = 0; paragraphIndex < wordFileRange.numParagraphs(); paragraphIndex++) {
+				//获取段落
+				Paragraph pa = wordFileRange.getParagraph(paragraphIndex);
+				
+				//存储文本内容
+				ArrayList<String> texts = new ArrayList<>();
+				
+				try {
+					//若传入的regex为空，则不进行切分
+					if (!regex.isEmpty()) {
+						// 对获取的文本按照传入的规则进行切分
+						String[] words = pa.text().split(regex);
+						//存储切分后的词语
+						texts.addAll(Arrays.asList(words));
+					} else {
+						texts.add(pa.text());
+					}
+				} catch (Exception e) {
+					//若抛出异常，则直接存储一整行
+					texts.add(pa.text());
+				}
+				
+				//查找每一个texts的长度，若该长度大于maxRowNum存储的长度，则替换maxRowNum
+				maxRowNum = (maxRowNum > texts.size()) ? maxRowNum : texts.size();
+				wordList.add(texts);
+			}
+			
 			// 存储替换后的文本
-			text = temp.toString();
-			word.close();
+			wordFile.close();
 		}
+		
+		//记录最大列数
+		maxColumnNum = wordList.size();
+		
+		//为满足输出要求，则对文本进行转置
+		tableTransposition();
 
 		fip.close();
 	}
