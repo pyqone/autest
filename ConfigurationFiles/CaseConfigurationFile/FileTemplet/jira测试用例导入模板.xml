@@ -10,8 +10,11 @@
 		<column id='优先级' name='Priority' wide='10.00' align='center'/>
 		<column id='项目' name='Component' wide='10.00' align='center'/>
 		<column id='设计者' name='Owner' wide='10.00' align='center'/>
-		<column id='步骤' name='Step' wide='45.75' align='left' row_text='1' index='true'/>
-		<column id='预期' name='Expected Result' wide='45.75' align='left' row_text='1' index='true'/>
+		<column id='步骤' name='Test Script (Step-by-Step) - Step' wide='45.75' align='left' row_text='1' index='true'/>
+		<column id='预期' name='Expected Test Script (Step-by-Step) - Expected Result' wide='45.75' align='left' row_text='1' index='true'/>
+		<column id='步骤' name='Test Script (Step-by-Step) - Step' wide='45.75' align='left' row_text='1' index='true'/>
+		<column id='关键用例' name='关键用例' wide='10.00' align='center'/>
+		<column id='关联需求' name='Coverage (Issues)' wide='20.00' align='center'/>
 	
 		<datas id='状态'>
 			<data name='Approved' />
@@ -20,6 +23,12 @@
 		</datas>
 		
 		<datas id='优先级'>
+			<data name='High' />
+			<data name='Normal' />
+			<data name='Low' />
+		</datas>
+		
+		<datas id='项目'>
 			<data name='High' />
 			<data name='Normal' />
 			<data name='Low' />
