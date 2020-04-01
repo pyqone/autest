@@ -24,6 +24,10 @@
 			<data name='Normal' />
 			<data name='Low' />
 		</datas>
+		
+		<datas id='模块'>
+			<file path='Test/ListDataFile/模块信息.xlsx' regex='Sheet1' column='2' start_row='2' end_row='11' />
+		</datas>
 	</sheet>
 	
 	<!-- 测试程序时使用 -->

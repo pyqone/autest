@@ -39,9 +39,41 @@ import pres.auxiliary.tool.file.UnsupportedFileException;
  */
 public class ListFileRead {
 	/**
-	 * 存储文件的后缀名
+	 * 切分标记：tap
 	 */
-	private String suffix = "";
+	public static final String SPLIT_TAB = "\\t";
+	/**
+	 * 切分标记：空格
+	 */
+	public static final String SPLIT_SPACE = " ";
+	/**
+	 * 切分标记：中文逗号
+	 */
+	public static final String SPLIT_COMMA_CH = "，";
+	/**
+	 * 切分标记：英文逗号
+	 */
+	public static final String SPLIT_COMMA_EN = ",";
+	/**
+	 * 切分标记：中文分号
+	 */
+	public static final String SPLIT_SEMICOLON_CH = "；";
+	/**
+	 * 切分标记：英文分号
+	 */
+	public static final String SPLIT_SEMICOLON_EN = ";";
+	/**
+	 * 切分标记：中文顿号
+	 */
+	public static final String SPLIT_STOP_CH = "、";
+	/**
+	 * 切分标记：斜杠
+	 */
+	public static final String SPLIT_SLASH = "/";
+	/**
+	 * 切分标记：反斜杠
+	 */
+	public static final String SPLIT_BACKSLASH = "\\\\";
 	
 	/**
 	 * 存储被切分的词语<br>
@@ -49,11 +81,6 @@ public class ListFileRead {
 	 * 内层ArrayList：存储每一列的所有词语
 	 */
 	private ArrayList<ArrayList<String>> wordList = new ArrayList<ArrayList<String>>();
-	
-	/**
-	 * 存储对文本分词处理的分隔符
-	 */
-	private String splitWord = "";
 	
 	/**
 	 * 存储当前获取到的内容组成的表格最大行数
@@ -86,10 +113,15 @@ public class ListFileRead {
 	 * @throws IOException 文件状态或路径不正确时抛出的异常
 	 */
 	public ListFileRead(File file, String regex) throws IOException {
+		//若regex为null，则赋为空
+		if (regex == null) {
+			regex = "";
+		}
+		
 		// 存储文件的名称
 		String fileName = file.getName();
 		//存储文件名的后缀，并根据后缀来判断采用哪一种读取方式
-		switch ((suffix = fileName.substring(fileName.lastIndexOf(".") + 1))) {
+		switch ( fileName.substring(fileName.lastIndexOf(".") + 1)) {
 		case "doc":
 		case "docx":
 			readWord(file, regex);
@@ -134,13 +166,13 @@ public class ListFileRead {
 	 * @return 相应的数据
 	 */
 	public List<String> getColumn(int columnIndex, int startRowIndex, int endRowIndex) {
-		columnIndex = columnIndex >= maxColumnNum ? maxColumnNum : columnIndex;
+		columnIndex = columnIndex >= maxColumnNum ? maxColumnNum - 1 : columnIndex;
 		columnIndex = columnIndex < 0 ? 0 : columnIndex;
 		
 		//若传值大于最大maxRowNum时，则直接赋予maxRowNum
-		startRowIndex = (startRowIndex > maxRowNum) ? maxRowNum : startRowIndex;
+		startRowIndex = (startRowIndex >= maxRowNum) ? maxRowNum - 1 : startRowIndex;
 		startRowIndex = startRowIndex < 0 ? 0 : startRowIndex;
-		endRowIndex = (endRowIndex > maxRowNum) ? maxRowNum : endRowIndex;
+		endRowIndex = (endRowIndex >= maxRowNum) ? maxRowNum - 1 : endRowIndex;
 		endRowIndex = endRowIndex < 0 ? 0 : endRowIndex;
 		
 		//若两个传值相同，则endRowIndex+1
@@ -150,9 +182,9 @@ public class ListFileRead {
 		ArrayList<String> texts = new ArrayList<>(); 
 		
 		int minRowIndex = startRowIndex < endRowIndex ? startRowIndex : endRowIndex;
-		int maxRowIndex = startRowIndex < endRowIndex ? endRowIndex :  endRowIndex;
+		int maxRowIndex = startRowIndex < endRowIndex ? endRowIndex :  startRowIndex;
 		//获取数据
-		for (int rowIndex = startRowIndex; rowIndex < endRowIndex; rowIndex++) {
+		for (int rowIndex = minRowIndex; rowIndex < maxRowIndex; rowIndex++) {
 			texts.add(wordList.get(columnIndex).get(rowIndex));
 		}
 		
@@ -180,15 +212,15 @@ public class ListFileRead {
 		ArrayList<ArrayList<String>> newWordList = new ArrayList<>();
 		
 		//若传值大于最大maxColumnNum时，则直接赋予maxColumnNum，小于0，则直接赋予0
-		startColumnIndex = startColumnIndex >= maxColumnNum ? maxColumnNum : startColumnIndex;
+		startColumnIndex = startColumnIndex >= maxColumnNum ? maxColumnNum - 1 : startColumnIndex;
 		startColumnIndex = startColumnIndex < 0 ? 0 : startColumnIndex;
-		endColumnIndex = endColumnIndex >= maxColumnNum ? maxColumnNum : endColumnIndex;
+		endColumnIndex = endColumnIndex >= maxColumnNum ? maxColumnNum - 1 : endColumnIndex;
 		endColumnIndex = endColumnIndex < 0 ? 0 : endColumnIndex;
 		
 		//若传值大于最大maxRowNum时，则直接赋予maxRowNum，小于0，则直接赋予0
-		startRowIndex = (startRowIndex > maxRowNum) ? maxRowNum : startRowIndex;
+		startRowIndex = (startRowIndex >= maxRowNum) ? maxRowNum - 1 : startRowIndex;
 		startRowIndex = startRowIndex < 0 ? 0 : startRowIndex;
-		endRowIndex = (endRowIndex > maxRowNum) ? maxRowNum : endRowIndex;
+		endRowIndex = (endRowIndex >= maxRowNum) ? maxRowNum - 1 : endRowIndex;
 		endRowIndex = endRowIndex < 0 ? 0 : endRowIndex;
 		
 		//若两个传值相同，则endXXXIndex+1
@@ -199,7 +231,7 @@ public class ListFileRead {
 		int minColumnIndex = startColumnIndex < endColumnIndex ? startColumnIndex : endColumnIndex;
 		int maxColumnIndex = startColumnIndex < endColumnIndex ? endColumnIndex :  startColumnIndex;
 		int minRowIndex = startRowIndex < endRowIndex ? startRowIndex : endRowIndex;
-		int maxRowIndex = startRowIndex < endRowIndex ? endRowIndex :  endRowIndex;
+		int maxRowIndex = startRowIndex < endRowIndex ? endRowIndex :  startRowIndex;
 		//获取数据
 		for (int columnIndex = minColumnIndex; columnIndex < maxColumnIndex; columnIndex++) {
 			ArrayList<String> columnTextList = new ArrayList<>();

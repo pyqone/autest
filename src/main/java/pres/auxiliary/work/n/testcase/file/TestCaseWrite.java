@@ -32,6 +32,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import pres.auxiliary.tool.readfile.ListFileRead;
 import pres.auxiliary.work.n.testcase.templet.Case;
 import pres.auxiliary.work.n.testcase.templet.LabelNotFoundException;
 
@@ -121,16 +122,16 @@ public class TestCaseWrite {
 		} catch (DocumentException e) {
 			throw new IncorrectFileException("用例xml文件有误");
 		}
-
-		// 获取xml文件中的第一个sheet标签，则将该标签的name属性内容传入getColumnId中
-		switchSheet(configXml.getRootElement().element("sheet").attributeValue("name"));
-
+		
 		// 判断路径是否包含“.xlsx”（使用的方法为XSSFWork）
 		if (caseFile.isFile() && caseFile.getAbsolutePath().indexOf(".xlsx") > -1) {
 			this.caseFile = caseFile;
 		} else {
 			throw new IncorrectFileException("不正确的文件格式：" + caseFile.getAbsolutePath());
 		}
+
+		// 获取xml文件中的第一个sheet标签，则将该标签的name属性内容传入getColumnId中
+		switchSheet(configXml.getRootElement().element("sheet").attributeValue("name"));
 
 		// 创建存储测试用例的document类对象
 		caseXml = DocumentHelper.createDocument();
@@ -710,23 +711,63 @@ public class TestCaseWrite {
 			// 查找xml文件中数据有效性标签
 			List<Element> datasList = sheetElement.elements("datas");
 			ArrayList<String> datas = new ArrayList<String>();
-			// 遍历所有的数据有效性标签，若存在，则将datas设置为true
+			// 遍历所有的数据有效性标签，若存在，则存储相应的数据有效性
 			for (Element datasElemenet : datasList) {
 				if (datasElemenet.attributeValue("id").equals(column.get(index).attributeValue("id"))) {
 					//存储当前的数据有效性的内容
 					((List<Element>)(datasElemenet.elements())).forEach(textElement -> {
-						datas.add(textElement.attributeValue("name"));
+						//判断数据有效性的存放位置，并按照相应的方法读取数据有效性
+						if ("file".equalsIgnoreCase(textElement.getName())) {
+							datas.addAll(getFileDataValidity(textElement));
+						} else {
+							datas.add(getLabelDataValidity(textElement));
+						}
 					});
 					break;
 				}
 			}
-
+			
 			// 存储字段信息
 			fieldMap.put(column.get(index).attributeValue("id"),
 					new Field(column.get(index).attributeValue("id"), column.get(index).attributeValue("align"), index,
 							column.get(index).attributeValue("row_text"), datas,
 							Boolean.valueOf(column.get(index).attributeValue("index"))));
 		}
+	}
+	
+	/**
+	 * 用于获取写在xml文件中的数据有效性
+	 * @param textElement 数据标签
+	 * @return 标签内的数据
+	 */
+	private String getLabelDataValidity(Element textElement) {
+		return textElement.attributeValue("name");
+	}
+	
+	/**
+	 * 用于获取写在外部文件中的数据有效性
+	 * @param textElement 数据标签
+	 * @return 从外部文件中读取到的数据
+	 */
+	private ArrayList<String> getFileDataValidity(Element textElement) {
+		ArrayList<String> dataList = new ArrayList<>();
+		try {
+			//读取数据有效性文件内容
+			File dataFile = new File(textElement.attributeValue("path"));
+			String sheet = textElement.attributeValue("regex");
+			ListFileRead lfr = new ListFileRead(dataFile, sheet);
+			
+			//存储需要读取的列和行信息
+			int columnIndex = Integer.valueOf(textElement.attributeValue("column"));
+			int startRowIndex = Integer.valueOf(textElement.attributeValue("start_row"));
+			int endRowIndex = Integer.valueOf(textElement.attributeValue("end_row"));
+			//获取数据信息
+			dataList.addAll(lfr.getColumn(columnIndex, startRowIndex, endRowIndex));
+		} catch (Exception e) {
+			//若抛出任何异常，则说明xml配置不正确，故不进行操作
+		}
+		
+		return dataList;
 	}
 	
 	/**
@@ -1154,6 +1195,9 @@ public class TestCaseWrite {
 		
 		/**
 		 * 用于创建表格的数据有效性，若当前字段无数据有效性或文件中无数据有效性 相应的内容时，则不创建数据有效性
+		 * @param caseSheet 用例所在sheet
+		 * @param startRowIndex 起始行下标
+		 * @param endRowIndex 结束行下标
 		 */
 		public void addDataValidation(XSSFSheet caseSheet, int startRowIndex, int endRowIndex) {
 			// 判断当前是否存在数据有效性，不存在，则结束

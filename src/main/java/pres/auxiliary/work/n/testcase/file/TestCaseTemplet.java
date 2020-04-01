@@ -3,6 +3,7 @@ package pres.auxiliary.work.n.testcase.file;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -19,6 +20,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import pres.auxiliary.tool.readfile.ListFileRead;
 import pres.auxiliary.work.n.testcase.templet.LabelNotFoundException;
 
 /**
@@ -32,7 +34,7 @@ import pres.auxiliary.work.n.testcase.templet.LabelNotFoundException;
  * <b>编码时间：</b>2020年2月11日下午11:12:56
  * </p>
  * <p>
- * <b>修改时间：</b>2020年2月11日下午11:12:56
+ * <b>修改时间：</b>2020年4月1日下午7:11:18
  * </p>
  * 
  * @author 彭宇琦
@@ -284,18 +286,7 @@ public class TestCaseTemplet {
 				titleCell.setCellStyle(columnStyle(xw));
 
 				// 添加数据，获取相应datas下的所有data标签
-				List<Element> dataList = datasList.get(datasIndex).elements();
-				for (int j = 0; j < dataList.size(); j++) {
-					//判断当前行是否被创建，若未被创建，则创建其行并创建单元格；反之，则直接创建单元格
-					XSSFRow row;
-					// 添加数据，若该行已被创建，则直接获取来创建单元格
-					if ((row = dataSheet.getRow(++rowIndex)) == null) {
-						dataSheet.createRow(rowIndex).createCell(columnIndex)
-								.setCellValue(dataList.get(j).attributeValue("name"));
-					} else {
-						row.createCell(columnIndex).setCellValue(dataList.get(j).attributeValue("name"));
-					}
-				}
+				writeDataValidity(datasList.get(datasIndex), dataSheet, rowIndex, columnIndex);
 			}
 		}
 	}
@@ -327,5 +318,70 @@ public class TestCaseTemplet {
 		xcs.setWrapText(true);
 
 		return xcs;
+	}
+	
+	/**
+	 * 用于将写入数据有效性至相应的sheet页
+	 * @param datasElement
+	 * @param dataSheet
+	 * @param rowIndex
+	 * @param columnIndex
+	 */
+	@SuppressWarnings("unchecked")
+	private void writeDataValidity(Element datasElement, XSSFSheet dataSheet, int rowIndex, int columnIndex) {
+		// 添加数据，获取相应datas下的所有data标签
+		List<Element> dataElementList = datasElement.elements();
+		ArrayList<String> dataTextList = new ArrayList<>();
+		for (int j = 0; j < dataElementList.size(); j++) {
+			//判断标签是否为文件标签，若为文件标签，则读取外部数据
+			if ("file".equalsIgnoreCase(dataElementList.get(j).getName())) {
+				try {
+					dataTextList.addAll(getFileDataValidity(dataElementList.get(j)));
+				} catch (Exception e) {
+					//若抛出任何异常，则说明xml配置不正确，故不进行操作
+				}
+			} else {
+				dataTextList.add(dataElementList.get(j).attributeValue("name"));
+			}
+		}
+		
+		//写入文件
+		for (String dataText : dataTextList) {
+			//判断当前行是否被创建，若未被创建，则创建其行并创建单元格；反之，则直接创建单元格
+			XSSFRow row;
+			// 添加数据，若该行已被创建，则直接获取来创建单元格
+			if ((row = dataSheet.getRow(++rowIndex)) == null) {
+				dataSheet.createRow(rowIndex).createCell(columnIndex)
+						.setCellValue(dataText);
+			} else {
+				row.createCell(columnIndex).setCellValue(dataText);
+			}
+		}
+	}
+	
+	/**
+	 * 用于获取写在外部文件中的数据有效性
+	 * @param textElement 数据标签
+	 * @return 从外部文件中读取到的数据
+	 */
+	private ArrayList<String> getFileDataValidity(Element textElement) {
+		ArrayList<String> dataList = new ArrayList<>();
+		try {
+			//读取数据有效性文件内容
+			File dataFile = new File(textElement.attributeValue("path"));
+			String sheet = textElement.attributeValue("regex");
+			ListFileRead lfr = new ListFileRead(dataFile, sheet);
+			
+			//存储需要读取的列和行信息
+			int columnIndex = Integer.valueOf(textElement.attributeValue("column"));
+			int startRowIndex = Integer.valueOf(textElement.attributeValue("start_row"));
+			int endRowIndex = Integer.valueOf(textElement.attributeValue("end_row"));
+			//获取数据信息
+			dataList.addAll(lfr.getColumn(columnIndex, startRowIndex, endRowIndex));
+		} catch (Exception e) {
+			//若抛出任何异常，则说明xml配置不正确，故不进行操作
+		}
+		
+		return dataList;
 	}
 }

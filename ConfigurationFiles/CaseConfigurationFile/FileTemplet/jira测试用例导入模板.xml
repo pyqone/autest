@@ -26,7 +26,7 @@
 		</datas>
 		
 		<datas id='模块'>
-			<file path='F:\5.测试文件\1.用例生成程序测试文件\模块信息.xlsx' sheet='sheet1' column='2' start_row='2' end_row='11' />
+			<file path='Test/ListDataFile/模块信息.xlsx' regex='Sheet1' column='2' start_row='2' end_row='11' />
 		</datas>
 	</sheet>
 	
