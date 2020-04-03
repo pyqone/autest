@@ -372,14 +372,24 @@ public class TestCaseTemplet {
 			String sheet = textElement.attributeValue("regex");
 			ListFileRead lfr = new ListFileRead(dataFile, sheet);
 			
-			//存储需要读取的列和行信息
-			int columnIndex = Integer.valueOf(textElement.attributeValue("column"));
-			int startRowIndex = Integer.valueOf(textElement.attributeValue("start_row"));
-			int endRowIndex = Integer.valueOf(textElement.attributeValue("end_row"));
+			//获取需要读取的列信息，若未指定列信息，则默认读取第一列
+			int columnIndex = textElement.attributeValue("column") == null ? 0 : Integer.valueOf(textElement.attributeValue("column"));
+			//读取起始行信息，若未指定起始行信息，则默认读取第一行
+			int startRowIndex = textElement.attributeValue("start_row") == null ? 0 : Integer.valueOf(textElement.attributeValue("start_row"));
+			//读取结束行信息，若未指定起始行信息，则默认读取最后一行
+			int endRowIndex = textElement.attributeValue("end_row") == null ? lfr.getCoulumnSize(columnIndex) : Integer.valueOf(textElement.attributeValue("end_row"));
 			//获取数据信息
 			dataList.addAll(lfr.getColumn(columnIndex, startRowIndex, endRowIndex));
 		} catch (Exception e) {
 			//若抛出任何异常，则说明xml配置不正确，故不进行操作
+		}
+		
+		//去除空行
+		for (int i = 0; i < dataList.size(); i++) {
+			if ("".equals(dataList.get(i))) {
+				dataList.remove(i);
+				i--;
+			}
 		}
 		
 		return dataList;
