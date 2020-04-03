@@ -69,7 +69,7 @@ public class TestCaseWrite {
 	/**
 	 * 用于存储一条用例的信息，第一个参数指向配置文件中的字段id，第二个字段为xml文件中字段的相应信息
 	 */
-	private HashMap<String, Field> fieldMap = new HashMap<>(16);
+	HashMap<String, Field> fieldMap = new HashMap<>(16);
 
 	/**
 	 * 用于存储所有用例均使用的字段常值
@@ -282,7 +282,6 @@ public class TestCaseWrite {
 		if (index > fieldMap.get(field).content.size()) {
 			return this;
 		}
-		
 		
 		if (fieldMap.get(field).datas.size() != 0) {
 			//查找数据有效性，若当前字段存在数据有效性，则将数据有效性转义，若添加的字段无法转义，则存储原内容

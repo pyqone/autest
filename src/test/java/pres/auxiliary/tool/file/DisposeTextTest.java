@@ -33,4 +33,15 @@ public class DisposeTextTest {
 		
 		bw.close();
 	}
+	
+	@Test
+	public void getFloder() throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("D:\\8.test\\FloderInformation.txt")));
+		for (String text : DisposeText.wordDelDuplication(new File("D:\\8.test\\kanoahtests-tests-export1018607237477323352.xlsx"))) {
+			bw.write(text);
+			bw.newLine();
+		}
+		
+		bw.close();
+	}
 }

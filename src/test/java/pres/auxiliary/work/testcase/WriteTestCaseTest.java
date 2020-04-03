@@ -44,7 +44,7 @@ public class WriteTestCaseTest {
 	/**
 	 * 配置文件类对象
 	 */
-	File conFile = new File("src/test/java/pres/auxiliary/work/testcase/jira测试用例导入模板.xml");
+	File conFile = new File("ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/jira测试用例导入模板.xml");
 	/**
 	 * 模板文件类对象
 	 */
@@ -119,6 +119,11 @@ public class WriteTestCaseTest {
 		InformationCase ic = new InformationCase(new File("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/AddInformation.xml"));
 		
 		wtc.addCase(ic.addRadioButtonCase("测试控件")).end();
+	}
+	
+	@Test
+	public void test() {
+		System.out.println(String.valueOf(System.currentTimeMillis()).length());
 	}
 	
 

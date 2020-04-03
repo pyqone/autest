@@ -297,6 +297,18 @@ public class ListFileRead {
 	public int getMaxColumnNumber() {
 		return maxColumnNum;
 	}
+	
+	/**
+	 * 返回制定列的元素个数
+	 * @param columnIndex 列下标
+	 * @return 相应列的长度
+	 */
+	public int getCoulumnSize(int columnIndex) {
+		columnIndex = columnIndex >= maxColumnNum ? maxColumnNum : columnIndex;
+		columnIndex = columnIndex < 0 ? 0 : columnIndex;
+		
+		return wordList.get(columnIndex).size();
+	}
 
 	/**
 	 * 该方法用于读取并处理csv格式文件

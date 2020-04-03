@@ -309,6 +309,10 @@ public class DisposeText {
 		Sheet sheet = excel.getSheetAt(0);
 		for (int i = 0; i < sheet.getLastRowNum(); i++) {
 			Row row = sheet.getRow(i);
+			//若获取不到行，则说明该行无数据，直接继续循环
+			if (row == null) {
+				continue;
+			}
 			for (int j = 0; j < row.getLastCellNum(); j++) {
 				try {
 					Cell cell = row.getCell(j);

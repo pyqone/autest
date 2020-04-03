@@ -5,14 +5,13 @@
 		<column id='标题' name='Name' wide='30.88' align='left'/>
 		<column id='目的' name='Objective' wide='18.25' align='left'/>
 		<column id='前置条件' name='Precondition' wide='18.25' align='left' index='true'/>
+		<column id='步骤' name='Test Script (Step-by-Step) - Step' wide='45.75' align='left' row_text='1' index='true'/>
+		<column id='预期' name='Test Script (Step-by-Step) - Expected Result' wide='45.75' align='left' row_text='1' index='true'/>
 		<column id='模块' name='Folder' wide='22.00' align='center'/>
 		<column id='状态' name='Status' wide='10.00' align='center'/>
 		<column id='优先级' name='Priority' wide='10.00' align='center'/>
 		<column id='项目' name='Component' wide='10.00' align='center'/>
 		<column id='设计者' name='Owner' wide='10.00' align='center'/>
-		<column id='步骤' name='Test Script (Step-by-Step) - Step' wide='45.75' align='left' row_text='1' index='true'/>
-		<column id='预期' name='Expected Test Script (Step-by-Step) - Expected Result' wide='45.75' align='left' row_text='1' index='true'/>
-		<column id='步骤' name='Test Script (Step-by-Step) - Step' wide='45.75' align='left' row_text='1' index='true'/>
 		<column id='关键用例' name='关键用例' wide='10.00' align='center'/>
 		<column id='关联需求' name='Coverage (Issues)' wide='20.00' align='center'/>
 	
@@ -29,13 +28,20 @@
 		</datas>
 		
 		<datas id='项目'>
-			<data name='High' />
-			<data name='Normal' />
-			<data name='Low' />
+			<file path='ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/Jira数据有效性.xlsx' regex='Sheet1' column='0' start_row='1' />
+		</datas>
+		
+		<datas id='关联需求'>
+			<file path='ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/Jira数据有效性.xlsx' regex='Sheet1' column='1' start_row='1' />
 		</datas>
 		
 		<datas id='模块'>
-			<file path='Test/ListDataFile/模块信息.xlsx' regex='Sheet1' column='2' start_row='2' end_row='11' />
+			<file path='ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/Jira数据有效性.xlsx' regex='Sheet1' column='2' start_row='1' />
+		</datas>
+		
+		<datas id='关键用例'>
+			<data name='是' />
+			<data name='否' />
 		</datas>
 	</sheet>
 	

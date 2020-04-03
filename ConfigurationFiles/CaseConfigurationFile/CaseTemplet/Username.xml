@@ -1,202 +1,257 @@
-<?xml version="1.0" encoding="GBK"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <cases project="Username">
 	<case name="addRightLoginCase">
-		<title value="Í¨¹ýÕýÈ·µÄÓÃ»§ÃûÓëÃÜÂë½øÐÐµÇÂ¼" />
-		<keyword value="ÕýÈ·µÄ,ÓÃ»§Ãû,ÃÜÂë,µÇÂ¼" />
-		<rank value="1" />
+		<titles>
+			<title id='1' value="é€šè¿‡æ­£ç¡®çš„ç”¨æˆ·åä¸Žå¯†ç è¿›è¡Œç™»å½•" />
+		</titles>
+		<keys> 
+			<key id='1' value="æ­£ç¡®çš„,ç”¨æˆ·å,å¯†ç ,ç™»å½•" />
+		</keys>
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
 		<preconditions>
 		</preconditions>
 		<steps>
-			<step id="1" value="ÕýÈ·ÊäÈëÓÃ»§Ãû¼°ÃÜÂë£¬µÇÂ¼" />
+			<step id="1" value="æ­£ç¡®è¾“å…¥ç”¨æˆ·ååŠå¯†ç ï¼Œç™»å½•" />
 		</steps>
-		<expectations>
-			<expectation id="1" value="ÄÜÕý³£µÇÂ¼ÏµÍ³£¬ÇÒµÇÂ½ºóÌø×ªµÄÒ³ÃæÕýÈ·"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="èƒ½æ­£å¸¸ç™»å½•ç³»ç»Ÿï¼Œä¸”ç™»é™†åŽè·³è½¬çš„é¡µé¢æ­£ç¡®" />
+		</excepts>
 	</case>
-	
-	<case name="addErrorLoginCase">
-		<title value="Í¨¹ý·Ç³£¹æµÄÓÃ»§ÃûÓëÃÜÂë½øÐÐµÇÂ¼" />
-		<keyword value="²»ÕýÈ·µÄ,ÓÃ»§Ãû,ÃÜÂë,µÇÂ¼" />
-		<rank value="2" />
+
+	<case name="addErrorLogkinCase">
+		<titles>
+			<title id='1' value="é€šè¿‡éžå¸¸è§„çš„ç”¨æˆ·åä¸Žå¯†ç è¿›è¡Œç™»å½•" />
+		</titles>
+		<keys>
+			<key id='1' value="ä¸æ­£ç¡®çš„,ç”¨æˆ·å,å¯†ç ,ç™»å½•" />
+		</keys>
+		<ranks>
+			<rank id='1' value="2" />
+		</ranks>
 		<preconditions>
 		</preconditions>
 		<steps>
-			<step id="1" value="ÊäÈëÒ»¸ö²»´æÔÚµÄÓÃ»§Ãû¼°ÃÜÂë£¬µÇÂ¼" />
-			<step id="2" value="ÊäÈëÒ»¸ö´æÔÚµÄÓÃ»§Ãûµ«ÃÜÂëÊäÈëÓëÆä²»¶ÔÓ¦£¬µÇÂ¼" />
-			<step id="3" value="²»ÊäÈëÓÃ»§Ãû£¬µÇÂ¼" />
-			<step id="4" value="²»ÊäÈëÃÜÂë£¬µÇÂ¼" />
-			<step id="5" value="ÔÚÓÃÓÃ»§ÃûÓëÃÜÂëÖÐÊäÈëÖÐÎÄ»òÌØÊâ×Ö·û£¬µÇÂ¼" />
+			<step id="1" value="è¾“å…¥ä¸€ä¸ªä¸å­˜åœ¨çš„ç”¨æˆ·ååŠå¯†ç ï¼Œç™»å½•" />
+			<step id="2" value="è¾“å…¥ä¸€ä¸ªå­˜åœ¨çš„ç”¨æˆ·åä½†å¯†ç è¾“å…¥ä¸Žå…¶ä¸å¯¹åº”ï¼Œç™»å½•" />
+			<step id="3" value="ä¸è¾“å…¥ç”¨æˆ·åï¼Œç™»å½•" />
+			<step id="4" value="ä¸è¾“å…¥å¯†ç ï¼Œç™»å½•" />
+			<step id="5" value="åœ¨ç”¨ç”¨æˆ·åä¸Žå¯†ç ä¸­è¾“å…¥ä¸­æ–‡æˆ–ç‰¹æ®Šå­—ç¬¦ï¼Œç™»å½•" />
 		</steps>
-		<expectations>
-			<expectation id="1" value="ÎÞ·¨µÇÂ¼£¬²¢¸ø³öÏàÓ¦µÄÌáÊ¾"/>
-			<expectation id="2" value="ÎÞ·¨µÇÂ¼£¬²¢¸ø³öÏàÓ¦µÄÌáÊ¾"/>
-			<expectation id="3" value="ÎÞ·¨µÇÂ¼£¬²¢¸ø³öÏàÓ¦µÄÌáÊ¾"/>
-			<expectation id="4" value="ÎÞ·¨µÇÂ¼£¬²¢¸ø³öÏàÓ¦µÄÌáÊ¾"/>
-			<expectation id="5" value="Èô´øÖÐÎÄµÄÓÃ»§Ãû»òÃÜÂëÄÜ×¢²á£¬ÔòÄÜÕý³£µÇÂ¼ÏµÍ³£¬ÇÒµÇÂ½ºóÌø×ªµÄÒ³ÃæÕýÈ·£»Èô²»ÄÜ×¢²á£¬ÔòÎÞ·¨µÇÂ¼£¬²¢¸ø³öÏàÓ¦µÄÌáÊ¾"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="æ— æ³•ç™»å½•ï¼Œå¹¶ç»™å‡ºç›¸åº”çš„æç¤º" />
+			<except id="2" value="æ— æ³•ç™»å½•ï¼Œå¹¶ç»™å‡ºç›¸åº”çš„æç¤º" />
+			<except id="3" value="æ— æ³•ç™»å½•ï¼Œå¹¶ç»™å‡ºç›¸åº”çš„æç¤º" />
+			<except id="4" value="æ— æ³•ç™»å½•ï¼Œå¹¶ç»™å‡ºç›¸åº”çš„æç¤º" />
+			<except id="5"
+				value="è‹¥å¸¦ä¸­æ–‡çš„ç”¨æˆ·åæˆ–å¯†ç èƒ½æ³¨å†Œï¼Œåˆ™èƒ½æ­£å¸¸ç™»å½•ç³»ç»Ÿï¼Œä¸”ç™»é™†åŽè·³è½¬çš„é¡µé¢æ­£ç¡®ï¼›è‹¥ä¸èƒ½æ³¨å†Œï¼Œåˆ™æ— æ³•ç™»å½•ï¼Œå¹¶ç»™å‡ºç›¸åº”çš„æç¤º" />
+		</excepts>
 	</case>
-	
+
 	<case name="addCaptchaCase">
-		<title value="ÊäÈë²»Í¬µÄÑéÖ¤Âë½øÐÐµÇÂ¼" />
-		<keyword value="ÑéÖ¤Âë,µÇÂ¼" />
-		<rank value="1" />
+		<titles>
+			<title id='1' value="è¾“å…¥ä¸åŒçš„éªŒè¯ç è¿›è¡Œç™»å½•" />
+		</titles>
+		<keys>
+			<key id='1' value="éªŒè¯ç ,ç™»å½•" />
+		</keys>
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
 		<preconditions>
-			<precondition value="ÕÊºÅºÍÃÜÂëÊäÈëÕýÈ·" />
+			<precondition id='1' value="å¸å·å’Œå¯†ç è¾“å…¥æ­£ç¡®" />
 		</preconditions>
 		<steps>
-			<step id="1" value="ÕýÈ·ÊäÈëÑéÖ¤Âë£¬µÇÂ¼" />
-			<step id="2" value="²»ÊäÈëÑéÖ¤Âë£¬µÇÂ¼" />
-			<step id="3" value="ÊäÈë´íÎóµÄÑéÖ¤Âë£¬µÇÂ¼" />
+			<step id="1" value="æ­£ç¡®è¾“å…¥éªŒè¯ç ï¼Œç™»å½•" />
+			<step id="2" value="ä¸è¾“å…¥éªŒè¯ç ï¼Œç™»å½•" />
+			<step id="3" value="è¾“å…¥é”™è¯¯çš„éªŒè¯ç ï¼Œç™»å½•" />
 		</steps>
-		<expectations>
-			<expectation id="1" value="ÄÜÕý³£µÇÂ¼ÏµÍ³£¬ÇÒµÇÂ½ºóÌø×ªµÄÒ³ÃæÕýÈ·"/>
-			<expectation id="2" value="ÎÞ·¨µÇÂ¼£¬²¢¸ø³öÏàÓ¦µÄÌáÊ¾"/>
-			<expectation id="3" value="ÎÞ·¨µÇÂ¼£¬²¢¸ø³öÏàÓ¦µÄÌáÊ¾"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="èƒ½æ­£å¸¸ç™»å½•ç³»ç»Ÿï¼Œä¸”ç™»é™†åŽè·³è½¬çš„é¡µé¢æ­£ç¡®" />
+			<except id="2" value="æ— æ³•ç™»å½•ï¼Œå¹¶ç»™å‡ºç›¸åº”çš„æç¤º" />
+			<except id="3" value="æ— æ³•ç™»å½•ï¼Œå¹¶ç»™å‡ºç›¸åº”çš„æç¤º" />
+		</excepts>
 	</case>
-	
+
 	<case name="addLoginAuthorityCase">
-		<title value="Í¨¹ý²»Í¬È¨ÏÞµÄÕÊºÅ½øÐÐµÇÂ¼" />
-		<keyword value="È¨ÏÞ,µÇÂ¼" />
-		<rank value="1" />
+		<titles>
+			<title id='1' value="é€šè¿‡ä¸åŒæƒé™çš„å¸å·è¿›è¡Œç™»å½•" />
+		</titles>
+		<keys>
+			<key id='1' value="æƒé™,ç™»å½•" />
+		</keys>
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
 		<preconditions>
-			<precondition value="ÕÊºÅºÍÃÜÂëÊäÈëÕýÈ·" />
+			<precondition id='1' value="å¸å·å’Œå¯†ç è¾“å…¥æ­£ç¡®" />
 		</preconditions>
 		<steps>
-			<step id="1" value="ÊäÈë²»Í¬È¨ÏÞµÄÕÊºÅºÍÃÜÂë£¬µÇÂ¼" />
-			<step id="2" value="ÔÚËùÓÐµÇÂ¼Ò³ÃæÉÏÊäÈëÓëÖ®È¨ÏÞ²»¶ÔÓ¦µÄÕÊºÅ£¬µÇÂ¼" />
+			<step id="1" value="è¾“å…¥ä¸åŒæƒé™çš„å¸å·å’Œå¯†ç ï¼Œç™»å½•" />
+			<step id="2" value="åœ¨æ‰€æœ‰ç™»å½•é¡µé¢ä¸Šè¾“å…¥ä¸Žä¹‹æƒé™ä¸å¯¹åº”çš„å¸å·ï¼Œç™»å½•" />
 		</steps>
-		<expectations>
-			<expectation id="1" value="ÄÜÕý³£µÇÂ¼ÏµÍ³£¬ÇÒµÇÂ½ºóÄÜ¿´µ½È¨ÏÞ¶ÔÓ¦µÄÒ³Ãæ¼°¹¦ÄÜ"/>
-			<expectation id="2" value="ÎÞ·¨µÇÂ¼£¬²¢¸ø³öÏàÓ¦µÄÌáÊ¾"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="èƒ½æ­£å¸¸ç™»å½•ç³»ç»Ÿï¼Œä¸”ç™»é™†åŽèƒ½çœ‹åˆ°æƒé™å¯¹åº”çš„é¡µé¢åŠåŠŸèƒ½" />
+			<except id="2" value="æ— æ³•ç™»å½•ï¼Œå¹¶ç»™å‡ºç›¸åº”çš„æç¤º" />
+		</excepts>
 	</case>
-	
+
 	<case name="addUsernameRegisterCase">
-		<title value="×¢²á²»Í¬ÓÃ»§ÃûµÄÕËºÅ" />
-		<keyword value="ÓÃ»§Ãû,×¢²á" />
-		<rank value="1" />
+		<titles>
+			<title id='1' value="æ³¨å†Œä¸åŒç”¨æˆ·åçš„è´¦å·" />
+		</titles>
+		<keys>
+			<key id='1' value="ç”¨æˆ·å,æ³¨å†Œ" />
+		</keys>
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
 		<preconditions>
-			<precondition value="ÒÑÔÚ×¢²áÕËºÅ½çÃæ" />
-			<precondition value="³ýÓÃ»§ÃûÍâ£¬ÆäËûÐÅÏ¢¾ùÕýÈ·ÌîÐ´" />
+			<precondition id='1' value="å·²åœ¨æ³¨å†Œè´¦å·ç•Œé¢" />
+			<precondition id='2' value="é™¤ç”¨æˆ·åå¤–ï¼Œå…¶ä»–ä¿¡æ¯å‡æ­£ç¡®å¡«å†™" />
 		</preconditions>
 		<steps>
-			<step id="1" value="Í¨¹ýÒ»¸öÎ´±»×¢²áÇÒÕýÈ·µÄÓÃ»§Ãû½øÐÐ×¢²á²Ù×÷" />
-			<step id="2" value="Í¨¹ýÒ»¸öÒÑ×¢²áµÄÓÃ»§Ãû½øÐÐ×¢²á²Ù×÷" />
-			<step id="3" value="ÊäÈëÒ»¸ö´óÓÚ11Î»µÄÊý×Ö×Ö·û½øÐÐ×¢²á²Ù×÷" />
-			<step id="4" value="ÊäÈëÒ»¸öÐ¡ÓÚ11Î»µÄÊý×Ö×Ö·û½øÐÐ×¢²á²Ù×÷" />
-			<step id="5" value="ÊäÈë·ÇÊý×Ö×Ö·û½øÐÐ×¢²á²Ù×÷" />
-			<step id="6" value="Í¨¹ýÒ»¸ö²»·ûºÏÒªÇóµÄÓÃ»§Ãû½øÐÐ×¢²á²Ù×÷" />
-			<step id="7" value="²»ÊäÈëÓÃ»§Ãû½øÐÐ×¢²á²Ù×÷" />
+			<step id="1" value="é€šè¿‡ä¸€ä¸ªæœªè¢«æ³¨å†Œä¸”æ­£ç¡®çš„ç”¨æˆ·åè¿›è¡Œæ³¨å†Œæ“ä½œ" />
+			<step id="2" value="é€šè¿‡ä¸€ä¸ªå·²æ³¨å†Œçš„ç”¨æˆ·åè¿›è¡Œæ³¨å†Œæ“ä½œ" />
+			<step id="3" value="è¾“å…¥ä¸€ä¸ªå¤§äºŽ11ä½çš„æ•°å­—å­—ç¬¦è¿›è¡Œæ³¨å†Œæ“ä½œ" />
+			<step id="4" value="è¾“å…¥ä¸€ä¸ªå°äºŽ11ä½çš„æ•°å­—å­—ç¬¦è¿›è¡Œæ³¨å†Œæ“ä½œ" />
+			<step id="5" value="è¾“å…¥éžæ•°å­—å­—ç¬¦è¿›è¡Œæ³¨å†Œæ“ä½œ" />
+			<step id="6" value="é€šè¿‡ä¸€ä¸ªä¸ç¬¦åˆè¦æ±‚çš„ç”¨æˆ·åè¿›è¡Œæ³¨å†Œæ“ä½œ" />
+			<step id="7" value="ä¸è¾“å…¥ç”¨æˆ·åè¿›è¡Œæ³¨å†Œæ“ä½œ" />
 		</steps>
-		<expectations>
-			<expectation id="1" value="×¢²áÍê³ÉºóÄÜÍ¨¹ý¸ÃÕÊºÅ¼°¶ÔÓ¦µÄÃÜÂë½øÐÐµÇÂ¼"/>
-			<expectation id="2" value="ÌáÊ¾ÓÃ»§ÃûÒÑ´æÔÚ"/>
-			<expectation id="3" value="ÌáÊ¾ÓÃ»§Ãû²»ºÏÀí"/>
-			<expectation id="4" value="ÌáÊ¾ÓÃ»§Ãû²»ºÏÀí"/>
-			<expectation id="5" value="ÌáÊ¾ÓÃ»§Ãû²»ºÏÀí"/>
-			<expectation id="6" value="ÌáÊ¾ÓÃ»§Ãû²»ºÏÀí"/>
-			<expectation id="7" value="ÌáÊ¾ÇëÊäÈëÓÃ»§Ãû"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="æ³¨å†Œå®ŒæˆåŽèƒ½é€šè¿‡è¯¥å¸å·åŠå¯¹åº”çš„å¯†ç è¿›è¡Œç™»å½•" />
+			<except id="2" value="æç¤ºç”¨æˆ·åå·²å­˜åœ¨" />
+			<except id="3" value="æç¤ºç”¨æˆ·åä¸åˆç†" />
+			<except id="4" value="æç¤ºç”¨æˆ·åä¸åˆç†" />
+			<except id="5" value="æç¤ºç”¨æˆ·åä¸åˆç†" />
+			<except id="6" value="æç¤ºç”¨æˆ·åä¸åˆç†" />
+			<except id="7" value="æç¤ºè¯·è¾“å…¥ç”¨æˆ·å" />
+		</excepts>
 	</case>
-	
+
 	<case name="addUsernameForgetCase">
-		<title value="Í¨¹ý²»Í¬ÓÃ»§ÃûµÄÕËºÅ½øÐÐÍü¼ÇÃÜÂë²Ù×÷" />
-		<keyword value="ÓÃ»§Ãû,Íü¼ÇÃÜÂë" />
-		<rank value="1" />
+		<titles>
+			<title id='1' value="é€šè¿‡ä¸åŒç”¨æˆ·åçš„è´¦å·è¿›è¡Œå¿˜è®°å¯†ç æ“ä½œ" />
+		</titles>
+		<keys>
+			<key id='1' value="ç”¨æˆ·å,å¿˜è®°å¯†ç " />
+		</keys>
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
 		<preconditions>
-			<precondition value="ÒÑÔÚÍü¼ÇÃÜÂë½çÃæ" />
-			<precondition value="³ýÓÃ»§ÃûÍâ£¬ÆäËûÐÅÏ¢¾ùÕýÈ·ÌîÐ´" />
+			<precondition id='1' value="å·²åœ¨å¿˜è®°å¯†ç ç•Œé¢" />
+			<precondition id='2' value="é™¤ç”¨æˆ·åå¤–ï¼Œå…¶ä»–ä¿¡æ¯å‡æ­£ç¡®å¡«å†™" />
 		</preconditions>
 		<steps>
-			<step id="1" value="Í¨¹ýÒ»¸öÒÑ´æÔÚÇÒÕýÈ·µÄÓÃ»§Ãû½øÐÐÍü¼ÇÃÜÂë²Ù×÷" />
-			<step id="2" value="Í¨¹ýÒ»¸ö²»´æÔÚµÄÓÃ»§Ãû½øÐÐÍü¼ÇÃÜÂë²Ù×÷" />
-			<step id="3" value="Í¨¹ýÒ»¸ö²»·ûºÏÒªÇóµÄÓÃ»§Ãû½øÐÐÍü¼ÇÃÜÂë²Ù×÷" />
-			<step id="4" value="²»ÊäÈëÓÃ»§Ãû½øÐÐÍü¼ÇÃÜÂë²Ù×÷" />
+			<step id="1" value="é€šè¿‡ä¸€ä¸ªå·²å­˜åœ¨ä¸”æ­£ç¡®çš„ç”¨æˆ·åè¿›è¡Œå¿˜è®°å¯†ç æ“ä½œ" />
+			<step id="2" value="é€šè¿‡ä¸€ä¸ªä¸å­˜åœ¨çš„ç”¨æˆ·åè¿›è¡Œå¿˜è®°å¯†ç æ“ä½œ" />
+			<step id="3" value="é€šè¿‡ä¸€ä¸ªä¸ç¬¦åˆè¦æ±‚çš„ç”¨æˆ·åè¿›è¡Œå¿˜è®°å¯†ç æ“ä½œ" />
+			<step id="4" value="ä¸è¾“å…¥ç”¨æˆ·åè¿›è¡Œå¿˜è®°å¯†ç æ“ä½œ" />
 		</steps>
-		<expectations>
-			<expectation id="1" value="ÃÜÂëÐÞ¸Ä³É¹¦£¬²¢ÇÒ¿ÉÒÔÊ¹ÓÃ¸ÃÕÊºÅ¼°ÐÞ¸ÄµÄÃÜÂë½øÐÐµÇÂ¼²Ù×÷"/>
-			<expectation id="2" value="ÌáÊ¾ÓÃ»§Ãû²»´æÔÚ"/>
-			<expectation id="3" value="ÌáÊ¾ÓÃ»§Ãû²»ºÏÀí"/>
-			<expectation id="4" value="ÌáÊ¾ÇëÊäÈëÓÃ»§Ãû"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="å¯†ç ä¿®æ”¹æˆåŠŸï¼Œå¹¶ä¸”å¯ä»¥ä½¿ç”¨è¯¥å¸å·åŠä¿®æ”¹çš„å¯†ç è¿›è¡Œç™»å½•æ“ä½œ" />
+			<except id="2" value="æç¤ºç”¨æˆ·åä¸å­˜åœ¨" />
+			<except id="3" value="æç¤ºç”¨æˆ·åä¸åˆç†" />
+			<except id="4" value="æç¤ºè¯·è¾“å…¥ç”¨æˆ·å" />
+		</excepts>
 	</case>
-	
+
 	<case name="addPasswordRegisterOrForgetCase">
-		<title value="Í¨¹ý²»Í¬µÄÃÜÂë½øÐÐ*{operation}*²Ù×÷" />
-		<keyword value="ÃÜÂë,*{operation}*" />
-		<rank value="1" />
+		<titles>
+			<title id='1' value="é€šè¿‡ä¸åŒçš„å¯†ç è¿›è¡Œ*{æ“ä½œç±»åž‹}*æ“ä½œ" />
+		</titles>
+		<keys>
+			<key id='1' value="å¯†ç ,*{æ“ä½œç±»åž‹}*" />
+		</keys>
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
 		<preconditions>
-			<precondition value="ÒÑÔÚ*{operation}*ÕËºÅ½çÃæ" />
-			<precondition value="³ýÃÜÂëÍâ£¬ÆäËûÐÅÏ¢¾ùÕýÈ·ÌîÐ´" />
+			<precondition id='1' value="å·²åœ¨*{æ“ä½œç±»åž‹}*è´¦å·ç•Œé¢" />
+			<precondition id='2' value="é™¤å¯†ç å¤–ï¼Œå…¶ä»–ä¿¡æ¯å‡æ­£ç¡®å¡«å†™" />
 		</preconditions>
 		<steps>
-			<step id="1" value="Í¨¹ýÕýÈ·µÄÃÜÂë½øÐÐ*{operation}*²Ù×÷" />
-			<step id="2" value="Í¨¹ýÒ»¸ö²»·ûºÏÒªÇóµÄÃÜÂë½øÐÐ*{operation}*²Ù×÷" />
-			<step id="3" value="²»ÊäÈëÃÜÂë½øÐÐ*{operation}*²Ù×÷" />
-			<step id="4" value="²»ÔÙ´ÎÊäÈëÃÜÂë£¬*{operation}*²Ù×÷" />
-			<step id="5" value="Á½´ÎÃÜÂëÊäÈë²»Ò»ÖÂºó½øÐÐ*{operation}*²Ù×÷" />
+			<step id="1" value="é€šè¿‡æ­£ç¡®çš„å¯†ç è¿›è¡Œ*{æ“ä½œç±»åž‹}*æ“ä½œ" />
+			<step id="2" value="é€šè¿‡ä¸€ä¸ªä¸ç¬¦åˆè¦æ±‚çš„å¯†ç è¿›è¡Œ*{æ“ä½œç±»åž‹}*æ“ä½œ" />
+			<step id="3" value="ä¸è¾“å…¥å¯†ç è¿›è¡Œ*{æ“ä½œç±»åž‹}*æ“ä½œ" />
+			<step id="4" value="ä¸å†æ¬¡è¾“å…¥å¯†ç ï¼Œ*{æ“ä½œç±»åž‹}*æ“ä½œ" />
+			<step id="5" value="ä¸¤æ¬¡å¯†ç è¾“å…¥ä¸ä¸€è‡´åŽè¿›è¡Œ*{æ“ä½œç±»åž‹}*æ“ä½œ" />
 		</steps>
-		<expectations>
-			<expectation id="1" value="*{operation}*²Ù×÷Íê³ÉºóÄÜÍ¨¹ý¸ÃÕÊºÅ¼°¶ÔÓ¦µÄÃÜÂë½øÐÐµÇÂ¼"/>
-			<expectation id="2" value="ÌáÊ¾ÃÜÂë²»ºÏÀí"/>
-			<expectation id="3" value="ÌáÊ¾ÇëÊäÈëÃÜÂë"/>
-			<expectation id="4" value="ÌáÊ¾Á½´ÎÃÜÂëÊäÈë²»Ò»ÖÂ»òÕßÌáÊ¾ÊäÈëÈ·ÈÏÃÜÂë"/>
-			<expectation id="5" value="ÌáÊ¾Á½´ÎÃÜÂëÊäÈë²»Ò»ÖÂ"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="*{æ“ä½œç±»åž‹}*æ“ä½œå®ŒæˆåŽèƒ½é€šè¿‡è¯¥å¸å·åŠå¯¹åº”çš„å¯†ç è¿›è¡Œç™»å½•" />
+			<except id="2" value="æç¤ºå¯†ç ä¸åˆç†" />
+			<except id="3" value="æç¤ºè¯·è¾“å…¥å¯†ç " />
+			<except id="4" value="æç¤ºä¸¤æ¬¡å¯†ç è¾“å…¥ä¸ä¸€è‡´æˆ–è€…æç¤ºè¾“å…¥ç¡®è®¤å¯†ç " />
+			<except id="5" value="æç¤ºä¸¤æ¬¡å¯†ç è¾“å…¥ä¸ä¸€è‡´" />
+		</excepts>
 	</case>
-	
+
 	<case name="addCodeRegisterOrForgetCase">
-		<title value="Í¨¹ý²»Í¬µÄÑéÖ¤Âë½øÐÐ*{operation}*²Ù×÷" />
-		<keyword value="ÑéÖ¤Âë,*{operation}*" />
-		<rank value="1" />
+		<titles>
+			<title id='1' value="é€šè¿‡ä¸åŒçš„éªŒè¯ç è¿›è¡Œ*{æ“ä½œç±»åž‹}*æ“ä½œ" />
+		</titles>
+		<keys>
+			<key id='1' value="éªŒè¯ç ,*{æ“ä½œç±»åž‹}*" />
+		</keys>
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
 		<preconditions>
-			<precondition value="ÒÑÔÚ*{operation}*ÕËºÅ½çÃæ" />
-			<precondition value="³ýÃÜÂëÍâ£¬ÆäËûÐÅÏ¢¾ùÕýÈ·ÌîÐ´" />
+			<precondition id='1' value="å·²åœ¨*{æ“ä½œç±»åž‹}*è´¦å·ç•Œé¢" />
+			<precondition id='2' value="é™¤å¯†ç å¤–ï¼Œå…¶ä»–ä¿¡æ¯å‡æ­£ç¡®å¡«å†™" />
 		</preconditions>
 		<steps>
-			<step id="1" value="Í¨¹ýÕýÈ·µÄÑéÖ¤Âë½øÐÐ*{operation}*" />
-			<step id="2" value="Í¨¹ýÒ»¸ö²»ÕýÈ·µÄÑéÖ¤Âë½øÐÐ*{operation}*" />
-			<step id="3" value="²»ÊäÈëÑéÖ¤Âë½øÐÐ*{operation}*" />
-			<step id="4" value="ÖØÐÂ·¢ËÍÑéÖ¤ÂëºóÊäÈëÉÏÒ»´ÎµÄÑéÖ¤Âë" />
-			<step id="5" value="ÖØÐÂ·¢ËÍÑéÖ¤ÂëºóÊäÈëÐÂµÄÑéÖ¤Âë" />
-			<step id="6" value="³¬¹ýÑéÖ¤ÂëµÄ¹ýÆÚÊ±¼äºóÔÙÊäÈëÑéÖ¤Âë£¬*{operation}*" />
+			<step id="1" value="é€šè¿‡æ­£ç¡®çš„éªŒè¯ç è¿›è¡Œ*{æ“ä½œç±»åž‹}*" />
+			<step id="2" value="é€šè¿‡ä¸€ä¸ªä¸æ­£ç¡®çš„éªŒè¯ç è¿›è¡Œ*{æ“ä½œç±»åž‹}*" />
+			<step id="3" value="ä¸è¾“å…¥éªŒè¯ç è¿›è¡Œ*{æ“ä½œç±»åž‹}*" />
+			<step id="4" value="é‡æ–°å‘é€éªŒè¯ç åŽè¾“å…¥ä¸Šä¸€æ¬¡çš„éªŒè¯ç " />
+			<step id="5" value="é‡æ–°å‘é€éªŒè¯ç åŽè¾“å…¥æ–°çš„éªŒè¯ç " />
+			<step id="6" value="è¶…è¿‡éªŒè¯ç çš„è¿‡æœŸæ—¶é—´åŽå†è¾“å…¥éªŒè¯ç ï¼Œ*{æ“ä½œç±»åž‹}*" />
 		</steps>
-		<expectations>
-			<expectation id="1" value="*{operation}*²Ù×÷Íê³ÉºóÄÜÍ¨¹ý¸ÃÕÊºÅ¼°¶ÔÓ¦µÄÃÜÂë½øÐÐµÇÂ¼"/>
-			<expectation id="2" value="ÌáÊ¾ÑéÖ¤Âë²»ÕýÈ·"/>
-			<expectation id="3" value="ÌáÊ¾ÇëÊäÈëÑéÖ¤Âë"/>
-			<expectation id="4" value="ÌáÊ¾ÑéÖ¤ÂëÊäÈëÓÐÎó"/>
-			<expectation id="5" value="*{operation}*²Ù×÷Íê³ÉºóÄÜÍ¨¹ý¸ÃÕÊºÅ¼°¶ÔÓ¦µÄÃÜÂë½øÐÐµÇÂ¼"/>
-			<expectation id="6" value="ÌáÊ¾ÑéÖ¤Âë²»ÕýÈ·"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="*{æ“ä½œç±»åž‹}*æ“ä½œå®ŒæˆåŽèƒ½é€šè¿‡è¯¥å¸å·åŠå¯¹åº”çš„å¯†ç è¿›è¡Œç™»å½•" />
+			<except id="2" value="æç¤ºéªŒè¯ç ä¸æ­£ç¡®" />
+			<except id="3" value="æç¤ºè¯·è¾“å…¥éªŒè¯ç " />
+			<except id="4" value="æç¤ºéªŒè¯ç è¾“å…¥æœ‰è¯¯" />
+			<except id="5" value="*{æ“ä½œç±»åž‹}*æ“ä½œå®ŒæˆåŽèƒ½é€šè¿‡è¯¥å¸å·åŠå¯¹åº”çš„å¯†ç è¿›è¡Œç™»å½•" />
+			<except id="6" value="æç¤ºéªŒè¯ç ä¸æ­£ç¡®" />
+		</excepts>
 	</case>
-	
+
 	<case name="addAlterPasswordCase">
-		<title value="ÐÞ¸ÄÓÃ»§ÃÜÂë" />
-		<keyword value="ÐÞ¸Ä,ÃÜÂë" />
-		<rank value="1" />
+		<titles>
+			<title id='1' value="ä¿®æ”¹ç”¨æˆ·å¯†ç " />
+		</titles>
+		<keys>
+			<key id='1' value="ä¿®æ”¹,å¯†ç " />
+		</keys>
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
 		<preconditions>
-			<precondition value="ÒÑµÇÂ¼ÏµÍ³" />
-			<precondition value="³ýÃÜÂëÍâ£¬ÆäËûÐÅÏ¢¾ùÕýÈ·ÌîÐ´" />
+			<precondition id='1' value="å·²ç™»å½•ç³»ç»Ÿ" />
+			<precondition id='2' value="é™¤å¯†ç å¤–ï¼Œå…¶ä»–ä¿¡æ¯å‡æ­£ç¡®å¡«å†™" />
 		</preconditions>
 		<steps>
-			<step id="1" value="ÕýÈ·ÊäÈëÔ­ÃÜÂë²¢°´ÒªÇóÊäÈëÐÂÃÜÂëºóÐÞ¸ÄÃÜÂë" />
-			<step id="2" value="ÊäÈë´íÎóµÄÔ­ÃÜÂëºóÐÞ¸ÄÃÜÂë" />
-			<step id="3" value="²»ÊäÈëÔ­ÃÜÂë½øÐÐÐÞ¸ÄÃÜÂë" />
-			<step id="4" value="ÊäÈëÒ»¸ö²»·ûºÏÒªÇóµÄÃÜÂë½øÐÐÐÞ¸ÄÃÜÂë" />
-			<step id="5" value="²»ÊäÈëÃÜÂë½øÐÐÐÞ¸ÄÃÜÂë" />
-			<step id="6" value="²»ÔÙ´ÎÊäÈëÃÜÂë½øÐÐÐÞ¸ÄÃÜÂë" />
-			<step id="7" value="Á½´ÎÃÜÂëÊäÈë²»Ò»ÖÂºó½øÐÐÐÞ¸ÄÃÜÂë" />
+			<step id="1" value="æ­£ç¡®è¾“å…¥åŽŸå¯†ç å¹¶æŒ‰è¦æ±‚è¾“å…¥æ–°å¯†ç åŽä¿®æ”¹å¯†ç " />
+			<step id="2" value="è¾“å…¥é”™è¯¯çš„åŽŸå¯†ç åŽä¿®æ”¹å¯†ç " />
+			<step id="3" value="ä¸è¾“å…¥åŽŸå¯†ç è¿›è¡Œä¿®æ”¹å¯†ç " />
+			<step id="4" value="è¾“å…¥ä¸€ä¸ªä¸ç¬¦åˆè¦æ±‚çš„å¯†ç è¿›è¡Œä¿®æ”¹å¯†ç " />
+			<step id="5" value="ä¸è¾“å…¥å¯†ç è¿›è¡Œä¿®æ”¹å¯†ç " />
+			<step id="6" value="ä¸å†æ¬¡è¾“å…¥å¯†ç è¿›è¡Œä¿®æ”¹å¯†ç " />
+			<step id="7" value="ä¸¤æ¬¡å¯†ç è¾“å…¥ä¸ä¸€è‡´åŽè¿›è¡Œä¿®æ”¹å¯†ç " />
 		</steps>
-		<expectations>
-			<expectation id="1" value="ÐÞ¸ÄÃÜÂë³É¹¦£¬¸ÃÕÊºÅÄÜÍ¨¹ýÐÂÐÞ¸ÄµÄÃÜÂë½øÐÐµÇÂ¼"/>
-			<expectation id="2" value="ÌáÊ¾ÓÃ»§Ô­ÃÜÂëÊäÈëÓÐÎó"/>
-			<expectation id="3" value="ÌáÊ¾ÇëÊäÈëÔ­ÃÜÂë"/>
-			<expectation id="4" value="ÌáÊ¾ÃÜÂë²»ºÏÀí"/>
-			<expectation id="5" value="ÌáÊ¾ÇëÊäÈëÃÜÂë"/>
-			<expectation id="6" value="ÌáÊ¾Á½´ÎÃÜÂëÊäÈë²»Ò»ÖÂ»òÕßÌáÊ¾ÊäÈëÈ·ÈÏÃÜÂë"/>
-			<expectation id="7" value="ÌáÊ¾Á½´ÎÃÜÂëÊäÈë²»Ò»ÖÂ"/>
-		</expectations>
+		<excepts>
+			<except id="1" value="ä¿®æ”¹å¯†ç æˆåŠŸï¼Œè¯¥å¸å·èƒ½é€šè¿‡æ–°ä¿®æ”¹çš„å¯†ç è¿›è¡Œç™»å½•" />
+			<except id="2" value="æç¤ºç”¨æˆ·åŽŸå¯†ç è¾“å…¥æœ‰è¯¯" />
+			<except id="3" value="æç¤ºè¯·è¾“å…¥åŽŸå¯†ç " />
+			<except id="4" value="æç¤ºå¯†ç ä¸åˆç†" />
+			<except id="5" value="æç¤ºè¯·è¾“å…¥å¯†ç " />
+			<except id="6" value="æç¤ºä¸¤æ¬¡å¯†ç è¾“å…¥ä¸ä¸€è‡´æˆ–è€…æç¤ºè¾“å…¥ç¡®è®¤å¯†ç " />
+			<except id="7" value="æç¤ºä¸¤æ¬¡å¯†ç è¾“å…¥ä¸ä¸€è‡´" />
+		</excepts>
 	</case>
 </cases>
