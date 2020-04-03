@@ -757,14 +757,24 @@ public class TestCaseWrite {
 			String sheet = textElement.attributeValue("regex");
 			ListFileRead lfr = new ListFileRead(dataFile, sheet);
 			
-			//存储需要读取的列和行信息
-			int columnIndex = Integer.valueOf(textElement.attributeValue("column"));
-			int startRowIndex = Integer.valueOf(textElement.attributeValue("start_row"));
-			int endRowIndex = Integer.valueOf(textElement.attributeValue("end_row"));
+			//获取需要读取的列信息，若未指定列信息，则默认读取第一列
+			int columnIndex = textElement.attributeValue("column") == null ? 0 : Integer.valueOf(textElement.attributeValue("column"));
+			//读取起始行信息，若未指定起始行信息，则默认读取第一行
+			int startRowIndex = textElement.attributeValue("start_row") == null ? 0 : Integer.valueOf(textElement.attributeValue("start_row"));
+			//读取结束行信息，若未指定起始行信息，则默认读取最后一行
+			int endRowIndex = textElement.attributeValue("end_row") == null ? lfr.getCoulumnSize(columnIndex) : Integer.valueOf(textElement.attributeValue("end_row"));
 			//获取数据信息
 			dataList.addAll(lfr.getColumn(columnIndex, startRowIndex, endRowIndex));
 		} catch (Exception e) {
 			//若抛出任何异常，则说明xml配置不正确，故不进行操作
+		}
+		
+		//去除空行
+		for (int i = 0; i < dataList.size(); i++) {
+			if ("".equals(dataList.get(i))) {
+				dataList.remove(i);
+				i--;
+			}
 		}
 		
 		return dataList;
@@ -1053,7 +1063,7 @@ public class TestCaseWrite {
 	 * <b>编码时间：</b>2020年2月27日下午6:58:08
 	 * </p>
 	 * <p>
-	 * <b>修改时间：</b>2020年2月27日下午6:58:08
+	 * <b>修改时间：</b>2020年4月3日 16:49:08
 	 * </p>
 	 * 
 	 * @author 彭宇琦
@@ -1061,7 +1071,7 @@ public class TestCaseWrite {
 	 * @since JDK 12
 	 *
 	 */
-	private class Field {
+	class Field {
 		/**
 		 * 用于存储字段在配置文件中的id
 		 */
@@ -1191,6 +1201,19 @@ public class TestCaseWrite {
 			} catch (NumberFormatException e) {
 				return indexText;
 			}
+		}
+		
+		/**
+		 * 用于对数据有效性的数据进行模糊匹配，并返回匹配到的数据有效性
+		 * @param keys 需要进行匹配的关键词
+		 * @return 被匹配到的数据
+		 */
+		public ArrayList<String> matchDataValidation(String... keys) {
+			return (ArrayList<String>) datas.stream().filter(data -> {
+				//遍历关键词组，若所有的词语通过判断（即filter筛选后所有的词语都通过），则表示该数据通过模糊匹配
+				return Arrays.stream(keys).filter(key -> data.indexOf(key) > -1)
+						.collect(Collectors.toList()).size() == keys.length;
+			}).collect(Collectors.toList());
 		}
 		
 		/**
