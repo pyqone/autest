@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import pres.auxiliary.work.testcase.templet.ZentaoTemplet;
-import pres.auxiliary.work.testcase.writecase.PresetCase;
-import pres.auxiliary.work.testcase.writecase.Username;
+import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
+import pres.auxiliary.work.old.testcase.writecase.PresetCase;
+import pres.auxiliary.work.old.testcase.writecase.Username;
 
 /**
  * FileName: TestCase3.java

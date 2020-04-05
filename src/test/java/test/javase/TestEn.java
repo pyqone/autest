@@ -1,6 +1,6 @@
 package test.javase;
 
-import pres.auxiliary.work.testcase.writecase.InputType;
+import pres.auxiliary.work.old.testcase.writecase.InputType;
 
 public class TestEn {
 	public static void main(String[] args) {

@@ -7,9 +7,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import pres.auxiliary.work.testcase.templet.ZentaoTemplet;
-import pres.auxiliary.work.testcase.writecase.BrowseList;
-import pres.auxiliary.work.testcase.writecase.PresetCase;
+import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
+import pres.auxiliary.work.old.testcase.writecase.BrowseList;
+import pres.auxiliary.work.old.testcase.writecase.PresetCase;
 
 public class TestBrowseList {
 	static PresetCase pc;

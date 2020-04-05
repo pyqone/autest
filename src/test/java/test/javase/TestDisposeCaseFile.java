@@ -3,7 +3,7 @@ package test.javase;
 import java.io.File;
 import java.io.IOException;
 
-import pres.auxiliary.work.testcase.templet.ZentaoTemplet;
+import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
 
 /**
  * FileName: TestDisposeCaseFile.java

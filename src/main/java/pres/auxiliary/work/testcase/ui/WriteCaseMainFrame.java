@@ -21,7 +21,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import pres.auxiliary.directory.exception.IncorrectDirectoryException;
-import pres.auxiliary.work.testcase.templet.ZentaoTemplet;
+import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
 
 public class WriteCaseMainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;

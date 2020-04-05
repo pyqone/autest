@@ -9,7 +9,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import pres.auxiliary.work.testcase.templet.ZentaoTemplet;
+import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
 
 /**
  * 该类用于通过读取生成的case文件来自动编写测试用例及selenium脚本（未做）

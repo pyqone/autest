@@ -7,13 +7,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import pres.auxiliary.work.testcase.change.Tab;
-import pres.auxiliary.work.testcase.templet.ZentaoTemplet;
-import pres.auxiliary.work.testcase.writecase.AddInformation;
-import pres.auxiliary.work.testcase.writecase.FileType;
-import pres.auxiliary.work.testcase.writecase.InputType;
-import pres.auxiliary.work.testcase.writecase.PhoneType;
-import pres.auxiliary.work.testcase.writecase.PresetCase;
+import pres.auxiliary.work.old.testcase.change.Tab;
+import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
+import pres.auxiliary.work.old.testcase.writecase.AddInformation;
+import pres.auxiliary.work.old.testcase.writecase.FileType;
+import pres.auxiliary.work.old.testcase.writecase.InputType;
+import pres.auxiliary.work.old.testcase.writecase.PhoneType;
+import pres.auxiliary.work.old.testcase.writecase.PresetCase;
 
 public class TestAddInformation {
 	static PresetCase pc;
