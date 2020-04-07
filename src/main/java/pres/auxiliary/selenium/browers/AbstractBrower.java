@@ -5,11 +5,14 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.WebDriver;
 
 /**
- * 该类定义启动浏览器时必要的方法以及打开浏览器，创建WebDriver对象的操作，由新添加的各个浏览器子类可进行继承
- * 
+ * <p><b>文件名：</b>AbstractBrower.java</p>
+ * <p><b>用途：</b>该类定义启动浏览器时必要的方法以及打开浏览器，创建WebDriver对象的操作，由新添加的各个浏览器子类可进行继承</p>
+ * <p><b>编码时间：</b>2020年4月6日 下午3:01:06</p>
+ * <p><b>修改时间：</b>2020年4月6日 下午3:01:06</p>
  * @author 彭宇琦
- * @version Ver1.1
- * 
+ * @version Ver1.0
+ * @since JDK 12
+ * @since selenium 3.0.0
  */
 public abstract class AbstractBrower {
 	/**

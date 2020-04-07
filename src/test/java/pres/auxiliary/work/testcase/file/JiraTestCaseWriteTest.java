@@ -14,6 +14,16 @@ import org.testng.annotations.Test;
 import pres.auxiliary.work.testcase.file.JiraTestCaseWrite.JiraFieldIdType;
 import pres.auxiliary.work.testcase.templet.DataListCase;
 
+/**
+ * <p><b>文件名：</b>JiraTestCaseWriteTest.java</p>
+ * <p><b>用途：</b>定义了上传至jira中tests的测试用例模板，类中定义了基本的字段枚举，在使用该类编写测试用例时，
+ * 若需要使用预设的测试用例，则无需设置模板字段与预设用例字段间的关系</p>
+ * <p><b>编码时间：</b>2020年4月6日 上午11:35:56</p>
+ * <p><b>修改时间：</b>2020年4月6日 上午11:35:56</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 12
+ */
 public class JiraTestCaseWriteTest {
 	JiraTestCaseWrite wtc;
 
