@@ -12,8 +12,9 @@ public class TestOpenNewHandle {
 	
 	@BeforeClass
 	public void openBrower() {
-		System.setProperty("webdriver.chrome.driver", "Resource/BrowersDriver/chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", "Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe");
 		cd = new ChromeDriver();
+		cd.get("http://www.baidu.com");
 	}
 	
 	@AfterClass
@@ -42,7 +43,7 @@ public class TestOpenNewHandle {
 		//获取当前所有的handle
 		Set<String> handleSet = cd.getWindowHandles();
 		//编写js脚本，执行js，以开启一个新的标签页
-		String js = "window.open(\"https://www.sogou.com\");";
+		String js = "window.open(\"\");";
 		cd.executeScript(js);
 		//移除原有的windows的Handle，保留新打开的windows的Handle
 		String newHandle = "";
@@ -55,7 +56,7 @@ public class TestOpenNewHandle {
 		//切换WebDriver
 		cd.switchTo().window(newHandle);
 		Thread.sleep(2000);
-		cd.get("http://www.hao123.com");
+//		cd.get("http://www.hao123.com");
 	}
 	
 	/**
