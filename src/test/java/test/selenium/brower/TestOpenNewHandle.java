@@ -31,7 +31,8 @@ public class TestOpenNewHandle {
 	public void overridePage() throws InterruptedException {
 		cd.get("http://www.baidu.com");
 		Thread.sleep(2000);
-		cd.get("http://www.qq.com");
+		cd.get("about:blank");
+		cd.switchTo().window("");
 	}
 	
 	/**
@@ -71,5 +72,32 @@ public class TestOpenNewHandle {
 		cd = new ChromeDriver();
 		cd.get("http://www.163.com");
 		
+	}
+	
+	/**
+	 * 覆盖原标签页
+	 * @throws InterruptedException
+	 */
+	@Test
+	public void closeLabel() throws InterruptedException {
+		cd.get("http://www.baidu.com");
+		Thread.sleep(2000);
+		//获取当前所有的handle
+		Set<String> handleSet = cd.getWindowHandles();
+		//编写js脚本，执行js，以开启一个新的标签页
+		String js = "window.open(\"\");";
+		cd.executeScript(js);
+		//移除原有的windows的Handle，保留新打开的windows的Handle
+		String newHandle = "";
+		for (String handle : cd.getWindowHandles()) {
+			if (!handleSet.contains(handle)) {
+				newHandle = handle;
+				break;
+			}
+		}
+		
+		cd.close();
+		cd.switchTo().window(newHandle);
+		cd.get("http://www.163.com");
 	}
 }
