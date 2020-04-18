@@ -137,7 +137,7 @@ public class Page {
 	/**
 	 * 用于通过浏览器加载页面，并根据页面断言，返回页面是否加载成功。若未设置断言，则无论
 	 * 页面是否成功加载，均返回true
-	 * @param driver WebDriver对象，通过可通过{@link AbstractBrower}类及其子类来生成
+	 * @param driver WebDriver对象，通过可通过{@link Brower}类及其子类来生成
 	 * @return 根据页面断言返回页面是否加载成功
 	 */
 	public boolean loadPage(WebDriver driver) {

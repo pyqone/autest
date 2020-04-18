@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
  * @since JDK 12
  *
  */
-public abstract class AbstractBrower {
+public abstract class Brower {
 	/**
 	 * 用于接收浏览器启动所需的文件路径
 	 */
@@ -50,7 +50,7 @@ public abstract class AbstractBrower {
 	 * 
 	 * @param driberFile 驱动文件对象
 	 */
-	public AbstractBrower(File driverFile) {
+	public Brower(File driverFile) {
 		this.driverFile = driverFile;
 
 		// 存储页面信息
@@ -64,7 +64,7 @@ public abstract class AbstractBrower {
 	 * @param url        待测站点
 	 * @param pageName   待测站点名称，用于切换页面
 	 */
-	public AbstractBrower(File driverFile, String url, String pageName) {
+	public Brower(File driverFile, String url, String pageName) {
 		this(driverFile);
 		nowPage = new Page(url, pageName);
 	}
@@ -75,7 +75,7 @@ public abstract class AbstractBrower {
 	 * @param driverFile 驱动文件对象
 	 * @param page       {@link Page}类对象
 	 */
-	public AbstractBrower(File driverFile, Page page) {
+	public Brower(File driverFile, Page page) {
 		this(driverFile);
 		nowPage = page;
 	}
