@@ -239,8 +239,6 @@ public abstract class AbstractEvent {
 	 * @param name 悬浮窗的名称
 	 */
 	public void switchFrame(String name) {
-		
-		
 		//获取父窗体的窗体名称
 		String parentIframeName = xml.getIframeName(name);
 		
@@ -327,7 +325,7 @@ public abstract class AbstractEvent {
 	}
 
 	/**
-	 * 定位到弹框上并且点击确定按钮
+	 * 定位到弹框上并且点击确定按钮，并返回弹框上的文本
 	 * 
 	 * @return 弹框上的文本
 	 */
@@ -340,7 +338,7 @@ public abstract class AbstractEvent {
 	}
 
 	/**
-	 * 定位到弹框上并且点击取消按钮
+	 * 定位到弹框上并且点击取消按钮，并返回弹框上的文本
 	 * 
 	 * @return 弹框上的文本
 	 */

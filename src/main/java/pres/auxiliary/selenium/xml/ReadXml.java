@@ -63,6 +63,12 @@ public class ReadXml {
 	public ReadXml(File xmlFile) {
 		setXmlPath(xmlFile);
 	}
+	
+	/**
+	 * 保留无参构造，不做任何操作
+	 */
+	public ReadXml() {
+	}
 
 	/**
 	 * 该方法用于重新设置xml文件存放的路径，并将Document对象指向新的XML文件
