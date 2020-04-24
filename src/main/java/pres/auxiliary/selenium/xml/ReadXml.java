@@ -54,6 +54,11 @@ public class ReadXml {
 	 * 定义xml文件中，模板使用的替换符结束标志
 	 */
 	private final String END_SIGN = "}";
+	
+	/**
+	 * 存储xml文件类对象
+	 */
+	private File xmlFile;
 
 	/**
 	 * 用于构造对象，并设置xml文件
@@ -79,10 +84,19 @@ public class ReadXml {
 		// 重新构造Document对象，使其指向新的XML文件
 		try {
 			dom = new SAXReader().read(xmlFile);
+			this.xmlFile = xmlFile;
 		} catch (DocumentException e) {
 			// 若抛出异常，则将异常转换为自定义的IncorrectXMLFileException异常，使其不需要在编译时处理
 			throw new IncorrectXmlPathException("XML文件不正确或XML路径不正确");
 		}
+	}
+	
+	/**
+	 * 用于返回相应的xml文件类对象
+	 * @return xml文件类对象
+	 */
+	public File getXmlFile() {
+		return xmlFile;
 	}
 
 	/**
@@ -91,9 +105,9 @@ public class ReadXml {
 	 * @param name 元素名称
 	 * @return 当前元素有效的定位名称，多个标签名称以空格隔开
 	 */
-	public List<PosMode> getElementMode(String name) {
+	public List<ElementLocationType> getElementMode(String name) {
 		// 用于存储元素定位方式的标签名称
-		List<PosMode> modes = new ArrayList<>();
+		List<ElementLocationType> modes = new ArrayList<>();
 
 		try {
 			@SuppressWarnings("unchecked")
@@ -105,7 +119,7 @@ public class ReadXml {
 			for (Element element : elements) {
 				// 若标签可用且标签内属性不为空，则将该标签的名称存储在s中
 				if ((element.attribute("is_use") == null || element.attributeValue("is_use").equalsIgnoreCase("true"))) {
-					modes.add(PosMode.getMode(element.getName()));
+					modes.add(getMode(element.getName()));
 				}
 			}
 		} catch (NullPointerException e) {
@@ -120,13 +134,13 @@ public class ReadXml {
 	 * 根据元素名称，在指定的xml文件中查找到相应的元素，返回其元素的信息，以{@link By}类返回
 	 * 
 	 * @param name 元素名称
-	 * @param mode 定位方式枚举类对象，参见{@link PosMode}
+	 * @param mode 定位方式枚举类对象，参见{@link ElementLocationType}
 	 * @return 元素对应的{@link By}类对象
 	 * 
 	 * @throws UndefinedElementException 未找到相应的模板元素时抛出的异常
 	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
 	 */
-	public By getBy(String name, PosMode mode) {
+	public By getBy(String name, ElementLocationType mode) {
 		// 存储从xml文件中读取到的元素定位
 		String elementPos = getValue(name, mode);
 
@@ -159,13 +173,13 @@ public class ReadXml {
 	 * 用于根据元素名称及定位方式来返回其定位方式的值
 	 * 
 	 * @param name 元素名称
-	 * @param mode 定位方式枚举类对象，参见{@link PosMode}
+	 * @param mode 定位方式枚举类对象，参见{@link ElementLocationType}
 	 * @return xml文件中的相应元素的定位值
 	 * 
 	 * @throws UndefinedElementException 未找到相应的模板元素时抛出的异常
 	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
 	 */
-	public String getValue(String name, PosMode mode) {
+	public String getValue(String name, ElementLocationType mode) {
 		// 用于拼接读取XML中元素的xpath，为了兼容iframe标签，故此处使用“*”符号来查找元素
 		String xmlXpath = "//*[@name='" + name + "']/" + mode.getValue();
 		// 获取元素节点，并将其转为Element对象，以便于获取该元素的属性值
@@ -199,6 +213,21 @@ public class ReadXml {
 		
 		return iframeName;
 	}
+	
+	/**
+	 * 该方法用于判断当前查找的元素是否存在于xml文件中
+	 * @return 元素是否存在于xml
+	 */
+	public boolean isElement(String name) {
+		//获取元素的xpath，查找所有带name属性的与传入的name相同元素
+		String xpath = "//*[@name='" + name + "']";
+		//若不存在该节点，则返回false，反之，则返回true
+		if (dom.getRootElement().selectSingleNode(xpath) == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	/**
 	 * 用于模板的元素的定位查找，返回其相应的定位
@@ -212,7 +241,7 @@ public class ReadXml {
 	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
 	 */
 	@SuppressWarnings("unchecked")
-	private String getTempletPath(Element element, String name, PosMode mode) {
+	private String getTempletPath(Element element, String name, ElementLocationType mode) {
 		// 通过元素的temp_id定位到模板的id上
 		Element templetElement = (Element) dom.selectSingleNode(
 				"//templet/" + mode.getValue() + "[@id='" + element.attribute("temp_id").getValue() + "']");
@@ -245,5 +274,32 @@ public class ReadXml {
 		}
 
 		return path;
+	}
+	
+	/**
+	 * 根据xml内容标签名称获取相应的ElementLocationType枚举
+	 * @param modeName 定位标签名称
+	 * @return ElementLocationType枚举
+	 */
+	private static ElementLocationType getMode(String modeName) {
+		switch (modeName) {
+		case "xpath":
+			return ElementLocationType.XPATH;
+		case "css":
+			return ElementLocationType.CSS;
+		case "classname":
+			return ElementLocationType.CLASSNAME;
+		case "id":
+			return ElementLocationType.ID;
+		case "linktext":
+			return ElementLocationType.LINKTEXT;
+		case "name":
+			return ElementLocationType.NAME;
+		case "tagname":
+			return ElementLocationType.TAGNAME;
+			
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + modeName);
+		}
 	}
 }

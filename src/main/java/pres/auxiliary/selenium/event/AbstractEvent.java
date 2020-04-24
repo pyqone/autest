@@ -18,7 +18,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.selenium.tool.RecordTool;
-import pres.auxiliary.selenium.xml.PosMode;
+import pres.auxiliary.selenium.xml.ElementLocationType;
 import pres.auxiliary.selenium.xml.ReadXml;
 import pres.auxiliary.selenium.xml.UndefinedElementException;
 
@@ -175,7 +175,7 @@ public abstract class AbstractEvent {
 		// 2.若在xml文件中查找不到该元素，则按照xpath和css的规则进行匹配，直到判断出该元素的定位方式位置
 		// 3.若仍找不到元素，则抛出UnrecognizableLocationModeException
 		try {
-			PosMode mode = readXml(name);
+			ElementLocationType mode = readXml(name);
 			// 判断readXML()方法的返回值是否为空串，若为空串，则抛出TimeoutException
 			if (mode == null) {
 				// 将错误信息写入到记录工具的备注中
@@ -186,7 +186,7 @@ public abstract class AbstractEvent {
 				return mode + "=" + xml.getValue(name, mode);
 			}
 		} catch (UndefinedElementException | NullPointerException | InvalidXPathException e) {
-			PosMode mode = readValue(driver, name);
+			ElementLocationType mode = readValue(driver, name);
 			// 判断readValue()方法的返回值是否为空串，若为空串，则抛出UnrecognizableLocationModeException
 			if (mode == null) {
 				// 将错误信息写入到记录工具的备注中
@@ -197,9 +197,9 @@ public abstract class AbstractEvent {
 				//若有返回定位方式，则根据定位方式类型，获取其元素
 				switch (mode) {
 				case XPATH:
-					return PosMode.XPATH.getValue() + "=" + name;
+					return ElementLocationType.XPATH.getValue() + "=" + name;
 				case CSS:
-					return PosMode.CSS.getValue() + "=" + name;
+					return ElementLocationType.CSS.getValue() + "=" + name;
 				default:
 					return "";
 				}
@@ -428,7 +428,7 @@ public abstract class AbstractEvent {
 		// 2.若在xml文件中查找不到该元素，则按照xpath和css的规则进行匹配，直到判断出该元素的定位方式位置
 		// 3.若仍找不到元素，则抛出UnrecognizableLocationModeException
 		try {
-			PosMode mode = readXml(name);
+			ElementLocationType mode = readXml(name);
 			// 判断readXML()方法的返回值是否为空串，若为空串，则抛出TimeoutException
 			if (mode == null) {
 				// 将错误信息写入到记录工具的备注中
@@ -439,7 +439,7 @@ public abstract class AbstractEvent {
 				elements = driver.findElements(xml.getBy(name, mode));
 			}
 		} catch (UndefinedElementException | NullPointerException | InvalidXPathException e) {
-			PosMode mode = readValue(driver, name);
+			ElementLocationType mode = readValue(driver, name);
 			// 判断readValue()方法的返回值是否为空串，若为空串，则抛出UnrecognizableLocationModeException
 			if (mode == null) {
 				// 将错误信息写入到记录工具的备注中
@@ -473,9 +473,9 @@ public abstract class AbstractEvent {
 	 * @param name   控件名称
 	 * @return 查找到的定位方式名称
 	 */
-	protected PosMode readXml(String name) {
+	protected ElementLocationType readXml(String name) {
 		// 循环，逐个在页面上配对有效的标签对应的定位方式
-		for (PosMode mode : xml.getElementMode(name)) {
+		for (ElementLocationType mode : xml.getElementMode(name)) {
 			// 在页面上查找元素定位方式
 			try {
 				//自动定位元素所在的窗体
@@ -545,7 +545,7 @@ public abstract class AbstractEvent {
 	 * @param text 定位方式
 	 * @return 定位方式的类型
 	 */
-	protected PosMode readValue(WebDriver driver, String text) {
+	protected ElementLocationType readValue(WebDriver driver, String text) {
 		// 定义判断参数为xpath的字符
 		String judgeXpath = "/";
 
@@ -558,12 +558,12 @@ public abstract class AbstractEvent {
 			if (text.indexOf(judgeXpath) == 0) {
 				// 查找该定位方式在有限的时间内是否内被查到
 				wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(text)));
-				return PosMode.XPATH;
+				return ElementLocationType.XPATH;
 				// 将等待时间设置回原来的
 			} else if (text.indexOf(judgeCss) == 0) {
 				// 匹配css，判断方法：判断text的前四个字符是否是“html”
 				wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(text)));
-				return PosMode.CSS;
+				return ElementLocationType.CSS;
 			} else {
 				return null;
 			}

@@ -19,7 +19,7 @@ package pres.auxiliary.selenium.xml;
  * @since JDK 12
  *
  */
-public enum PosMode {
+public enum ElementLocationType {
 	/** 通过xpath方式进行定位 */
 	XPATH("xpath"),
 	/** 通过css方式进行定位 */
@@ -40,7 +40,7 @@ public enum PosMode {
 	 */
 	private String value;
 
-	private PosMode(String value) {
+	private ElementLocationType(String value) {
 		this.value = value;
 	}
 
@@ -51,27 +51,5 @@ public enum PosMode {
 	 */
 	public String getValue() {
 		return value;
-	}
-	
-	public static PosMode getMode(String modeName) {
-		switch (modeName) {
-		case "xpath":
-			return XPATH;
-		case "css":
-			return CSS;
-		case "classname":
-			return CLASSNAME;
-		case "id":
-			return ID;
-		case "linktext":
-			return LINKTEXT;
-		case "name":
-			return NAME;
-		case "tagname":
-			return TAGNAME;
-			
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + modeName);
-		}
 	}
 }

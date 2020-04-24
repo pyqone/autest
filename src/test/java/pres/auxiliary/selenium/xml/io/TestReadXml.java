@@ -7,7 +7,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.selenium.xml.PosMode;
+import pres.auxiliary.selenium.xml.ElementLocationType;
 import pres.auxiliary.selenium.xml.ReadXml;
 
 /**
@@ -37,73 +37,73 @@ public class TestReadXml {
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getBy(String, PosMode)}方法，获取普通元素
+	 * 用于测试{@link ReadXml#getBy(String, ElementLocationType)}方法，获取普通元素
 	 */
 	@Test
 	public void getByTest_Element() {
-		System.out.println(r.getBy("XX控件7", PosMode.XPATH));
+		System.out.println(r.getBy("XX控件7", ElementLocationType.XPATH));
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getBy(String, PosMode)}方法，获取窗体元素
+	 * 用于测试{@link ReadXml#getBy(String, ElementLocationType)}方法，获取窗体元素
 	 */
 	@Test
 	public void getByTest_Iframe() {
-		System.out.println(r.getBy("窗体1.1", PosMode.XPATH));
+		System.out.println(r.getBy("窗体1.1", ElementLocationType.XPATH));
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getBy(String, PosMode)}方法，获取模板元素
+	 * 用于测试{@link ReadXml#getBy(String, ElementLocationType)}方法，获取模板元素
 	 */
 	@Test
 	public void getByTest_Templet() {
-		System.out.println(r.getBy("XX控件11", PosMode.XPATH));
-		System.out.println(r.getBy("窗体1", PosMode.CSS));
+		System.out.println(r.getBy("XX控件11", ElementLocationType.XPATH));
+		System.out.println(r.getBy("窗体1", ElementLocationType.CSS));
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getBy(String, PosMode)}方法，获取顶层元素
+	 * 用于测试{@link ReadXml#getBy(String, ElementLocationType)}方法，获取顶层元素
 	 */
 	@Test
 	public void getByTest_RootElement() {
-		System.out.println(r.getBy("XX控件1", PosMode.XPATH));
+		System.out.println(r.getBy("XX控件1", ElementLocationType.XPATH));
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, PosMode)}方法，获取普通元素
+	 * 用于测试{@link ReadXml#getValue(String, ElementLocationType)}方法，获取普通元素
 	 */
 	@Test
 	public void getElementValueTest_Element() {
-		System.out.println(r.getValue("XX控件7", PosMode.XPATH));
+		System.out.println(r.getValue("XX控件7", ElementLocationType.XPATH));
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, PosMode)}方法，获取窗体元素
+	 * 用于测试{@link ReadXml#getValue(String, ElementLocationType)}方法，获取窗体元素
 	 */
 	@Test
 	public void getElementValueTest_Iframe() {
-		System.out.println(r.getValue("窗体1.1", PosMode.XPATH));
+		System.out.println(r.getValue("窗体1.1", ElementLocationType.XPATH));
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, PosMode)}方法，获取模板元素
+	 * 用于测试{@link ReadXml#getValue(String, ElementLocationType)}方法，获取模板元素
 	 */
 	@Test
 	public void getElementValueTest_Templet() {
-		System.out.println(r.getValue("XX控件11", PosMode.XPATH));
-		System.out.println(r.getValue("窗体1", PosMode.CSS));
+		System.out.println(r.getValue("XX控件11", ElementLocationType.XPATH));
+		System.out.println(r.getValue("窗体1", ElementLocationType.CSS));
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, PosMode)}方法，获取顶层元素
+	 * 用于测试{@link ReadXml#getValue(String, ElementLocationType)}方法，获取顶层元素
 	 */
 	@Test
 	public void getElementValueTest_RootElement() {
-		System.out.println(r.getValue("XX控件1", PosMode.XPATH));
+		System.out.println(r.getValue("XX控件1", ElementLocationType.XPATH));
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getIframeName(String, PosMode)}方法，获取普通元素
+	 * 用于测试{@link ReadXml#getIframeName(String, ElementLocationType)}方法，获取普通元素
 	 */
 	@Test
 	public void getIframeNameTest_Element() {
@@ -111,7 +111,7 @@ public class TestReadXml {
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getIframeName(String, PosMode)}方法，获取窗体元素
+	 * 用于测试{@link ReadXml#getIframeName(String, ElementLocationType)}方法，获取窗体元素
 	 */
 	@Test
 	public void getIframeNameTest_Iframe() {
@@ -119,7 +119,7 @@ public class TestReadXml {
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getIframeName(String, PosMode)}方法，获取模板元素
+	 * 用于测试{@link ReadXml#getIframeName(String, ElementLocationType)}方法，获取模板元素
 	 */
 	@Test
 	public void getIframeNameTest_Templet() {
