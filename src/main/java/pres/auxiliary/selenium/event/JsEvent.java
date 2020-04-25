@@ -6,7 +6,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 
-import pres.auxiliary.selenium.xml.ElementLocationType;
+import pres.auxiliary.selenium.xml.ByType;
 
 /**
  * <p><b>文件名：</b>JsEvent.java</p>
@@ -158,10 +158,10 @@ public class JsEvent extends AbstractEvent {
 
 		String[] element = getElementPosition(text).split("=");
 		// 判断定位方式，若定位方式为css，则按照querySelector()方式进行选择，其他的方式均按照xpath来获取
-		if (ElementLocationType.XPATH.getValue().equalsIgnoreCase(element[0])) {
+		if (ByType.XPATH.getValue().equalsIgnoreCase(element[0])) {
 			script = "document.evaluate('" + element[1]
 					+ "', document, null, XPathResult.ANY_TYPE, null).iterateNext()";
-		} else if (ElementLocationType.CSS.getValue().equalsIgnoreCase(element[0])) {
+		} else if (ByType.CSS.getValue().equalsIgnoreCase(element[0])) {
 			script = "document.querySelector(" + element[1] + ")";
 		} else {
 			script = "document.evaluate('//*[@" + element[0] + "=\"" + element[1]

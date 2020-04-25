@@ -40,7 +40,7 @@ import org.openqa.selenium.WebElement;
 import pres.auxiliary.directory.exception.UndefinedDirectoryException;
 import pres.auxiliary.selenium.browers.FirefoxBrower;
 import pres.auxiliary.selenium.event.Event;
-import pres.auxiliary.selenium.xml.ElementLocationType;
+import pres.auxiliary.selenium.xml.ByType;
 import pres.auxiliary.selenium.xml.ReadXml;
 
 /**
@@ -1040,7 +1040,7 @@ public class TestReport extends AbstractReport {
 		// 由于禅道的项目搜索机制与其他页面不同，即使搜索了其<ul>标签下也显示所有的<li>，故不能通过搜索后获取第一个元素来对搜索到的项目进行定位
 		List<WebElement> l = null;
 		while (true) {
-			l = d.findElements(r.getBy("项目选项", ElementLocationType.XPATH));
+			l = d.findElements(r.getBy("项目选项", ByType.XPATH));
 			if (l.size() != 0) {
 				break;
 			} else {
@@ -1072,7 +1072,7 @@ public class TestReport extends AbstractReport {
 		event.getSelectEvent().select("编码格式下拉框", 1);
 		event.getSelectEvent().select("记录下拉框", 0);
 		// 禅道的导出按钮无法点击，故需要通过提交表单的方法来导出
-		d.findElement(r.getBy("导出数据表单", ElementLocationType.XPATH)).submit();
+		d.findElement(r.getBy("导出数据表单", ByType.XPATH)).submit();
 		d.close();
 	}
 }

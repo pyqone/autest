@@ -40,7 +40,7 @@ import com.alibaba.fastjson.JSONArray;
  * @since JDK 1.8
  *
  */
-public class ChromeBrower extends Brower {
+public class ChromeBrower extends AbstractBrower {
 	/**
 	 * 用于存储需要对浏览器进行配置的参数
 	 */

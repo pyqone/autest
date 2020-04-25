@@ -2,7 +2,7 @@ package pres.auxiliary.selenium.xml;
 
 /**
  * <p>
- * <b>文件名：</b>PosMode.java
+ * <b>文件名：</b>ByType.java
  * </p>
  * <p>
  * <b>用途：</b>用于枚举出能被识别的元素定位方式
@@ -19,7 +19,7 @@ package pres.auxiliary.selenium.xml;
  * @since JDK 12
  *
  */
-public enum ElementLocationType {
+public enum ByType {
 	/** 通过xpath方式进行定位 */
 	XPATH("xpath"),
 	/** 通过css方式进行定位 */
@@ -33,14 +33,19 @@ public enum ElementLocationType {
 	/** 通过name方式进行定位 */
 	NAME("name"),
 	/** 通过tagName方式进行定位 */
-	TAGNAME("tagname");
+	TAGNAME("tagname"), 
+	/**
+	 * 通过jQuert的方式进行定位
+	 */
+//	JQ("jquert"), 
+	;
 
 	/**
 	 * 定义枚举值
 	 */
 	private String value;
 
-	private ElementLocationType(String value) {
+	private ByType(String value) {
 		this.value = value;
 	}
 

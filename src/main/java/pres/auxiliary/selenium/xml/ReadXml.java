@@ -105,9 +105,9 @@ public class ReadXml {
 	 * @param name 元素名称
 	 * @return 当前元素有效的定位名称，多个标签名称以空格隔开
 	 */
-	public List<ElementLocationType> getElementMode(String name) {
+	public List<ByType> getElementMode(String name) {
 		// 用于存储元素定位方式的标签名称
-		List<ElementLocationType> modes = new ArrayList<>();
+		List<ByType> modes = new ArrayList<>();
 
 		try {
 			@SuppressWarnings("unchecked")
@@ -134,13 +134,13 @@ public class ReadXml {
 	 * 根据元素名称，在指定的xml文件中查找到相应的元素，返回其元素的信息，以{@link By}类返回
 	 * 
 	 * @param name 元素名称
-	 * @param mode 定位方式枚举类对象，参见{@link ElementLocationType}
+	 * @param mode 定位方式枚举类对象，参见{@link ByType}
 	 * @return 元素对应的{@link By}类对象
 	 * 
 	 * @throws UndefinedElementException 未找到相应的模板元素时抛出的异常
 	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
 	 */
-	public By getBy(String name, ElementLocationType mode) {
+	public By getBy(String name, ByType mode) {
 		// 存储从xml文件中读取到的元素定位
 		String elementPos = getValue(name, mode);
 
@@ -173,13 +173,13 @@ public class ReadXml {
 	 * 用于根据元素名称及定位方式来返回其定位方式的值
 	 * 
 	 * @param name 元素名称
-	 * @param mode 定位方式枚举类对象，参见{@link ElementLocationType}
+	 * @param mode 定位方式枚举类对象，参见{@link ByType}
 	 * @return xml文件中的相应元素的定位值
 	 * 
 	 * @throws UndefinedElementException 未找到相应的模板元素时抛出的异常
 	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
 	 */
-	public String getValue(String name, ElementLocationType mode) {
+	public String getValue(String name, ByType mode) {
 		// 用于拼接读取XML中元素的xpath，为了兼容iframe标签，故此处使用“*”符号来查找元素
 		String xmlXpath = "//*[@name='" + name + "']/" + mode.getValue();
 		// 获取元素节点，并将其转为Element对象，以便于获取该元素的属性值
@@ -241,7 +241,7 @@ public class ReadXml {
 	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
 	 */
 	@SuppressWarnings("unchecked")
-	private String getTempletPath(Element element, String name, ElementLocationType mode) {
+	private String getTempletPath(Element element, String name, ByType mode) {
 		// 通过元素的temp_id定位到模板的id上
 		Element templetElement = (Element) dom.selectSingleNode(
 				"//templet/" + mode.getValue() + "[@id='" + element.attribute("temp_id").getValue() + "']");
@@ -281,22 +281,22 @@ public class ReadXml {
 	 * @param modeName 定位标签名称
 	 * @return ElementLocationType枚举
 	 */
-	private static ElementLocationType getMode(String modeName) {
+	private static ByType getMode(String modeName) {
 		switch (modeName) {
 		case "xpath":
-			return ElementLocationType.XPATH;
+			return ByType.XPATH;
 		case "css":
-			return ElementLocationType.CSS;
+			return ByType.CSS;
 		case "classname":
-			return ElementLocationType.CLASSNAME;
+			return ByType.CLASSNAME;
 		case "id":
-			return ElementLocationType.ID;
+			return ByType.ID;
 		case "linktext":
-			return ElementLocationType.LINKTEXT;
+			return ByType.LINKTEXT;
 		case "name":
-			return ElementLocationType.NAME;
+			return ByType.NAME;
 		case "tagname":
-			return ElementLocationType.TAGNAME;
+			return ByType.TAGNAME;
 			
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + modeName);
