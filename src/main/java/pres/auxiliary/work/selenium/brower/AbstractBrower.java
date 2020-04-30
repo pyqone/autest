@@ -1,7 +1,9 @@
 package pres.auxiliary.work.selenium.brower;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -33,7 +35,7 @@ public abstract class AbstractBrower {
 	/**
 	 * 存储打开的页面
 	 */
-	HashMap<String, Page> pageList = new HashMap<String, Page>(16);
+	HashMap<String, Page> pageMap = new HashMap<String, Page>(16);
 
 	/**
 	 * 用于存储WebDriver当前指向的页面信息
@@ -135,9 +137,9 @@ public abstract class AbstractBrower {
 
 		// 若pageList无元素，则表明此为第一次打开浏览器，则无论openNewLabel是何值，均按照同一规则打开页面
 		// 若pageList有元素，则根据openNewLabel参数来决定如何打开新的页面
-		if (pageList.size() == 0) {
+		if (pageMap.size() == 0) {
 			// 存储页面对象
-			pageList.put(newPage.getPageName(), newPage);
+			pageMap.put(newPage.getPageName(), newPage);
 			// 将当前页面对象指向newPage
 			nowPage = newPage;
 			// 在当前标签上打开页面
@@ -145,15 +147,15 @@ public abstract class AbstractBrower {
 		} else {
 			if (openNewLabel) {
 				// 存储页面对象
-				pageList.put(newPage.getPageName(), newPage);
+				pageMap.put(newPage.getPageName(), newPage);
 				// 将当前页面对象指向newPage
 				nowPage = newPage;
 				// 在标签页上打开页面
 				openNewLabelPage();
 			} else {
 				// 先在pageList移除nowPage
-				pageList.remove(nowPage.getPageName());
-				pageList.put(newPage.getPageName(), newPage);
+				pageMap.remove(nowPage.getPageName());
+				pageMap.put(newPage.getPageName(), newPage);
 				// 将nowPage指向newPage
 				nowPage = newPage;
 				// 在当前标签上打开页面
@@ -193,7 +195,7 @@ public abstract class AbstractBrower {
 	public JSONObject getAllInformation() {
 		// 遍历所有标签页，存储标签页信息
 		JSONArray labelInformation = new JSONArray();
-		pageList.forEach((name, page) -> {
+		pageMap.forEach((name, page) -> {
 			labelInformation.add(page.getPageInformation());
 		});
 		// 存储标签页信息
@@ -203,28 +205,20 @@ public abstract class AbstractBrower {
 	}
 
 	/**
-	 * 用于根据名称返回对浏览器的各项信息，若信息不存在，则返回空
-	 * 
-	 * @param key 需要搜索的信息名称
-	 * @return 名称对应的浏览器信息
+	 * 用于返回当前在浏览器中被打开的页面
+	 * @return 在浏览器中被打开的{@link Page}对象
 	 */
-	public String getInformation(String key) {
-		if (informationJson.containsKey(key)) {
-			//若需要查看标签信息，则对标签信息即时进行存储
-			if ("标签信息".equals(key)) {
-				// 遍历所有标签页，存储标签页信息
-				JSONArray labelInformation = new JSONArray();
-				pageList.forEach((name, page) -> {
-					labelInformation.add(page.getPageInformation());
-				});
-				// 存储标签页信息
-				informationJson.put("标签信息", labelInformation);
+	public List<Page> getOpenPage() {
+		List<Page> pageList = new ArrayList<>();
+		
+		//遍历pageMap，存储所有存在handle的Page对象
+		pageMap.forEach((k, v) -> {
+			if (!v.getHandle().isEmpty()) {
+				pageList.add(v);
 			}
-			
-			return informationJson.getString(key);
-		} else {
-			return "";
-		}
+		});
+		
+		return pageList;
 	}
 
 	/**
@@ -261,14 +255,14 @@ public abstract class AbstractBrower {
 			driver.switchTo().window(newHandle);
 
 			// 将标签内容全部置空及当前页面内容置空
-			pageList.clear();
+			pageMap.clear();
 			nowPage = null;
 		} else {
 			// 根据当前窗口handle查找相应的page对象
 			Page page = findPage(driver.getWindowHandle());
 			// 若窗口指向的页面存在，则将该页面从类中移除
 			if (page != null) {
-				pageList.remove(page.getPageName());
+				pageMap.remove(page.getPageName());
 			}
 
 			// 关闭当前标签
@@ -290,7 +284,7 @@ public abstract class AbstractBrower {
 		//将driver指定为null
 		driver = null;
 		// 清空页面存储的内容
-		pageList.clear();
+		pageMap.clear();
 		nowPage = null;
 	}
 
@@ -314,7 +308,7 @@ public abstract class AbstractBrower {
 	 */
 	public void switchWindow(Page page) {
 		// 查找pageList中是否存在传入的page，若存在，则获取相应的handle后对窗口进行切换
-		if (pageList.containsKey(page.getPageName())) {
+		if (pageMap.containsKey(page.getPageName())) {
 			try {
 				driver.switchTo().window(page.getHandle());
 			} catch (NoSuchWindowException e) {
@@ -404,8 +398,8 @@ public abstract class AbstractBrower {
 	 * @return 页面对应窗口的Handle
 	 */
 	private String findPageHandle(String pageName) {
-		if (pageList.containsKey(pageName)) {
-			return pageList.get(pageName).getHandle();
+		if (pageMap.containsKey(pageName)) {
+			return pageMap.get(pageName).getHandle();
 		} else {
 			return "";
 		}
@@ -419,10 +413,10 @@ public abstract class AbstractBrower {
 	 */
 	private Page findPage(String handle) {
 		// 遍历所有的page，查询与传入相同的handle
-		for (String pageName : pageList.keySet()) {
+		for (String pageName : pageMap.keySet()) {
 			// 若存储的handle与传入的handle相同，则对其进行
-			if (handle.equals(pageList.get(pageName).getHandle())) {
-				return pageList.get(pageName);
+			if (handle.equals(pageMap.get(pageName).getHandle())) {
+				return pageMap.get(pageName);
 			}
 		}
 		

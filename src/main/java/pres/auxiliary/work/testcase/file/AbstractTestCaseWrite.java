@@ -357,7 +357,7 @@ public abstract class AbstractTestCaseWrite<T extends AbstractTestCaseWrite<T>> 
 	}
 
 	/**
-	 * 用于将生成测试用例方法（继承自{@link Case}类的方法）所成成的测试用例添加到测试用例文件中
+	 * 用于将测试用例模板（继承自{@link Case}类的方法）所成的测试用例添加到测试用例文件中
 	 * 
 	 * @param testCase 测试用例生成方法
 	 * @return 类本身

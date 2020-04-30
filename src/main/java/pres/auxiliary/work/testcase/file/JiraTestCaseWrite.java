@@ -67,7 +67,7 @@ public class JiraTestCaseWrite extends CommonTestCaseWrite<JiraTestCaseWrite> {
 	 * @since JDK 12
 	 *
 	 */
-	enum JiraFieldIdType {
+	public enum JiraFieldIdType {
 		/**
 		 * 标题（Name）
 		 */
