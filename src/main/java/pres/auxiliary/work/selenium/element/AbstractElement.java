@@ -13,7 +13,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.selenium.event.NoSuchWindownException;
 import pres.auxiliary.selenium.xml.ByType;
@@ -228,14 +227,8 @@ public abstract class AbstractElement {
 		//调用切换窗体的方法
 		switchFrame(nameList);
 		
-		//将相应的元素存入nameList中
-		if (byType != null) {
-			driver.switchTo().frame(recognitionElements(new ElementInformation(name, byType, getWaitTime(name))).get(0));
-		} else {
-			driver.switchTo().frame(recognitionElements(new ElementInformation(name, getWaitTime(name))).get(0));
-		}
+		driver.switchTo().frame(recognitionElement(name, byType).get(0));
 		//切换窗体
-		
 		iframeNameList.add(name);
 	}
 	
@@ -271,7 +264,7 @@ public abstract class AbstractElement {
 				}
 			} else {
 				//切换窗体
-				driver.switchTo().frame(recognitionElements(new ElementInformation(frameName, getWaitTime(frameName))).get(0));
+				driver.switchTo().frame(recognitionElement(frameName, null).get(0));
 				iframeNameList.add(frameName);
 			}
 		});
@@ -316,7 +309,7 @@ public abstract class AbstractElement {
 			driver.switchTo().window(newWinHandle);
 			try {
 				//构造信息，因为在构造过程中会判断元素是否存在，
-				new ElementInformation(controlName, getWaitTime(controlName));
+				recognitionElement(controlName, null);
 				return;
 			}catch (Exception e) {
 				continue;
@@ -329,7 +322,7 @@ public abstract class AbstractElement {
 				//切换窗口，并查找元素是否在窗口上，若存在，则结束切换
 				brower.switchWindow(page);
 				try {
-					new ElementInformation(controlName, getWaitTime(controlName));
+					recognitionElement(controlName, null);
 					return;
 				}catch (Exception e) {
 					continue;
@@ -406,8 +399,40 @@ public abstract class AbstractElement {
 	 * @throws TimeoutException 元素在指定时间内未查找到时，抛出的异常
 	 * @throws UnrecognizableLocationModeException 元素无法识别时抛出的异常
 	 */
+	/*
 	List<WebElement> recognitionElements(ElementInformation element) {
 		return driver.findElements(element.getBy());
+	}
+	*/
+	List<WebElement> recognitionElement(String name, ByType byType) {
+		By by;
+		//若未指定xml文件，或者在xml文件中无法查到相应的元素时，则将name的值赋给value，且根据value判断相应定位方式
+		if (isXmlElement(name)) {
+			by = recognitionCommonElement(name, byType);
+		} else {
+			//若指定了xml文件，且传入的元素名称存在与xml文件中，则判断元素相应的定位方式及定位内容
+			by = recognitionXmlElement(name, byType);
+		}
+		
+		return driver.findElements(by);
+	}
+
+	private By recognitionCommonElement(String name, ByType byType) {
+		//判断传入的ByType对象是否为null
+		if (byType == null) {
+			return judgeCommonElementBy(name);
+		} else {
+			return getBy(name, byType);
+		}
+	}
+
+	private By recognitionXmlElement(String name, ByType byType) {
+		//判断传入的ByType对象是否为null
+		if (byType == null) {
+			return judgeXmlElementBy(name);
+		} else {
+			return xml.getBy(name, byType);
+		}
 	}
 	
 	/**
@@ -466,203 +491,103 @@ public abstract class AbstractElement {
 	}
 	
 	/**
-	 * <p><b>文件名：</b>AbstractElement.java</p>
-	 * <p><b>用途：</b>用于</p>
-	 * <p><b>编码时间：</b>2020年4月25日 下午5:43:59</p>
-	 * <p><b>修改时间：</b>2020年4月25日 下午5:43:59</p>
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 * @since JDK 12
+	 * 用于根据传入的参数，识别非xml文件内的元素定位方式。
+	 * 该方法能快速识别xpath定位方式以及绝对css定位方式，若不是以上两种定位方式
+	 * 则会遍历所有的定位方式，此时会降低运行速度，建议在不是以上两种定位方式的
+	 * 情况下，直接指定元素的定位方式，以提高效率
 	 */
-	class ElementInformation {
-		/**
-		 * 用于存储元素的名称
-		 */
-		private String name;
-		
-		/**
-		 * 用于存储元素的定位内容
-		 */
-		private String value = "";
-		
-		/**
-		 * 用于存储元素的定位方式
-		 */
-		private ByType byType;
-		
-		/**
-		 * 用于存储在页面上查找的等待时间
-		 */
-		private long waitTime;
-		
-		/**
-		 * 用于初始化元素的信息
-		 * @param name 元素在xml文件的名称，或xpath路径，或绝对的css路径
-		 * @param waitTime 元素控件的等待时间
-		 */
-		public ElementInformation(String name, long waitTime) {
-			this.name = name;
-			this.waitTime = waitTime;
-			
-			//若未指定xml文件，或者在xml文件中无法查到相应的元素时，则将name的值赋给value，且根据value判断相应定位方式
-			if (xml == null || !xml.isElement(name)) {
-				value = name;
-				setCommonElementLocationMode();
-			} else {
-				//若指定了xml文件，且传入的元素名称存在与xml文件中，则判断元素相应的定位方式及定位内容
-				setXmlElementLocation();
+	By judgeCommonElementBy(String value) {
+		// 如果抛出元素名称查找不到的的异常，则对应匹配xpath和绝对css路径两种定位方式
+		// 匹配xpath定位，判定方法，判断text的第一个字符是否是“/”
+		//由于是识别普通元素，非xml元素其value就是元素的名称name， 故获取等待时间时可直接将value传入
+		if (value.indexOf("/") == 0) {
+			//在页面中查找元素，若元素能找到，则结束查找
+			By by = getBy(value, ByType.XPATH);
+			if (isExistElement(by, getWaitTime(value))) {
+				return by;
 			}
-		}
-		
-		/**
-		 * 用于初始化元素的信息
-		 * @param name 元素在xml文件的名称，或xpath路径，或绝对的css路径
-		 * @param waitTime 元素控件的等待时间
-		 */
-		public ElementInformation(String name, ByType byType, long waitTime) {
-			this.name = name;
-			this.byType = byType;
-			this.waitTime = waitTime;
-			
-			//若未指定xml文件，则将name的值赋给value
-			if (xml == null) {
-				value = name;
-			} else {
-				//xml文件中不存在name对应的元素，则将name的值赋给value；反之，则在xml文件中查找对应的定位内容
-				if (!xml.isElement(name)) {
-					value = name;
-				} else {
-					value = xml.getValue(name, byType);
-				}
+		} else if (value.indexOf("html") == 0) {
+			//在页面中查找元素，若元素能找到，则结束查找
+			By by = getBy(value, ByType.CSS);
+			if (isExistElement(by, getWaitTime(value))) {
+				return by;
 			}
-		}
-
-		/**
-		 * 用于返回元素的名称，或定位方式
-		 * @return 元素的名称
-		 */
-		public String getName() {
-			return name;
-		}
-
-		/**
-		 * 用于返回元素的等待时间
-		 * @return
-		 */
-		public long getWaitTime() {
-			return waitTime;
-		}
+		} 
 		
-		/**
-		 * 用于返回定位元素的内容，当未对元素进行查找时，返回空串
-		 * @return 定位元素的内容
-		 */
-		public String getValue() {
-			return value;
-		}
-		
-		/**
-		 * 用于根据传入的参数，识别非xml文件内的元素定位方式。
-		 * 该方法能快速识别xpath定位方式以及绝对css定位方式，若不是以上两种定位方式
-		 * 则会遍历所有的定位方式，此时会降低运行速度，建议在不是以上两种定位方式的
-		 * 情况下，直接指定元素的定位方式，以提高效率
-		 */
-		void setCommonElementLocationMode() {
-			// 如果抛出元素名称查找不到的的异常，则对应匹配xpath和绝对css路径两种定位方式
-			// 匹配xpath定位，判定方法，判断text的第一个字符是否是“/”
-			if (value.indexOf("/") == 0) {
-				// 查找该定位方式在有限的时间内是否内被查到
-				byType = ByType.XPATH;
-				//在页面中查找元素，若元素能找到，则结束查找
-				if (isExistElement()) {
-					return;
-				}
-			} else if (value.indexOf("html") == 0) {
-				byType = ByType.CSS;
-				//在页面中查找元素，若元素能找到，则结束查找
-				if (isExistElement()) {
-					return;
-				}
-			} else {
-				//若元素无法识别，则将所有的定位类型（排除xpath类型）与之进行对比，直到在页面上找到元素为止
-				for(ByType type : ByType.values()) {
-					if (type == ByType.XPATH) {
-						continue;
-					}
-					
-					byType = type;
-					//在页面中查找元素，若元素能找到，则结束查找
-					if (isExistElement()) {
-						return;
-					}
-				}
+		//若元素无法识别，则将所有的定位类型（排除xpath类型）与之进行对比，直到在页面上找到元素为止
+		for(ByType type : ByType.values()) {
+			if (type == ByType.XPATH) {
+				continue;
 			}
 			
-			//若所有的定位方式均无法查找到元素，则抛出异常
-			throw new UnrecognizableLocationModeException("元素定位方式类型无法识别：" + value);
-		}
-		
-		/**
-		 * 用于设置xml文件内的元素的定位方式及定位内容
-		 */
-		void setXmlElementLocation() {
-			// 循环，逐个在页面上配对有效的标签对应的定位方式
-			for (ByType mode : xml.getElementMode(name)) {
-				//存储当前查询到的元素信息
-				byType = mode;
-				value = xml.getValue(name, mode);
-				
-				//若元素能被找到，则结束循环
-				if (isExistElement()) {
-					break;
-				}
-		 
-				// 若循环结束后仍未能找到该元素，则抛出异常
-				throw new TimeoutException("元素“" + name + "”无法查找，请核对xml文件：" + xml.getXmlFile().getName() + "\n文件路径：" + xml.getXmlFile().getAbsolutePath());
+			By by = getBy(value, type);
+			
+			//在页面中查找元素，若元素能找到，则结束查找
+			if (isExistElement(by, getWaitTime(value))) {
+				return by;
 			}
 		}
 		
-		/**
-		 * 根据元素的参数，返回元素的By对象
-		 * @return 元素的By对象
-		 */
-		By getBy() {
-			//根据元素的定位方式，对定位内容进行选择，返回相应的By对象
-			switch (byType) {
-			case XPATH: 
-				return By.xpath(value);
-			case CLASSNAME:
-				return By.className(value);
-			case CSS:
-				return By.cssSelector(value);
-			case ID:
-				return By.id(value);
-			case LINKTEXT:
-				return By.linkText(value);
-			case NAME:
-				return By.name(value);
-			case TAGNAME:
-				return By.tagName(value);
-			default:
-				throw new UnrecognizableLocationModeException("无法识别的定位类型：" + byType);
+		//若所有的定位方式均无法查找到元素，则抛出异常
+		throw new TimeoutException("普通元素定位方式类型无法识别：" + value);
+	}
+	
+	/**
+	 * 用于设置xml文件内的元素的定位方式及定位内容
+	 */
+	By judgeXmlElementBy(String name) {
+		By by;
+		// 循环，逐个在页面上配对有效的标签对应的定位方式
+		for (ByType mode : xml.getElementMode(name)) {
+			by = getBy(xml.getValue(name, mode), mode);
+			
+			//若元素能被找到，则返回相应的By对象，若未找到，则再次循环
+			if (isExistElement(by, getWaitTime(name))) {
+				return by;
+			} else {
+				continue;
 			}
 		}
 		
-		/**
-		 * 根据页面的等待时间和元素定位方式，在页面上查找相应的元素，返回是否能查到元素
-		 * @param time 控件等待时间
-		 * @param by 元素定位方式
-		 * @return 是否能查找到的元素
-		 */
-		boolean isExistElement() {
-//			new WebDriverWait(driver, time, 200).until(ExpectedConditions.elementToBeClickable(by));
-//			new WebDriverWait(driver, time, 200).until(ExpectedConditions.titleContains(""));
-			//当查找到元素时，则返回true，若查不到元素，则会抛出异常，故返回false
-			return new WebDriverWait(driver, waitTime, 200).
-					until((driver) -> {
-						WebElement element = driver.findElement(getBy());
-						return element != null;
-					});
+		// 若循环结束后仍未能找到该元素，则抛出异常
+		throw new TimeoutException("xml文件内元素“" + name + "”无法查找，请核对xml文件：" + xml.getXmlFile().getName() + "\n文件路径：" + xml.getXmlFile().getAbsolutePath());
+	}
+	
+	/**
+	 * 根据元素的参数，返回元素的By对象
+	 * @return 元素的By对象
+	 */
+	By getBy(String value, ByType byType) {
+		//根据元素的定位方式，对定位内容进行选择，返回相应的By对象
+		switch (byType) {
+		case XPATH: 
+			return By.xpath(value);
+		case CLASSNAME:
+			return By.className(value);
+		case CSS:
+			return By.cssSelector(value);
+		case ID:
+			return By.id(value);
+		case LINKTEXT:
+			return By.linkText(value);
+		case NAME:
+			return By.name(value);
+		case TAGNAME:
+			return By.tagName(value);
+		default:
+			throw new UnrecognizableLocationModeException("无法识别的定位类型：" + byType);
 		}
+	}
+	
+	/**
+	 * 根据页面的等待时间和元素定位方式，在页面上查找相应的元素，返回是否能查到元素
+	 * @param time 控件等待时间
+	 * @param by 元素定位方式
+	 * @return 是否能查找到的元素
+	 */
+	abstract boolean isExistElement(By by, long waitTime);
+	
+	boolean isXmlElement(String name) {
+		return (xml == null || !xml.isElement(name));
 	}
 }

@@ -1,7 +1,9 @@
 package pres.auxiliary.work.selenium.element;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
@@ -47,12 +49,7 @@ public class CommonElement extends AbstractElement {
 	 * @return WebElement对象
 	 */
 	public WebElement getWebElement(String name) {
-		//判断传入的元素是否在xml文件中，若存在再判断是否自动切换窗体，若需要，则获取元素的所有父窗体并进行切换
-		if (xml != null && xml.isElement(name) && isAutoSwitchIframe) {
-			switchFrame(getParentFrameName(name));
-		}
-		
-		return recognitionElements(new ElementInformation(name, getWaitTime(name))).get(0);
+		return getWebElement(name, null);
 	}
 	
 	/**
@@ -67,6 +64,16 @@ public class CommonElement extends AbstractElement {
 			switchFrame(getParentFrameName(name));
 		}
 		
-		return recognitionElements(new ElementInformation(name, byType, getWaitTime(name))).get(0);
+		return recognitionElement(name, byType).get(0);
+	}
+
+	@Override
+	boolean isExistElement(By by, long waitTime) {
+		//当查找到元素时，则返回true，若查不到元素，则会抛出异常，故返回false
+		return new WebDriverWait(driver, waitTime, 200).
+				until((driver) -> {
+					WebElement element = driver.findElement(by);
+					return element != null;
+				});
 	}
 }

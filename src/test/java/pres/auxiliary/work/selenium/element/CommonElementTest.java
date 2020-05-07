@@ -2,6 +2,7 @@ package pres.auxiliary.work.selenium.element;
 
 import java.io.File;
 
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -22,13 +23,18 @@ import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
  *
  */
 public class CommonElementTest {
-	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
+	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/80.0.3987.163/chromedriver.exe"));
 	CommonElement ce;
 	
 	@BeforeClass
 	public void initDate() {
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
 		ce = new CommonElement(cb);
+	}
+	
+	@AfterClass
+	public void qiut() {
+		cb.getDriver().quit();
 	}
 	
 	/**
