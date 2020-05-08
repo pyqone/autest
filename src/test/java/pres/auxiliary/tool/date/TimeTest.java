@@ -135,6 +135,17 @@ public class TimeTest {
 		System.out.println(time.getFormatTime());
 	}
 	
+	/**
+	 * 测试{@link Time#addTime(String)}
+	 */
+	@Test
+	public void addOldTimeTest() {
+		time.setTime("2019年12月01日 00:00:00");
+		System.out.println(time.addOldTime("-1.5y-2.3M2W5d1.5h-0.5min20.5S"));
+		System.out.println(time.getTime());
+		System.out.println(time.addTime("-1.5y-2.3M2W5d1.5h-0.5min20.5S"));
+	}
+	
 	@Test
 	public void use3() throws IOException {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("D:\\8.test\\TestTime\\time.txt")));
