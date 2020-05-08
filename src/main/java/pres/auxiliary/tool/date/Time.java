@@ -233,8 +233,9 @@ public class Time {
 	 * 
 	 * 
 	 * @param regex 时间规则
+	 * @return 返回修改后的时间戳
 	 */
-	public void addTime(String regex) {
+	public long addTime(String regex) {
 		//去空格
 		regex = regex.replaceAll(" ", "");
 		
@@ -390,8 +391,23 @@ public class Time {
 		
 		//将转换后的时间存储至date中
 		date = cTime.getTime();
+		
+		return getTime();
 	}
-
+	
+	/**
+	 * 修改原始存储的时间，返回修改后的时间戳，且不影响原存储的时间，具体修改规则可以参见{@link #addTime(String)}
+	 * @param regex 时间规则
+	 * @return 返回修改后的时间戳
+	 * @see #addTime(String)
+	 */
+	public long addOldTime(String regex) {
+		//TODO 此处逻辑需要修改
+		addTime(regex);
+		initTime();
+		return getTime();
+	}
+	
 	/**
 	 * 用于判断相应单位前的数字在整个字符串中所存在的位置
 	 * @param text 传入的除当前判断单位前的字符串，例如有规则5H31s，判断秒数，则传入5H31
