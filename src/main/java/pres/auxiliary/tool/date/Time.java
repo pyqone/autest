@@ -403,9 +403,9 @@ public class Time {
 	 */
 	public long addOldTime(String regex) {
 		//TODO 此处逻辑需要修改
-		addTime(regex);
+		long time = addTime(regex);
 		initTime();
-		return getTime();
+		return time;
 	}
 	
 	/**
