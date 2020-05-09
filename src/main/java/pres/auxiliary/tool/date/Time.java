@@ -1,11 +1,10 @@
 package pres.auxiliary.tool.date;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
-
-import com.ibm.icu.text.SimpleDateFormat;
 
 import pres.auxiliary.tool.web.IncorrectConditionException;
 
