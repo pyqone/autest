@@ -23,7 +23,7 @@ import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
  *
  */
 public class CommonElementTest {
-	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/80.0.3987.163/chromedriver.exe"));
+	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
 	CommonElement ce;
 	
 	@BeforeClass

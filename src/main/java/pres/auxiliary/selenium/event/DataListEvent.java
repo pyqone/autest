@@ -152,7 +152,7 @@ public class DataListEvent extends ListElementEvent {
 	}
 
 	/**
-	 * 用于对列中元素的文本进行筛选，返回符合筛选项序号
+	 * 用于对列中元素的文本进行筛选，返qwa回符合筛选项序号
 	 * 
 	 * @param name  列名
 	 * @param index 筛选后所在的列下标（下标从1开始，1表示第一个元素）

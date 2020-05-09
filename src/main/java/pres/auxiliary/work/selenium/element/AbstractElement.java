@@ -205,7 +205,7 @@ public abstract class AbstractElement {
 	 * @param name 窗体的名称或xpath与css定位方式
 	 */
 	public void switchFrame(String name) {
-		switchFrame(name, null);
+		switchFrame(new ElementInformation(name, null));
 	}
 	
 	/**
@@ -218,18 +218,26 @@ public abstract class AbstractElement {
 	 * @see #switchFrame(String)
 	 */
 	public void switchFrame(String name, ByType byType) {
+		switchFrame(new ElementInformation(name, byType));
+	}
+	
+	/**
+	 * 切换窗体的底层方法
+	 * @param elementInformation 元素信息类对象
+	 */
+	private void switchFrame(ElementInformation elementInformation) {
 		List<String> nameList = new ArrayList<String>();
 		//判断传入的元素名称是否存在于xml文件中，若存在，则将该元素的父层名称存储至nameList
-		if (xml != null && xml.isElement(name) && isAutoSwitchIframe) {
-			nameList.addAll(getParentFrameName(name));
+		if (isXmlElement(elementInformation.name) && isAutoSwitchIframe) {
+			nameList.addAll(getParentFrameName(elementInformation.name));
 		}
 		
 		//调用切换窗体的方法
 		switchFrame(nameList);
 		
-		driver.switchTo().frame(recognitionElement(name, byType).get(0));
+		driver.switchTo().frame(recognitionElement(elementInformation).get(0));
 		//切换窗体
-		iframeNameList.add(name);
+		iframeNameList.add(elementInformation.name);
 	}
 	
 	/**
@@ -264,7 +272,7 @@ public abstract class AbstractElement {
 				}
 			} else {
 				//切换窗体
-				driver.switchTo().frame(recognitionElement(frameName, null).get(0));
+				driver.switchTo().frame(recognitionElement(new ElementInformation(frameName, null)).get(0));
 				iframeNameList.add(frameName);
 			}
 		});
@@ -309,7 +317,7 @@ public abstract class AbstractElement {
 			driver.switchTo().window(newWinHandle);
 			try {
 				//构造信息，因为在构造过程中会判断元素是否存在，
-				recognitionElement(controlName, null);
+				recognitionElement(new ElementInformation(controlName, null));
 				return;
 			}catch (Exception e) {
 				continue;
@@ -322,7 +330,7 @@ public abstract class AbstractElement {
 				//切换窗口，并查找元素是否在窗口上，若存在，则结束切换
 				brower.switchWindow(page);
 				try {
-					recognitionElement(controlName, null);
+					recognitionElement(new ElementInformation(controlName, null));
 					return;
 				}catch (Exception e) {
 					continue;
@@ -399,39 +407,44 @@ public abstract class AbstractElement {
 	 * @throws TimeoutException 元素在指定时间内未查找到时，抛出的异常
 	 * @throws UnrecognizableLocationModeException 元素无法识别时抛出的异常
 	 */
-	/*
-	List<WebElement> recognitionElements(ElementInformation element) {
-		return driver.findElements(element.getBy());
-	}
-	*/
-	List<WebElement> recognitionElement(String name, ByType byType) {
+	List<WebElement> recognitionElement(ElementInformation elementInformation) {
 		By by;
-		//若未指定xml文件，或者在xml文件中无法查到相应的元素时，则将name的值赋给value，且根据value判断相应定位方式
-		if (isXmlElement(name)) {
-			by = recognitionCommonElement(name, byType);
-		} else {
+		if (isXmlElement(elementInformation.name)) {
 			//若指定了xml文件，且传入的元素名称存在与xml文件中，则判断元素相应的定位方式及定位内容
-			by = recognitionXmlElement(name, byType);
+			by = recognitionXmlElement(elementInformation);
+		} else {
+			//若未指定xml文件，或者在xml文件中无法查到相应的元素时，则将name的值赋给value，且根据value判断相应定位方式
+			by = recognitionCommonElement(elementInformation);
 		}
 		
 		return driver.findElements(by);
 	}
 
-	private By recognitionCommonElement(String name, ByType byType) {
+	/**
+	 * 获取普通元素的By对象
+	 * @param elementInformation 元素信息类对象
+	 * @return 元素信息指向的By对象
+	 */
+	private By recognitionCommonElement(ElementInformation elementInformation) {
 		//判断传入的ByType对象是否为null
-		if (byType == null) {
-			return judgeCommonElementBy(name);
+		if (elementInformation.byType == null) {
+			return judgeCommonElementBy(elementInformation.name);
 		} else {
-			return getBy(name, byType);
+			return getBy(elementInformation.name, elementInformation.byType);
 		}
 	}
 
-	private By recognitionXmlElement(String name, ByType byType) {
+	/**
+	 * 获取xml文件内元素的By对象
+	 * @param elementInformation 元素信息类对象
+	 * @return 元素信息指向的By对象
+	 */
+	private By recognitionXmlElement(ElementInformation elementInformation) {
 		//判断传入的ByType对象是否为null
-		if (byType == null) {
-			return judgeXmlElementBy(name);
+		if (elementInformation.byType == null) {
+			return judgeXmlElementBy(elementInformation.name);
 		} else {
-			return xml.getBy(name, byType);
+			return xml.getBy(elementInformation.name, elementInformation.byType);
 		}
 	}
 	
@@ -587,7 +600,46 @@ public abstract class AbstractElement {
 	 */
 	abstract boolean isExistElement(By by, long waitTime);
 	
+	/**
+	 * 用于判断元素是否为xml文件内的元素
+	 * @param name 元素名称
+	 * @return 是否为xml文件内的元素
+	 */
 	boolean isXmlElement(String name) {
-		return (xml == null || !xml.isElement(name));
+		return (xml != null && xml.isElement(name));
+	}
+	
+	/**
+	 * <p><b>文件名：</b>AbstractElement.java</p>
+	 * <p><b>用途：</b>
+	 * 存储获取元素时的信息
+	 * </p>
+	 * <p><b>编码时间：</b>2020年5月9日上午7:57:24</p>
+	 * <p><b>修改时间：</b>2020年5月9日上午7:57:24</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 12
+	 *
+	 */
+	class ElementInformation {
+		/**
+		 * 存储元素的名称或定位内容
+		 */
+		public String name;
+		/**
+		 * 存储元素的定位方式
+		 */
+		public ByType byType;
+		/**
+		 * 初始化信息
+		 * @param name 元素名称或定位内容
+		 * @param byType 元素定位
+		 */
+		public ElementInformation(String name, ByType byType) {
+			super();
+			this.name = name;
+			this.byType = byType;
+		}
+		
 	}
 }

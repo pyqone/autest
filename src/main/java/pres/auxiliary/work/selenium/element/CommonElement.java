@@ -59,12 +59,21 @@ public class CommonElement extends AbstractElement {
 	 * @return WebElement对象
 	 */
 	public WebElement getWebElement(String name, ByType byType) {
+		return getWebElement(new ElementInformation(name, byType));
+	}
+	
+	/**
+	 * 获取元素的底层方法
+	 * @param elementInformation 元素信息类对象
+	 * @return WebElement对象
+	 */
+	private WebElement getWebElement(ElementInformation elementInformation) {
 		//判断传入的元素是否在xml文件中，若存在再判断是否自动切换窗体，若需要，则获取元素的所有父窗体并进行切换
-		if (xml != null && xml.isElement(name) && isAutoSwitchIframe) {
-			switchFrame(getParentFrameName(name));
+		if (xml != null && xml.isElement(elementInformation.name) && isAutoSwitchIframe) {
+			switchFrame(getParentFrameName(elementInformation.name));
 		}
 		
-		return recognitionElement(name, byType).get(0);
+		return recognitionElement(elementInformation).get(0);
 	}
 
 	@Override
