@@ -13,7 +13,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import pres.auxiliary.selenium.event.DataListEvent.ListEvent;
 import pres.auxiliary.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 
@@ -29,7 +28,6 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 12
- *
  */
 public class DataListElement extends AbstractElement {
 	/**
@@ -339,18 +337,25 @@ public class DataListElement extends AbstractElement {
 	 * @return 列表事件组
 	 */
 	public List<WebElement> getRandomWebElements(String name, int length) {
+		//获取元素信息，并判断元素是否存在，不存在则抛出异常
+		ElementInformation element = nameToElementInformation(name);
+		if (element == null) {
+			throw new NoSuchElementException("不存在的定位方式：" + name);
+		}
+				
 		// 判断传入的长度是否大于等于当前
-		if (length >= elements.get(name).size()) {
-			return getEvents(name);
+		if (length >= elementMap.get(element).size()) {
+			return getAllWebElement(name);
 		}
 
 		// 存储通过随机得到的数字
 		ArrayList<Integer> indexsList = new ArrayList<Integer>();
+		int randomLength = elementMap.get(element).size() + 1;
 		// 循环，随机获取下标数字
 		for (int i = 0; i < length; i++) {
 			int randomIndex = 0;
 			// 循环，直到生成的随机数不在indexs中为止
-			while (indexsList.contains(randomIndex = new Random().nextInt(elements.get(name).size()) + 1)) {
+			while (indexsList.contains(randomIndex = new Random().nextInt(randomLength))) {
 			}
 			indexsList.add(randomIndex);
 		}
@@ -361,7 +366,13 @@ public class DataListElement extends AbstractElement {
 			indexs[i] = indexsList.get(i);
 		}
 
-		return getEvents(name, indexs);
+		return getWebElements(name, indexs);
+	}
+	
+	public void getLineWebElement(String name, int startIndex, int length) {
+		if (length <= 0) {
+			
+		}
 	}
 	
 	/**
