@@ -369,11 +369,13 @@ public class DataListElement extends AbstractElement {
 		return getWebElements(name, indexs);
 	}
 	
+	/*
 	public void getLineWebElement(String name, int startIndex, int length) {
 		if (length <= 0) {
 			
 		}
 	}
+	*/
 	
 	/**
 	 * 用于根据参数，求取elementMap中最多或最少列表的元素个数以及列表的名称

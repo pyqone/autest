@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -487,22 +486,6 @@ public abstract class AbstractElement {
 		return nameList;
 	}
 
-	/**
-	 * 用于将页面控件元素高亮显示
-	 * @param newElement 当前指向的元素
-	 */
-	void elementHight(WebElement newElement) {
-		//获取当前指向的元素的style属性
-		String newElementStyle = newElement.getAttribute("style");
-		// 控件高亮
-		((JavascriptExecutor) getDriver()).executeScript("arguments[0].setAttribute('style',arguments[1])", newElement,
-				newElementStyle + "background:yellow;solid:red;");
-		
-		//解除高亮
-		((JavascriptExecutor) getDriver()).executeScript("arguments[0].setAttribute('style',arguments[1])",
-				newElement, newElementStyle + "background:yellow;solid:red;");
-	}
-	
 	/**
 	 * 用于根据传入的参数，识别非xml文件内的元素定位方式。
 	 * 该方法能快速识别xpath定位方式以及绝对css定位方式，若不是以上两种定位方式
