@@ -429,7 +429,11 @@ public abstract class AbstractElement {
 		if (elementInformation.byType == null) {
 			return judgeCommonElementBy(elementInformation.name);
 		} else {
-			return getBy(elementInformation.name, elementInformation.byType);
+			By by = getBy(elementInformation.name, elementInformation.byType);
+			if (isExistElement(by, getWaitTime(elementInformation.name)))
+				return by;
+			else 
+				throw new TimeoutException("普通元素定位方式类型无法识别：" + by);
 		}
 	}
 
@@ -443,7 +447,11 @@ public abstract class AbstractElement {
 		if (elementInformation.byType == null) {
 			return judgeXmlElementBy(elementInformation.name);
 		} else {
-			return xml.getBy(elementInformation.name, elementInformation.byType);
+			By by = xml.getBy(elementInformation.name, elementInformation.byType);
+			if (isExistElement(by, getWaitTime(elementInformation.name)))
+				return by;
+			else 
+				throw new TimeoutException("普通元素定位方式类型无法识别：" + by);
 		}
 	}
 	
@@ -573,6 +581,8 @@ public abstract class AbstractElement {
 		default:
 			throw new UnrecognizableLocationModeException("无法识别的定位类型：" + byType);
 		}
+		
+		
 	}
 	
 	/**
