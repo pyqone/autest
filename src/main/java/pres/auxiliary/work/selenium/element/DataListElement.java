@@ -183,7 +183,7 @@ public class DataListElement extends AbstractElement {
 	 * @throws TimeoutException 元素在指定时间内无法找到时抛出的异常
 	 */
 	public void add(String name, ByType byType) {
-		
+		add(new ElementInformation(name, byType));
 	}
 	
 	/**
