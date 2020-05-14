@@ -388,21 +388,15 @@ public class DataListElement extends AbstractElement {
 		
 		//根据参数，判断获取的列是否为最大值所在的列，并对极值做进一步判断
 		if (maxColumnSize < size) {
-			
-			if (maxColumnSize < size) {
-				maxColumnNameList.clear();
-				maxColumnSize = size;
-			}
+			maxColumnNameList.clear();
+			maxColumnSize = size;
 			maxColumnNameList.add(key.name);
 		} else {
-			//对比当前存储的最小值与列的元素个数，其操作与求取最大值相反
-			if (minColumnSize < size) {
-				return;
-			}
-			
 			if (minColumnSize > size) {
 				minColumnNameList.clear();
 				minColumnSize = size;
+			} else {
+				return;
 			}
 			minColumnNameList.add(key.name);
 		}
