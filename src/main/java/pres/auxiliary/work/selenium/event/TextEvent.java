@@ -5,20 +5,13 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.openqa.selenium.Rectangle;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import pres.auxiliary.selenium.event.inter.ClearInter;
-import pres.auxiliary.selenium.event.inter.GetAttributeValueInter;
-import pres.auxiliary.selenium.event.inter.GetTextInter;
-import pres.auxiliary.selenium.event.inter.InputInter;
-import pres.auxiliary.selenium.event.inter.TextEventInter;
+import pres.auxiliary.selenium.event.Event;
 import pres.auxiliary.selenium.tool.RecognitionImage;
-import pres.auxiliary.selenium.tool.RecordTool;
 import pres.auxiliary.selenium.tool.Screenshot;
 import pres.auxiliary.tool.randomstring.RandomString;
 import pres.auxiliary.tool.randomstring.StringMode;
@@ -51,77 +44,115 @@ public class TextEvent extends AbstractEvent {
 	 * 该方法通过控件名称或定位方式对页面元素进行定位来清空控件中的内容，主要用于清空文本框中已有的数据。该方法将存储被清空的
 	 * 文本
 	 * @param element 通过查找页面得到的控件元素对象
+	 * @return 被清空的文本内容
 	 */
 	public String clear(WebElement element) {
 		//元素高亮
 		elementHight(element);
-		//等待元素出现
-		element = new WebDriverWait(driver, waitTime, 200).until(ExpectedConditions.visibilityOf(element));
 		
-		//记录被清空的内容
-		result = getText(element);
-		//进行清空操作
-		element.clear();
+		//等待事件可操作后对事件进行操作
+		wait.until(driver -> {
+			try {
+				element.clear();
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		});
+		
+		//由于需要存储步骤，若直接调用getText方法进行返回时，其会更改存储的step，为保证step正确，故存储返回值进行返回
+		String text = getText(element);
 		
 		//记录操作
 		step = "清空“" + ELEMENT_NAME + "”元素内的文本";
 		
-		return result;
+		return text;
 	}
 
 	/**
-	 * 用于获取元素中的指定属性值的内容，可通过
-	 * @param element
-	 * @param attributeName
+	 * 用于获取元素中的指定属性值的内容
+	 * @param element 通过查找页面得到的控件元素对象
+	 * @param attributeName 属性名称
+	 * @return 对应属性的值
 	 */
 	public String getAttributeValue(WebElement element, String attributeName) {
 		//元素高亮
 		elementHight(element);
 		//等待元素中attributeName指向的属性内容出现
-		new WebDriverWait(driver, waitTime, 200).until(ExpectedConditions.attributeToBeNotEmpty(element, attributeName));
+		wait.until(ExpectedConditions.attributeToBeNotEmpty(element, attributeName));
 		
-		//记录获取到的内容
-		result = element.getAttribute(attributeName);
 		//记录操作
 		step = "获取“" + ELEMENT_NAME + "”元素的" + attributeName +"属性的内容";
 		
-		return result;
+		return element.getAttribute(attributeName);
 	}
 
+	/**
+	 * 用于获取相应元素中的文本内容
+	 * @param element 通过查找页面得到的控件元素对象
+	 * @return 对应元素中的文本内容
+	 */
 	public String getText(WebElement element) {
 		//元素高亮
 		elementHight(element);
-		//等待元素出现
-		element = new WebDriverWait(driver, waitTime, 200).until(ExpectedConditions.visibilityOf(element));
 		
-		//记录获取的内容
-		result = "input".equalsIgnoreCase(element.getTagName()) ? element.getText() : element.getAttribute("value");
+		//等待事件可操作后对事件进行操作
+		String text = wait.until(driver -> {
+			try {
+				return "input".equalsIgnoreCase(element.getTagName()) ? element.getAttribute("value") : element.getText();
+			} catch (Exception e) {
+				return "";
+			}
+		});
+				
 		//记录操作
 		step = "获取“" + ELEMENT_NAME + "”元素内的文本";
 		
-		return result;
+		return text;
 	}
 
+	/**
+	 * 用于在指定的控件中输入相应的内容
+	 * @param element 通过查找页面得到的控件元素对象
+	 * @param text 需要输入到控件中的
+	 * @return 在控件中输入的内容
+	 */
 	public String input(WebElement element, String text) {
 		//元素高亮
 		elementHight(element);
-		//等待元素出现
-		element = new WebDriverWait(driver, waitTime, 200).until(ExpectedConditions.visibilityOf(element));
+
+		//等待事件可操作后对事件进行操作
+		wait.until(driver -> {
+			try {
+				element.sendKeys(text);
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		});
 		
-		//记录获取的内容
-		result = text;
+		
+		
 		//记录操作
 		step = "获取“" + ELEMENT_NAME + "”元素内的文本";
 		
-		return result;
+		return text;
 	}
 
-	@Override
-	public Event codeInput(String textName, String codeName) {
+	/**
+	 * 用于对“数字+英文”类型的图片验证码进行输入的方法，根据验证码图片元素位置，识别图片中的验证码，
+	 * 并将结果填入对应的文本框中。注意，该方法识别验证码成功的概率不高，在“数字+英文”的验证码模式下，
+	 * 经常将数字识别为英文。
+	 * 
+	 * @param textElement 通过查找页面得到的文本框控件元素对象
+	 * @param codeImageElement 通过查找页面得到的验证码图片控件元素对象
+	 * @return 输入的内容
+	 */
+	public String codeInput(WebElement textElement, WebElement codeImageElement) {
 		// 判断验证码信息是否加载，加载后，获取其Rectang对象
-		Rectangle r = judgeElementMode(codeName).getRect();
+		Rectangle r = codeImageElement.getRect();
 		// 构造截图对象，并创建截图
-		Screenshot sc = new Screenshot(getDriver(), "Temp");
+		Screenshot sc = new Screenshot(driver, "Temp");
 		File image = null;
 		try {
 			image = sc.creatImage("code");
@@ -140,13 +171,20 @@ public class TextEvent extends AbstractEvent {
 		image.delete();
 		new File("Temp").delete();
 
-		return input(textName, text);
+		return input(textElement, text);
 	}
 
-	@Override
-	public Event avgIntergeInput(int num, String... names) {
+	/**
+	 * 该方法用于将一个指定的整数随机填写到传入的控件组中<br>
+	 * <b><i>建议在指定值远远大于控件的数量时再使用该方法，否则将会出现不可预期的问题</i></b>
+	 * 
+	 * @param num 指定的整数
+	 * @param textElements 通过查找页面得到的一组控件元素对象
+	 * @return 由于涉及到多个文本框，故其返回值有多个，将以“值1,值2,值3...”的形式进行返回
+	 */
+	public String avgIntergeInput(int num, WebElement... elements) {
 		//定义存储控件数量及需要随机的数量
-		int contrlNum = names.length;
+		int contrlNum = elements.length;
 		String inputNumText = "";
 		String[] inputNum = new String[contrlNum];
 		
@@ -175,16 +213,59 @@ public class TextEvent extends AbstractEvent {
 		
 		//将随机值填写至控件中
 		for (int i = 0; i < contrlNum; i++) {
-			input(names[i], inputNum[i]);
+			input(elements[i], inputNum[i]);
 			inputNumText += (Event.getStringValve() + ",");
 		}
 		
-		Event.setValue(EventResultEnum.STRING.setValue(inputNumText.substring(0, inputNumText.length() - 1)));
-		return Event.newInstance(getDriver());
+		return inputNumText.substring(0, inputNumText.length() - 1);
 	}
 
-	@Override
-	public Event randomInput(String name, int minLength, int maxLength, StringMode... modes) {
+	/**
+	 * 通过指定的随机字符串长度与指定的随机字符串模型枚举（{@link StringMode}枚举类），向控件中
+	 * 随机输入字符串。
+	 * @param element 通过查找页面得到的控件元素对象
+	 * @param minLength 字符串最小长度，设为小于等于0的数值时则默认为1
+	 * @param maxLength 字符串最大长度，设为小于等于0的数值时则默认为1，若需要指定字符串的输入长度，可设置minLength数值与maxLength一致
+	 * @param modes {@link StringMode}枚举，指定字符串输入的类型，可传入多种模型，参见{@link RandomString#RandomString(StringMode...)}
+	 * @return 在控件中输入的内容
+	 */
+	public String randomInput(WebElement element, int minLength, int maxLength, StringMode... modes) {
+		return randomInput(element, minLength, maxLength, new RandomString(modes));
+	}
+
+	/**
+	 * 通过指定的随机字符串长度与指定的随机字符串模型，向控件中随机输入字符串操作。
+	 * @param element 通过查找页面得到的控件元素对象
+	 * @param minLength 字符串最小长度，设为小于等于0的数值时则默认为1
+	 * @param maxLength 字符串最大长度，设为小于等于0的数值时则默认为1，若需要指定字符串的输入长度，可设置minLength数值与maxLength一致
+	 * @param mode 可用的随机字符串抽取范围，参见{@link RandomString#RandomString(String)}
+	 * @return 在控件中输入的内容
+	 */
+	public String randomInput(WebElement element, int minLength, int maxLength, String mode) {
+		return randomInput(element, minLength, maxLength, new RandomString(mode));
+	}
+
+	/**
+	 * 用于向控件中上传指定的文件。<br>
+	 * @param element 通过查找页面得到的控件元素对象
+	 * @param updataFile 需要上传到控件中的文件
+	 * @return 上传的文件路径
+	 */
+	public String updataFile(WebElement element, File updataFile) {
+		//记录操作
+		step = "向“" + ELEMENT_NAME + "”元素中的上传文件";
+		return input(element, updataFile.getAbsolutePath());
+	}
+	
+	/**
+	 * 向控件随机输入信息的底层方法
+	 * @param element 通过查找页面得到的控件元素对象
+	 * @param minLength 字符串最小长度，设为小于等于0的数值时则默认为1
+	 * @param maxLength 字符串最大长度，设为小于等于0的数值时则默认为1，若需要指定字符串的输入长度，可设置minLength数值与maxLength一致
+	 * @param rs 随机字符类对象
+	 * @return 在控件中输入的内容
+	 */
+	private String randomInput(WebElement element, int minLength, int maxLength, RandomString rs) {
 		// 判断传入的参数是否小于0，小于0则将其都设置为1
 		if (minLength < 0 || maxLength < 0) {
 			minLength = 1;
@@ -201,45 +282,12 @@ public class TextEvent extends AbstractEvent {
 		//根据参数，生成随机字符串
 		String text = "";
 		if (minLength == maxLength) {
-			text = new RandomString(modes).toString(maxLength);
+			text = rs.toString(maxLength);
 		} else {
-			text = new RandomString(modes).toString(minLength, maxLength);
+			text = rs.toString(minLength, maxLength);
 		}
 		
 		//调用input方法进行返回
-		return input(name, text);
+		return input(element, text);
 	}
-
-	@Override
-	public Event randomInput(String name, int minLength, int maxLength, String mode) {
-		// 判断传入的参数是否小于0，小于0则将其都设置为1
-		if (minLength < 0 || maxLength < 0) {
-			minLength = 1;
-			maxLength = 1;
-		}
-
-		// 判断传入的随机字符串最小生成长度是否大于最大生成长度，若大于，则调换两数字的位置
-		if (minLength > maxLength) {
-			int tem = minLength;
-			minLength = maxLength;
-			maxLength = tem;
-		}
-		
-		//根据参数，生成随机字符串
-		String text = "";
-		if (minLength == maxLength) {
-			text = new RandomString(mode).toString(maxLength);
-		} else {
-			text = new RandomString(mode).toString(minLength, maxLength);
-		}
-		
-		//调用input方法进行返回
-		return input(name, text);
-	}
-
-	@Override
-	public Event updataFile(String name, File updataFile) {
-		return input(name, updataFile.getAbsolutePath());
-	}
-
 }

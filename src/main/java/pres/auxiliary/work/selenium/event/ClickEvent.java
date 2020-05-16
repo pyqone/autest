@@ -5,7 +5,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * <p><b>文件名：</b>ClickEvent.java</p>
@@ -38,12 +37,10 @@ public class ClickEvent extends AbstractEvent {
 	public void click(WebElement element) {
 		//元素高亮
 		elementHight(element);
-		//在等待时间内判断元素是否可以点击，若可以点击元素，则进行点击事件
-		new WebDriverWait(driver, waitTime, 200).
-			until(ExpectedConditions.elementToBeClickable(element));
-		
-		new WebDriverWait(driver, waitTime, 200).
-			until((driver) -> {
+		//在等待时间内判断元素是否可以点击
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
+		wait.until((driver) -> {
 				try {
 					element.click();
 				} catch (ElementClickInterceptedException e) {
@@ -52,8 +49,6 @@ public class ClickEvent extends AbstractEvent {
 				return true;
 			});
 		
-		//记录操作内容
-		result = "";
 		step = "鼠标左键点击“" + ELEMENT_NAME + "”元素";
 	}
 
@@ -66,12 +61,17 @@ public class ClickEvent extends AbstractEvent {
 		//元素高亮
 		elementHight(element);
 		//在等待时间内判断元素是否可以点击，若可以点击元素，则进行双击事件
-		new Actions(driver).
-			doubleClick(new WebDriverWait(driver, waitTime, 200).until(ExpectedConditions.elementToBeClickable(element))).
-			perform();
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+ 		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
+		wait.until((driver) -> {
+				try {
+					new Actions(driver).doubleClick(element).perform();
+					return true;
+				} catch (ElementClickInterceptedException e) {
+					return false;
+				}
+			});
 		
-		//记录操作内容
-		result = "";
 		step = "鼠标左键双击“" + ELEMENT_NAME + "”元素";
 	}
 
@@ -83,12 +83,17 @@ public class ClickEvent extends AbstractEvent {
 		//元素高亮
 		elementHight(element);
 		//在等待时间内判断元素是否可以点击，若可以点击元素，则进行右击事件
-		new Actions(driver).
-			contextClick(new WebDriverWait(driver, waitTime, 200).until(ExpectedConditions.elementToBeClickable(element))).
-			perform();
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
+		wait.until((driver) -> {
+				try {
+					new Actions(driver).contextClick(element).perform();
+				} catch (ElementClickInterceptedException e) {
+					return false;
+				}
+				return true;
+			});
 		
-		//记录操作内容
-		result = "";
 		step = "鼠标右键点击“" + ELEMENT_NAME + "”元素";
 	}
 	
@@ -109,8 +114,6 @@ public class ClickEvent extends AbstractEvent {
 			}
 		}
 		
-		//记录操作内容
-		result = "";
 		step = "鼠标左键连续" + clickCount + "次点击“" + ELEMENT_NAME + "”元素";
 	}
 }

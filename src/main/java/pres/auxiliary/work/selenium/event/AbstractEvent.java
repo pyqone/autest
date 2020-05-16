@@ -1,8 +1,11 @@
 package pres.auxiliary.work.selenium.event;
 
+import java.time.Duration;
+
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * <p><b>文件名：</b>AbstractEvent.java</p>
@@ -20,6 +23,10 @@ public abstract class AbstractEvent {
 	 */
 	WebDriver driver;
 	/**
+	 * 用于存储事件等待事件
+	 */
+	WebDriverWait wait;
+	/**
 	 * 设置显示等待的超时时间（默认3秒）
 	 */
 	long waitTime = 3;
@@ -29,10 +36,6 @@ public abstract class AbstractEvent {
 	 */
 	public static final String ELEMENT_NAME = "&{元素名称}";
 	
-	/**
-	 * 存储事件的返回结果
-	 */
-	String result = "";
 	/**
 	 * 存储事件的操作说明
 	 */
@@ -45,23 +48,16 @@ public abstract class AbstractEvent {
 	 */
 	public AbstractEvent(WebDriver driver) {
 		this.driver = driver;
+		wait = new WebDriverWait(driver, waitTime, 200);
 	}
 
 	/**
-	 * 用于设置等待时间
+	 * 用于设置事件等待时间，默认时间为3秒
 	 * 
-	 * @param waitTime 等待时间
+	 * @param waitTime 事件等待时间
 	 */
 	public void setWaitTime(long waitTime) {
-		this.waitTime = waitTime;
-	}
-	
-	/**
-	 * 用于获取事件的返回结果
-	 * @return 事件的返回结果
-	 */
-	public String getResult() {
-		return result;
+		wait.withTimeout(Duration.ofSeconds(waitTime));
 	}
 	
 	/**
@@ -86,6 +82,6 @@ public abstract class AbstractEvent {
 		
 		//解除高亮
 		((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute('style',arguments[1])",
-				element, elementStyle + "background:yellow;solid:red;");
+				element, elementStyle);
 	}
 }

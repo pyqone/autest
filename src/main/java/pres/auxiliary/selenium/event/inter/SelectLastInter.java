@@ -53,7 +53,7 @@ public interface SelectLastInter {
 	 * &lt;/div&gt;<br>
 	 * 对于这种非标准的下拉框选项，需要传入选项所在的所有div标签对应的WebElement元素，在上例，则需要定位到//div[@id='test']/div，
 	 * 注意，末尾的div不指定数字，则可以代表整个选项。
-	 * 
+	 *  
 	 * @param elements 通过查找页面得到的选项组对象
 	 */
 	static void selectLast(List<WebElement> elements) {

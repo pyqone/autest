@@ -270,7 +270,7 @@ public class DataListElement extends AbstractElement {
 	 * 与元素实际所在位置一致，当传入0时，则表示随机获取一个元素，如：<br>
 	 * {@code getWebElement("姓名", 1)}表示获取名称为“姓名”的列中的第1个元素<br>
 	 * {@code getWebElement("姓名", 0)}表示获取名称为“姓名”的列中在长度范围内随机一个元素<br>
-	 * {@code getWebElement("//*[@id='name']", -1)}表示获“//*[@id='name']”对应列中的倒数第1个元素<br>
+	 * {@code getWebElement("//*[@id='name']", -1)}表示获取“//*[@id='name']”对应列中的倒数第1个元素<br>
 	 * 
 	 * @param name 列名称
 	 * @param index 元素下标（即列表中对应的某一个元素）
@@ -413,7 +413,7 @@ public class DataListElement extends AbstractElement {
 	int getIndex(ElementInformation element, int index) {
 		int length = elementMap.get(element).size();
 		//判断元素下标是否超出范围，由于可以传入负数，故需要使用绝对值
-		if (Math.abs(index) > length) {
+		if (Math.abs(index) >= length) {
 			throw new NoSuchElementException("指定的选项值大于选项的最大值。选项总个数：" + length + "，指定项：" + index);
 		}
 		
