@@ -10,7 +10,6 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import pres.auxiliary.selenium.event.Event;
 import pres.auxiliary.selenium.tool.RecognitionImage;
 import pres.auxiliary.selenium.tool.Screenshot;
 import pres.auxiliary.tool.randomstring.RandomString;
@@ -131,8 +130,6 @@ public class TextEvent extends AbstractEvent {
 			}
 		});
 		
-		
-		
 		//记录操作
 		step = "获取“" + ELEMENT_NAME + "”元素内的文本";
 		
@@ -213,8 +210,7 @@ public class TextEvent extends AbstractEvent {
 		
 		//将随机值填写至控件中
 		for (int i = 0; i < contrlNum; i++) {
-			input(elements[i], inputNum[i]);
-			inputNumText += (Event.getStringValve() + ",");
+			inputNumText += (input(elements[i], inputNum[i]) + ",");
 		}
 		
 		return inputNumText.substring(0, inputNumText.length() - 1);
