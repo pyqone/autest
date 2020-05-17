@@ -194,7 +194,7 @@ public class DataListElement extends AbstractElement {
 	private void add(ElementInformation elementInformation) {
 		List<WebElement> elementList = new ArrayList<WebElement>();
 		//获取元素
-		elementList = recognitionElement(elementInformation);
+		elementList = driver.findElements(recognitionElement(elementInformation));
 		//添加元素
 		elementMap.put(elementInformation, elementList);
 		

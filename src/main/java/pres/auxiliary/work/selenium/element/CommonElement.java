@@ -48,8 +48,8 @@ public class CommonElement extends AbstractElement {
 	 * @param name 元素的名称或元素定位内容
 	 * @return WebElement对象
 	 */
-	public WebElement getWebElement(String name) {
-		return getWebElement(name, null);
+	public Element getWebElement(String name) {
+		return getElement(name, null);
 	}
 	
 	/**
@@ -58,23 +58,41 @@ public class CommonElement extends AbstractElement {
 	 * @param name 元素的名称或元素定位内容
 	 * @return WebElement对象
 	 */
-	public WebElement getWebElement(String name, ByType byType) {
-		return getWebElement(new ElementInformation(name, byType));
+	public Element getElement(String name, ByType byType) {
+		return getElement(new ElementInformation(name, byType));
 	}
-	
+
 	/**
 	 * 获取元素的底层方法
 	 * @param elementInformation 元素信息类对象
 	 * @return WebElement对象
 	 */
+	/*
 	private WebElement getWebElement(ElementInformation elementInformation) {
 		//判断传入的元素是否在xml文件中，若存在再判断是否自动切换窗体，若需要，则获取元素的所有父窗体并进行切换
 		if (xml != null && xml.isElement(elementInformation.name) && isAutoSwitchIframe) {
 			switchFrame(getParentFrameName(elementInformation.name));
 		}
 		
-		return recognitionElement(elementInformation).get(0);
+		return driver.findElement(recognitionElement(elementInformation));
 	}
+	*/
+	
+	/**
+	 * 获取元素的底层方法
+	 * @param elementInformation 元素信息类对象
+	 * @return WebElement对象
+	 */
+	/*
+	private Element getElement(ElementInformation elementInformation) {
+		//判断传入的元素是否在xml文件中，若存在再判断是否自动切换窗体，若需要，则获取元素的所有父窗体并进行切换
+		if (xml != null && xml.isElement(elementInformation.name) && isAutoSwitchIframe) {
+			switchFrame(getParentFrameName(elementInformation.name));
+		}
+		
+		return new Element(recognitionElement(elementInformation));
+	}
+	*/
 
 	@Override
 	boolean isExistElement(By by, long waitTime) {

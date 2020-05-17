@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -14,6 +15,7 @@ import pres.auxiliary.selenium.tool.RecognitionImage;
 import pres.auxiliary.selenium.tool.Screenshot;
 import pres.auxiliary.tool.randomstring.RandomString;
 import pres.auxiliary.tool.randomstring.StringMode;
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p><b>文件名：</b>TextEvent.java</p>
@@ -45,22 +47,25 @@ public class TextEvent extends AbstractEvent {
 	 * @param element 通过查找页面得到的控件元素对象
 	 * @return 被清空的文本内容
 	 */
-	public String clear(WebElement element) {
+	public String clear(Element element) {
+		WebElement webElement = element.getWebElement(driver);
 		//元素高亮
-		elementHight(element);
+		elementHight(webElement);
 		
 		//等待事件可操作后对事件进行操作
 		wait.until(driver -> {
 			try {
-				element.clear();
+				webElement.clear();
 				return true;
+			} catch (StaleElementReferenceException e) {
+				// TODO: handle exception
 			} catch (Exception e) {
 				return false;
 			}
 		});
 		
 		//由于需要存储步骤，若直接调用getText方法进行返回时，其会更改存储的step，为保证step正确，故存储返回值进行返回
-		String text = getText(element);
+		String text = getText(webElement);
 		
 		//记录操作
 		step = "清空“" + ELEMENT_NAME + "”元素内的文本";

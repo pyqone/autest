@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import pres.auxiliary.selenium.event.NoSuchWindownException;
 import pres.auxiliary.selenium.xml.ByType;
@@ -234,7 +233,7 @@ public abstract class AbstractElement {
 		//调用切换窗体的方法
 		switchFrame(nameList);
 		
-		driver.switchTo().frame(recognitionElement(elementInformation).get(0));
+		driver.switchTo().frame(driver.findElement(recognitionElement(elementInformation)));
 		//切换窗体
 		iframeNameList.add(elementInformation.name);
 	}
@@ -271,7 +270,7 @@ public abstract class AbstractElement {
 				}
 			} else {
 				//切换窗体
-				driver.switchTo().frame(recognitionElement(new ElementInformation(frameName, null)).get(0));
+				driver.switchTo().frame(driver.findElement(recognitionElement(new ElementInformation(frameName, null))));
 				iframeNameList.add(frameName);
 			}
 		});
@@ -406,7 +405,7 @@ public abstract class AbstractElement {
 	 * @throws TimeoutException 元素在指定时间内未查找到时，抛出的异常
 	 * @throws UnrecognizableLocationModeException 元素无法识别时抛出的异常
 	 */
-	List<WebElement> recognitionElement(ElementInformation elementInformation) {
+	By recognitionElement(ElementInformation elementInformation) {
 		By by;
 		if (isXmlElement(elementInformation.name)) {
 			//若指定了xml文件，且传入的元素名称存在与xml文件中，则判断元素相应的定位方式及定位内容
@@ -416,7 +415,8 @@ public abstract class AbstractElement {
 			by = recognitionCommonElement(elementInformation);
 		}
 		
-		return driver.findElements(by);
+//		return driver.findElements(by);
+		return by;
 	}
 
 	/**
@@ -633,6 +633,5 @@ public abstract class AbstractElement {
 			this.name = name;
 			this.byType = byType;
 		}
-		
 	}
 }
