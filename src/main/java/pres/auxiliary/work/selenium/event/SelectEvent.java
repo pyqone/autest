@@ -38,24 +38,6 @@ public class SelectEvent extends AbstractEvent {
 		return select(element, -1);
 	}
 	
-	/*
-	public String selectLast(List<WebElement> elements) {
-		int index = elements.size() - 1;
-		WebElement element = elements.get(index);
-		//元素高亮
-		elementHight(element);
-		//在等待时间内判断元素是否可以点击，若可以点击元素，则进行点击事件
-		new WebDriverWait(driver, waitTime, 200).until(ExpectedConditions.elementToBeClickable(element)).click();
-		
-		//记录操作内容
-		result = element.getText();
-		step = "选择“" + ELEMENT_NAME + "”元素的第" + index + "个选项";
-		
-		//返回Event类
-		return result;
-	}
-	*/
-
 	/**
 	 * 选择下拉框中的指定下标的元素，下标支持从后向前获取，传入的下标
 	 * 与元素实际所在位置一致，当传入0时，则表示随机获取一个元素，如：<br>

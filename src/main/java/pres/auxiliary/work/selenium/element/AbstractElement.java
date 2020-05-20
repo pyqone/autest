@@ -581,8 +581,6 @@ public abstract class AbstractElement {
 		default:
 			throw new UnrecognizableLocationModeException("无法识别的定位类型：" + byType);
 		}
-		
-		
 	}
 	
 	/**

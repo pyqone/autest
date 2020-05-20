@@ -3,7 +3,6 @@ package pres.auxiliary.work.selenium.event;
 import java.io.File;
 import java.lang.reflect.Method;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -14,6 +13,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
+import pres.auxiliary.work.selenium.element.CommonElement;
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p><b>文件名：</b>JsEventTest.java</p>
@@ -33,7 +34,7 @@ public class JsEventTest {
 	/**
 	 * 输入文本框元素对象
 	 */
-	WebElement inputElemnt;
+	Element inputElemnt;
 	JsEvent event;
 	ChromeBrower cb;
 	
@@ -42,11 +43,10 @@ public class JsEventTest {
 	 */
 	@BeforeClass
 	public void init() {
-		cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/80.0.3987.163/chromedriver.exe"));
+		cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
+		inputElemnt = new CommonElement(cb).getElement("//*[@id='kw']");
 		
-		//获取输入文本框
-		inputElemnt = cb.getDriver().findElement(By.xpath("//*[@id='kw']"));
 		//初始化js类
 		event = new JsEvent(cb.getDriver());
 	}
@@ -83,7 +83,7 @@ public class JsEventTest {
 	 */
 	@Test
 	public void addElementTest_String() {
-		System.out.println(event.addElement(inputElemnt, "bbb"));
+		System.out.println(event.addElement(inputElemnt, "input"));
 	}
 	
 	/**
@@ -99,8 +99,8 @@ public class JsEventTest {
 	 */
 	@Test
 	public void addElementTest_Json() {
-		JSONObject json = event.deleteElement(cb.getDriver().findElement(By.xpath("//*[@value = '百度一下']")));
-		WebElement e = cb.getDriver().findElement(By.xpath("//*[text() = '百度热榜']"));
+		JSONObject json = event.deleteElement(new CommonElement(cb.getDriver()).getElement("//*[@value = '百度一下']"));
+		Element e = new CommonElement(cb.getDriver()).getElement("//*[text() = '我的关注']");
 		System.out.println(event.addElement(e, json));
 	}
 }

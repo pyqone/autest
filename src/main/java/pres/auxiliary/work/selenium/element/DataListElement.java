@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
+import pres.auxiliary.work.selenium.element.Element.ElementType;
 
 /**
  * <p><b>文件名：</b>DataListElement.java</p>
@@ -33,7 +34,7 @@ public class DataListElement extends AbstractElement {
 	/**
 	 * 用于存储获取到的列表一列元素，key为列表名称，value为列表元素
 	 */
-	private LinkedHashMap<ElementInformation, List<WebElement>> elementMap = new LinkedHashMap<>(16);
+	private LinkedHashMap<ElementInformation, List<Element>> elementMap = new LinkedHashMap<>(16);
 	
 	/**
 	 * 用于存储元素列累计的个数
@@ -76,9 +77,9 @@ public class DataListElement extends AbstractElement {
 	}
 
 	/**
-	 * 构造对象并存储浏览器的WebDriver对象
+	 * 构造对象并存储浏览器的{@link WebDriver}对象
 	 * 
-	 * @param driver 浏览器的WebDriver对象
+	 * @param driver 浏览器的{@link WebDriver}对象
 	 */
 	public DataListElement(WebDriver driver) {
 		super(driver);
@@ -192,9 +193,15 @@ public class DataListElement extends AbstractElement {
 	 * @param isAddSize 是否需要统计
 	 */
 	private void add(ElementInformation elementInformation) {
-		List<WebElement> elementList = new ArrayList<WebElement>();
+		List<Element> elementList = new ArrayList<Element>();
 		//获取元素
-		elementList = driver.findElements(recognitionElement(elementInformation));
+		By by = recognitionElement(elementInformation);
+		int size = driver.findElements(by).size();
+		//构造Element对象
+		for (int i = 0; i < size; i++) {
+			elementList.add(new Element(driver, ElementType.DATA_LIST_ELEMENT, by, i));
+		}
+		//elementList = driver.findElements(recognitionElement(elementInformation));
 		//添加元素
 		elementMap.put(elementInformation, elementList);
 		
@@ -226,7 +233,7 @@ public class DataListElement extends AbstractElement {
 	 * @param isRemove 是否需要将该列移除
 	 * @return 被移除列中存储的所有元素
 	 */
-	public List<WebElement> clearColumn(String name, boolean isRemove) {
+	public List<Element> clearColumn(String name, boolean isRemove) {
 		ElementInformation element = nameToElementInformation(name);
 		//若元素不存在，则直接返回null
 		if (element == null) {
@@ -234,7 +241,7 @@ public class DataListElement extends AbstractElement {
 		}
 		
 		//用于存储被移除的元素
-		List<WebElement> elementList = elementMap.get(element);
+		List<Element> elementList = elementMap.get(element);
 		//判断元素是否需要被完全移除
 		if (isRemove) {
 			//若元素需要被完全移除，则直接移除元素
@@ -277,7 +284,7 @@ public class DataListElement extends AbstractElement {
 	 * @return 对应列指定的元素
 	 * @throws NoSuchElementException 当未对name列进行获取数据或index的绝对值大于列表最大值时抛出的异常
 	 */
-	public WebElement getWebElement(String name, int index) {
+	public Element getWebElement(String name, int index) {
 		//获取元素信息，并判断元素是否存在，不存在则抛出异常
 		ElementInformation element = nameToElementInformation(name);
 		if (element == null) {
@@ -298,7 +305,7 @@ public class DataListElement extends AbstractElement {
 	 * @return 对应列元素
 	 * @throws NoSuchElementException 当未对name列进行获取数据时抛出的异常
 	 */
-	public List<WebElement> getAllWebElement(String name) {
+	public List<Element> getAllWebElement(String name) {
 		//获取元素信息，并判断元素是否存在，不存在则抛出异常
 		ElementInformation element = nameToElementInformation(name);
 		if (element == null) {
@@ -317,9 +324,9 @@ public class DataListElement extends AbstractElement {
 	 * @throws NoSuchElementException 当未对name列进行获取数据或index的绝对值大于列表最大值时抛出的异常
 	 * @see #getWebElement(String, int)
 	 */
-	public List<WebElement> getWebElements(String name, int... indexs) {
+	public List<Element> getWebElements(String name, int... indexs) {
 		// 存储所有获取到的事件
-		ArrayList<WebElement> events = new ArrayList<>();
+		ArrayList<Element> events = new ArrayList<>();
 
 		// 循环，解析所有的下标，并调用getEvent()方法，存储至events
 		for (int index : indexs) {
@@ -336,7 +343,7 @@ public class DataListElement extends AbstractElement {
 	 * @param length 需要返回列表事件的个数
 	 * @return 列表事件组
 	 */
-	public List<WebElement> getRandomWebElements(String name, int length) {
+	public List<Element> getRandomWebElements(String name, int length) {
 		//获取元素信息，并判断元素是否存在，不存在则抛出异常
 		ElementInformation element = nameToElementInformation(name);
 		if (element == null) {

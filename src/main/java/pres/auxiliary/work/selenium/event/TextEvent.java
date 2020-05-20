@@ -48,24 +48,19 @@ public class TextEvent extends AbstractEvent {
 	 * @return 被清空的文本内容
 	 */
 	public String clear(Element element) {
-		WebElement webElement = element.getWebElement(driver);
-		//元素高亮
-		elementHight(webElement);
-		
-		//等待事件可操作后对事件进行操作
+		//由于需要存储步骤，若直接调用getText方法进行返回时，其会更改存储的step，为保证step正确，故存储返回值进行返回
+		String text = getText(element);
+				
+		//对元素进行操作，若元素过期，则重新获取
 		wait.until(driver -> {
 			try {
-				webElement.clear();
+				element.getWebElement().clear();
 				return true;
 			} catch (StaleElementReferenceException e) {
-				// TODO: handle exception
-			} catch (Exception e) {
+				element.findElement();
 				return false;
 			}
 		});
-		
-		//由于需要存储步骤，若直接调用getText方法进行返回时，其会更改存储的step，为保证step正确，故存储返回值进行返回
-		String text = getText(webElement);
 		
 		//记录操作
 		step = "清空“" + ELEMENT_NAME + "”元素内的文本";
@@ -79,16 +74,23 @@ public class TextEvent extends AbstractEvent {
 	 * @param attributeName 属性名称
 	 * @return 对应属性的值
 	 */
-	public String getAttributeValue(WebElement element, String attributeName) {
-		//元素高亮
-		elementHight(element);
+	public String getAttributeValue(Element element, String attributeName) {
 		//等待元素中attributeName指向的属性内容出现
-		wait.until(ExpectedConditions.attributeToBeNotEmpty(element, attributeName));
+		wait.until(ExpectedConditions.attributeToBeNotEmpty(element.getWebElement(), attributeName));
+		
 		
 		//记录操作
 		step = "获取“" + ELEMENT_NAME + "”元素的" + attributeName +"属性的内容";
 		
-		return element.getAttribute(attributeName);
+		//对元素进行操作，若元素过期，则重新获取
+		return wait.until(driver -> {
+			try {
+				return element.getWebElement().getAttribute(attributeName);
+			} catch (StaleElementReferenceException e) {
+				element.findElement();
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -96,23 +98,20 @@ public class TextEvent extends AbstractEvent {
 	 * @param element 通过查找页面得到的控件元素对象
 	 * @return 对应元素中的文本内容
 	 */
-	public String getText(WebElement element) {
-		//元素高亮
-		elementHight(element);
-		
-		//等待事件可操作后对事件进行操作
-		String text = wait.until(driver -> {
-			try {
-				return "input".equalsIgnoreCase(element.getTagName()) ? element.getAttribute("value") : element.getText();
-			} catch (Exception e) {
-				return "";
-			}
-		});
-				
+	public String getText(Element element) {
 		//记录操作
 		step = "获取“" + ELEMENT_NAME + "”元素内的文本";
 		
-		return text;
+		//对元素进行操作，若元素过期，则重新获取
+		return wait.until(driver -> {
+				try {
+					WebElement webElement = element.getWebElement();
+					return "input".equalsIgnoreCase(webElement.getTagName()) ? webElement.getAttribute("value") : webElement.getText();
+				} catch (StaleElementReferenceException e) {
+					element.findElement();
+					return null;
+				}
+			});
 	}
 
 	/**
@@ -121,14 +120,11 @@ public class TextEvent extends AbstractEvent {
 	 * @param text 需要输入到控件中的
 	 * @return 在控件中输入的内容
 	 */
-	public String input(WebElement element, String text) {
-		//元素高亮
-		elementHight(element);
-
+	public String input(Element element, String text) {
 		//等待事件可操作后对事件进行操作
 		wait.until(driver -> {
 			try {
-				element.sendKeys(text);
+				element.getWebElement().sendKeys(text);
 				return true;
 			} catch (Exception e) {
 				return false;
@@ -150,9 +146,9 @@ public class TextEvent extends AbstractEvent {
 	 * @param codeImageElement 通过查找页面得到的验证码图片控件元素对象
 	 * @return 输入的内容
 	 */
-	public String codeInput(WebElement textElement, WebElement codeImageElement) {
+	public String codeInput(Element textElement, Element codeImageElement) {
 		// 判断验证码信息是否加载，加载后，获取其Rectang对象
-		Rectangle r = codeImageElement.getRect();
+		Rectangle r = codeImageElement.getWebElement().getRect();
 		// 构造截图对象，并创建截图
 		Screenshot sc = new Screenshot(driver, "Temp");
 		File image = null;
@@ -184,7 +180,7 @@ public class TextEvent extends AbstractEvent {
 	 * @param textElements 通过查找页面得到的一组控件元素对象
 	 * @return 由于涉及到多个文本框，故其返回值有多个，将以“值1,值2,值3...”的形式进行返回
 	 */
-	public String avgIntergeInput(int num, WebElement... elements) {
+	public String avgIntergeInput(int num, Element... elements) {
 		//定义存储控件数量及需要随机的数量
 		int contrlNum = elements.length;
 		String inputNumText = "";
@@ -230,7 +226,7 @@ public class TextEvent extends AbstractEvent {
 	 * @param modes {@link StringMode}枚举，指定字符串输入的类型，可传入多种模型，参见{@link RandomString#RandomString(StringMode...)}
 	 * @return 在控件中输入的内容
 	 */
-	public String randomInput(WebElement element, int minLength, int maxLength, StringMode... modes) {
+	public String randomInput(Element element, int minLength, int maxLength, StringMode... modes) {
 		return randomInput(element, minLength, maxLength, new RandomString(modes));
 	}
 
@@ -242,7 +238,7 @@ public class TextEvent extends AbstractEvent {
 	 * @param mode 可用的随机字符串抽取范围，参见{@link RandomString#RandomString(String)}
 	 * @return 在控件中输入的内容
 	 */
-	public String randomInput(WebElement element, int minLength, int maxLength, String mode) {
+	public String randomInput(Element element, int minLength, int maxLength, String mode) {
 		return randomInput(element, minLength, maxLength, new RandomString(mode));
 	}
 
@@ -252,7 +248,7 @@ public class TextEvent extends AbstractEvent {
 	 * @param updataFile 需要上传到控件中的文件
 	 * @return 上传的文件路径
 	 */
-	public String updataFile(WebElement element, File updataFile) {
+	public String updataFile(Element element, File updataFile) {
 		//记录操作
 		step = "向“" + ELEMENT_NAME + "”元素中的上传文件";
 		return input(element, updataFile.getAbsolutePath());
@@ -266,7 +262,7 @@ public class TextEvent extends AbstractEvent {
 	 * @param rs 随机字符类对象
 	 * @return 在控件中输入的内容
 	 */
-	private String randomInput(WebElement element, int minLength, int maxLength, RandomString rs) {
+	private String randomInput(Element element, int minLength, int maxLength, RandomString rs) {
 		// 判断传入的参数是否小于0，小于0则将其都设置为1
 		if (minLength < 0 || maxLength < 0) {
 			minLength = 1;

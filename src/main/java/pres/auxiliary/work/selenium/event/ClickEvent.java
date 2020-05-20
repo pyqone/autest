@@ -1,10 +1,12 @@
 package pres.auxiliary.work.selenium.event;
 
 import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p><b>文件名：</b>ClickEvent.java</p>
@@ -34,19 +36,20 @@ public class ClickEvent extends AbstractEvent {
 	 * 
 	 * @param element 通过查找页面得到的控件元素对象
 	 */
-	public void click(WebElement element) {
-		//元素高亮
-		elementHight(element);
+	public void click(Element element) {
 		//在等待时间内判断元素是否可以点击
-		wait.until(ExpectedConditions.elementToBeClickable(element));
+		wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
 		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
 		wait.until((driver) -> {
 				try {
-					element.click();
+					element.getWebElement().click();
+					return true;
 				} catch (ElementClickInterceptedException e) {
 					return false;
+				} catch (StaleElementReferenceException e) {
+					element.findElement();
+					return false;
 				}
-				return true;
 			});
 		
 		step = "鼠标左键点击“" + ELEMENT_NAME + "”元素";
@@ -57,17 +60,18 @@ public class ClickEvent extends AbstractEvent {
 	 * 
 	 * @param element 通过查找页面得到的控件元素对象
 	 */
-	public void doubleClick(WebElement element) {
-		//元素高亮
-		elementHight(element);
+	public void doubleClick(Element element) {
 		//在等待时间内判断元素是否可以点击，若可以点击元素，则进行双击事件
-		wait.until(ExpectedConditions.elementToBeClickable(element));
+		wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
  		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
 		wait.until((driver) -> {
 				try {
-					new Actions(driver).doubleClick(element).perform();
+					new Actions(driver).doubleClick(element.getWebElement()).perform();
 					return true;
 				} catch (ElementClickInterceptedException e) {
+					return false;
+				} catch (StaleElementReferenceException e) {
+					element.findElement();
 					return false;
 				}
 			});
@@ -79,19 +83,20 @@ public class ClickEvent extends AbstractEvent {
 	 * 鼠标右键点击事件
 	 * @param element 通过查找页面得到的控件元素对象
 	 */
-	public void rightClick(WebElement element) {
-		//元素高亮
-		elementHight(element);
+	public void rightClick(Element element) {
 		//在等待时间内判断元素是否可以点击，若可以点击元素，则进行右击事件
-		wait.until(ExpectedConditions.elementToBeClickable(element));
+		wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
 		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
 		wait.until((driver) -> {
 				try {
-					new Actions(driver).contextClick(element).perform();
+					new Actions(driver).contextClick(element.getWebElement()).perform();
+					return true;
 				} catch (ElementClickInterceptedException e) {
 					return false;
+				} catch (StaleElementReferenceException e) {
+					element.findElement();
+					return false;
 				}
-				return true;
 			});
 		
 		step = "鼠标右键点击“" + ELEMENT_NAME + "”元素";
@@ -103,7 +108,7 @@ public class ClickEvent extends AbstractEvent {
 	 * @param clickCount 点击次数
 	 * @param sleepInMillis 操作时间间隔，单位为毫秒
 	 */
-	public void continuousClick(WebElement element, int clickCount, long sleepInMillis) {
+	public void continuousClick(Element element, int clickCount, long sleepInMillis) {
 		for(int i = 0; i < clickCount; i++) {
 			click(element);
 			
