@@ -52,9 +52,6 @@ public class Element {
 		this.index = index;
 		this.driver = driver;
 		this.elementType = elementType;
-		
-		//对元素进行一次查找
-		findElement();
 	}
 	
 	/**
@@ -71,6 +68,12 @@ public class Element {
 	 * @return 返回元素对应的WebElement对象
 	 */
 	public WebElement getWebElement() {
+		//若元素未进行查找，则查找一次元素
+		if(element == null) {
+			//对元素进行一次查找
+			findElement();
+		}
+		
 		return element;
 	}
 	
@@ -89,37 +92,5 @@ public class Element {
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + elementType);
 		}
-	}
-	
-	/**
-	 * <p><b>文件名：</b>Element.java</p>
-	 * <p><b>用途：</b>
-	 * 用于标记当前传入的元素是以何种方式进行获取
-	 * </p>
-	 * <p><b>编码时间：</b>2020年5月20日上午7:43:38</p>
-	 * <p><b>修改时间：</b>2020年5月20日上午7:43:38</p>
-	 * @author 
-	 * @version Ver1.0
-	 * @since JDK 12
-	 *
-	 */
-	public enum ElementType {
-		/**
-		 * 指向普通类型元素
-		 */
-		COMMON_ELEMENT, 
-		/**
-		 * 指向数据列表类型元素
-		 */
-		DATA_LIST_ELEMENT, 
-		/**
-		 * 指向标准下拉框选择类型元素
-		 */
-		SELECT_OPTION_ELEMENT, 
-		/**
-		 * 指向列表型下拉框选择类型元素
-		 */
-		SELECT_DATAS_ELEMENT;
-		
 	}
 }

@@ -88,7 +88,7 @@ public class SelectEvent extends AbstractEvent {
 	 */
 	private int getIndex(int length, int index) {
 		//判断元素下标是否超出范围，由于可以传入负数，故需要使用绝对值
-		if (Math.abs(index) >= length) {
+		if (Math.abs(index) > length) {
 			throw new NoSuchElementException("指定的选项值大于选项的最大值。选项总个数：" + length + "，指定项：" + index);
 		}
 		

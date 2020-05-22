@@ -29,7 +29,7 @@ public abstract class AbstractEvent {
 	/**
 	 * 设置显示等待的超时时间（默认3秒）
 	 */
-	long waitTime = 3;
+	long waitTime = 5;
 	
 	/**
 	 * 用于在记录步骤时需要替换的元素名称文本

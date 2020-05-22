@@ -10,6 +10,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.InvalidXPathException;
 import org.dom4j.io.SAXReader;
 import org.openqa.selenium.By;
 
@@ -222,10 +223,15 @@ public class ReadXml {
 		//获取元素的xpath，查找所有带name属性的与传入的name相同元素
 		String xpath = "//*[@name='" + name + "']";
 		//若不存在该节点，则返回false，反之，则返回true
-		if (dom.getRootElement().selectSingleNode(xpath) == null) {
+		try {
+			if (dom.getRootElement().selectSingleNode(xpath) == null) {
+				return false;
+			} else {
+				return true;
+			}
+		} catch (InvalidXPathException e) {
+			//当写入name为一个xpath时会抛出该异常，若存在该异常，则直接返回false
 			return false;
-		} else {
-			return true;
 		}
 	}
 

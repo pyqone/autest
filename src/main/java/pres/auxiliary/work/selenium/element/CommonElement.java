@@ -7,7 +7,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.Element.ElementType;
 
 /**
  * <p><b>文件名：</b>CommonElement.java</p>
@@ -60,7 +59,7 @@ public class CommonElement extends AbstractElement {
 	 * @return {@link Element}对象
 	 */
 	public Element getElement(String name, ByType byType) {
-		return getElement(new ElementInformation(name, byType));
+		return getElement(new ElementInformation(name, byType, ElementType.COMMON_ELEMENT));
 	}
 
 	/**
@@ -101,5 +100,10 @@ public class CommonElement extends AbstractElement {
 					WebElement element = driver.findElement(by);
 					return element != null;
 				});
+		/*
+		return new WebDriverWait(driver, waitTime, 200).
+				until(ExpectedConditions.and(ExpectedConditions.visibilityOfAllElementsLocatedBy(by), 
+						ExpectedConditions.invisibilityOfElementLocated(by)));
+						*/
 	}
 }

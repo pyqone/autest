@@ -14,10 +14,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import pres.auxiliary.work.selenium.element.Element;
-import pres.auxiliary.work.selenium.element.Element.ElementType;
+import pres.auxiliary.work.selenium.element.ElementType;
 
 /**
- * <p>
+ * <p>	
  * <b>文件名：</b>JsEvent.java
  * </p>
  * <p>

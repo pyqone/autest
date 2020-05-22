@@ -88,6 +88,15 @@ public abstract class AbstractElement {
 	}
 	
 	/**
+	 * 用于设置事件等待时间，默认时间为5秒
+	 * 
+	 * @param waitTime 事件等待时间
+	 */
+	public void setWaitTime(long waitTime) {
+		this.waitTime = waitTime;
+	}
+	
+	/**
 	 * 用于对单个控件设置等待时间
 	 * 
 	 * @param name     控件名称
@@ -95,14 +104,6 @@ public abstract class AbstractElement {
 	 */
 	public void setContorlWaitTime(String name, long waitTime) {
 		controlWaitTime.put(name, waitTime);
-	}
-	
-	/**
-	 * 用于设置控件的通用等待时间
-	 * @param waitTime 控件通用的等待时间
-	 */
-	public void setWaitTime(long waitTime) {
-		this.waitTime = waitTime;
 	}
 	
 	/**
@@ -203,7 +204,7 @@ public abstract class AbstractElement {
 	 * @param name 窗体的名称或xpath与css定位方式
 	 */
 	public void switchFrame(String name) {
-		switchFrame(new ElementInformation(name, null));
+		switchFrame(new ElementInformation(name, null, ElementType.COMMON_ELEMENT));
 	}
 	
 	/**
@@ -216,7 +217,7 @@ public abstract class AbstractElement {
 	 * @see #switchFrame(String)
 	 */
 	public void switchFrame(String name, ByType byType) {
-		switchFrame(new ElementInformation(name, byType));
+		switchFrame(new ElementInformation(name, byType, ElementType.COMMON_ELEMENT));
 	}
 	
 	/**
@@ -270,7 +271,7 @@ public abstract class AbstractElement {
 				}
 			} else {
 				//切换窗体
-				driver.switchTo().frame(driver.findElement(recognitionElement(new ElementInformation(frameName, null))));
+				driver.switchTo().frame(driver.findElement(recognitionElement(new ElementInformation(frameName, null, ElementType.COMMON_ELEMENT))));
 				iframeNameList.add(frameName);
 			}
 		});
@@ -315,7 +316,7 @@ public abstract class AbstractElement {
 			driver.switchTo().window(newWinHandle);
 			try {
 				//构造信息，因为在构造过程中会判断元素是否存在，
-				recognitionElement(new ElementInformation(controlName, null));
+				recognitionElement(new ElementInformation(controlName, null, ElementType.COMMON_ELEMENT));
 				return;
 			}catch (Exception e) {
 				continue;
@@ -328,7 +329,7 @@ public abstract class AbstractElement {
 				//切换窗口，并查找元素是否在窗口上，若存在，则结束切换
 				brower.switchWindow(page);
 				try {
-					recognitionElement(new ElementInformation(controlName, null));
+					recognitionElement(new ElementInformation(controlName, null, ElementType.COMMON_ELEMENT));
 					return;
 				}catch (Exception e) {
 					continue;
@@ -606,9 +607,9 @@ public abstract class AbstractElement {
 	 * 存储获取元素时的信息
 	 * </p>
 	 * <p><b>编码时间：</b>2020年5月9日上午7:57:24</p>
-	 * <p><b>修改时间：</b>2020年5月9日上午7:57:24</p>
+	 * <p><b>修改时间：</b>2020年5月22日上午8:18:39</p>
 	 * @author 彭宇琦
-	 * @version Ver1.0
+	 * @version Ver1.1
 	 * @since JDK 12
 	 *
 	 */
@@ -622,14 +623,47 @@ public abstract class AbstractElement {
 		 */
 		public ByType byType;
 		/**
+		 * 用于标记元素的类型
+		 */
+		public ElementType elementType;
+		/**
+		 * 初始化信息
+		 * @param name 元素名称或定位内容
+		 * @param byType 元素定位
+		 * @param elementType 元素类型
+		 */
+		public ElementInformation(String name, ByType byType, ElementType elementType) {
+			this(name, byType);
+			this.elementType = elementType;
+		}
+		
+		/**
 		 * 初始化信息
 		 * @param name 元素名称或定位内容
 		 * @param byType 元素定位
 		 */
 		public ElementInformation(String name, ByType byType) {
-			super();
 			this.name = name;
 			this.byType = byType;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ElementInformation other = (ElementInformation) obj;
+			if (byType != other.byType)
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			return true;
 		}
 	}
 }
