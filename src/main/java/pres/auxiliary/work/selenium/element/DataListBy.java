@@ -26,7 +26,7 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
  * @version Ver1.0
  * @since JDK 12
  */
-public class DataListElement extends ListElement {
+public class DataListBy extends ListBy {
 	/**
 	 * 存储获取到的元素列表中最多元素列的元素个数
 	 */
@@ -63,7 +63,7 @@ public class DataListElement extends ListElement {
 	 * 通过浏览器对象{@link AbstractBrower}进行构造
 	 * @param brower {@link AbstractBrower}对象
 	 */
-	public DataListElement(AbstractBrower brower) {
+	public DataListBy(AbstractBrower brower) {
 		super(brower);
 	}
 
@@ -72,7 +72,7 @@ public class DataListElement extends ListElement {
 	 * 
 	 * @param driver 浏览器的{@link WebDriver}对象
 	 */
-	public DataListElement(WebDriver driver) {
+	public DataListBy(WebDriver driver) {
 		super(driver);
 	}
 	

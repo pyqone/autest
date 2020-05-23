@@ -13,7 +13,7 @@ import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
 /**
  * <p><b>文件名：</b>CommonElementTest.java</p>
  * <p><b>用途：</b>
- * 对{@link CommonElement}类方法进行单元测试
+ * 对{@link CommonBy}类方法进行单元测试
  * </p>
  * <p><b>测试对象：</b>桂建通工资管理的工资单管理模块，获取第一条数据的单位信息</p>
  * <p><b>编码时间：</b>2020年4月30日上午7:44:34</p>
@@ -23,14 +23,14 @@ import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
  * @since JDK 12
  *
  */
-public class CommonElementTest {
+public class CommonByTest {
 	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
-	CommonElement ce;
+	CommonBy ce;
 	
 	@BeforeClass
 	public void initDate() {
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
-		ce = new CommonElement(cb);
+		ce = new CommonBy(cb);
 	}
 	
 	@AfterClass

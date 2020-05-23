@@ -9,8 +9,8 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.CommonElement;
-import pres.auxiliary.work.selenium.element.DataListElement;
+import pres.auxiliary.work.selenium.element.CommonBy;
+import pres.auxiliary.work.selenium.element.DataListBy;
 import pres.auxiliary.work.selenium.element.Element;
 
 /**
@@ -37,16 +37,16 @@ public class TextEventTest {
 	final String ID_LIST_XPATH = "//*[@class=\"el-table__body-wrapper\"]/table/tbody/tr/td[1]/div/span";
 	
 	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
-	CommonElement ce;
-	DataListElement dle;
+	CommonBy ce;
+	DataListBy dle;
 	TextEvent t;
 	Element turningButton;
 	
 	@BeforeClass
 	public void init() {
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
-		ce = new CommonElement(cb.getDriver());
-		dle = new DataListElement(cb.getDriver());
+		ce = new CommonBy(cb.getDriver());
+		dle = new DataListBy(cb.getDriver());
 		
 		t = new TextEvent(cb.getDriver());
 		
@@ -89,7 +89,7 @@ public class TextEventTest {
 	public void getTextTest_DataListElement() throws InterruptedException {
 		dle.add(ID_LIST_XPATH);
 		System.out.println("第一页：");
-		dle.getAllWebElement(ID_LIST_XPATH).forEach(element -> {
+		dle.getAllElement(ID_LIST_XPATH).forEach(element -> {
 			System.out.println(t.getText(element));
 		});
 		//测试元素过期问题
@@ -98,7 +98,7 @@ public class TextEventTest {
 		Thread.sleep(5000);
 		System.out.println("第二页：");
 		//翻页后再次获取
-		dle.getAllWebElement(ID_LIST_XPATH).forEach(element -> {
+		dle.getAllElement(ID_LIST_XPATH).forEach(element -> {
 			System.out.println(t.getText(element));
 		});
 	}

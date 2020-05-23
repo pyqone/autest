@@ -22,7 +22,7 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
  * @since JDK 12
  *
  */
-public abstract class ListElement extends MultiElement {
+public abstract class ListBy extends MultiBy {
 	/**
 	 * 用于存储获取到的列表一列元素，key为列表名称，value为列表元素
 	 */
@@ -32,7 +32,7 @@ public abstract class ListElement extends MultiElement {
 	 * 通过浏览器对象{@link AbstractBrower}进行构造
 	 * @param brower {@link AbstractBrower}对象
 	 */
-	public ListElement(AbstractBrower brower) {
+	public ListBy(AbstractBrower brower) {
 		super(brower);
 	}
 
@@ -41,7 +41,7 @@ public abstract class ListElement extends MultiElement {
 	 * 
 	 * @param driver 浏览器的{@link WebDriver}对象
 	 */
-	public ListElement(WebDriver driver) {
+	public ListBy(WebDriver driver) {
 		super(driver);
 	}
 	
@@ -167,7 +167,7 @@ public abstract class ListElement extends MultiElement {
 		}
 		
 		// 转义下标
-		index = getIndex(elementMap.get(element).size(), index);
+		index = getIndex(elementMap.get(element).size(), index, true);
 
 		// 转义下标后，返回对应的元素
 		return elementMap.get(element).get(index);

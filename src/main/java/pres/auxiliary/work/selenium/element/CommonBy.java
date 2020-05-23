@@ -22,13 +22,13 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
  * @since JDK 12
  *
  */
-public class CommonElement extends AbstractElement {
+public class CommonBy extends AbstractBy {
 	/**
 	 * 构造对象并存储浏览器的WebDriver对象
 	 * 
 	 * @param driver 浏览器的WebDriver对象
 	 */
-	public CommonElement(WebDriver driver) {
+	public CommonBy(WebDriver driver) {
 		super(driver);
 	}
 	
@@ -36,7 +36,7 @@ public class CommonElement extends AbstractElement {
 	 * 通过浏览器对象{@link AbstractBrower}进行构造
 	 * @param brower {@link AbstractBrower}对象
 	 */
-	public CommonElement(AbstractBrower brower) {
+	public CommonBy(AbstractBrower brower) {
 		super(brower);
 	}
 

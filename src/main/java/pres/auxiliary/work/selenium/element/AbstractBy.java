@@ -31,7 +31,7 @@ import pres.auxiliary.work.selenium.brower.Page;
  * @version Ver1.0
  * @since JDK 12
  */
-public abstract class AbstractElement {
+public abstract class AbstractBy {
 	/**
 	 * 用于存储浏览器的WebDriver对象，设为静态，保证所有的子类只使用一个WebDriver对象，以避免造成WebDriver不正确导致的Bug
 	 */
@@ -73,7 +73,7 @@ public abstract class AbstractElement {
 	 * 
 	 * @param driver {@link WebDriver}对象
 	 */
-	public AbstractElement(WebDriver driver) {
+	public AbstractBy(WebDriver driver) {
 		this.driver = driver;
 		browserHandles = this.driver.getWindowHandle();
 	}
@@ -82,7 +82,7 @@ public abstract class AbstractElement {
 	 * 通过浏览器对象{@link AbstractBrower}进行构造
 	 * @param brower {@link AbstractBrower}对象
 	 */
-	public AbstractElement(AbstractBrower brower) {
+	public AbstractBy(AbstractBrower brower) {
 		this.brower = brower;
 		this.driver = brower.getDriver();
 	}

@@ -88,7 +88,8 @@ public class Element {
 			element = driver.findElements(by).get(index);
 			break;
 		case SELECT_OPTION_ELEMENT:
-			new Select(element).getOptions().get(index);
+			element = new Select(driver.findElement(by)).getOptions().get(index);
+			break;
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + elementType);
 		}

@@ -21,12 +21,12 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
  * @since JDK 12
  *
  */
-public abstract class MultiElement extends AbstractElement {
+public abstract class MultiBy extends AbstractBy {
 	/**
 	 * 通过浏览器对象{@link AbstractBrower}进行构造
 	 * @param brower {@link AbstractBrower}对象
 	 */
-	public MultiElement(AbstractBrower brower) {
+	public MultiBy(AbstractBrower brower) {
 		super(brower);
 	}
 
@@ -35,7 +35,7 @@ public abstract class MultiElement extends AbstractElement {
 	 * 
 	 * @param driver 浏览器的{@link WebDriver}对象
 	 */
-	public MultiElement(WebDriver driver) {
+	public MultiBy(WebDriver driver) {
 		super(driver);
 	}
 	
@@ -87,10 +87,11 @@ public abstract class MultiElement extends AbstractElement {
 	 * 故可通过该方法对下标的含义进行转义，得到java能识别的下标
 	 * @param length 元素的个数
 	 * @param index 传入的下标
+	 * @param randomZero 标记是否可以随机出数字0
 	 * @return 可识别的下标
 	 * @throws NoSuchElementException 当元素无法查找到时抛出的异常
 	 */
-	int getIndex(int length, int index) {
+	int getIndex(int length, int index, boolean randomZero) {
 		//判断元素下标是否超出范围，由于可以传入负数，故需要使用绝对值
 		if (Math.abs(index) > length) {
 			throw new NoSuchElementException("指定的选项值大于选项的最大值。选项总个数：" + length + "，指定项：" + index);
@@ -104,8 +105,13 @@ public abstract class MultiElement extends AbstractElement {
 			//选择元素，由于index为负数，则长度加上选项值即可得到需要选择的选项
 			return length + index;
 		} else {
-			//为0，则随机进行选择
-			return new Random().nextInt(length);
+			//为0，则进行随机选择，但需要判断是否允许随机出0（第一个元素）
+			int newindex = 0;
+			do {
+				newindex = new Random().nextInt(length);
+			} while(newindex == 0 && !randomZero);
+			
+			return newindex;
 		}
 	}
 }
