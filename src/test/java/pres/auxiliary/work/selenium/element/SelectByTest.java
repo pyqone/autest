@@ -2,6 +2,8 @@ package pres.auxiliary.work.selenium.element;
 
 import java.io.File;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -80,5 +82,23 @@ public class SelectByTest {
 		s.add("//label[text()='缺陷来源']/../select");
 		//按照下标进行选择(第三个选项：与需求不一致)
 		ce.click(s.getElement(3));
+		
+		//点击修复版本，未排期的第5个选项
+		ce.click(cby.getElement("//*[@id=\"fixVersions-multi-select\"]/span"));
+		s.add("//div[contains(@class, 'ajs-layer box')]//*[text()='20200408-解决实名制平台响应慢问题']/../..//a");
+		ce.click(s.getElement(5));
+	}
+	
+	@Test
+	public void test() {
+		ce.click(cby.getElement("//*[@id=\"fixVersions-multi-select\"]/span"));
+		WebElement e = cb.getDriver().findElement(By.xpath("//div[contains(@class, 'ajs-layer box')]//*[text()='20200408-解决实名制平台响应慢问题']"));
+		
+		System.out.println(e.getTagName());
+		
+		cb.getDriver().findElements(By.xpath("//div[contains(@class, 'ajs-layer box')]//*[text()='20200408-解决实名制平台响应慢问题']/../..//a")).
+			stream().map(ele -> {
+				return ele.getText();
+			}).forEach(System.out :: println);
 	}
 }
