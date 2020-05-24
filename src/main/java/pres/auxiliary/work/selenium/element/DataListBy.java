@@ -229,7 +229,7 @@ public class DataListBy extends ListBy {
 	
 	/**
 	 * 用于根据参数，求取elementMap中最多或最少列表的元素个数以及列表的名称
-	 * @param isMax 是否为求取最大值
+	 * @param key 需要计算的最小值
 	 * @return 极值以及极值所在的列
 	 */
 	private void findLimitColumn(ElementInformation key) {
@@ -241,13 +241,15 @@ public class DataListBy extends ListBy {
 			maxColumnNameList.clear();
 			maxColumnSize = size;
 			maxColumnNameList.add(key.name);
-		} else {
-			if (minColumnSize > size) {
-				minColumnNameList.clear();
-				minColumnSize = size;
-			} else {
-				return;
-			}
+		} else if (maxColumnSize == size) {
+			maxColumnNameList.add(key.name);
+		}
+		
+		if (minColumnSize > size) {
+			minColumnNameList.clear();
+			minColumnSize = size;
+			minColumnNameList.add(key.name);
+		} else if (minColumnSize == size) {
 			minColumnNameList.add(key.name);
 		}
 	}
