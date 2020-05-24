@@ -2,8 +2,6 @@ package pres.auxiliary.work.selenium.element;
 
 import java.io.File;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -86,19 +84,8 @@ public class SelectByTest {
 		//点击修复版本，未排期的第5个选项
 		ce.click(cby.getElement("//*[@id=\"fixVersions-multi-select\"]/span"));
 		s.add("//div[contains(@class, 'ajs-layer box')]//*[text()='20200408-解决实名制平台响应慢问题']/../..//a");
-		ce.click(s.getElement(5));
-	}
-	
-	@Test
-	public void test() {
-		ce.click(cby.getElement("//*[@id=\"fixVersions-multi-select\"]/span"));
-		WebElement e = cb.getDriver().findElement(By.xpath("//div[contains(@class, 'ajs-layer box')]//*[text()='20200408-解决实名制平台响应慢问题']"));
+//		ce.click(s.getElement("2020", "-", "银行接口"));
 		
-		System.out.println(e.getTagName());
-		
-		cb.getDriver().findElements(By.xpath("//div[contains(@class, 'ajs-layer box')]//*[text()='20200408-解决实名制平台响应慢问题']/../..//a")).
-			stream().map(ele -> {
-				return ele.getText();
-			}).forEach(System.out :: println);
+		ce.click(s.getElement("233", "-", "银行接口"));
 	}
 }

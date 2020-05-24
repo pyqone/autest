@@ -1,10 +1,12 @@
 package pres.auxiliary.work.selenium.element;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
@@ -13,6 +15,39 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pres.auxiliary.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 
+/**
+ * <p><b>文件名：</b>SelectBy.java</p>
+ * <p><b>用途：</b>
+ * 提供获取下拉框中选项元素的方法，支持标准型下拉框选项（由select与option标签组成的下拉框）以及
+ * 非标准型下拉框选项（由普通的div、li等元素组成的选项），并支持根据关键词查找选项。需要注意的是，
+ * 标准下拉选项和非标准下拉选项需要传入的参数不同，例如，<br>
+ * 标准下拉框：<br>
+ * &lt;select&nbsp;id='test'&gt;<br>
+ * &emsp;&lt;option&gt;男&lt;/option&gt;<br>
+ * &emsp;&lt;option&gt;女&lt;/option&gt;<br>
+ * &emsp;&lt;option&gt;其他&lt;/option&gt;<br>
+ * &lt;/select&gt;<br>
+ * 对于该标准的下拉框选项，只需要定位到//select[@id='test']，得到其WebElement对象即可，但对于非标准的下拉框其下拉框是由input和button标签构成：<br>
+ * &lt;div&gt;<br>
+ * &emsp;&lt;span&gt;&lt;input/&gt;&lt;/span&gt;<br>
+ * &emsp;&lt;span&gt;&lt;button/&gt;&lt;/span&gt;<br>
+ * &lt;/div&gt;<br>
+ * 点击button对应的按钮后，其下也能弹出选项，但其选项是由div标签写入text构成：<br>
+ * &lt;div&nbsp;id='test'&gt;<br>
+ * &emsp;&lt;div&gt;男&lt;/div&gt;<br>
+ * &emsp;&lt;div&gt;女&lt;/div&gt;<br>
+ * &emsp;&lt;div&gt;其他&lt;/div&gt;<br>
+ * &lt;/div&gt;<br>
+ * 对于这种非标准的下拉框选项，需要传入选项所在的所有div标签对应的WebElement元素，在上例，则需要定位到//div[@id='test']/div，
+ * 注意，末尾的div不指定数字，则可以代表整个选项。<br>
+ * </p>
+ * <p><b>编码时间：</b>2020年5月24日下午3:30:00</p>
+ * <p><b>修改时间：</b>2020年5月24日下午3:30:00</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 12
+ *
+ */
 public class SelectBy extends MultiBy {
 	/**
 	 * 用于存储获取下拉选项时的信息
@@ -110,19 +145,36 @@ public class SelectBy extends MultiBy {
 	}
 	
 	/**
-	 * 根据选项内容，返回相应的选项元素，当传入的元素名称不存在时，则返回null；当存在重复的选项
-	 * 名称时，则选择第一个选项
+	 * 根据关键词组查找选项，并返回选项元素，当传入的元素名称不存在时，则抛出NoSuchElementException异常；
+	 * 当查询到有多个包含关键词的选项时，则选择第一个选项<br>
+	 * 注意，当传入多个关键词时其选项需要全部满足才会返回相应的选项。
 	 * 
-	 * @param elementName 选项名称
+	 * @param keys 查询选项的关键词组
 	 * @return 相应的选项元素
+	 * @throws NoSuchElementException 查找的选项不存在时抛出的异常
 	 */
-	public Element getElement(String elementName) {
-		//根据名称获取元素下标
-		int index = optionText.indexOf(elementName);
-		//判断下标是否为-1（元素是否存在），若不存在则返回null
-		if (index == -1) {
-			return null;
-		}
+	public Element getElement(String...keys) {
+		//查找完全符合关键词的元素
+		String elementName = optionText.stream().filter(text -> {
+			//遍历关键词，若元素不符合条件，则返回false
+			for (String key : keys) {
+				if (text.indexOf(key) < 0) {
+					return false;
+				}
+			}
+			
+			//若条件均符合，则返回true
+			return true;
+		}).findFirst().orElseThrow(() -> {
+			//若不存在符合条件的选项，则抛出NoSuchElementException异常，并返回相应的消息
+			StringBuilder keyText = new StringBuilder("[");
+			//拼接查询条件
+			Arrays.stream(keys).forEach(key -> {
+				keyText.append(key + ", ");
+			});
+			
+			return new NoSuchElementException("不存在符合条件的选项：" + keyText.substring(0, keyText.length() - ", ".length()) + "]");
+		});
 		
 		return option.get(optionText.indexOf(elementName));
 	}
