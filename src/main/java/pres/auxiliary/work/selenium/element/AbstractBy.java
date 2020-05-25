@@ -12,11 +12,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 
-import pres.auxiliary.selenium.event.NoSuchWindownException;
-import pres.auxiliary.selenium.xml.ByType;
-import pres.auxiliary.selenium.xml.ReadXml;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 import pres.auxiliary.work.selenium.brower.Page;
+import pres.auxiliary.work.selenium.xml.ByType;
+import pres.auxiliary.work.selenium.xml.ReadXml;
 
 /**
  * <p><b>文件名：</b>AbstractElement.java</p>
@@ -259,6 +258,12 @@ public abstract class AbstractBy {
 	 * @param elementInformationList 存储窗体的名称或xpath与css定位方式的List集合
 	 */
 	void switchFrame(List<String> frameNameList) {
+		//若传参为空，则切回到顶层
+		if (frameNameList.isEmpty()) {
+			switchRootFrame();
+		}
+		
+		//若不为空，则列表进行切换
 		frameNameList.forEach(frameName -> {
 			//判断name指向的窗体是否在iframeNameList中，若存在，则向上切换父层，直到切换到name指向的窗体；若不存在，则直接切换，并添加窗体名称
 			if (iframeNameList.contains(frameName)) {
