@@ -55,7 +55,7 @@ public abstract class AbstractBy {
 	/**
 	 * 存储当前定位的窗体层级
 	 */
-	private ArrayList<String> iframeNameList = new ArrayList<>();
+	private static ArrayList<String> iframeNameList = new ArrayList<>();
 	
 	/**
 	 * 用于存储元素通用的等待时间，默认5秒
@@ -261,6 +261,11 @@ public abstract class AbstractBy {
 		//若传参为空，则切回到顶层
 		if (frameNameList.isEmpty()) {
 			switchRootFrame();
+			return;
+		}
+		
+		if (!iframeNameList.isEmpty() && frameNameList.get(frameNameList.size() - 1).equals(iframeNameList.get(iframeNameList.size() - 1))) {
+			return;
 		}
 		
 		//若不为空，则列表进行切换
