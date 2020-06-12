@@ -74,6 +74,11 @@ public abstract class ListBy extends MultiBy {
 	
 	@Override
 	void add(ElementInformation elementInformation) {
+		//判断传入的元素是否在xml文件中，若存在再判断是否自动切换窗体，若需要，则获取元素的所有父窗体并进行切换
+		if (xml != null && xml.isElement(elementInformation.name) && isAutoSwitchIframe) {
+			switchFrame(getParentFrameName(elementInformation.name));
+		}
+				
 		List<Element> elementList = new ArrayList<Element>();
 		//获取元素
 		By by = recognitionElement(elementInformation);

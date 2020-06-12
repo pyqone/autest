@@ -39,7 +39,7 @@ public class CaseTab extends Tab {
 		if (c == null) {
 			c = new CaseTab(caseFile);
 		} else {
-			CaseTab.caseFile = caseFile;
+			Tab.caseFile = caseFile;
 		}
 
 		return c;

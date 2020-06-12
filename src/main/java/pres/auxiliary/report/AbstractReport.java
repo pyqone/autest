@@ -26,6 +26,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -47,7 +48,6 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -895,7 +895,7 @@ public abstract class AbstractReport implements ReportInter {
 		// anchor.setAnchorType(3);
 		// 插入图片
 		patriarch.createPicture(anchor, newxw.addPicture(plotBugCurve(verBugXs)
-				.toByteArray(), XSSFWorkbook.PICTURE_TYPE_PNG));
+				.toByteArray(), Workbook.PICTURE_TYPE_PNG));
 
 		// 返回新的模版对象
 		return newxw;
@@ -1038,8 +1038,8 @@ public abstract class AbstractReport implements ReportInter {
 		CategoryPlot cp = chart.getCategoryPlot();
 
 		// 背景色设置
-		cp.setBackgroundPaint(ChartColor.WHITE);
-		cp.setRangeGridlinePaint(ChartColor.GRAY);
+		cp.setBackgroundPaint(Color.WHITE);
+		cp.setRangeGridlinePaint(Color.GRAY);
 
 		try {
 			ChartUtilities.writeChartAsPNG(byteArrayOut, chart, 400, 200);

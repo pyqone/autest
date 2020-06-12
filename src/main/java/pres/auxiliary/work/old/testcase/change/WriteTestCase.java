@@ -9,13 +9,13 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
-import pres.auxiliary.selenium.xml.IncorrectXmlPathException;
 import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
 import pres.auxiliary.work.old.testcase.writecase.AddInformation;
 import pres.auxiliary.work.old.testcase.writecase.BrowseList;
 import pres.auxiliary.work.old.testcase.writecase.FileType;
 import pres.auxiliary.work.old.testcase.writecase.InputType;
 import pres.auxiliary.work.old.testcase.writecase.PhoneType;
+import pres.auxiliary.work.selenium.xml.IncorrectXmlPathException;
 
 /**
  * 该类用于通过XML文件结构来生成测试用例

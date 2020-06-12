@@ -47,4 +47,14 @@ public class EventWait {
 			return !waitElement.getWebElement().isDisplayed();
 		});
 	}
+	
+	/**
+	 * 用于等待元素元素内出现文本
+	 * @param waitElement 需要等待的元素
+	 */ 
+	public void showText(Element waitElement) {
+		wait.until(driver -> {
+			return !new TextEvent(driver).getText(waitElement).isEmpty();
+		});
+	}
 }

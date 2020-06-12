@@ -10,7 +10,7 @@ import pres.auxiliary.tool.web.IncorrectConditionException;
 
 /**
  * <p>
- * <b>文件名：</b>DateToMs.java
+ * <b>文件名：</b>Time.java
  * </p>
  * <p>
  * <b>用途：</b>提供对时间进行转换相关的工具
@@ -129,6 +129,34 @@ public class Time {
 		date = new Date();
 		oldDate = this.date;
 	}
+	
+	/**
+	 * 设置返回时间的格式，该方法可传入时间格式，亦可向该方法中传入时间格式的模板，
+	 * 通过识别模板得到日期的格式，但作为模板的日期也必须满足时间格式。例如：<br>
+	 * <pre>{@code
+	 * Time time = new Time(1575387800000L);
+	 * 
+	 * time.setTimeFormat("yyyy年MM月dd日 HH:mm:ss");
+	 * getFormatTime();//输出：2019年12月03日 23:43:20
+	 * 
+	 * time.setTimeFormat("2019/12/04 03:03:20");
+	 * getFormatTime();//输出：2019/12/03 23:43:20
+	 * }</pre>
+	 * 注意，传入已格式化的时间时，其不会改变当前存储的时间
+	 * 
+	 * @param pattern 指定的格式或已格式化的时间
+	 * @return 格式化后的时间
+	 */
+	public void setTimeFormat(String pattern) {
+		if (pattern.matches(REGEX_DATE)) {
+			dateFormat = getDateFormat(pattern);
+		} else {
+			try {
+				dateFormat = pattern;
+			} catch (IllegalArgumentException e) {
+			}
+		}
+	}
 
 	/**
 	 * 用于返回Date类对象
@@ -168,32 +196,6 @@ public class Time {
 	 */
 	public String getFormatTime() {
 		return new SimpleDateFormat(dateFormat).format(date);
-	}
-
-	/**
-	 * 根据指定的格式，格式化设置的时间并进行返回，若格式化失败，则按照默 认的“yyyy-MM-dd HH:mm:ss”格式进行返回。
-	 * 亦可向该方法中传入时间格式的模板，通过识别模板得到日期的格式，但作为模板的日期也必须满足时间格式。例如：<br>
-	 * date = 1575387800000L;<br>
-	 * String getFormatTime("yyyy-MM-dd HH:mm:ss");//输出：2019-12-03 23:43:20<br>
-	 * String getFormatTime("2019/12/04 03:03:20");//输出：2019/12/03 23:43:20<br>
-	 * 
-	 * 
-	 * @param pattern 指定的格式
-	 * @return 格式化后的时间
-	 */
-	public String getFormatTime(String pattern) {
-		if (pattern.matches(REGEX_DATE)) {
-			dateFormat = pattern;
-			return new SimpleDateFormat(getDateFormat(pattern)).format(date);
-		} else {
-			try {
-				String dateText = new SimpleDateFormat(pattern).format(date);
-				dateFormat = pattern;
-				return dateText;
-			} catch (IllegalArgumentException e) {
-				return new SimpleDateFormat(dateFormat).format(date);
-			}
-		}
 	}
 
 	/**
@@ -257,9 +259,9 @@ public class Time {
 			int numIndex = getIndex(time.substring(0, index));
 
 			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 60.0 * 1000.0);
+			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 60.0);
 			//cTime增加相应日期
-			cTime.add(Calendar.MILLISECOND, addTime);
+			cTime.add(Calendar.SECOND, addTime);
 
 			//删除已修改的单位以及其数值，由于分钟单位可能为三位，故需要根据具体传入的单位来定义
 			time = time.delete(numIndex,
@@ -348,9 +350,9 @@ public class Time {
 			int numIndex = getIndex(time.substring(0, index));
 
 			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 24.0 * 60.0 * 60.0 * 1000.0);
+			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 24.0 * 60.0 * 60.0);
 			//cTime增加相应日期
-			cTime.add(Calendar.MILLISECOND, addTime);
+			cTime.add(Calendar.SECOND, addTime);
 
 			//删除已修改的单位以及其数值
 			time = time.delete(numIndex, index + 1);
@@ -364,9 +366,9 @@ public class Time {
 			int numIndex = getIndex(time.substring(0, index));
 
 			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 60.0 * 60.0 * 1000.0);
+			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 60.0 * 60.0);
 			//cTime增加相应日期
-			cTime.add(Calendar.MILLISECOND, addTime);
+			cTime.add(Calendar.SECOND, addTime);
 
 			//删除已修改的单位以及其数值
 			time = time.delete(numIndex, index + 1);
@@ -380,9 +382,9 @@ public class Time {
 			int numIndex = getIndex(time.substring(0, index));
 
 			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 1000.0);
+			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 1.0);
 			//cTime增加相应日期
-			cTime.add(Calendar.MILLISECOND, addTime);
+			cTime.add(Calendar.SECOND, addTime);
 
 			//删除已修改的单位以及其数值
 			time = time.delete(numIndex, index + 1);

@@ -72,14 +72,14 @@ public enum StringMode {
 	private String seed;
 
 	private StringMode(String seed) {
-		setSeed(seed);
+		this.seed = seed;
 	}
 
+	/**
+	 * 返回字符串种子
+	 * @return 字符串种子
+	 */
 	public String getSeed() {
 		return seed;
-	}
-
-	public void setSeed(String seed) {
-		this.seed = seed;
 	}
 }

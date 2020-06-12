@@ -10,11 +10,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
-import pres.auxiliary.selenium.browers.ChromeBrower;
-import pres.auxiliary.selenium.event.DataListEvent;
-import pres.auxiliary.selenium.event.DataListEvent.ListEvent;
-import pres.auxiliary.selenium.event.Event;
-
 /**
  * <p><b>文件名：</b>WebDataToFile.java</p>
  * <p><b>用途：</b>用于从页面爬取数据以文本的形式存储至本地的工具</p>

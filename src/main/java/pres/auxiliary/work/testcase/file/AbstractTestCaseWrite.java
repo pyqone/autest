@@ -32,7 +32,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import pres.auxiliary.tool.readfile.ListFileRead;
 import pres.auxiliary.work.testcase.templet.Case;
 import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
 
@@ -1001,7 +1000,7 @@ public abstract class AbstractTestCaseWrite<T extends AbstractTestCaseWrite<T>> 
 			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("name").equals(field))
 					.forEach(fieldElement -> {
 						// 获取其下的所有field标签
-						List<Element> textElements = (List<Element>) (fieldElement.elements());
+						List<Element> textElements = (fieldElement.elements());
 						// 判断是否存在text标签，若不存在，则结束
 						if (textElements.size() != 0) {
 							// 处理最大与最小值，保证数据不会错误

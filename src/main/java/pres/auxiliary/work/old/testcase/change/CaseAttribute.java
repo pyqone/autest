@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -91,9 +91,9 @@ public abstract class CaseAttribute {
 		}
 
 		else if (cell.getCellTypeEnum().equals(CellType.NUMERIC)) {
-			if (HSSFDateUtil.isCellDateFormatted(cell)) {
+			if (DateUtil.isCellDateFormatted(cell)) {
 				double d = cell.getNumericCellValue();
-				Date date = HSSFDateUtil.getJavaDate(d);
+				Date date = DateUtil.getJavaDate(d);
 				s = new SimpleDateFormat("yyyy-MM-dd").format(date);
 			} else {
 				s = String.valueOf((int) cell.getNumericCellValue());

@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
 
 import org.openqa.selenium.WebDriver;
 
-import pres.auxiliary.selenium.event.DataListEvent;
-
 /**
  * <p>
  * <b>文件名：</b>Condition.java

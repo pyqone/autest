@@ -366,7 +366,7 @@ public class TestReportMainFrame extends JFrame {
 
 				// 添加测试目的
 				@SuppressWarnings("unchecked")
-				List<Element> purposes = (List<Element>) dom.getRootElement()
+				List<Element> purposes = dom.getRootElement()
 						.element("report").element("content").element("purpose")
 						.elements();
 				s[i] = "";
@@ -382,7 +382,7 @@ public class TestReportMainFrame extends JFrame {
 				// 读取配置文件中的测试依据
 				StringBuilder gist = new StringBuilder();
 				@SuppressWarnings("unchecked")
-				List<Element> gists = (List<Element>) dom.getRootElement()
+				List<Element> gists = dom.getRootElement()
 						.element("report").element("content").element("gist")
 						.elements();
 				s[i] = "";

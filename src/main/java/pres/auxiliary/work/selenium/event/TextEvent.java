@@ -11,11 +11,11 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import pres.auxiliary.selenium.tool.RecognitionImage;
-import pres.auxiliary.selenium.tool.Screenshot;
 import pres.auxiliary.tool.randomstring.RandomString;
 import pres.auxiliary.tool.randomstring.StringMode;
 import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.tool.RecognitionImage;
+import pres.auxiliary.work.selenium.tool.Screenshot;
 
 /**
  * <p><b>文件名：</b>TextEvent.java</p>

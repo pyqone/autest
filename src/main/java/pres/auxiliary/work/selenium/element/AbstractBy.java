@@ -53,7 +53,7 @@ public abstract class AbstractBy {
 	 */
 	private String browserHandles;
 	/**
-	 * 存储当前定位的窗体层级
+	 * 存储当前定位的窗体层级，由于多个子类之间需要相互通信，故此处标记为static
 	 */
 	private static ArrayList<String> iframeNameList = new ArrayList<>();
 	
@@ -264,8 +264,14 @@ public abstract class AbstractBy {
 			return;
 		}
 		
+		//若原窗体和需要切换的窗体的最后一个元素一致，则无需切换
 		if (!iframeNameList.isEmpty() && frameNameList.get(frameNameList.size() - 1).equals(iframeNameList.get(iframeNameList.size() - 1))) {
 			return;
+		}
+		
+		//若需要切换的窗体第一层均不在iframeNameList时，则需要切回到顶层
+		if (!iframeNameList.contains(frameNameList.get(0))) {
+			switchRootFrame();
 		}
 		
 		//若不为空，则列表进行切换

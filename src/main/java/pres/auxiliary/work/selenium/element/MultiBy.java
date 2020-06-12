@@ -6,8 +6,8 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 
-import pres.auxiliary.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
+import pres.auxiliary.work.selenium.xml.ByType;
 
 /**
  * <p><b>文件名：</b>MultiElement.java</p>

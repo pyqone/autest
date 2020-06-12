@@ -19,6 +19,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -38,10 +39,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import pres.auxiliary.directory.exception.UndefinedDirectoryException;
-import pres.auxiliary.selenium.browers.FirefoxBrower;
-import pres.auxiliary.selenium.event.Event;
-import pres.auxiliary.selenium.xml.ByType;
-import pres.auxiliary.selenium.xml.ReadXml;
+import pres.auxiliary.work.selenium.xml.ByType;
+import pres.auxiliary.work.selenium.xml.ReadXml;
 
 /**
  * 该类用于从禅道上导出的BUG列表，使用项目路径下Templet的模版文件（TestReportTemplet.docx），来生成测试报告，
@@ -336,7 +335,7 @@ public class TestReport extends AbstractReport {
 		// 读取配置文件中的测试目的
 		StringBuilder purpose = new StringBuilder();
 		@SuppressWarnings("unchecked")
-		List<Element> purposes = (List<Element>) content.element("purpose")
+		List<Element> purposes = content.element("purpose")
 				.elements();
 		// 获取测试目的
 		for (int i = 0; i < purposes.size(); i++) {
@@ -347,7 +346,7 @@ public class TestReport extends AbstractReport {
 		// 读取配置文件中的测试依据
 		StringBuilder gist = new StringBuilder();
 		@SuppressWarnings("unchecked")
-		List<Element> gists = (List<Element>) content.element("gist")
+		List<Element> gists = content.element("gist")
 				.elements();
 		// 获取测试目的
 		for (int i = 0; i < gists.size(); i++) {
@@ -674,7 +673,7 @@ public class TestReport extends AbstractReport {
 		StringBuilder ccStr = new StringBuilder();
 
 		// 设置多个收件人
-		message.setRecipients(MimeMessage.RecipientType.TO,
+		message.setRecipients(RecipientType.TO,
 				InternetAddress.parse(toStr.toString()));
 
 		// 遍历cc标签，设置抄送人
@@ -712,7 +711,7 @@ public class TestReport extends AbstractReport {
 		// 再将自己拼接入抄送人中，以避免邮件无法发送
 		ccStr.append(root.element("mail").attributeValue("username"));
 		// 设置多个抄送人
-		message.setRecipients(MimeMessage.RecipientType.CC,
+		message.setRecipients(RecipientType.CC,
 				InternetAddress.parse(ccStr.toString()));
 
 		// 设置邮件主题

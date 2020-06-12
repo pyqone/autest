@@ -3,9 +3,6 @@ package pres.auxiliary.tool.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
-
 /**
  * <p><b>文件名：</b>Condition.java</p>
  * <p><b>用途：</b>该类用于对文本的筛选条件进行编辑，可编辑的条件包含字符串、时间及数字</p>

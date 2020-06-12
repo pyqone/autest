@@ -14,9 +14,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.WebDriver;
 
-import pres.auxiliary.selenium.browers.ChromeBrower;
-import pres.auxiliary.selenium.event.Event;
-
 /**
  * <p>
  * <b>文件名：</b>WebDataCompare.java

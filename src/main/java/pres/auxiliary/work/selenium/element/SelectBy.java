@@ -12,8 +12,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import pres.auxiliary.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
+import pres.auxiliary.work.selenium.xml.ByType;
 
 /**
  * <p><b>文件名：</b>SelectBy.java</p>
@@ -67,6 +67,9 @@ public class SelectBy extends MultiBy {
 	 */
 	private ElementType elementType;
 	
+	/**
+	 * 控制元素首行是否为
+	 */
 	private boolean fristIsEmpty = false;
 	
 	/**
@@ -76,9 +79,8 @@ public class SelectBy extends MultiBy {
 	 * @param brower {@link AbstractBrower}对象
 	 * @param fristIsEmpty 指定第一个元素是否为空串或为“请选择”等文本
 	 */
-	public SelectBy(AbstractBrower brower, boolean fristIsEmpty) {
+	public SelectBy(AbstractBrower brower) {
 		super(brower);
-		this.fristIsEmpty = fristIsEmpty;
 	}
 
 	/**
@@ -88,9 +90,8 @@ public class SelectBy extends MultiBy {
 	 * @param driver 浏览器的{@link WebDriver}对象
 	 * @param fristIsEmpty 指定第一个元素是否为空串或为“请选择”等文本
 	 */
-	public SelectBy(WebDriver driver, boolean fristIsEmpty) {
+	public SelectBy(WebDriver driver) {
 		super(driver);
-		this.fristIsEmpty = fristIsEmpty;
 	}
 	
 	@Override
@@ -99,8 +100,35 @@ public class SelectBy extends MultiBy {
 		add(elementInfo);
 	}
 	
+	/**
+	 * 用于添加选项并指明首个选项是否为不可选择的选项或者文本为空的选项，其他效果与{@link #add(String)}一致
+	 * @param name 元素在xml文件或者元素的定位内容
+	 * @param fristIsEmpty 首个选项是否为不可选择的选项或者文本为空的选项
+	 * @see #add(String)
+	 */
+	public void add(String name, boolean fristIsEmpty) {
+		this.fristIsEmpty = fristIsEmpty;
+		add(name);
+	}
+	
+	/**
+	 * 用于添加选项并指明首个选项是否为不可选择的选项或者文本为空的选项，其他效果与{@link #add(String, ByType)}一致
+	 * @param name 元素在xml文件或者元素的定位内容
+	 * @param fristIsEmpty 首个选项是否为不可选择的选项或者文本为空的选项
+	 * @see #add(String, ByType)
+	 */
+	public void add(String name, ByType byType, boolean fristIsEmpty) {
+		this.fristIsEmpty = fristIsEmpty;
+		add(name, byType);
+	}
+	
 	@Override
 	void add(ElementInformation elementInformation) {
+		//判断传入的元素是否在xml文件中，若存在再判断是否自动切换窗体，若需要，则获取元素的所有父窗体并进行切换
+		if (xml != null && xml.isElement(elementInformation.name) && isAutoSwitchIframe) {
+			switchFrame(getParentFrameName(elementInformation.name));
+		}
+				
 		//清除原存储的内容
 		clear();
 		
@@ -111,8 +139,8 @@ public class SelectBy extends MultiBy {
 		//获取元素个数
 		int size = elementList.size();
 		
-		//根据获取到的元素个数，来判断下拉选项的类型
-		if (size == 1) {
+		//根据第一个元素的tagname来判断是否为标准下拉元素
+		if ("select".equalsIgnoreCase(elementList.get(0).getTagName())) {
 			elementType = ElementType.SELECT_OPTION_ELEMENT;
 			
 			//若是标准下拉选项型，则需要改变size的值，方便后续添加数据

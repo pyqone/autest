@@ -38,7 +38,11 @@ public class ClickEvent extends AbstractEvent {
 	 */
 	public void click(Element element) {
 		//在等待时间内判断元素是否可以点击
-		wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
+		} catch (Exception e) {
+		}
+		
 		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
 		wait.until((driver) -> {
 				try {
@@ -61,8 +65,11 @@ public class ClickEvent extends AbstractEvent {
 	 * @param element 通过查找页面得到的控件元素对象
 	 */
 	public void doubleClick(Element element) {
-		//在等待时间内判断元素是否可以点击，若可以点击元素，则进行双击事件
-		wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
+		//在等待时间内判断元素是否可以点击
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
+		} catch (Exception e) {
+		}
  		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
 		wait.until((driver) -> {
 				try {
@@ -84,8 +91,11 @@ public class ClickEvent extends AbstractEvent {
 	 * @param element 通过查找页面得到的控件元素对象
 	 */
 	public void rightClick(Element element) {
-		//在等待时间内判断元素是否可以点击，若可以点击元素，则进行右击事件
-		wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
+		//在等待时间内判断元素是否可以点击
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
+		} catch (Exception e) {
+		}
 		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
 		wait.until((driver) -> {
 				try {
