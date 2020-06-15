@@ -72,7 +72,7 @@ public class BasicTestCaseWriteTest {
 	@AfterClass
 	public void openFolder() throws IOException {
 		wtc.writeFile();
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 //		System.out.println("优先级：");
 //		Arrays.stream(wtc.getRank()).forEach(System.out::println);
 //		wtc.getCaseXml();

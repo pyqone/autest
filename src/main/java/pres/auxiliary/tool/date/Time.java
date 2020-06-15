@@ -46,8 +46,9 @@ public class Time {
 	/**
 	 * 定义日期约束类型的传入格式
 	 */
-	private final String REGEX_DATE = "(\\d{4}[-\\.年\\\\\\/][01]?\\d[-\\.月\\\\\\/][0123]?\\d日?)?"
-			+ "( ?[012]?\\d[:时][0123456]?\\d分?([:分][0123456]?\\d秒?)?)?";
+	private final String REGEX_DATE = "(\\d{4}[-\\.年\\\\/][01]?\\d[-\\.月\\\\/][0123]?\\d日?"
+			+ "( [012]?\\d[:时][0123456]?\\d分?([:分][0123456]?\\d秒?)?)?)|"
+			+ "([012]?\\d[:时][0123456]?\\d分?([:分][0123456]?\\d秒?))";
 
 	/**
 	 * 构造当前时间
@@ -111,6 +112,12 @@ public class Time {
 	 * @throws IncorrectConditionException 时间转换错误时抛出的异常
 	 */
 	public void setTime(String formatTime) {
+		//若formatTime传入为Null或为空串，则设置为当前时间
+		if (formatTime == null || formatTime.isEmpty()) {
+			setNowTime();
+			return;
+		}
+		
 		if (formatTime.matches(REGEX_DATE)) {
 			try {
 				date = new SimpleDateFormat(getDateFormat(formatTime)).parse(formatTime);

@@ -7,9 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 
-import pres.auxiliary.selenium.browers.FirefoxBrower;
-import pres.auxiliary.selenium.event.TextEvent;
-
 public class TestTextControl {
 	TextEvent tc;
 	WebDriver d;

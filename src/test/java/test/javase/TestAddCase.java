@@ -3,10 +3,6 @@ package test.javase;
 import java.io.IOException;
 import java.lang.reflect.Parameter;
 
-import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
-import pres.auxiliary.work.old.testcase.writecase.InputType;
-import pres.auxiliary.work.old.testcase.writecase.PresetCase;
-
 public class TestAddCase {
 	public static void main(String[] args) throws IOException {
 		/*

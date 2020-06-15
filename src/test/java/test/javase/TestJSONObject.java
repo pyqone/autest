@@ -2,6 +2,7 @@ package test.javase;
 
 import java.util.Arrays;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 public class TestJSONObject {
@@ -39,14 +40,14 @@ public class TestJSONObject {
 		//System.out.println(moduleJson);
 		
 		System.out.println("模块信息输出：");
-		JSONObject outputModuleJson = JSONObject.parseObject(moduleJson.toString());
+		JSONObject outputModuleJson = JSON.parseObject(moduleJson.toString());
 		System.out.println(outputModuleJson.get("name"));
 		outputModuleJson.getJSONArray("testClass").forEach(System.out :: println);
 		System.out.println("-".repeat(20));
 		
 		System.out.println("测试类输出：");
 		outputModuleJson.getJSONArray("testClass").forEach(testClassJson -> {
-			JSONObject outputTestClassJson = JSONObject.parseObject(testClassJson.toString());
+			JSONObject outputTestClassJson = JSON.parseObject(testClassJson.toString());
 			System.out.println(outputTestClassJson.get("name"));
 			outputTestClassJson.getJSONArray("method").forEach(System.out :: println);
 		});
@@ -54,9 +55,9 @@ public class TestJSONObject {
 		
 		System.out.println("测试方法输出：");
 		outputModuleJson.getJSONArray("testClass").forEach(testClassJson -> {
-			JSONObject outputTestClassJson = JSONObject.parseObject(testClassJson.toString());
+			JSONObject outputTestClassJson = JSON.parseObject(testClassJson.toString());
 			outputTestClassJson.getJSONArray("method").forEach(methodJson -> {
-				JSONObject outputMethodJson = JSONObject.parseObject(methodJson.toString());
+				JSONObject outputMethodJson = JSON.parseObject(methodJson.toString());
 				System.out.println(outputMethodJson.get("name"));
 				System.out.println(outputMethodJson.get("step"));
 				System.out.println(outputMethodJson.get("bug"));

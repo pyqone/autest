@@ -1,8 +1,6 @@
 package test.javase;
 
-import pres.auxiliary.tool.randomstring.IllegalStringLengthException;
 import pres.auxiliary.tool.randomstring.RandomString;
-import pres.auxiliary.tool.randomstring.StringMode;
 
 public class TestRandomString {
 	public static void main(String[] args) {

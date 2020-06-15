@@ -53,7 +53,7 @@ public class JiraTestCaseWriteTest {
 	@AfterClass
 	public void openFolder() throws IOException {
 		wtc.writeFile();
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		java.awt.Desktop.getDesktop().open(tempFile.getParentFile());
 		java.awt.Desktop.getDesktop().open(tempFile);
 	}

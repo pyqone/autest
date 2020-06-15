@@ -7,8 +7,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.selenium.xml.ByType;
-import pres.auxiliary.selenium.xml.ReadXml;
+import pres.auxiliary.work.selenium.xml.ByType;
+import pres.auxiliary.work.selenium.xml.ReadXml;
 
 /**
  * <p><b>文件名：</b>TestReadXml.java</p>

@@ -25,23 +25,23 @@ public class TimeTest {
 	public void newTimeTest() throws ParseException {
 		time = new Time();
 		System.out.println(time.getTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time = new Time(new Date(1575387550000L));
 		System.out.println(time.getTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time = new Time(1585290323214L);
 		System.out.println(time.getTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time = new Time("2019-12-04 03:03:20");
 		System.out.println(time.getTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 	}
 	
 	@Test
 	public void test() throws ParseException {
 		time = new Time();
-		time.addTime("-2d6h");
-		System.out.println(time.getTime());
+		time.addTime("-90d+1min");
+		System.out.println(time.getFormatTime());
 	}
 	
 	/**
@@ -51,16 +51,16 @@ public class TimeTest {
 	public void getDateTest() {
 		time.setNowTime();
 		System.out.println(time.getDate().getTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time = new Time(new Date(1575387550000L));
 		System.out.println(time.getDate().getTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time = new Time(1575387800000L);
 		System.out.println(time.getDate().getTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime("2019\\12\\04 03时03分20秒");
 		System.out.println(time.getDate().getTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 	}
 	
 	/**
@@ -70,28 +70,28 @@ public class TimeTest {
 	public void getFormatTimeTest() {
 		time.setNowTime();
 		System.out.println(time.getFormatTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time = new Time(new Date(1575387550000L));
 		System.out.println(time.getFormatTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time = new Time(1575387800000L);
 		System.out.println(time.getFormatTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime("2019年12月04日 03时03分20秒");
 		System.out.println(time.getFormatTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time = new Time("2019/12/04 03:03:20");
 		System.out.println(time.getFormatTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime("2019年12月04日");
 		System.out.println(time.getFormatTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime("2019年12月04日 03时03分");
 		System.out.println(time.getFormatTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setNowTime();
 		System.out.println(time.getFormatTime());
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 	}
 	
 	/**
@@ -101,23 +101,23 @@ public class TimeTest {
 	public void getFormatTimeTest_String() {
 		time.setNowTime();
 		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime("2019/12/04 03:03:20");
 		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime(new Date());
 		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime(1576037076297L);
 		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
 		System.out.println(time.getFormatTime("2019/12/04 03:03:20"));
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime("2019/12/04");
 		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 		time.setTime("03:03:20");
 		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("-".repeat(20));
+		System.out.println("----------------------------");
 	}
 	
 	/**
@@ -144,6 +144,15 @@ public class TimeTest {
 		System.out.println(time.addOldTime("-1.5y-2.3M2W5d1.5h-0.5min20.5S"));
 		System.out.println(time.getTime());
 		System.out.println(time.addTime("-1.5y-2.3M2W5d1.5h-0.5min20.5S"));
+	}
+	
+	/**
+	 * 测试{@link Time#addTime(String)}
+	 */
+	@Test
+	public void timeTest_ExceptionTime() {
+		time.setTime("2019年13月37日 29:00:00");
+		System.out.println(time.getFormatTime());
 	}
 	
 	@Test

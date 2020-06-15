@@ -7,8 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 
-import pres.auxiliary.selenium.browers.ChromeBrower;
-import pres.auxiliary.selenium.event.Event;
+import pres.auxiliary.work.selenium.tool.Screenshot;
 
 public class TestScreenshot {
 	static ChromeBrower cb;

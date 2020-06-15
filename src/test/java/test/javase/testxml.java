@@ -1,13 +1,7 @@
 package test.javase;
 
-import java.io.File;
-
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-
-import pres.auxiliary.selenium.xml.XmlFileNameIsNullException;
+import pres.auxiliary.work.selenium.xml.XmlFileNameIsNullException;
 
 public class testxml {
 

@@ -4,9 +4,7 @@ import java.io.IOException;
 
 import pres.auxiliary.tool.randomstring.RandomString;
 import pres.auxiliary.tool.randomstring.StringMode;
-import pres.auxiliary.work.old.testcase.change.Tab;
 import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
-import pres.auxiliary.work.old.testcase.writecase.AddInformation;
 
 public class TestCase2 {
 	public static void main(String[] args) throws IOException {

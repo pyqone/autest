@@ -2,8 +2,8 @@ package test.javase;
 
 import java.io.File;
 
-import pres.auxiliary.selenium.xml.CreateXml;
-import pres.auxiliary.selenium.xml.XmlFileNameIsNullException;
+import pres.auxiliary.work.selenium.xml.CreateXml;
+import pres.auxiliary.work.selenium.xml.XmlFileNameIsNullException;
 
 
 public class TestCreateXml {

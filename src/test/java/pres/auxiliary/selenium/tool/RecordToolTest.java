@@ -9,7 +9,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.selenium.browers.ChromeBrower;
+import pres.auxiliary.work.selenium.tool.RecordTool;
+import pres.auxiliary.work.selenium.tool.RecordType;
 
 public class RecordToolTest {
 	/**

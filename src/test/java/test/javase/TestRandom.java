@@ -1,7 +1,6 @@
 package test.javase;
 
 import java.util.Random;
-import java.util.Scanner;
 
 public class TestRandom {
 	public static void main(String[] args) {

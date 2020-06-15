@@ -1,6 +1,6 @@
 package test.javase;
 
-import pres.auxiliary.selenium.tool.Log;
+import pres.auxiliary.work.selenium.tool.Log;
 
 public class testResultFile {
 	public static void main(String[] args) {

@@ -8,10 +8,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.selenium.browers.ChromeBrower;
-import pres.auxiliary.selenium.event.Event;
-import pres.auxiliary.selenium.event.JudgeEvent;
-import pres.auxiliary.selenium.tool.RecordTool;
+import pres.auxiliary.work.selenium.tool.RecordTool;
 
 public class JudgeEventTest {
 	JudgeEvent je;

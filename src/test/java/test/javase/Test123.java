@@ -1,8 +1,5 @@
 package test.javase;
 
-import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
-import pres.auxiliary.work.old.testcase.writecase.PresetCase;
-
 public class Test123 {
 	public static void main(String[] args) throws Exception {
 		String s = "Fgfdsdfg\\sfdggwe\\grew.gsfd.sdf.txt";

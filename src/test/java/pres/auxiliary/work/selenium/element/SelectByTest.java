@@ -35,7 +35,7 @@ public class SelectByTest {
 	public void init() {
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
 		
-		s = new SelectBy(cb, false);
+		s = new SelectBy(cb);
 		cby = new CommonBy(cb);
 		ce = new ClickEvent(cb.getDriver());
 	}
