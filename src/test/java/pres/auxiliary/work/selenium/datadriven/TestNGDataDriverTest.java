@@ -15,22 +15,21 @@ import pres.auxiliary.work.selenium.datadriven.TestNGDataDriver.Data;
 public class TestNGDataDriverTest {
 	TestNGDataDriver testNGData = new TestNGDataDriver();
 	
+	File docxFile = new File("src/test/java/pres/auxiliary/work/selenium/datadriven/Test.docx");
+	File xlsxFile = new File("src/test/java/pres/auxiliary/work/selenium/datadriven/AddTest.xlsx");
+	File functionFile = new File("src/test/java/pres/auxiliary/work/selenium/datadriven/Functions.xlsx");
+	
 	/**
 	 * 测试{@link TestNGDataDriver#addExcelData(java.io.File, String, boolean)}方法
 	 * @throws IOException 
 	 */
 	@BeforeClass
 	public void initData() throws IOException {
-		File docxFile = new File("src/test/java/pres/auxiliary/work/selenium/datadriven/Test.docx");
-		File xlsxFile = new File("src/test/java/pres/auxiliary/work/selenium/datadriven/AddTest.xlsx");
-		File functionFile = new File("src/test/java/pres/auxiliary/work/selenium/datadriven/Functions.xlsx");
-		
 		String patten = SplitType.SPLIT_TAB.getSplitSign();
 		String sheetName = "Sheet1";
 		
 		testNGData.addDataDriver(docxFile, patten, true);
 		testNGData.addDataDriver(xlsxFile, sheetName, true);
-		testNGData.addDataDriver(functionFile, "Sheet1", true);
 	}
 	
 	@AfterMethod
@@ -66,7 +65,8 @@ public class TestNGDataDriverTest {
 	 */
 	@Test
 	public void addFunctiontest_Functions_Rs() throws IOException {
-		testNGData.addFunction(Functions.randomString());
+//		testNGData.addFunction(Functions.randomString());
+		testNGData.addDataDriver(functionFile, "Sheet1", true);
 	}
 	
 	/**
@@ -77,5 +77,6 @@ public class TestNGDataDriverTest {
 	public void addFunctiontest_Functions_Time() throws IOException {
 		testNGData.addFunction(Functions.getNowTime());
 		testNGData.addFunction(Functions.getTime());
+		testNGData.addDataDriver(functionFile, "Sheet1", true);
 	}
 }

@@ -10,6 +10,9 @@ import java.util.Date;
 
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.randomstring.RandomString;
+import pres.auxiliary.tool.randomstring.StringMode;
+
 public class TimeTest {
 	Time time = new Time();
 	
@@ -42,6 +45,10 @@ public class TimeTest {
 		time = new Time();
 		time.addTime("-90d+1min");
 		System.out.println(time.getFormatTime());
+		
+		Time time = new Time();
+		time.setTimeFormat("2020-05-32 HH:mm:ss");
+		time.addTime("-" + new RandomString(StringMode.NUM).toString(2, 4) + "s");
 	}
 	
 	/**

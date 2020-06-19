@@ -2,6 +2,7 @@ package pres.auxiliary.work.selenium.datadriven;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,9 @@ import pres.auxiliary.tool.date.Time;
  * </pre>
  * 从数据驱动中读取到的数据有${test}、${select(1)}，则按照字符串的形式输出后分别得到“HelloWorld”、“function1”。
  * </p>
+ * <p>
+ * 除自定义函数外，构造类时将默认加载部分函数，可直接调用，详见{@link Functions}
+ * </p>
  * <p><b>编码时间：</b>2020年6月3日上午7:04:51</p>
  * <p><b>修改时间：</b>2020年6月3日上午7:04:51</p>
  * @author 彭宇琦
@@ -55,12 +59,25 @@ public class TestNGDataDriver {
 	 * 用于存储自定义的公式
 	 */
 	private HashMap<String, DataFunction> dataFunctionMap = new HashMap<>(16);
-	
-	
+
 	/**
 	 * 用于对日期格式或特殊字段输入的日期进行转换
 	 */
 	private Time time = new Time();
+	
+	/**
+	 * 构造类，并将默认的数据驱动函数（{@link Functions}）加载至类中
+	 */
+	public TestNGDataDriver() {
+		//构造Functions，通过反射，将所有Functions中的所有方法执行并添加至dataFunctionMap中
+		Functions functions = new Functions();
+		for (Method method : functions.getClass().getDeclaredMethods()) {
+			try {
+				addFunction((DataDriverFunction) method.invoke(functions));
+			} catch (Exception e) {
+			}
+		}
+	}
 	
 	/**
 	 * 用于返回数据驱动中列表的元素个数，即当前数据驱动中最大行元素个数
@@ -181,15 +198,15 @@ public class TestNGDataDriver {
 				//将rowDataList之前的列都置为空串
 				int oldListSize = dataList.get(rowInde - 1).dataList.size();
 				for (int index = 0; index < oldListSize - rowDataList.size(); index++) {
-					data.dataList.add("");
+					data.addData("");
 				}
 			}
 			
 			//存储数据
-			rowDataList.forEach(data.dataList :: add);
+			rowDataList.forEach(data :: addData);
 			dataList.add(data);
 		} else {
-			rowDataList.forEach(dataList.get(rowInde).dataList :: add);
+			rowDataList.forEach(dataList.get(rowInde) :: addData);
 		}
 	}
 
@@ -241,7 +258,6 @@ public class TestNGDataDriver {
 		 * @return 字符串形式的数据
 		 */
 		public String getString(int index) {
-			
 			return index < dataList.size() ? disposeContent(dataList.get(index)) : "";
 		}
 		
@@ -357,6 +373,14 @@ public class TestNGDataDriver {
 		 */
 		public Time getTime(String listName) {
 			return new Time(getString(listName));
+		}
+		
+		/**
+		 * 用于添加元素
+		 * @param content 元素内容
+		 */
+		private void addData(String content) {
+			dataList.add(disposeContent(content));
 		}
 		
 		/**
