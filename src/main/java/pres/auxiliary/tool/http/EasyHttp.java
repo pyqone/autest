@@ -3,8 +3,6 @@ package pres.auxiliary.tool.http;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.alibaba.fastjson.JSONObject;
-
 /**
  * <p><b>文件名：</b>EasyHttp.java</p>
  * <p><b>用途：</b>
@@ -18,9 +16,9 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class EasyHttp implements Cloneable {
 	/**
-	 * 存储指定的请求方式
+	 * 存储指定的请求方式，默认get请求
 	 */
-	private RequestType requestType;
+	private RequestType requestType = RequestType.GET;
 	
 	/**
 	 * 存储接口请求地址，及相应拼接的参数，用于最终请求
@@ -34,11 +32,11 @@ public class EasyHttp implements Cloneable {
 	/**
 	 * 存储主机，IP或者域名
 	 */
-	private String host = "";
+	private String host = "127.0.0.1";
 	/**
 	 * 存储端口
 	 */
-	private String port = "";
+	private String port = "80";
 	/**
 	 * 存储接口路径
 	 */
@@ -50,9 +48,14 @@ public class EasyHttp implements Cloneable {
 	private HashMap<String, String> parameterMap = new HashMap<>(16);
 	
 	/**
-	 * 用于存储请求体
+	 * 存储请求体
 	 */
 	private String body = "";
+	
+	/**
+	 * 存储字体编码
+	 */
+	private String encoding = "";
 	
 	/**
 	 * 用于存储请求头
@@ -110,14 +113,14 @@ public class EasyHttp implements Cloneable {
 			host(inter.substring(0, index));
 		} else {
 			host(inter);
-			//若其中未包含冒号，则表示端口为80
-			port("80");
 		}
 		
 		//裁剪参数
-		Arrays.stream(param.split("&")).forEach(parameterText -> {
-			putParameter(parameterText);
-		});
+		if (!param.isEmpty()) {
+			Arrays.stream(param.split("&")).forEach(parameterText -> {
+				putParameter(parameterText);
+			});
+		}
 		
 		return this;
 	}
@@ -207,6 +210,21 @@ public class EasyHttp implements Cloneable {
 	}
 	
 	/**
+	 * 用于根据请求头枚举类{@link HeadType}设置请求头，若请求头名存在时，则覆盖上一次设置的值
+	 * @param headType {@link HeadType}枚举类
+	 * @return 类本身
+	 */
+	public EasyHttp putHead(HeadType headType) {
+		putHead(headType.getKey(), headType.getValue());
+		return this;
+	}
+	
+	public EasyHttp encoding(String encoding) {
+		this.encoding = encoding;
+		return this;
+	}
+	
+	/**
 	 * 返回设置的url
 	 * @return url
 	 */
@@ -230,12 +248,12 @@ public class EasyHttp implements Cloneable {
 		}
 		
 		//判断请求方式是否为get请求，若为get请求时，若设置了body，则将body拼接至末尾
-		if (requestType == RequestType.GET) {
+		if (requestType == RequestType.GET && !body.isEmpty()) {
 			//根据parameterMap是否为空判断，应拼接何种连接符，若parameterMap存在参数，则拼接"&"符号
 			url.append(parameterMap.isEmpty() ? "?" : "&");
 		}
 		
-		//返回参数，并将空格转换为20%
-		return url.toString().replaceAll(" ", "20%");
+		//返回参数，并将空格转换为%20
+		return url.toString().replaceAll(" ", "%20");
 	}
 }
