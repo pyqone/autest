@@ -1,8 +1,26 @@
 package pres.auxiliary.tool.http;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.date.Time;
+
+/**
+ * <p><b>文件名：</b>EasyHttpTest.java</p>
+ * <p><b>用途：</b>
+ * 对{@link EasyHttp}类进行测试
+ * </p>
+ * <p><b>编码时间：</b>2020年6月26日下午8:45:49</p>
+ * <p><b>修改时间：</b>2020年6月26日下午8:45:49</p>
+ * @author 
+ * @version Ver1.0
+ *
+ */
 public class EasyHttpTest {
 	EasyHttp eh = new EasyHttp();
 	
@@ -82,6 +100,62 @@ public class EasyHttpTest {
 	 */
 	@Test
 	public void portTest() {
-		eh.port("55663");
+		eh.port(55663);
+	}
+	
+	/**
+	 * 测试{@link EasyHttp#putParameter(String, String)}方法
+	 */
+	@Test 
+	public void putParameterTest_StringString() {
+		eh.putParameter("A", "a");
+		eh.putParameter("B", "b");
+	}
+	
+	/**
+	 * 测试{@link EasyHttp#putParameter(String)}方法
+	 */
+	@Test 
+	public void putParameterTest_String() {
+		eh.putParameter("C=c");
+		eh.putParameter("D=d");
+	}
+	
+	/**
+	 * 测试{@link EasyHttp#clearParameter()}方法
+	 */
+	@Test
+	public void clearParameterTest() {
+		eh.putParameter("C=c");
+		eh.clearParameter();
+	}
+	
+	/**
+	 * 测试{@link EasyHttp#response()}方法
+	 * @throws IOException 
+	 * @throws URISyntaxException 
+	 * @throws ClientProtocolException 
+	 */
+	@Test 
+	public void responseTest() throws ClientProtocolException, URISyntaxException, IOException {
+		String time = new Time().getFormatTime();
+		String apiKey = "F1047305D50145159C13CB12C200E931";
+		String clientSerial = "FT00000003";
+		String apiSecret = "921DE23A2D434C8B9919EBC21E8DEFDC";
+		String body = "{}";
+		String md5string = apiKey+"api_key"+apiKey+"api_version1.0"+"body"+body+"client_serial"+clientSerial+"timestamp"+time+apiSecret;
+		String signature = DigestUtils.md5Hex(md5string).toUpperCase();
+		
+		String responseText = eh.host("10.19.27.1").port(7013).address("/CWRService/KeepAlive")
+			.putParameter("api_version", "1.0")
+			.putParameter("timestamp", "time")
+			.putParameter("client_serial", clientSerial)
+			.putParameter("signature", signature)
+			.putParameter("api_key", apiKey)
+			.putHead(HeadType.CONTENT_TYPE_JSON.setEncoding("UTF-8")).response().getFormatResponseText();
+			
+		System.out.println("-----------------------------------");
+		System.out.println(responseText);
+		System.out.println("-----------------------------------");
 	}
 }

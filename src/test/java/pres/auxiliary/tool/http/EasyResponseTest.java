@@ -10,6 +10,17 @@ import org.testng.annotations.Test;
 
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * <p><b>文件名：</b>EasyResponseTest.java</p>
+ * <p><b>用途：</b>
+ * 用于对{@link EasyResponse}类进行测试
+ * </p>
+ * <p><b>编码时间：</b>2020年6月26日下午8:47:16</p>
+ * <p><b>修改时间：</b>2020年6月26日下午8:47:16</p>
+ * @author 
+ * @version Ver1.0
+ *
+ */
 public class EasyResponseTest {
 	EasyResponse re;
 	
