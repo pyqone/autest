@@ -17,6 +17,17 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+/**
+ * <p><b>文件名：</b>EasyResponse.java</p>
+ * <p><b>用途：</b>
+ * 对接口响应参数进行处理，可根据不同的返回，对响应结果进行输出，或以格式化的形式输出响应内容
+ * </p>
+ * <p><b>编码时间：</b>2020年6月26日下午7:09:07</p>
+ * <p><b>修改时间：</b>2020年6月26日下午7:09:07</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ *
+ */
 public class EasyResponse {
 	/**
 	 * 存储接口响应数据

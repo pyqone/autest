@@ -1,7 +1,18 @@
 package pres.auxiliary.tool.http;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 /**
  * <p><b>文件名：</b>EasyHttp.java</p>
@@ -55,7 +66,7 @@ public class EasyHttp implements Cloneable {
 	/**
 	 * 存储字体编码
 	 */
-	private String encoding = "";
+	private String encoding = "UTF-8";
 	
 	/**
 	 * 用于存储请求头
@@ -109,7 +120,7 @@ public class EasyHttp implements Cloneable {
 		
 		//判断获取的ip是否包含冒号，若包含冒号，则按照冒号切分ip及端口
 		if ((index = inter.indexOf(":")) > -1) {
-			port(inter.substring(index + 1));
+			port(Integer.valueOf(inter.substring(index + 1)));
 			host(inter.substring(0, index));
 		} else {
 			host(inter);
@@ -160,8 +171,8 @@ public class EasyHttp implements Cloneable {
 	 * @param port 端口号
 	 * @return 类本身
 	 */
-	public EasyHttp port(String port) {
-		this.port = port;
+	public EasyHttp port(int port) {
+		this.port = String.valueOf(port);
 		return this;
 	}
 	
@@ -183,9 +194,23 @@ public class EasyHttp implements Cloneable {
 	 * @see #putParameter(String, String)
 	 */
 	public EasyHttp putParameter(String parameterText) {
+		//判断parameterText是否包含等号，若不包含，则直接返回
+		if (parameterText.indexOf("=") < 0) {
+			return this;
+		}
+		
 		String[] parameter = parameterText.split("=");
 		//去空格后传入putParameter方法中
 		return putParameter(parameter[0].trim(), parameter[1].trim());
+	}
+	
+	/**
+	 * 用于清空设置的请求参数
+	 * @return 类本身
+	 */
+	public EasyHttp clearParameter() {
+		parameterMap.clear();
+		return this;
 	}
 	
 	/**
@@ -219,6 +244,20 @@ public class EasyHttp implements Cloneable {
 		return this;
 	}
 	
+	/**
+	 * 用于清空设置的请求头
+	 * @return 类本身
+	 */
+	public EasyHttp clearHead() {
+		headMap.clear();
+		return this;
+	}
+	
+	/**
+	 * 用于设置字体编码，默认为UTF-8
+	 * @param encoding 字体编码
+	 * @return 类本身
+	 */
 	public EasyHttp encoding(String encoding) {
 		this.encoding = encoding;
 		return this;
@@ -255,5 +294,52 @@ public class EasyHttp implements Cloneable {
 		
 		//返回参数，并将空格转换为%20
 		return url.toString().replaceAll(" ", "%20");
+	}
+	
+	/**
+	 * 根据设置的内容，对接口进行请求，返回{@link EasyResponse}类对象，可通过该类对响应结果进行返回
+	 * @return {@link EasyResponse}
+	 * @throws URISyntaxException 当url地址有误时抛出的异常
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
+	 */
+	public EasyResponse response() throws URISyntaxException, ClientProtocolException, IOException {
+		//根据请求方式，构造相应的请求类对象
+		HttpRequestBase request = null;
+		switch (requestType) {
+		case POST:
+			request = new HttpPost(new URI(getUrlString()));
+			//由于在HttpRequestBase类中不存在设置请求体的参数，故若请求为post请求时，则先添加请求体
+			if (!body.isEmpty()) {
+				((HttpPost) request).setEntity(new StringEntity(body, encoding));
+			}
+			break;
+		case GET:
+			request = new HttpGet(new URI(getUrlString()));
+			break;
+		default:
+			break;
+		}
+		
+		//设置请求头
+		request = setHead(request);
+		//对接口进行请求，并存储响应结果
+		String responseText = EntityUtils.toString(HttpClients.createDefault().execute(request).getEntity(), encoding);
+		//通过响应结果构造EasyResponse类
+		return new EasyResponse(responseText);
+	}
+	
+	/**
+	 * 用于设置请求头
+	 * @param request 请求类对象
+	 * @return 设置请求头的类对象
+	 */
+	public HttpRequestBase setHead(HttpRequestBase request) {
+		//遍历headMap中的内容，将请求头逐个设置
+		headMap.forEach((key, value) -> {
+			request.setHeader(key, value);
+		});
+		
+		return request;
 	}
 }
