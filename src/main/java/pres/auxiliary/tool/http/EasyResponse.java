@@ -1,11 +1,21 @@
 package pres.auxiliary.tool.http;
 
-import org.dom4j.Document;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+import org.jsoup.Jsoup;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 public class EasyResponse {
 	/**
@@ -19,9 +29,14 @@ public class EasyResponse {
 	private JSONObject responseJson = null;
 	
 	/**
-	 * 以HTML的形式或XML的形式存储响应数据，通过DocumentHelper.parseText(String)方法可以转换
+	 * 以XML的形式存储响应数据，通过DocumentHelper.parseText(String)方法可以转换
 	 */
-	private Document responseDom = null;
+	private org.dom4j.Document responseXmlDom = null;
+	
+	/**
+	 * 以HTML的形式存储响应数据，通过Jsoup.parse(String)方法可以转换
+	 */
+	private org.jsoup.nodes.Document responseHtmlDom = null;
 	
 	/**
 	 * 存储响应数据的类型
@@ -47,15 +62,25 @@ public class EasyResponse {
 			responseJson = JSONObject.parseObject(responseText);
 			responseType = ResponseType.JSON;
 		} catch (JSONException jsonException) {
+			//设置responseJson为null
 			responseJson = null;
 			
-			//转换为Document格式，若不能转换，则dom为null
+			//先通过dom4j的格式对数据进行转换，若不能转换，则表示其是文本形式
 			try {
-				responseDom = DocumentHelper.parseText(responseText);
-				//根据xml格式的特点进行判断，若响应数据的第一位为"<?xml"，则表示该文本是xml格式
-				responseType = responseText.indexOf("<?xml") == 0 ? ResponseType.XML : ResponseType.HTML;
+				responseXmlDom = DocumentHelper.parseText(responseText);
+				//若相应参数开头的文本为<html>，则表示其相应参数为html形式，则以html形式进行转换
+				if (responseText.indexOf("<html>") == 0) {
+					//存储html形式
+					responseType = ResponseType.HTML;
+					//设置responseXmlDom为null，保证返回的数据正确
+					responseXmlDom = null;
+					//将文本转换为HTML的形式
+					responseHtmlDom = Jsoup.parse(responseText);
+				} else {
+					responseType = ResponseType.XML;
+				}
 			} catch (DocumentException domExcepttion) {
-				responseDom = null;
+				responseXmlDom = null;
 				//若响应数据无法转换成json或dom，则存储为纯文本形式
 				responseType = ResponseType.TEXT;
 			}
@@ -72,6 +97,56 @@ public class EasyResponse {
 	}
 	
 	/**
+	 * 以格式化的形式输出响应数据。
+	 * @return 格式化后的响应数据
+	 */
+	public String getFormatResponseText() {
+		//根据responseType存储的形式对格式进行转换
+		switch (responseType) {
+		case HTML:
+			return responseHtmlDom.html();
+		case JSON:
+			return JSON.toJSONString(responseJson, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+		case XML:
+			OutputFormat format = OutputFormat.createPrettyPrint();
+			format.setEncoding(responseXmlDom.getXMLEncoding());
+			StringWriter stringWriter = new StringWriter();
+			XMLWriter writer = new XMLWriter(stringWriter, format);
+			try {
+				writer.write(responseXmlDom);
+				writer.close();
+			} catch (IOException e) {
+			}
+			return stringWriter.toString();
+		case EMPTY:
+		case TEXT:
+			return responseText;
+		default:
+			return "";
+		}
+	}
+	
+	/**
+	 * 用于将响应数据写入到文件中
+	 * @param outputFile 需要输出的文件
+	 * @param isFormat 是否格式化输出
+	 * @return 写入的文件
+	 * @throws IOException 写入文件有误时抛出的异常
+	 */
+	public File responseToFile(File outputFile, boolean isFormat) throws IOException {
+		//创建文件夹
+		outputFile.getParentFile().mkdirs();
+		//获取响应数据
+		String responseText = isFormat ? getFormatResponseText() : this.responseText;
+		
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+		bw.write(responseText);
+		bw.close();
+		
+		return outputFile;
+	}
+	
+	/**
 	 * 用于以{@link JSONObject}类的形式返回响应数据，若响应数据不是json格式时，则返回null
 	 * @return {@link JSONObject}类形式的响应数据
 	 */
@@ -80,11 +155,19 @@ public class EasyResponse {
 	}
 	
 	/**
+	 * 用于以{@link org.jsoup.nodes.Document}类的形式返回响应数据，若响应数据不是html格式时，则返回null
+	 * @return {@link org.jsoup.nodes.Document}类形式的响应数据
+	 */
+	public org.jsoup.nodes.Document getHtmlDocument() {
+		return responseHtmlDom;
+	}
+	
+	/**
 	 * 用于以{@link Document}类的形式返回响应数据，若响应数据不是html或xml格式时，则返回null
 	 * @return {@link Document}类形式的响应数据
 	 */
-	public Document getDocument() {
-		return responseDom;
+	public org.dom4j.Document getXmlDocument() {
+		return responseXmlDom;
 	}
 	
 	/**
