@@ -190,4 +190,19 @@ public class Functions {
 		
 		return time.getFormatTime();
 	}
+	
+	/**
+	 * <p>
+	 * 定义标记当前元素为空元素，用法：<br>
+	 * ${ }（花括号内存在一个空格）
+	 * </p>
+	 * @return {@link DataDriverFunction}类对象
+	 */
+	public static DataDriverFunction addEmpty() {
+		//定义规则
+		String regex = " ";
+		return new DataDriverFunction(regex, text -> {
+			return "";
+		});
+	}
 }

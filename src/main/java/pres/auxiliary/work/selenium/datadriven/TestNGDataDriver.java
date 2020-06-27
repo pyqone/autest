@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import pres.auxiliary.tool.date.Time;
@@ -150,7 +152,17 @@ public class TestNGDataDriver {
 		
 		//遍历所有行，读取所有的数据
 		for (int rowIndex = isFirstTitle ? 1 : 0; rowIndex < data.getMaxColumnNumber(); rowIndex++) {
-			addRowData(isFirstTitle ? rowIndex - 1 : rowIndex, data.getColumn(rowIndex));
+			addFileRowData(isFirstTitle ? rowIndex - 1 : rowIndex, data.getColumn(rowIndex));
+		}
+	}
+	
+	public void addData(String title, Object...objects) {
+		//根据列名是否存在，调用相应的添加元素的方法
+		if (titleList.indexOf(title) > -1) {
+			addOriginalColumn(titleList.indexOf(title), objects);
+		} else {
+			titleList.add(title);
+			addNewColumn(objects);
 		}
 	}
 	
@@ -180,11 +192,58 @@ public class TestNGDataDriver {
 	}
 	
 	/**
+	 * 返回数据驱动的总行数
+	 * @return 数据驱动的总行数
+	 */
+	public int getRowSize() {
+		return dataList.size();
+	}
+	
+	/**
+	 * 用于根据列名称返回指定列的元素个数
+	 * @param title 列名称
+	 * @return 列元素个数
+	 */
+	public int getColumnSize(String title) {
+		int index = titleList.indexOf(title);
+		if (index > -1) {
+			return getColumnSize(index);
+		} else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * 用于根据列下标返回指定列的元素个数
+	 * @param index 列下标
+	 * @return 列元素个数
+	 */
+	public int getColumnSize(int index) {
+		AtomicInteger rowIndex = new AtomicInteger(0);
+		//遍历所有行的指定列元素
+		dataList.forEach(data -> {
+			//判断当前元素是否为空，若为空，则结束循环，否则，其rowIndex+1
+			if (data.getOriginalString(index).isEmpty()) {
+				return;
+			} else {
+				rowIndex.addAndGet(1);
+			}
+		});
+		
+		return rowIndex.get();
+	}
+	
+	/**
 	 * 用于将一行的数据转为Data类对象
 	 * @param rowDataList 一行数据
 	 * @return 返回一行数据的Data类对象
 	 */
-	private void addRowData(int rowInde, List<String> rowDataList) {
+	private void addFileRowData(int rowInde, List<String> rowDataList) {
+		//将所有的空元素替换为“${ }”，以表示该行存在元素，只是为空
+		rowDataList.replaceAll(text -> {
+			return text.isEmpty() ? "${ }" : text;
+		});
+		
 		//当rowInde大于dataList的总列数时，则表示未对该行进行存储，此时存在两种情况：
 		//1.第一次文件，此时dataList并无数据，调用方法时为初次添加数据，则按照正常方式添加
 		//2.非第一次读取文件，此时dataList已存在上次读取的数据，当写入的数据行数大于存储的行数
@@ -198,7 +257,7 @@ public class TestNGDataDriver {
 				//将rowDataList之前的列都置为空串
 				int oldListSize = dataList.get(rowInde - 1).dataList.size();
 				for (int index = 0; index < oldListSize - rowDataList.size(); index++) {
-					data.addData("");
+					data.addData("${ }");
 				}
 			}
 			
@@ -209,7 +268,47 @@ public class TestNGDataDriver {
 			rowDataList.forEach(dataList.get(rowInde) :: addData);
 		}
 	}
-
+	
+	/**
+	 * 存储新的列元素
+	 * @param objects 元素组
+	 */
+	private void addNewColumn(Object...objects) {
+		//获取当前数据驱动中的行数
+		int maxRowSize = getRowSize();
+		//获取当前行元素与需要添加的元素个数之间的差值
+		int diff = objects.length - maxRowSize;
+		
+		//为保证数据统一，按照当前元素最大行进行存储，若objects中的元素个数不足时，使用空函数对其占位，保证列表的统一
+		for (int index = 0; index < maxRowSize; index++) {
+			try {
+				dataList.get(index).addData(objects[index].toString());
+			}catch (Exception e) {
+				dataList.get(index).addData("${ }");
+			}
+		}
+		
+		//判断差值是否大于0，若大于0，则按照已存在的行进行存储
+		if (diff > 0) {
+			//存储剩余的元素
+			Object[] obj = new Object[diff];
+			for (int index = 0; index < diff; index++) {
+				obj[index] = objects[maxRowSize + index];
+			}
+			
+			addOriginalColumn(titleList.size() - 1, obj);
+		}
+	}
+	
+	/**
+	 * 在已存在的列中添加元素
+	 * @param index 列下标
+	 * @param objects 元素组
+	 */
+	private void addOriginalColumn(int index, Object...objects) {
+		if ()
+	}
+	
 	/**
 	 * <p><b>文件名：</b>TestNGDataDriver.java</p>
 	 * <p><b>用途：</b>
@@ -259,6 +358,7 @@ public class TestNGDataDriver {
 		 */
 		public String getString(int index) {
 			return index < dataList.size() ? disposeContent(dataList.get(index)) : "";
+//			return index < dataList.size() ? dataList.get(index) : ""; //调试使用，输出存储的原始内容
 		}
 		
 		/**
@@ -380,7 +480,7 @@ public class TestNGDataDriver {
 		 * @param content 元素内容
 		 */
 		private void addData(String content) {
-			dataList.add(disposeContent(content));
+			dataList.add(content);
 		}
 		
 		/**
@@ -442,6 +542,15 @@ public class TestNGDataDriver {
 			
 			//若内容不与任何正则匹配，则返回原始内容
 			return null;
+		}
+		
+		/**
+		 * 用于返回index对应列中存储的元素的原始内容，若列不存在，或无元素，则返回空
+		 * @param index 列下标
+		 * @return 列中的内容
+		 */
+		private String getOriginalString(int index) {
+			return index < dataList.size() ? dataList.get(index) : "";
 		}
 	} 
 }
