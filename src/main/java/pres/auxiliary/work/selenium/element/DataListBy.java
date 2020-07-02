@@ -133,29 +133,23 @@ public class DataListBy extends ListBy {
 	}
 	
 	@Override
+	public void add(String name, ByType byType, String... links) {
+		add(new ElementInformation(name, byType, ElementType.DATA_LIST_ELEMENT, links));
+		
+	}
+
+	@Override
+	public void add(String name, String... links) {
+		add(new ElementInformation(name, null, ElementType.DATA_LIST_ELEMENT, links));
+		
+	}
+	
+	@Override
 	void add(ElementInformation elementInformation) {
 		//重写父类的add方法，使元素能进行极值的统计
 		super.add(elementInformation);
-		
 		//判断当前获取到的元素是否大于当前存储的元素的最大值或小于当前存储的最小值，若是，则将最大值或最小值进行替换
 		findLimitColumn(elementInformation);
-		
-		/*
-		//判断元素是否需统计，若元素需要统计，则对元素列表的个数加上当前获取到的元素个数；若不需要统计，则移除该元素
-		if (isAddSize) {
-			if (elementSizeMap.containsKey(elementInformation.name)) {
-				elementSizeMap.put(elementInformation.name, 0);
-			}
-			
-			if (isStartAddSize) {
-				elementSizeMap.put(elementInformation.name, elementSizeMap.get(elementInformation.name) + elementList.size());
-			}
-		} else {
-			if (elementSizeMap.containsKey(elementInformation.name)) {
-				elementSizeMap.remove(elementInformation.name);
-			}
-		}
-		*/
 	}
 	
 	/**
@@ -218,14 +212,6 @@ public class DataListBy extends ListBy {
 
 		return getElements(name, indexs);
 	}
-	
-	/*
-	public void getLineWebElement(String name, int startIndex, int length) {
-		if (length <= 0) {
-			
-		}
-	}
-	*/
 	
 	/**
 	 * 用于根据参数，求取elementMap中最多或最少列表的元素个数以及列表的名称

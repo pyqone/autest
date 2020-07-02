@@ -48,7 +48,7 @@ public abstract class MultiBy extends AbstractBy {
 	 * @throws TimeoutException 元素在指定时间内无法找到时抛出的异常
 	 */
 	public void add(String name) {
-		add(name, null);
+		add(new ElementInformation(name, null));
 	}
 	
 	/**
@@ -59,6 +59,30 @@ public abstract class MultiBy extends AbstractBy {
 	 * @throws TimeoutException 元素在指定时间内无法找到时抛出的异常
 	 */
 	public abstract void add(String name, ByType byType);
+	
+	/**
+	 * 用于根据传入的元素在xml文件中的名称或者元素的定位内容，以及元素的定位方式，添加元素。
+	 * 该方法可对由xml文件读取的内容进行词语替换，根据
+	 * 传参中词语的顺序，对需要替换的词语进行替换
+	 * @param name 元素在xml文件或者元素的定位内容
+	 * @param byType 元素定位方式枚举对象（{@link ByType}枚举）
+	 * @param links 替换词语
+	 * @see #add(String, ByType)
+	 * @throws TimeoutException 元素在指定时间内无法找到时抛出的异常
+	 */
+	public abstract void add(String name, ByType byType, String...links);
+	
+	/**
+	 * 用于根据传入的元素在xml文件中的名称或者元素的定位内容，添加元素。由于该方法不指定元素的定位
+	 * 方式，若传入的参数不是xml元素且非xpath路径或绝对css路径时，其识别效率较慢，建议在该情况下
+	 * 调用{@link #add(String, ByType)}方法，指定元素定位方法。该方法可对由xml文件读取的内容进
+	 * 行词语替换，根据传参中词语的顺序，对需要替换的词语进行替换
+	 * @param name 元素在xml文件或者元素的定位内容
+	 * @param links 替换词语
+	 * @see #add(String)
+	 * @throws TimeoutException 元素在指定时间内无法找到时抛出的异常
+	 */
+	public abstract void add(String name, String...links);
 	
 	/**
 	 * 添加元素的底层方法
