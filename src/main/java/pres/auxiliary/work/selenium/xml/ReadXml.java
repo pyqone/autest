@@ -2,8 +2,10 @@ package pres.auxiliary.work.selenium.xml;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.dom4j.Attribute;
@@ -47,6 +49,10 @@ public class ReadXml {
 	 */
 	private Document dom;
 
+	/**
+	 * 切分公式标记
+	 */
+	private final String SPLIT_START = "\\$\\{";
 	/**
 	 * 定义xml文件中，模板使用的替换符开始标志
 	 */
@@ -142,8 +148,23 @@ public class ReadXml {
 	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
 	 */
 	public By getBy(String name, ByType mode) {
+		return getBy(name, mode, null);
+	}
+	
+	/**
+	 * 根据元素名称，在指定的xml文件中查找到相应的元素，返回其元素的信息，以{@link By}类返回
+	 * 
+	 * @param name 元素名称
+	 * @param mode 定位方式枚举类对象，参见{@link ByType}
+	 * @param linkKeyList 外链关键词集合
+	 * @return 元素对应的{@link By}类对象
+	 * 
+	 * @throws UndefinedElementException 未找到相应的模板元素时抛出的异常
+	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
+	 */
+	public By getBy(String name, ByType mode, List<String> linkKeyList) {
 		// 存储从xml文件中读取到的元素定位
-		String elementPos = getValue(name, mode);
+		String elementPos = getValue(name, mode, linkKeyList); 
 
 		// 判断传入的参数是否符合使用By类的定位方式，如果符合，则拼接读取XML文件的xpath，若不符，则抛出异常
 		try {
@@ -192,6 +213,53 @@ public class ReadXml {
 		} else {
 			return element.getText();
 		}
+	}
+	
+	/**
+	 * 用于根据元素名称及定位方式查找其定位方式标签中的内容，并根据关键词组，对需要修改的关键词
+	 * 逐个进行修改。注意，该方法将根据需要修改的关键词顺序进行修改，与关键词名称无关
+	 * 
+	 * @param name 元素名称
+	 * @param mode 定位方式枚举类对象，参见{@link ByType}
+	 * @return xml文件中的相应元素的定位值
+	 * 
+	 * @throws UndefinedElementException 未找到相应的模板元素时抛出的异常
+	 * @throws NoSuchSignValueException  模板中存在为定义值的标志时抛出的异常
+	 */
+	public String getValue(String name, ByType mode, List<String> linkKeyList) {
+		//获取到元素定位方式内容
+		StringBuilder value = new StringBuilder(getValue(name, mode));
+		
+		//判断linkKeyList是否为空或null，若为空或null，则直接返回
+		if (linkKeyList == null || linkKeyList.isEmpty()) {
+			return value.toString();
+		}
+		
+		//按照公式起始符号对内容进行切分，遍历切分后的每一个元素
+		String[] texts = value.toString().split(SPLIT_START);
+		
+		//用于lambda中计算替换的词语位置
+		AtomicInteger index = new AtomicInteger(0);
+		//遍历texts
+		Arrays.stream(texts)
+			//过滤不包含END_SIGN的元素
+			.filter(text -> text.indexOf(END_SIGN) > -1)
+			//提取元素的有效替换词语（${XXX}）
+			.map(text -> START_SIGN + text.substring(0, text.indexOf(END_SIGN) + 1))
+			//对词语进行替换
+			.forEach(text -> {
+				//判断当前下标是否超出linkKeyList最大元素个数，若超出，则结束当前执行
+				if (index.get() >= linkKeyList.size()) {
+					return;
+				}
+				
+				//获取该字段在value中第一次出现的位置
+ 				int signIndex = value.indexOf(text);
+ 				// 将所有与该标志替换为元素属性中存储的内容（使用拼接的方式进行替换）
+				value.replace(signIndex, signIndex + text.length(), linkKeyList.get(index.getAndAdd(1)));
+ 				
+			});
+		return value.toString();
 	}
 	
 	/**
@@ -253,7 +321,7 @@ public class ReadXml {
 				"//templet/" + mode.getValue() + "[@id='" + element.attribute("temp_id").getValue() + "']");
 		// 如果templetElement元素为null（无法查找到），则抛出UndefinedElementException
 		if (templetElement == null) {
-			throw new UndefinedElementException("未定义的模板。元素定位方式为：" + mode.getValue() + "，模板id为："
+			throw new UndefinedElementException("未定义的模板，元素定位方式为：" + mode.getValue() + "，模板id为："
 					+ element.attribute("temp_id").getValue() + "；该模板未定义");
 		}
 
@@ -265,18 +333,22 @@ public class ReadXml {
 			attElements.put(att.getName(), att.getValue());
 		}
 
-		// 存储存储模板的内容
+		// 获取模板的内容
 		String path = templetElement.getText();
-		// 循环，遍历模板中的所有需要替换的属性
-		while (path.indexOf(START_SIGN) > -1) {
-			// 存储需要替换的标志名称
-			String sign = path.substring(path.indexOf(START_SIGN) + START_SIGN.length(), path.indexOf(END_SIGN));
-			// 判断该标志名称是否存储在attElements中，若不存在，则抛出异常
-			if (!attElements.containsKey(sign)) {
-				throw new NoSuchSignValueException(sign + "标志的值未记录为属性中；" + element.asXML());
+		//按照公式起始符号对内容进行切分，遍历切分后的每一个元素
+		String[] texts = path.split(SPLIT_START);
+		for (int i = 0; i < texts.length; i++) {
+			//判断切分的元素是否包含公式结束符号
+			int index;
+			if ((index = texts[i].indexOf(END_SIGN)) > -1) {
+				//截取有效字符串，对关键词进行替换
+				String sign = texts[i].substring(0, index);
+				// 判断该标志名称是否存储在attElements中，若不存在，则抛出异常
+				if (attElements.containsKey(sign)) {
+					// 将所有与该标志相关的全部替换为元素属性中存储的内容
+					path = path.replaceAll("\\$\\{" + sign + "\\}", attElements.get(sign));
+				}
 			}
- 			// 将所有与该标志相关的全部替换为元素属性中存储的内容
-			path = path.replaceAll("\\$\\{" + sign + "\\}", attElements.get(sign));
 		}
 
 		return path;

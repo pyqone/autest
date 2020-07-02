@@ -44,12 +44,12 @@ public class CommonBy extends AbstractBy {
 	 * 用于根据xml文件中元素的名称，返回对应的{@link Element}对象。该方法亦可传入元素
 	 * 定位内容，通过遍历所有的定位方式，在页面上查找元素，来获取元素的WebElement对象。
 	 * 建议传入的定位内容为xpath路径或绝对的css路径，若非这两路径，则在识别元素时会很慢，降低
-	 * 程序运行速度。若非xml文件中的元素，且不是xpath路径或绝对的css路径，建议使用{@link #getWebElement(String, ByType)}方法
+	 * 程序运行速度。若非xml文件中的元素，且不是xpath路径或绝对的css路径，建议使用{@link #getElement(String, ByType)}方法
 	 * @param name 元素的名称或元素定位内容
 	 * @return {@link Element}对象
 	 */
 	public Element getElement(String name) {
-		return getElement(name, null);
+		return getElement(new ElementInformation(name, null, ElementType.COMMON_ELEMENT));
 	}
 	
 	/**
@@ -61,23 +61,33 @@ public class CommonBy extends AbstractBy {
 	public Element getElement(String name, ByType byType) {
 		return getElement(new ElementInformation(name, byType, ElementType.COMMON_ELEMENT));
 	}
-
-	/**
-	 * 获取元素的底层方法
-	 * @param elementInformation 元素信息类对象
-	 * @return WebElement对象
-	 */
-	/*
-	private WebElement getWebElement(ElementInformation elementInformation) {
-		//判断传入的元素是否在xml文件中，若存在再判断是否自动切换窗体，若需要，则获取元素的所有父窗体并进行切换
-		if (xml != null && xml.isElement(elementInformation.name) && isAutoSwitchIframe) {
-			switchFrame(getParentFrameName(elementInformation.name));
-		}
-		
-		return driver.findElement(recognitionElement(elementInformation));
-	}
-	*/
 	
+	/**
+	 * 用于根据xml文件中元素的名称，与定位方式，返回对应的{@link Element}对象。该方法亦可传入元素
+	 * 定位内容，并根据定位方式，对页面数据进行查找。该方法可对由xml文件读取的内容进行词语替换，根据
+	 * 传参中词语的顺序，对需要替换的词语进行替换
+	 * @param name 元素名称或定位方式内容
+	 * @param byType 元素定位方式
+	 * @param links 替换词语
+	 * @return {@link Element}对象
+	 */
+	public Element getElement(String name, ByType byType, String...links) {
+		return getElement(new ElementInformation(name, byType, ElementType.COMMON_ELEMENT, links));
+	}
+	
+	/**
+	 *  用于根据xml文件中元素的名称，返回对应的{@link Element}对象。该方法亦可传入元素
+	 * 定位内容，通过遍历所有的定位方式，在页面上查找元素，来获取元素的WebElement对象。
+	 * 建议传入的定位内容为xpath路径或绝对的css路径，若非这两路径，则在识别元素时会很慢，降低
+	 * 程序运行速度。若非xml文件中的元素，且不是xpath路径或绝对的css路径，建议使用{@link #getElement(String, ByType, String...)}方法
+	 * @param name 元素的名称或元素定位内容
+	 * @param links 替换词语
+	 * @return {@link Element}对象
+	 */
+	public Element getElement(String name, String...links) {
+		return getElement(name, null, links);
+	}
+
 	/**
 	 * 获取元素的底层方法
 	 * @param elementInformation 元素信息类对象

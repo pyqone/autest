@@ -88,4 +88,14 @@ public class CommonByTest {
 		//在获取元素前，会判断元素所在窗体，由于主窗体是爷爷辈窗体，获取元素前会切换工资发放详情窗体
 		System.out.println(ce.getElement("单位名称").getWebElement().getText());
 	}
+	
+	/**
+	 * 用于测试外链xml
+	 */
+	@Test
+	public void getElementTest() {
+		File xmlFile = new File("src/test/java/pres/auxiliary/work/selenium/element/测试文件.xml");
+		ce.setXmlFile(xmlFile, false);
+		System.out.println(ce.getElement("搜索条件", "工资单编号").getWebElement().getAttribute("type"));
+	}
 }

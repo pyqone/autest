@@ -1,39 +1,27 @@
-package pres.auxiliary.selenium.xml.io;
+package pres.auxiliary.work.selenium.xml;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.selenium.xml.ByType;
-import pres.auxiliary.work.selenium.xml.ReadXml;
-
-/**
- * <p><b>文件名：</b>TestReadXml.java</p>
- * <p><b>用途：</b>用于测试ReadXml类</p>
- * <p><b>编码时间：</b>2019年10月25日下午3:14:25</p>
- * <p><b>修改时间：</b>2019年10月25日下午3:14:25</p>
- * @author 彭宇琦
- * @version Ver1.0
- * @since JDK 12
- *
- */
-public class TestReadXml {
-	ReadXml r;
+public class ReadXmlTest {
+ReadXml r;
 	
 	/**
 	 * 初始化数据
 	 */
 	@BeforeClass
 	public void newReadXML() {
-		r = new ReadXml(new File("src/test/java/pres/auxiliary/selenium/xml/io/测试用xml文件.xml"));
+		r = new ReadXml(new File("src/test/java/pres/auxiliary/work/selenium/xml/测试用xml文件.xml"));
 	}
 	
 	@AfterMethod
 	public void over(Method method) {
-		System.out.println("*".repeat(5) + method.getName() + "运行完毕" + "*".repeat(5));
+		System.out.println("*****" + method.getName() + "运行完毕" + "*****");
 	}
 	
 	/**
@@ -133,5 +121,41 @@ public class TestReadXml {
 	@Test
 	public void getIframeNameTest_RootElement() {
 		System.out.println(r.getIframeName("XX控件1"));
+	}
+	
+	/**
+	 * 用于测试{@link ReadXml#getIframeName(String)}方法，获取模板元素
+	 */
+	@Test
+	public void getIframeNameTest_NoPram() {
+		System.out.println(r.getIframeName("XX控件12"));
+	}
+	
+	/**
+	 * 用于测试{@link ReadXml#getValue(String, ByType)}方法，未查找到替换的属性
+	 */
+	@Test
+	public void getValueTest_NoPram() {
+		System.out.println(r.getValue("XX控件12", ByType.XPATH));
+		System.out.println(r.getValue("窗体3", ByType.XPATH));
+	}
+	
+	/**
+	 * 用于测试{@link ReadXml#getValue(String, ByType)}方法，外链关键词
+	 */
+	@Test
+	public void getValueTest_Link() {
+		ArrayList<String> link = new ArrayList<>();
+		link.add("测试1");
+		link.add("测试2");
+		link.add("测试3");
+		
+		//XXX模板控件1[@X='${src}']/div[@name='${name}']
+		System.out.println(r.getValue("XX控件13", ByType.XPATH, link));
+		System.out.println(r.getValue("窗体3", ByType.XPATH, link));
+		//XXX模板控件1[@X='${src}']/div[@name='${name}']/div[@is='${str1}' and text()='${str1}']
+		System.out.println(r.getValue("XX控件14", ByType.XPATH, link));
+		//XXX模板控件1[@X='${src}']/div[@name='${name}']/div[@is='${str1}' and text()='${src}']/span[text()='${str2}']/span[id='${aaaa}']
+		System.out.println(r.getValue("XX控件15", ByType.XPATH, link));
 	}
 }

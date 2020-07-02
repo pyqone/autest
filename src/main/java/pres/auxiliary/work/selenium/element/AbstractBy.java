@@ -2,6 +2,7 @@ package pres.auxiliary.work.selenium.element;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -462,9 +463,9 @@ public abstract class AbstractBy {
 	private By recognitionXmlElement(ElementInformation elementInformation) {
 		//判断传入的ByType对象是否为null
 		if (elementInformation.byType == null) {
-			return judgeXmlElementBy(elementInformation.name);
+			return judgeXmlElementBy(elementInformation.name, elementInformation.linkKeyList);
 		} else {
-			By by = xml.getBy(elementInformation.name, elementInformation.byType);
+			By by = xml.getBy(elementInformation.name, elementInformation.byType, elementInformation.linkKeyList);
 			if (isExistElement(by, getWaitTime(elementInformation.name)))
 				return by;
 			else 
@@ -556,11 +557,11 @@ public abstract class AbstractBy {
 	/**
 	 * 用于设置xml文件内的元素的定位方式及定位内容
 	 */
-	By judgeXmlElementBy(String name) {
+	By judgeXmlElementBy(String name, List<String> linkList) {
 		By by;
 		// 循环，逐个在页面上配对有效的标签对应的定位方式
 		for (ByType mode : xml.getElementMode(name)) {
-			by = getBy(xml.getValue(name, mode), mode);
+			by = getBy(xml.getValue(name, mode, linkList), mode);
 			
 			//若元素能被找到，则返回相应的By对象，若未找到，则再次循环
 			if (isExistElement(by, getWaitTime(name))) {
@@ -626,7 +627,7 @@ public abstract class AbstractBy {
 	 * <p><b>修改时间：</b>2020年5月22日上午8:18:39</p>
 	 * @author 彭宇琦
 	 * @version Ver1.1
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	class ElementInformation {
@@ -642,6 +643,10 @@ public abstract class AbstractBy {
 		 * 用于标记元素的类型
 		 */
 		public ElementType elementType;
+		/**
+		 * 
+		 */
+		public ArrayList<String> linkKeyList = new ArrayList<>();
 		/**
 		 * 初始化信息
 		 * @param name 元素名称或定位内容
@@ -661,6 +666,20 @@ public abstract class AbstractBy {
 		public ElementInformation(String name, ByType byType) {
 			this.name = name;
 			this.byType = byType;
+		}
+		
+		/**
+		 * 初始化信息
+		 * @param name 元素名称或定位内容
+		 * @param byType 元素定位
+		 * @param elementType 元素类型
+		 * @param links 元素外链信息
+		 */
+		public ElementInformation(String name, ByType byType, ElementType elementType, String...links) {
+			this.name = name;
+			this.byType = byType;
+			
+			linkKeyList.addAll(Arrays.asList(links));
 		}
 		
 		@Override
