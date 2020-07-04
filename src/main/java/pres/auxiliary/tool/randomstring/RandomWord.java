@@ -31,8 +31,8 @@ public class RandomWord {
 	 * 用于向无需条件亦可直接返回的词语组中添加词语
 	 * @param wordLst 词语集合
 	 */
-	public void addRetuenWord(ArrayList<String> wordLst) {
-		conditionWordList.addAll(wordLst);
+	public void addRetuenWord(ArrayList<String> wordList) {
+		returnWordList.addAll(wordList);
 	}
 	
 	/**
@@ -47,8 +47,8 @@ public class RandomWord {
 	 * 用于向符合条件后返回的词语组中添加词语
 	 * @param wordLst 词语集合
 	 */
-	public void addConditionWord(ArrayList<String> wordLst) {
-		returnWordList.addAll(wordLst);
+	public void addConditionWord(ArrayList<String> wordList) {
+		conditionWordList.addAll(wordList);
 	}
 	
 	/**
@@ -82,7 +82,7 @@ public class RandomWord {
 		//存储生成的词语
 		ArrayList<String> randomWordList = new ArrayList<>();
 		//循环，生成相应的词语
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length && wordList.size() > 0; i++) {
 			//获取随机下标
 			int index = getRandomIndex(wordList);
 			//存储下标对应的词语
@@ -93,7 +93,7 @@ public class RandomWord {
 			}
 		}
 		
-		return wordList;
+		return randomWordList;
 	}
 
 	/**
@@ -102,8 +102,16 @@ public class RandomWord {
 	 * @return 实际最大词语生成个数
 	 */
 	private int getLength(int minLength, int maxLength) {
-		//若词语不允许重复生成且maxLength大于returnWordList.size()，则将maxLength改为maxLength
-		maxLength = (isRepeat && maxLength > returnWordList.size()) ? returnWordList.size() : maxLength;
+		//若词语不允许重复生成且minLength大于returnWordList.size()，则将minLength改为returnWordList.size()
+		minLength = (!isRepeat && minLength > returnWordList.size()) ? returnWordList.size() : minLength;
+		//若词语不允许重复生成且maxLength大于returnWordList.size()，则将maxLength改为returnWordList.size()
+		maxLength = (!isRepeat && maxLength > returnWordList.size()) ? returnWordList.size() : maxLength;
+		
+		//若两个数字一致，则返回任意一个数字
+		if (minLength == maxLength) {
+			return maxLength;
+		}
+		
 		//为避免最小长度与最大长度传参相反，故此处进行一个调换
 		int max = Math.max(minLength, maxLength);
 		int min = Math.min(minLength, maxLength);
