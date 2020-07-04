@@ -3,6 +3,7 @@
 	<templet>
 		<!-- 窗体模板 -->
 		<xpath id='1'>//iframe[contains(@src,'${src}')]</xpath>
+		<xpath id='3'>//lable[contains(text(), '${condition}')]/../span/input[1]</xpath>
 	</templet>
 
 	<iframe name='主窗体'>
@@ -15,6 +16,10 @@
 			<!-- 搜索项 -->
 			<element name='单位名称'>
 				<xpath is_use='true'>//*[@id="listBox"]/li[1]/div[1]/p/span[1]</xpath>
+			</element>
+			
+			<element name='搜索条件'>
+				<xpath is_use='true' temp_id='3' />
 			</element>
 		</iframe>
 	</iframe>

@@ -3,6 +3,9 @@
 	<templet>
 		<xpath id='1'>//XXX模板控件1[@X='${name}']/div/div[@${att}='${id}']/input</xpath>
 		<css id='2'>http body ${tagName}</css>
+		<xpath id='3'>//XXX模板控件1[@X='${src}']/div[@name='${name}']</xpath>
+		<xpath id='4'>//XXX模板控件1[@X='${src}']/div[@name='${name}']/div[@is='${str1}' and text()='${str1}']</xpath>
+		<xpath id='5'>//XXX模板控件1[@X='${src}']/div[@name='${name}']/div[@is='${str1}' and text()='${src}']/span[text()='${str2}']/span[id='${aaaa}']</xpath>
 	</templet>
 	
 	<element name='XX控件1'>
@@ -62,6 +65,25 @@
 		<element name='XX控件11'> 
 			<xpath is_use='true' temp_id='1' id='Test' att='src'/>
 			<css is_use='true' temp_id='2' tagName='div'/>
+			<xpath is_use='true' temp_id='3' />
+		</element>
+		
+		<element name='XX控件12'> 
+			<xpath is_use='true' temp_id='3' />
+		</element>
+	</iframe>
+	
+	<iframe name='窗体3' >
+		<xpath is_use='true'>//窗体3[@X='${ccc}']</xpath>
+		
+		<element name='XX控件13'> 
+			<xpath is_use='true' temp_id='3' />
+		</element>
+		<element name='XX控件14'> 
+			<xpath is_use='true' temp_id='4' />
+		</element>
+		<element name='XX控件15'> 
+			<xpath is_use='true' temp_id='5' />
 		</element>
 	</iframe>
 </project>

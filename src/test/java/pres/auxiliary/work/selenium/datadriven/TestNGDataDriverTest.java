@@ -79,4 +79,13 @@ public class TestNGDataDriverTest {
 		testNGData.addFunction(Functions.getTime());
 		testNGData.addDataDriver(functionFile, "Sheet1", true);
 	}
+	
+	/**
+	 * 测试{@link TestNGDataDriver#addDataDriver(String, Object...)}方法
+	 */
+	@Test
+	public void addDataDriverTest_String_Objects() {
+		testNGData.addDataDriver("123", "1", "2", "3");
+		testNGData.addDataDriver("docx3", "1", "2", "3");
+	}
 }

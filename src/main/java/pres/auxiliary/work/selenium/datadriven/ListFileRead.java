@@ -137,9 +137,9 @@ public class ListFileRead {
 		columnIndex = columnIndex < 0 ? 0 : columnIndex;
 		
 		//若传值大于最大maxRowNum时，则直接赋予maxRowNum
-		startRowIndex = (startRowIndex >= maxRowNum) ? maxRowNum - 1 : startRowIndex;
+		startRowIndex = (startRowIndex >= maxRowNum) ? maxRowNum : startRowIndex;
 		startRowIndex = startRowIndex < 0 ? 0 : startRowIndex;
-		endRowIndex = (endRowIndex >= maxRowNum) ? maxRowNum - 1 : endRowIndex;
+		endRowIndex = (endRowIndex >= maxRowNum) ? maxRowNum : endRowIndex;
 		endRowIndex = endRowIndex < 0 ? 0 : endRowIndex;
 		
 		//若两个传值相同，则endRowIndex+1
@@ -185,9 +185,9 @@ public class ListFileRead {
 		endColumnIndex = endColumnIndex < 0 ? 0 : endColumnIndex;
 		
 		//若传值大于最大maxRowNum时，则直接赋予maxRowNum，小于0，则直接赋予0
-		startRowIndex = (startRowIndex >= maxRowNum) ? maxRowNum - 1 : startRowIndex;
+		startRowIndex = (startRowIndex >= maxRowNum) ? maxRowNum : startRowIndex;
 		startRowIndex = startRowIndex < 0 ? 0 : startRowIndex;
-		endRowIndex = (endRowIndex >= maxRowNum) ? maxRowNum - 1 : endRowIndex;
+		endRowIndex = (endRowIndex >= maxRowNum) ? maxRowNum : endRowIndex;
 		endRowIndex = endRowIndex < 0 ? 0 : endRowIndex;
 		
 		//若两个传值相同，则endXXXIndex+1

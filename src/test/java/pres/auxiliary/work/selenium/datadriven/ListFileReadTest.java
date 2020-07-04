@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.readfile;
+package pres.auxiliary.work.selenium.datadriven;
 
 import java.io.File;
 import java.io.IOException;

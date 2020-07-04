@@ -110,33 +110,47 @@ public class PresetString {
 	 * @return 生成的身份证号码
 	 */
 	public static String IdentityCard() {
-		String s = "45030119";
-
-		rs.clear();
-		rs.addMode(StringMode.NUM);
-		s += rs.toString(2);
-
-		Random r = new Random();
-
-		// 生成月
-		int i = (1 + r.nextInt(11));
-		// 判断生成的随机字符串是否小于10，小于10则向s中补全一个0
-		if (i < 10) {
-			s += "0";
+		StringBuilder sb = new StringBuilder();
+		RandomString rs = new RandomString("123456789");
+		
+		//省份
+		int[] province = {13,14,15,21,22,23,31,32,33,34,35,36,37,41,42,43,44,45,46,50,51,52,53,54,61,62,63,64,65,71,81,82,91};
+		//城市
+		String[] city = {"01", "02", "03"};
+		//区县
+		String[] county = {"01", "02", "03", "04", "05"};
+		//生日年份前两位
+		int[] year = {19, 18};
+		
+		//加权数
+		int[] factors = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
+		//校验位
+		String[] parity = {"1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"};
+		
+		//随机添加一个省份
+		sb.append(province[new Random().nextInt(province.length)]);
+		//随机添加一个城市
+		sb.append(city[new Random().nextInt(city.length)]);
+		//随机添加一个区县
+		sb.append(county[new Random().nextInt(county.length)]);
+		//随机生日年份
+		sb.append(year[new Random().nextInt(year.length)]).append(rs.toString(2));
+		//随机生日月份及日子
+		sb.append("0" + rs.toString(1)).append("0" + rs.toString(1));
+		//随机三位数
+		sb.append(rs.toString(3));
+		
+		//计算加权数
+		int sum = 0;
+		for (int i = 0; i < 17; i++) {
+			int code = Integer.valueOf(sb.substring(i, i + 1));
+			int factor = Integer.valueOf(factors[i]);
+			sum += (code * factor);
 		}
-		s += i;
-
-		// 生成日
-		i = (1 + r.nextInt(27));
-		// 判断生成的随机字符串是否小于10，小于10则向s中补全一个0
-		if (i < 10) {
-			s += "0";
-		}
-		s += i;
-
-		s += rs.toString(4);
-
-		return s;
+		//根据加权数添加校验位
+		sb.append(parity[(sum % 11)]);
+		
+		return sb.toString();
 	}
 
 	/**
@@ -176,6 +190,9 @@ public class PresetString {
 			
 			return s;
 		}
+	}
+	
+	private static String getMobleNumber(MobleNumberType mobleNumberType) {
 		
 	}
 

@@ -55,7 +55,8 @@ public class TestNGDataDriver {
 	/**
 	 * 用于存储读取到的数据
 	 */
-	private ArrayList<Data> dataList = new ArrayList<>();
+//	private ArrayList<Data> dataList = new ArrayList<>();
+	private HashMap<String, List<Object>> dataMap = new HashMap<>(16);
 	
 	/**
 	 * 用于存储自定义的公式
@@ -66,6 +67,11 @@ public class TestNGDataDriver {
 	 * 用于对日期格式或特殊字段输入的日期进行转换
 	 */
 	private Time time = new Time();
+	
+	/**
+	 * 用于存储最大列的元素个数
+	 */
+	private int maxColumnSize = -1;
 	
 	/**
 	 * 构造类，并将默认的数据驱动函数（{@link Functions}）加载至类中
@@ -124,11 +130,14 @@ public class TestNGDataDriver {
 	public void addDataDriver(File dataFile, String pattern, boolean isFirstTitle) throws IOException {
 		//读取文件内的数据
 		ListFileRead data = new ListFileRead(dataFile, pattern);
-		//由于数据按照列的形式读取，故此处将数据转置
-		data.tableTransposition();
+		//获取当前标题行的总数
+		int titleIndex = titleList.size();
 		
-		//若设定首行为标题行，则根据首行元素读取标题
+		//若设定首行为标题行，则根据首行元素读取标题；若首行非标题行，则以列数进行命名
 		if (isFirstTitle) {
+			//将读取到的数据转置，得到以行的形式存储数据
+			data.tableTransposition();
+			//此时，返回data中第一列元素即为标题行的元素
 			//定位到首行
 			List<String> dataTitleList = data.getColumn(0);
 			
@@ -148,22 +157,44 @@ public class TestNGDataDriver {
 					titleList.add(title);
 				}
 			}
+			//存储标题后再重新转置，使data以列的形式进行返回
+			data.tableTransposition();
+		} else {
+			//若首行不是标题行，则获取data的最大列，按照“元素列 + 行号”的形式进行命名
+			for (int index = 0; index < data.getMaxColumnNumber(); index++) {
+				titleList.add("元素列" + (titleIndex + index));
+			}
 		}
 		
 		//遍历所有行，读取所有的数据
-		for (int rowIndex = isFirstTitle ? 1 : 0; rowIndex < data.getMaxColumnNumber(); rowIndex++) {
-			addFileRowData(isFirstTitle ? rowIndex - 1 : rowIndex, data.getColumn(rowIndex));
+		for (int columnIndex = 0; columnIndex < data.getMaxColumnNumber(); columnIndex++) {
+			//将List<String>转换为List<Object>
+			List<Object> objectList = new ArrayList<>();
+			objectList.addAll(data.getColumn(columnIndex, isFirstTitle ? 1 : 0, data.getCoulumnSize(columnIndex)));
+			System.out.println(objectList);
+			//存储数据
+			addData(titleList.get(columnIndex + titleIndex), objectList);
 		}
 	}
 	
-	public void addData(String title, Object...objects) {
-		//根据列名是否存在，调用相应的添加元素的方法
-		if (titleList.indexOf(title) > -1) {
-			addOriginalColumn(titleList.indexOf(title), objects);
-		} else {
-			titleList.add(title);
-			addNewColumn(objects);
+	/**
+	 * 用于在非文件中添加数据驱动
+	 * @param title 数据列标题
+	 * @param objects 相应的元素
+	 */
+	public void addDataDriver(String title, Object...objects) {
+		//判断title是否为空，若为空，则将其改为默认命名
+		if (title == null || title.isEmpty()) {
+			title = "数据" + (1 + columnSize());
 		}
+		
+		//判断列表是否存在，若不存在，则重新添加标题
+		if (titleList.indexOf(title) < 0) {
+			titleList.add(title);
+		}
+		
+		//添加数据
+		addData(title, Arrays.asList(objects));
 	}
 	
 	/**
@@ -179,13 +210,28 @@ public class TestNGDataDriver {
 	 * 一个{@link Data}类对象，通过该对象，对获取到的所有数据进行返回，以简化在编写脚本时
 	 * 的传参
 	 * 
-	 * @return TestNG数据驱动
+	 * @return TestNG形式的数据驱动
 	 */
 	public Object[][] getDataDriver() {
-		Object[][] objs = new Object[dataList.size()][1];
+		//构造Object[][]
+		Object[][] objs = new Object[maxColumnSize][1];
 		
-		for (int i = 0; i < dataList.size(); i++) {
-			objs[i][0] = dataList.get(i);
+		//遍历所有的行，按照最大行添加数据
+		for (int i = 0; i < maxColumnSize; i++) {
+			//由于在lambda中不能直接引用变量i，故需要编写一个封装类
+			AtomicInteger index = new AtomicInteger(i);
+			//遍历标题列表，按照标题列表的顺序，写入到data中
+			Data data = new Data();
+			titleList.forEach(title -> {
+				//由于列表长度不一致，导致存储时超出数组的元素无法读取，若抛出异常，则存储空串
+				try {
+					data.addData(dataMap.get(title).get(index.get()));
+				} catch (Exception e) {
+					data.addData("");
+				}
+			});
+			//存储数据
+			objs[i][0] = data;
 		}
 		
 		return objs;
@@ -196,117 +242,51 @@ public class TestNGDataDriver {
 	 * @return 数据驱动的总行数
 	 */
 	public int getRowSize() {
-		return dataList.size();
+		//最大列的元素个数即为最大的行数
+		return maxColumnSize;
 	}
 	
 	/**
-	 * 用于根据列名称返回指定列的元素个数
+	 * 用于根据列名称返回指定列的元素个数，若标题不存在，则返回0
 	 * @param title 列名称
 	 * @return 列元素个数
 	 */
 	public int getColumnSize(String title) {
-		int index = titleList.indexOf(title);
-		if (index > -1) {
-			return getColumnSize(index);
+		if (dataMap.containsKey(title)) {
+			return dataMap.get(title).size();
 		} else {
 			return 0;
 		}
 	}
 	
 	/**
-	 * 用于根据列下标返回指定列的元素个数
+	 * 用于根据列下标返回指定列的元素个数，若输入的参数不存在，则返回0
 	 * @param index 列下标
 	 * @return 列元素个数
 	 */
 	public int getColumnSize(int index) {
-		AtomicInteger rowIndex = new AtomicInteger(0);
-		//遍历所有行的指定列元素
-		dataList.forEach(data -> {
-			//判断当前元素是否为空，若为空，则结束循环，否则，其rowIndex+1
-			if (data.getOriginalString(index).isEmpty()) {
-				return;
-			} else {
-				rowIndex.addAndGet(1);
-			}
-		});
-		
-		return rowIndex.get();
+		try {
+			return getColumnSize(titleList.get(index));
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 	
 	/**
-	 * 用于将一行的数据转为Data类对象
+	 * 将一行数据添加至相应的dataMap中
 	 * @param rowDataList 一行数据
-	 * @return 返回一行数据的Data类对象
 	 */
-	private void addFileRowData(int rowInde, List<String> rowDataList) {
-		//将所有的空元素替换为“${ }”，以表示该行存在元素，只是为空
-		rowDataList.replaceAll(text -> {
-			return text.isEmpty() ? "${ }" : text;
-		});
-		
-		//当rowInde大于dataList的总列数时，则表示未对该行进行存储，此时存在两种情况：
-		//1.第一次文件，此时dataList并无数据，调用方法时为初次添加数据，则按照正常方式添加
-		//2.非第一次读取文件，此时dataList已存在上次读取的数据，当写入的数据行数大于存储的行数
-		//时，直接添加数据会造成数据向左移，则需要读取原始列表的内容，将原来没有的数据补全后再
-		//添加数据
-		if (rowInde > dataList.size() - 1) {
-			Data data = new Data();
-			//判断rowDataList元素与上一行元素个数一致，若一致，则表示当前为第一次读取
-			if (dataList.size() != 0 && dataList.get(rowInde - 1).dataList.size() != rowDataList.size()) {
-				//若上一行的元素个数与rowDataList的元素个数不一致，则此时是非第一次读取文件，rowDataList存在数据，则
-				//将rowDataList之前的列都置为空串
-				int oldListSize = dataList.get(rowInde - 1).dataList.size();
-				for (int index = 0; index < oldListSize - rowDataList.size(); index++) {
-					data.addData("${ }");
-				}
-			}
-			
-			//存储数据
-			rowDataList.forEach(data :: addData);
-			dataList.add(data);
-		} else {
-			rowDataList.forEach(dataList.get(rowInde) :: addData);
+	private void addData(String title, List<Object> columnDataList) {
+		//判断标题是否存在，若不存在，则进行构造
+		if (!dataMap.containsKey(title)) {
+			dataMap.put(title, new ArrayList<Object>());
 		}
-	}
-	
-	/**
-	 * 存储新的列元素
-	 * @param objects 元素组
-	 */
-	private void addNewColumn(Object...objects) {
-		//获取当前数据驱动中的行数
-		int maxRowSize = getRowSize();
-		//获取当前行元素与需要添加的元素个数之间的差值
-		int diff = objects.length - maxRowSize;
+		//对元素进行存储
+		dataMap.get(title).addAll(columnDataList);
 		
-		//为保证数据统一，按照当前元素最大行进行存储，若objects中的元素个数不足时，使用空函数对其占位，保证列表的统一
-		for (int index = 0; index < maxRowSize; index++) {
-			try {
-				dataList.get(index).addData(objects[index].toString());
-			}catch (Exception e) {
-				dataList.get(index).addData("${ }");
-			}
-		}
-		
-		//判断差值是否大于0，若大于0，则按照已存在的行进行存储
-		if (diff > 0) {
-			//存储剩余的元素
-			Object[] obj = new Object[diff];
-			for (int index = 0; index < diff; index++) {
-				obj[index] = objects[maxRowSize + index];
-			}
-			
-			addOriginalColumn(titleList.size() - 1, obj);
-		}
-	}
-	
-	/**
-	 * 在已存在的列中添加元素
-	 * @param index 列下标
-	 * @param objects 元素组
-	 */
-	private void addOriginalColumn(int index, Object...objects) {
-		if ()
+		//判断该列的元素个数是否大于最大列元素个数，若大于，则将其个数替换为最大元素个数
+		int size = dataMap.get(title).size();
+		maxColumnSize = size > maxColumnSize ? size : maxColumnSize;
 	}
 	
 	/**
@@ -339,7 +319,7 @@ public class TestNGDataDriver {
 		/**
 		 * 用于存储数据
 		 */
-		private ArrayList<String> dataList = new ArrayList<>();
+		private ArrayList<Object> dataList = new ArrayList<>();
 		
 		/**
 		 * 用于根据列名称，以字符串的形式返回数据
@@ -357,7 +337,7 @@ public class TestNGDataDriver {
 		 * @return 字符串形式的数据
 		 */
 		public String getString(int index) {
-			return index < dataList.size() ? disposeContent(dataList.get(index)) : "";
+			return index < dataList.size() ? disposeContent(dataList.get(index).toString()) : "";
 //			return index < dataList.size() ? dataList.get(index) : ""; //调试使用，输出存储的原始内容
 		}
 		
@@ -476,10 +456,28 @@ public class TestNGDataDriver {
 		}
 		
 		/**
+		 * 用于根据列名称，以{@link Object}的形式对数据进行返回
+		 * @param listName 列表名称
+		 * @return {@link Object}类型的数据
+		 */
+		public Object getObject(String listName) {
+			return dataList.get(titleList.indexOf(listName));
+		}
+		
+		/**
+		 * 用于根据列名称，以{@link Object}的形式对数据进行返回
+		 * @param listName 列表名称
+		 * @return {@link Object}类型的数据
+		 */
+		public Object getObject(int index) {
+			return dataList.get(index);
+		}
+		
+		/**
 		 * 用于添加元素
 		 * @param content 元素内容
 		 */
-		private void addData(String content) {
+		private void addData(Object content) {
 			dataList.add(content);
 		}
 		
@@ -489,6 +487,7 @@ public class TestNGDataDriver {
 		 * @return 处理后的内容
 		 */
 		private String disposeContent(String content) {
+			//TODO 想办法在处理时输出Object类
 			//判断传入的内容是否包含公式起始符号，若不包含，则返回原串
 			if (content.indexOf(FUNCTION_SIGN_START) < 0) {
 				return content;
@@ -542,15 +541,6 @@ public class TestNGDataDriver {
 			
 			//若内容不与任何正则匹配，则返回原始内容
 			return null;
-		}
-		
-		/**
-		 * 用于返回index对应列中存储的元素的原始内容，若列不存在，或无元素，则返回空
-		 * @param index 列下标
-		 * @return 列中的内容
-		 */
-		private String getOriginalString(int index) {
-			return index < dataList.size() ? dataList.get(index) : "";
 		}
 	} 
 }
