@@ -95,7 +95,7 @@ public class RandomWord {
 		
 		return randomWordList;
 	}
-
+	
 	/**
 	 * 用于根据词语是否允许重复，返回实际的最大生成词语个数
 	 * @param maxLength 设置的最大词语生成个数
