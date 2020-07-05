@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
@@ -97,13 +98,13 @@ public abstract class AbstractBy {
 	}
 	
 	/**
-	 * 用于对单个控件设置等待时间
+	 * 用于对符合正则表达式的控件名称设置等待时间
 	 * 
-	 * @param name     控件名称
+	 * @param regex    正则表达式
 	 * @param waitTime 等待时间
 	 */
-	public void setContorlWaitTime(String name, long waitTime) {
-		controlWaitTime.put(name, waitTime);
+	public void setContorlWaitTime(String regex, long waitTime) {
+		controlWaitTime.put(regex, waitTime);
 	}
 	
 	/**
@@ -483,7 +484,13 @@ public abstract class AbstractBy {
 	 * @see #setWaitTime(long)
 	 */
 	long getWaitTime(String name) {
-		return controlWaitTime.containsKey(name) ? controlWaitTime.get(name) : waitTime;
+		for (String regex : controlWaitTime.keySet()) {
+			if (Pattern.compile(regex).matcher(name).matches()) {
+				return controlWaitTime.get(regex);
+			}
+		}
+		
+		return waitTime;
 	}
 	
 	/**
