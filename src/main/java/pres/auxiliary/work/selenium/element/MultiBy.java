@@ -40,6 +40,14 @@ public abstract class MultiBy extends AbstractBy {
 	}
 	
 	/**
+	 * 通过{@link AbstractBy}对象对类进行构造，将传入的AbstractBy类中的关键参数设置到当前类对象中
+	 * @param brower {@link AbstractBy}对象
+	 */
+	public MultiBy(AbstractBy by) {
+		super(by);
+	}
+	
+	/**
 	 * 用于根据传入的元素在xml文件中的名称或者元素的定位内容，添加元素。由于该方法不指定元素的定位
 	 * 方式，若传入的参数不是xml元素且非xpath路径或绝对css路径时，其识别效率较慢，建议在该情况下
 	 * 调用{@link #add(String, ByType)}方法，指定元素定位方法

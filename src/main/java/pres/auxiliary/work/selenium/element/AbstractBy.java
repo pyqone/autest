@@ -80,6 +80,16 @@ public abstract class AbstractBy {
 	}
 	
 	/**
+	 * 通过{@link AbstractBy}对象对类进行构造，将传入的AbstractBy类中的关键参数设置到当前类对象中
+	 * @param brower {@link AbstractBy}对象
+	 */
+	public AbstractBy(AbstractBy by) {
+		this.brower = by.brower;
+		this.driver = by.driver;
+		this.xml = by.xml;
+	}
+	
+	/**
 	 * 通过浏览器对象{@link AbstractBrower}进行构造
 	 * @param brower {@link AbstractBrower}对象
 	 */

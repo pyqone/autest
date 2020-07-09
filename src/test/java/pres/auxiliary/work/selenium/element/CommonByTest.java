@@ -74,6 +74,10 @@ public class CommonByTest {
 		File xmlFile = new File("src/test/java/pres/auxiliary/work/selenium/element/测试文件.xml");
 		ce.setXmlFile(xmlFile, false);
 		System.out.println(ce.getElement("单位名称").getWebElement().getText());
+		
+		DataListBy d = new DataListBy(ce);
+		d.add("单位名称");
+		System.out.println(d.getElement("单位名称", 1).getWebElement().getText());
 	}
 	
 	/**

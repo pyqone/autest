@@ -46,6 +46,14 @@ public abstract class ListBy extends MultiBy {
 	}
 	
 	/**
+	 * 通过{@link AbstractBy}对象对类进行构造，将传入的AbstractBy类中的关键参数设置到当前类对象中
+	 * @param brower {@link AbstractBy}对象
+	 */
+	public ListBy(AbstractBy by) {
+		super(by);
+	}
+	
+	/**
 	 * 返回列表名称对应的元素个数，若该列未被获取，则返回-1
 	 * @param name 被获取的列名称
 	 * @return 列名对应列的元素个数

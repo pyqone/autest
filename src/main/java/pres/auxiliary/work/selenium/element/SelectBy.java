@@ -73,25 +73,29 @@ public class SelectBy extends MultiBy {
 	private boolean fristIsEmpty = false;
 	
 	/**
-	 * 通过浏览器对象{@link AbstractBrower}进行构造，并指定第一个选项是否为空选项或者为“请选择”等文本
-	 * 的选项，若为该选项时，则在随机选择时不会选择到该选项
+	 * 通过浏览器对象{@link AbstractBrower}进行构造
 	 * 
 	 * @param brower {@link AbstractBrower}对象
-	 * @param fristIsEmpty 指定第一个元素是否为空串或为“请选择”等文本
 	 */
 	public SelectBy(AbstractBrower brower) {
 		super(brower);
 	}
 
 	/**
-	 * 构造对象并存储浏览器的{@link WebDriver}对象，并指定第一个选项是否为空选项或者为“请选择”等文本
-	 * 的选项，若为该选项时，则在随机选择时不会选择到该选项
+	 * 构造对象并存储浏览器的{@link WebDriver}对象
 	 * 
 	 * @param driver 浏览器的{@link WebDriver}对象
-	 * @param fristIsEmpty 指定第一个元素是否为空串或为“请选择”等文本
 	 */
 	public SelectBy(WebDriver driver) {
 		super(driver);
+	}
+	
+	/**
+	 * 通过{@link AbstractBy}对象对类进行构造，将传入的AbstractBy类中的关键参数设置到当前类对象中
+	 * @param brower {@link AbstractBy}对象
+	 */
+	public SelectBy(AbstractBy by) {
+		super(by);
 	}
 	
 	@Override

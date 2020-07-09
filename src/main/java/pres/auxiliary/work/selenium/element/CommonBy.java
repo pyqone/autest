@@ -39,6 +39,14 @@ public class CommonBy extends AbstractBy {
 	public CommonBy(AbstractBrower brower) {
 		super(brower);
 	}
+	
+	/**
+	 * 通过{@link AbstractBy}对象对类进行构造，将传入的AbstractBy类中的关键参数设置到当前类对象中
+	 * @param brower {@link AbstractBy}对象
+	 */
+	public CommonBy(AbstractBy by) {
+		super(by);
+	}
 
 	/**
 	 * 用于根据xml文件中元素的名称，返回对应的{@link Element}对象。该方法亦可传入元素
