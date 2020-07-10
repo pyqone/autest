@@ -2,16 +2,14 @@ package pres.auxiliary.work.selenium.event;
 
 import java.time.Duration;
 
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * <p><b>文件名：</b>AbstractEvent.java</p>
  * <p><b>用途：</b>所有事件类的基类，包含了事件类所用到的基础方法以及弹窗处理方法和窗体、窗口的切换方法</p>
  * <p><b>编码时间：</b>2019年9月24日下午4:24:15</p>
- * <p><b>修改时间：</b>2020年5月10日 下午3:42:15</p>
+ * <p><b>修改时间：</b>2020年7月10日上午16:49:37</p>
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 12
@@ -32,16 +30,6 @@ public abstract class AbstractEvent {
 	long waitTime = 5;
 	
 	/**
-	 * 用于在记录步骤时需要替换的元素名称文本
-	 */
-	public static final String ELEMENT_NAME = "&{元素名称}";
-	
-	/**
-	 * 存储事件的操作说明
-	 */
-	String step = "";
-
-	/**
 	 * 构造对象并存储浏览器的WebDriver对象
 	 * 
 	 * @param driver 浏览器的WebDriver对象
@@ -58,30 +46,5 @@ public abstract class AbstractEvent {
 	 */
 	public void setWaitTime(long waitTime) {
 		wait.withTimeout(Duration.ofSeconds(waitTime));
-	}
-	
-	/**
-	 * 用于获取事件的文字说明，其文字存在一个可以替换元素名称的预留字段，可根据参数确定返回时是否需要保留该字段
-	 * @param clearElementName 是否清除预留字段
-	 * @return 操作的文本说明
-	 */
-	public String getStep(boolean clearElementName) {
-		return clearElementName ? step.replaceAll(ELEMENT_NAME, "") : step;
-	}
-	
-	/**
-	 * 用于将页面控件元素高亮显示
-	 * @param element 当前指向的元素
-	 */
-	void elementHight(WebElement element) {
-		//获取当前指向的元素的style属性
-		String elementStyle = element.getAttribute("style");
-		// 控件高亮
-		((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute('style',arguments[1])", element,
-				elementStyle + "background:yellow;solid:red;");
-		
-		//解除高亮
-		((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute('style',arguments[1])",
-				element, elementStyle);
 	}
 }

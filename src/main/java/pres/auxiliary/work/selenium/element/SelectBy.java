@@ -198,7 +198,7 @@ public class SelectBy extends MultiBy {
 		//构造Element对象
 		for (int i = 0; i < size; i++) {
 			//获取元素
-			option.add(new Element(driver, elementType, by, i));
+			option.add(new Element(driver, elementType, by, elementInformation.name, i));
 			//获取元素的文本内容
 			optionText.add(elementList.get(i).getText());
 		}

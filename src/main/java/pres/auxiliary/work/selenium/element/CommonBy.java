@@ -107,7 +107,7 @@ public class CommonBy extends AbstractBy {
 			switchFrame(getParentFrameName(elementInformation.name));
 		}
 		
-		return new Element(driver, ElementType.COMMON_ELEMENT, recognitionElement(elementInformation));
+		return new Element(driver, ElementType.COMMON_ELEMENT, recognitionElement(elementInformation), elementInformation.name);
 	}
 
 	@Override

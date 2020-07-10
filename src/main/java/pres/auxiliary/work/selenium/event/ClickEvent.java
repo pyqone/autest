@@ -14,7 +14,7 @@ import pres.auxiliary.work.selenium.element.Element;
  * 定义了对控件进行点击操作相关的方法，可通过该类，对页面进行基本的点击操作
  * </p>
  * <p><b>编码时间：</b>2019年8月29日下午3:24:34</p>
- * <p><b>修改时间：</b>2020年5月10日 下午3:42:36</p>
+ * <p><b>修改时间：</b>2020年7月10日上午16:49:37</p>
  * 
  * @author 彭宇琦
  * @version Ver2.0
@@ -55,8 +55,6 @@ public class ClickEvent extends AbstractEvent {
 					return false;
 				}
 			});
-		
-		step = "鼠标左键点击“" + ELEMENT_NAME + "”元素";
 	}
 
 	/**
@@ -82,8 +80,6 @@ public class ClickEvent extends AbstractEvent {
 					return false;
 				}
 			});
-		
-		step = "鼠标左键双击“" + ELEMENT_NAME + "”元素";
 	}
 
 	/**
@@ -108,8 +104,6 @@ public class ClickEvent extends AbstractEvent {
 					return false;
 				}
 			});
-		
-		step = "鼠标右键点击“" + ELEMENT_NAME + "”元素";
 	}
 	
 	/**
@@ -128,7 +122,5 @@ public class ClickEvent extends AbstractEvent {
 				continue;
 			}
 		}
-		
-		step = "鼠标左键连续" + clickCount + "次点击“" + ELEMENT_NAME + "”元素";
 	}
 }

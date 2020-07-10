@@ -145,7 +145,7 @@ public class JsEvent extends AbstractEvent {
 		// 获取新添加元素的xpath
 		String xpath = addElement(element, elementName);
 		// 查找新添加的元素（由于是新添加的元素，肯定能查找到，故无需编写等待）
-		Element newElement = new Element(driver, ElementType.COMMON_ELEMENT, By.xpath(xpath));
+		Element newElement = new Element(driver, ElementType.COMMON_ELEMENT, By.xpath(xpath), "TeamElement");
 
 		// 获取元素的所有属性
 		JSONArray attributes = elementJson.getJSONArray("attributes");

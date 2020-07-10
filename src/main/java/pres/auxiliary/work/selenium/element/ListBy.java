@@ -93,7 +93,7 @@ public abstract class ListBy extends MultiBy {
 		int size = driver.findElements(by).size();
 		//构造Element对象
 		for (int i = 0; i < size; i++) {
-			elementList.add(new Element(driver, ElementType.DATA_LIST_ELEMENT, by, i));
+			elementList.add(new Element(driver, ElementType.DATA_LIST_ELEMENT, by, elementInformation.name, i));
 		}
 		//elementList = driver.findElements(recognitionElement(elementInformation));
 		//添加元素

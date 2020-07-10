@@ -21,10 +21,10 @@ import pres.auxiliary.work.selenium.tool.Screenshot;
  * <p><b>文件名：</b>TextEvent.java</p>
  * <p><b>用途：</b>定义了对控件文本操作相关的方法，可通过该类，对页面进行对控件输入，文本获取等操作</p>
  * <p><b>编码时间：</b>2019年9月6日上午9:28:59</p>
- * <p><b>修改时间：</b>2019年11月29日上午9:53:37</p>
+ * <p><b>修改时间：</b>2020年7月10日上午16:49:37</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 8
  *
  */
 public class TextEvent extends AbstractEvent {
@@ -62,9 +62,6 @@ public class TextEvent extends AbstractEvent {
 			}
 		});
 		
-		//记录操作
-		step = "清空“" + ELEMENT_NAME + "”元素内的文本";
-		
 		return text;
 	}
 
@@ -77,10 +74,6 @@ public class TextEvent extends AbstractEvent {
 	public String getAttributeValue(Element element, String attributeName) {
 		//等待元素中attributeName指向的属性内容出现
 		wait.until(ExpectedConditions.attributeToBeNotEmpty(element.getWebElement(), attributeName));
-		
-		
-		//记录操作
-		step = "获取“" + ELEMENT_NAME + "”元素的" + attributeName +"属性的内容";
 		
 		//对元素进行操作，若元素过期，则重新获取
 		return wait.until(driver -> {
@@ -99,9 +92,6 @@ public class TextEvent extends AbstractEvent {
 	 * @return 对应元素中的文本内容
 	 */
 	public String getText(Element element) {
-		//记录操作
-		step = "获取“" + ELEMENT_NAME + "”元素内的文本";
-		
 		//对元素进行操作，若元素过期，则重新获取
 		return wait.until(driver -> {
 				try {
@@ -130,9 +120,6 @@ public class TextEvent extends AbstractEvent {
 				return false;
 			}
 		});
-		
-		//记录操作
-		step = "获取“" + ELEMENT_NAME + "”元素内的文本";
 		
 		return text;
 	}
@@ -249,8 +236,6 @@ public class TextEvent extends AbstractEvent {
 	 * @return 上传的文件路径
 	 */
 	public String updataFile(Element element, File updataFile) {
-		//记录操作
-		step = "向“" + ELEMENT_NAME + "”元素中的上传文件";
 		return input(element, updataFile.getAbsolutePath());
 	}
 	

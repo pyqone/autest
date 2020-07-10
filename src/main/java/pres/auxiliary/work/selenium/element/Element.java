@@ -37,6 +37,11 @@ public class Element {
 	private WebDriver driver;
 	
 	/**
+	 * 用于存储元素的名称
+	 */
+	private String name;
+	
+	/**
 	 * 标记元素的类型，以用于重新获取时
 	 */
 	private ElementType elementType;
@@ -46,12 +51,13 @@ public class Element {
 	 * @param name 元素名称或定位内容
 	 * @param byType 元素定位
 	 */
-	public Element(WebDriver driver, ElementType elementType, By by, int index) {
+	public Element(WebDriver driver, ElementType elementType, By by, String name, int index) {
 		super();
 		this.by = by;
 		this.index = index;
 		this.driver = driver;
 		this.elementType = elementType;
+		this.name = name;
 	}
 	
 	/**
@@ -59,8 +65,8 @@ public class Element {
 	 * @param name 元素名称或定位内容
 	 * @param byType 元素定位
 	 */
-	public Element(WebDriver driver, ElementType elementType, By by) {
-		this(driver, elementType, by, 0);
+	public Element(WebDriver driver, ElementType elementType, By by, String name) {
+		this(driver, elementType, by, name, 0);
 	}
 	
 	/**
@@ -90,6 +96,31 @@ public class Element {
 		case SELECT_OPTION_ELEMENT:
 			element = new Select(driver.findElement(by)).getOptions().get(index);
 			break;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + elementType);
+		}
+	}
+	
+	/**
+	 * 用于返回元素 的名称
+	 * @return 元素名称
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * 用于返回元素信息，输出格式“元素名称 + “元素” + 列表选项”
+	 * @return 元素信息
+	 */
+	public String getLog() {
+		switch (elementType) {
+		case COMMON_ELEMENT:
+			return name + "元素";
+		case DATA_LIST_ELEMENT:
+		case SELECT_DATAS_ELEMENT:
+		case SELECT_OPTION_ELEMENT:
+			return name + "元素第" + index + "个选项";
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + elementType);
 		}
