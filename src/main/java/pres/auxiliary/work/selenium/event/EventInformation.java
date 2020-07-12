@@ -41,7 +41,7 @@ public class EventInformation {
 		this.method = method;
 		this.args = args;
 		//提取Element类对象
-		getElement();
+		toElement();
 	}
 
 	/**
@@ -61,9 +61,17 @@ public class EventInformation {
 	}
 	
 	/**
+	 * 用于返回传入到方法中{@link Element}类对象集合
+	 * @return {@link Element}类对象集合
+	 */
+	public ArrayList<Element> getElement() {
+		return elementList;
+	}
+	
+	/**
 	 * 用于将args中为Element类对象的参数进行转换并存储至elementList中
 	 */
-	private void getElement() {
+	private void toElement() {
 		Arrays.stream(args).forEach(arg -> {
 			if (arg instanceof Element) {
 				elementList.add((Element) arg);

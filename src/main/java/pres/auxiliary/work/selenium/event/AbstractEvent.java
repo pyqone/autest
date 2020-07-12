@@ -47,4 +47,12 @@ public abstract class AbstractEvent {
 	public void setWaitTime(long waitTime) {
 		wait.withTimeout(Duration.ofSeconds(waitTime));
 	}
+	
+	/**
+	 * 用于返回存储的{@link WebDriver}类对象
+	 * @return{@link WebDriver}类对象
+	 */
+	public WebDriver getDriver() {
+		return driver;
+	}
 }
