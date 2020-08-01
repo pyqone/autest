@@ -110,10 +110,12 @@ public class SelectBy extends MultiBy {
 	 * @param fristIsEmpty 首个选项是否为不可选择的选项或者文本为空的选项
 	 * @see #add(String)
 	 */
+	/*
 	public void add(String name, boolean fristIsEmpty) {
 		this.fristIsEmpty = fristIsEmpty;
 		add(name);
 	}
+	*/
 	
 	/**
 	 * 用于添加选项并指明首个选项是否为不可选择的选项或者文本为空的选项，其他效果与{@link #add(String, ByType)}一致
@@ -122,10 +124,12 @@ public class SelectBy extends MultiBy {
 	 * @param fristIsEmpty 首个选项是否为不可选择的选项或者文本为空的选项
 	 * @see #add(String, ByType)
 	 */
+	/*
 	public void add(String name, ByType byType, boolean fristIsEmpty) {
 		this.fristIsEmpty = fristIsEmpty;
 		add(name, byType);
 	}
+	*/
 	
 	@Override
 	public void add(String name, ByType byType, String... links) {
@@ -147,11 +151,13 @@ public class SelectBy extends MultiBy {
 	 * @param fristIsEmpty 首个选项是否为不可选择的选项或者文本为空的选项
 	 * @param links 替换词语
 	 */
+	/*
 	public void add(String name, ByType byType, boolean fristIsEmpty, String... links) {
 		this.fristIsEmpty = fristIsEmpty;
 		add(name, byType, links);
 		
 	}
+	*/
 
 	/**
 	 * 可用于指明首行是否为空选项，其他说明可参考{@link #add(String, String...)}
@@ -159,10 +165,20 @@ public class SelectBy extends MultiBy {
 	 * @param fristIsEmpty 首个选项是否为不可选择的选项或者文本为空的选项
 	 * @param links 替换词语
 	 */
+	/*
 	public void add(String name, boolean fristIsEmpty, String... links) {
 		this.fristIsEmpty = fristIsEmpty;
 		add(name, null, links);
 		
+	}
+	*/
+	
+	/**
+	 * 设置首个选项是否为不可选择的选项
+	 * @param fristIsEmpty 首个选项是否为不可选择
+	 */
+	public void setFristIsEmpty(boolean fristIsEmpty) {
+		this.fristIsEmpty = fristIsEmpty;
 	}
 	
 	@Override

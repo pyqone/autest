@@ -70,9 +70,6 @@ import com.jacob.com.Dispatch;
 import com.jacob.com.Variant;
 import com.opencsv.CSVReader;
 
-import pres.auxiliary.directory.exception.IncorrectDirectoryException;
-import pres.auxiliary.directory.operate.MakeDirectory;
-
 /**
  * 该类用于定义生成测试报告类共用的方法
  * 

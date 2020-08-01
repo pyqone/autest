@@ -102,6 +102,13 @@
 			<version>5.0.2</version>
 		</dependency>
 		
+		<!-- 数据库连接依赖包 -->
+		<dependency>
+		    <groupId>com.github.noraui</groupId>
+		    <artifactId>ojdbc7</artifactId>
+		    <version>12.1.0.2</version>
+		</dependency>
+		
 		<!-- HttpClient 用于接口测试 -->
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
@@ -137,6 +144,15 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.9.5</version>
         </dependency>
+        
+        <!-- lombok注解生成get/set方法依赖 -->
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok</artifactId>
+		    <version>1.18.12</version>
+		    <scope>provided</scope>
+		</dependency>
+        
         
 	</dependencies>
 </project>

@@ -1,5 +1,6 @@
 package pres.auxiliary.tool.randomstring;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -109,7 +110,7 @@ public class PresetString {
 	 * 
 	 * @return 生成的身份证号码
 	 */
-	public static String IdentityCard() {
+	public static String identityCard() {
 		StringBuilder sb = new StringBuilder();
 		RandomString rs = new RandomString("123456789");
 		
@@ -120,7 +121,7 @@ public class PresetString {
 		//区县
 		String[] county = {"01", "02", "03", "04", "05"};
 		//生日年份前两位
-		int[] year = {19, 18};
+		int[] year = {19};
 		
 		//加权数
 		int[] factors = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
@@ -192,8 +193,19 @@ public class PresetString {
 		}
 	}
 	
-	private static String getMobleNumber(MobleNumberType mobleNumberType) {
+	/**
+	 * 根据运营商，生成相应运营商号段的随机号码
+	 * @param mobleNumberType 运营商号段枚举
+	 * @return 相应运营商的随机号码
+	 */
+	public static String mobleNumber(MobleNumberType mobleNumberType) {
+		RandomString rs = new RandomString(StringMode.NUM);
+		ArrayList<String> regexList = mobleNumberType.getRegex();
 		
+		//根据运营商号码开头规则，随机选择一个号段
+		String regex = regexList.get(new Random().nextInt(regexList.size()));
+		//再根据号段的长度，生成相应位数的尾号
+		return regex + rs.toString(11 - regex.length());
 	}
 
 }

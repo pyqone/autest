@@ -2,7 +2,6 @@ package test.javase;
 
 import java.io.File;
 
-import pres.auxiliary.work.selenium.xml.CreateXml;
 import pres.auxiliary.work.selenium.xml.XmlFileNameIsNullException;
 
 

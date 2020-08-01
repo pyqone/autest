@@ -38,7 +38,6 @@ import org.dom4j.io.XMLWriter;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import pres.auxiliary.directory.exception.UndefinedDirectoryException;
 import pres.auxiliary.work.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.xml.ReadXml;
 

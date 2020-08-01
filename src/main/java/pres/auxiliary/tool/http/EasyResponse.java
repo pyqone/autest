@@ -70,7 +70,7 @@ public class EasyResponse {
 		
 		//转换为JSONObject格式，若不能转换，则responseJson为null
 		try {
-			responseJson = JSONObject.parseObject(responseText);
+			responseJson = JSON.parseObject(responseText);
 			responseType = ResponseType.JSON;
 		} catch (JSONException jsonException) {
 			//设置responseJson为null

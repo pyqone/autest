@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import pres.auxiliary.directory.exception.IncorrectDirectoryException;
-import pres.auxiliary.directory.exception.UndefinedDirectoryException;
-import pres.auxiliary.directory.operate.MakeDirectory;
-
 /**
  * <p><b>文件名：</b>Log.java</p>
  * <p><b>用途：</b>用于在txt文件中生成自动化测试相关的日志，亦可指定输出的内容</p>

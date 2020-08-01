@@ -22,7 +22,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import pres.auxiliary.directory.exception.UndefinedDirectoryException;
 import pres.auxiliary.work.old.testcase.change.CaseTab;
 import pres.auxiliary.work.old.testcase.change.Tab;
 import pres.auxiliary.work.old.testcase.templet.ZentaoExcel;

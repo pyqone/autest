@@ -1,7 +1,5 @@
 package test.javase;
 
-import pres.auxiliary.directory.operate.MakeDirectory;
-
 public class TestMakeDirector {
 	public static void main(String[] args) {
 //		MakeDirectory.createAllFolder();

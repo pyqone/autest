@@ -3,6 +3,7 @@ package pres.auxiliary.work.selenium.brower;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +37,8 @@ public abstract class AbstractBrower {
 	 * 存储打开的页面
 	 */
 	HashMap<String, Page> pageMap = new HashMap<String, Page>(16);
+	
+	HashSet<String> windowHandleSet = new HashSet<>();
 
 	/**
 	 * 用于存储WebDriver当前指向的页面信息
@@ -162,7 +165,9 @@ public abstract class AbstractBrower {
 				overridePage();
 			}
 		}
-
+		
+		//存储当前打开窗口的handle
+		windowHandleSet.add(nowPage.getHandle());
 		// 切换至相应的窗口
 		driver.switchTo().window(nowPage.getHandle());
 	}
@@ -219,6 +224,14 @@ public abstract class AbstractBrower {
 		});
 		
 		return pageList;
+	}
+	
+	/**
+	 * 用于返回当前指向的窗体打开的页面{@link Page}对象
+	 * @return {@link Page}对象
+	 */
+	public Page getNowPage() {
+		return nowPage;
 	}
 
 	/**
@@ -296,11 +309,13 @@ public abstract class AbstractBrower {
 	public void switchWindow(String pageName) {
 		try {
 			driver.switchTo().window(findPageHandle(pageName));
+			//切换当前指向的页面
+			nowPage = pageMap.get(pageName);
 		} catch (NoSuchWindowException e) {
 			throw new IncorrectPageException("页面未在浏览器中打开");
 		}
 	}
-
+	
 	/**
 	 * 用于根据页面切换页面
 	 * 
@@ -311,14 +326,14 @@ public abstract class AbstractBrower {
 		if (pageMap.containsKey(page.getPageName())) {
 			try {
 				driver.switchTo().window(page.getHandle());
+				//切换当前指向的页面
+				nowPage = page;
 			} catch (NoSuchWindowException e) {
 				throw new IncorrectPageException("页面未在浏览器中打开");
 			}
 		}
 	}
 	
-	
-
 	/**
 	 * 用于切换到当前页面
 	 */
@@ -328,7 +343,100 @@ public abstract class AbstractBrower {
 			switchWindow(nowPage);
 		}
 	}
+	
+	/**
+	 * 用于切换到弹窗上，当浏览器存在多个弹窗时，该方法无法保证能切换至理想的窗口，
+	 * 但调用该方法后，其弹窗会作为{@link Page}类对象进行存储，其页面名称为当前窗口的
+	 * handle值，若切换的窗口非理想的窗口，则可以多次调用该方法，直至切换至理想的窗口
+	 * 为止。若当前不存在弹窗，则返回false，若切换弹窗成功，则返回true
+	 * 
+	 * @return 是否成功切换弹窗
+	 */
+	public boolean switchPopuWindow() {
+		//判断当前是否存在弹窗，若不存在，则直接失败
+		if (!hasPopuWindow()) {
+			return false;
+		}
+		
+		//若存在弹窗，则获取获取当前所有窗口的handle，获取其中一个弹窗的handle值进行存储
+		String popuHandle = getPopuHandle(driver.getWindowHandles());
+		//切换弹窗
+		driver.switchTo().window(popuHandle);
+		//将弹窗转换为Page类对象，存储至pageMap中，以避免存在多个弹窗时其他弹窗无法被切换的情况
+		Page popuPage = new Page(driver.getCurrentUrl(), popuHandle);
+		popuPage.setHandle(popuHandle);
+		popuPage.setAssertTitle(driver.getTitle());
+		
+		//存储弹窗
+		pageMap.put(popuHandle, popuPage);
+		//将当前页面指向到弹窗页面上
+		nowPage = popuPage;
+		
+		//返回切换弹窗成功
+		return true;
+	}
+	
+	/**
+	 * 用于判断当前浏览器中是否存在弹窗（未被存储的浏览器标签）。注意，若在
+	 * 浏览器上自行打开的标签，其也会被计算为弹窗
+	 * @return 是否存在弹窗
+	 */
+	public boolean hasPopuWindow() {
+		//获取当前浏览器上的窗口handle
+		Set<String> nowWindowHandleSet = driver.getWindowHandles();
+		//移除被手动关闭的标签
+		removeClosePage(nowWindowHandleSet);
+		//若nowWindowHandleSet中的数量与windowHandleSet不一致，则可认为存在弹窗
+		return nowWindowHandleSet.size() != windowHandleSet.size();
+	}
+	
+	/**
+	 * 定位到弹框上并且点击确定按钮，并返回弹框上的文本
+	 * 
+	 * @return 弹框上的文本
+	 */
+	public String alertAccept() {
+		String text = alertGetText();
+		driver.switchTo().alert().accept();
 
+		return text;
+
+	}
+
+	/**
+	 * 定位到弹框上并且点击取消按钮，并返回弹框上的文本
+	 * 
+	 * @return 弹框上的文本
+	 */
+	public String alertDimiss() {
+		String text = alertGetText();
+		driver.switchTo().alert().dismiss();
+
+		return text;
+	}
+
+	/**
+	 * 定位到弹框上并且在其文本框中输入信息
+	 * 
+	 * @param content 需要输入的信息
+	 * @return 弹框上的文本
+	 */
+	public String alertInput(String content) {
+		String text = alertGetText();
+		driver.switchTo().alert().sendKeys("");
+
+		return text;
+	}
+
+	/**
+	 * 获取弹框上的文本
+	 * 
+	 * @return 弹框上的文本
+	 */
+	public String alertGetText() {
+		return driver.switchTo().alert().getText();
+	}
+	
 	/**
 	 * 用于新增一个标签页，并打开指定站点
 	 * 
@@ -373,7 +481,7 @@ public abstract class AbstractBrower {
 				break;
 			}
 		}
-
+		
 		return newHandle;
 	}
 
@@ -422,5 +530,34 @@ public abstract class AbstractBrower {
 		
 		// 若类中未存储相应page，则返回null
 		return null;
+	}
+	
+	/**
+	 * 用于在pageMap中移除已被关闭的浏览器标签，该方法主要用于清除手动关闭的标签
+	 * @param handleList 当前浏览器存储的标签值
+	 */
+	private void removeClosePage(Set<String> handleList) {
+		ArrayList<String> removeKeyList = new ArrayList<>();
+		//遍历pageMap，若其handle值不存在于handleList中，则记录需要移除的key值
+		pageMap.forEach((key, value) -> {
+			if (!handleList.contains(value.getHandle())) {
+				removeKeyList.add(key);
+			}
+		});
+		
+		//遍历removeKeyList，在pageMap中移除相应的key
+		removeKeyList.forEach(key -> {
+			pageMap.remove(key);
+		});
+	}
+	
+	/**
+	 * 用于返回当前浏览器中其中一个弹窗的handle值，当存在多个弹窗时
+	 * 该方法不保证返回的handle为理想的handle值
+	 * @param handleList 当前浏览器中所有的窗口handle集合
+	 * @return 其中一个弹窗的handle值
+	 */
+	private String getPopuHandle(Set<String> handleSet) {
+		return handleSet.stream().filter(handle -> findPage(handle) == null).findAny().get();
 	}
 }

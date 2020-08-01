@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
+import pres.auxiliary.work.selenium.element.copy.CommonBy;
 
 /**
  * <p><b>文件名：</b>CommonElementTest.java</p>
@@ -36,11 +37,6 @@ public class CommonByTest {
 	@AfterClass
 	public void qiut() {
 		cb.getDriver().quit();
-	}
-	
-	@BeforeMethod
-	public void switchRootFrame() {
-		ce.switchRootFrame();
 	}
 	
 	/**
@@ -99,7 +95,7 @@ public class CommonByTest {
 	@Test
 	public void getElementTest() {
 		File xmlFile = new File("src/test/java/pres/auxiliary/work/selenium/element/测试文件.xml");
-		ce.setXmlFile(xmlFile, false);
+		ce.setXmlFile(xmlFile);
 		System.out.println(ce.getElement("搜索条件", "工资单编号").getWebElement().getAttribute("type"));
 	}
 }

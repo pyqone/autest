@@ -11,10 +11,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 
-import pres.auxiliary.directory.exception.IncorrectDirectoryException;
-import pres.auxiliary.directory.exception.UndefinedDirectoryException;
-import pres.auxiliary.directory.operate.MakeDirectory;
-
 /**
  * 该类用于在使用selenium进行自动化测试中进行截图的工具。使用该类时可以指定截图保存的位置以及
  * 截图的名称，若不设置，则默认路径为C:\\AutoTest\\Screenshot\\，默认文件名称为Image。
@@ -213,35 +209,6 @@ public class Screenshot {
 		}).start();
 	}
 	
-	/**
-	 * 该方法用于创建截图并保存到相应的路径下，通过指定的截图文件名称和类中存储的WebDriver对象、截图保存路径来创建截图，
-	 * 该方法可先按照控件名称查找页面是否存在该控件，存在则截图，若不存在，则返回null
-	 * 
-	 * @param event 事件类（Event）对象
-	 * @param controlName 控件名称
-	 * @param imageName 指定的截图文件名
-	 * @return
-	 * @throws IOException
-	 *             文件流状态不正确时抛出的异常
-	 * @throws WebDriverException
-	 *             WebDriver引用错误时抛出的异常
-	 * @throws NullPointerException
-	 *             WebDriver为空时抛出的异常
-	 * @throws UndefinedDirectoryException
-	 *             截图保存路径或截图名称为指定时抛出的异常
-	 * @see #creatImage(String)
-	 */
-	public File creatImage(Event event, String controlName, String imageName) throws WebDriverException, IOException {
-		//判断控件名对应的控件是否存在，存在后则截图，否则返回null
-		if ( event.getJudgeEvent().judgeControl(controlName).getBooleanValue() ) {
-			return null;
-		}
-		// 将名称放入属性中
-		setImageName(imageName);
-		// 调用无参方法
-		return saveScreenshot();
-	}
-
 	/**
 	 * 该方法用于保存并转移截图
 	 * 

@@ -3,6 +3,8 @@ package pres.auxiliary.work.selenium.brower;
 import java.io.File;
 import java.util.Scanner;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
@@ -227,5 +229,71 @@ public class TestChromeBrower {
 		Thread.sleep(2500);
 		cb.switchWindow(page);
 		cb.closeLabel();
+	}
+	
+	@Test
+	public void hasPopuWindowTest() {
+		Page page = new Page("http://test.gxjzgr.caihcloud.com/#/home/index", "桂建通");
+		cb = new ChromeBrower(driverFile, page);
+		
+		//不加载图片
+		cb.addConfig(ChromeOptionType.DONOT_LOAD_IMAGE);
+		cb.addConfig(ChromeOptionType.SET_WINDOW_MAX_SIZE);
+		
+		WebDriver driver = cb.getDriver();
+		System.out.println("是否存在弹窗：" + cb.hasPopuWindow());
+		
+		driver.findElement(By.xpath("//*[text()='账号注册']")).click();
+		driver.findElement(By.xpath("//*[text()='账号注册']")).click();
+		driver.findElement(By.xpath("//*[text()='账号注册']")).click();
+		
+		System.out.println("是否存在弹窗：" + cb.hasPopuWindow());
+	}
+	
+	@Test
+	public void switchPopuWindowTest_singlePage() {
+		Page page = new Page("http://test.gxjzgr.caihcloud.com/#/home/index", "桂建通");
+		cb = new ChromeBrower(driverFile, page);
+		
+		//不加载图片
+		cb.addConfig(ChromeOptionType.DONOT_LOAD_IMAGE);
+		cb.addConfig(ChromeOptionType.SET_WINDOW_MAX_SIZE);
+		
+		WebDriver driver = cb.getDriver();
+		
+		driver.findElement(By.xpath("//*[text()='账号注册']")).click();
+//		cb.switchNowPage();
+		
+		System.out.println("是否切换至弹窗：" + cb.switchPopuWindow());
+		System.out.println(cb.getNowPage().getPageName());
+		cb.closeLabel();
+	}
+	
+	@Test
+	public void switchPopuWindowTest_MuPage() {
+		Page page = new Page("http://test.gxjzgr.caihcloud.com/#/home/index", "桂建通");
+		cb = new ChromeBrower(driverFile, page);
+		
+		//不加载图片
+		cb.addConfig(ChromeOptionType.DONOT_LOAD_IMAGE);
+		cb.addConfig(ChromeOptionType.SET_WINDOW_MAX_SIZE);
+		
+		WebDriver driver = cb.getDriver();
+		
+		driver.findElement(By.xpath("//*[text()='账号注册']")).click();
+		driver.findElement(By.xpath("//*[text()='账号注册']")).click();
+		driver.findElement(By.xpath("//*[text()='账号注册']")).click();
+		driver.findElement(By.xpath("//*[text()='账号注册']")).click();
+//		cb.switchNowPage();
+		
+		int i = 0;
+		do {
+			try {
+				driver.findElement(By.xpath("//*[@alog-action=\"search11111\"]")).click();
+				break;
+			} catch (Exception e) {
+			}
+			System.out.println(i++);
+		} while(cb.switchPopuWindow());
 	}
 }

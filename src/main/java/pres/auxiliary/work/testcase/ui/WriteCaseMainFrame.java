@@ -20,7 +20,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import pres.auxiliary.directory.exception.IncorrectDirectoryException;
 import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
 
 public class WriteCaseMainFrame extends JFrame {

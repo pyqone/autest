@@ -10,7 +10,6 @@ import javax.imageio.ImageIO;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import pres.auxiliary.directory.exception.IncorrectDirectoryException;
 
 /**
  * <p>

@@ -29,9 +29,6 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import pres.auxiliary.directory.exception.IncorrectDirectoryException;
-import pres.auxiliary.directory.operate.MakeDirectory;
-
 /**
  * 该类用于向指定的路径下生成用于上传至禅道上的测试用例模版，目前实现已基本模拟从禅道专业版上导出的
  * 模版文件，用户从禅道开源版导出csv的模块数据后，通过类中存储的方法，可实现向模块项与需求项中添加数据有效性。

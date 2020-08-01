@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import pres.auxiliary.work.selenium.datadriven.DataDriven;
 import pres.auxiliary.work.selenium.datadriven.DataNotFoundException;
 
 public class TestDataDriven {
