@@ -13,8 +13,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.CommonBy;
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.old.CommonBy;
+import pres.auxiliary.work.selenium.element.old.Element;
 
 /**
  * <p><b>文件名：</b>JsEventTest.java</p>

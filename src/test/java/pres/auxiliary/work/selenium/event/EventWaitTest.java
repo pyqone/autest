@@ -8,8 +8,8 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.CommonBy;
-import pres.auxiliary.work.selenium.element.DataListBy;
+import pres.auxiliary.work.selenium.element.old.CommonBy;
+import pres.auxiliary.work.selenium.element.old.DataListBy;
 
 /**
  * <p><b>文件名：</b>EventWaitTest.java</p>
@@ -49,7 +49,7 @@ public class EventWaitTest {
 	}
 	
 	/**
-	 * 测试{@link EventWait#disappear(pres.auxiliary.work.selenium.element.Element)}方法
+	 * 测试{@link EventWait#disappear(pres.auxiliary.work.selenium.element.old.Element)}方法
 	 */
 	@Test
 	public void disappearTest() {

@@ -13,7 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import pres.auxiliary.tool.randomstring.RandomString;
 import pres.auxiliary.tool.randomstring.StringMode;
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.old.Element;
 import pres.auxiliary.work.selenium.tool.RecognitionImage;
 import pres.auxiliary.work.selenium.tool.Screenshot;
 

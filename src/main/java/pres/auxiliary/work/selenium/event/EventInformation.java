@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.old.Element;
 
 /**
  * <p><b>文件名：</b>EventInformation.java</p>

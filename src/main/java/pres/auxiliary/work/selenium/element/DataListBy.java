@@ -68,23 +68,6 @@ public class DataListBy extends ListBy {
 	}
 
 	/**
-	 * 构造对象并存储浏览器的{@link WebDriver}对象
-	 * 
-	 * @param driver 浏览器的{@link WebDriver}对象
-	 */
-	public DataListBy(WebDriver driver) {
-		super(driver);
-	}
-	
-	/**
-	 * 通过{@link AbstractBy}对象对类进行构造，将传入的AbstractBy类中的关键参数设置到当前类对象中
-	 * @param brower {@link AbstractBy}对象
-	 */
-	public DataListBy(AbstractBy by) {
-		super(by);
-	}
-	
-	/**
 	 * 用于设置首行元素是否为标题元素
 	 * @param isFristRowTitle 首行是否为标题元素
 	 */
@@ -132,24 +115,6 @@ public class DataListBy extends ListBy {
 	 */
 	public List<String> getMinColumnName() {
 		return minColumnNameList;
-	}
-	
-	@Override
-	public void add(String name, ByType byType) {
-		add(new ElementInformation(name, byType, ElementType.DATA_LIST_ELEMENT));
-		
-	}
-	
-	@Override
-	public void add(String name, ByType byType, String... links) {
-		add(new ElementInformation(name, byType, ElementType.DATA_LIST_ELEMENT, links));
-		
-	}
-
-	@Override
-	public void add(String name, String... links) {
-		add(new ElementInformation(name, null, ElementType.DATA_LIST_ELEMENT, links));
-		
 	}
 	
 	@Override
@@ -246,22 +211,5 @@ public class DataListBy extends ListBy {
 		} else if (minColumnSize == size) {
 			minColumnNameList.add(key.name);
 		}
-	}
-	
-	@Override
-	boolean isExistElement(By by, long waitTime) {
-		//TODO 修改等待方法，改为获取到元素后才返回相应的状态
-		//当查找到元素时，则返回true，若查不到元素，则会抛出异常，故返回false
-		return new WebDriverWait(driver, waitTime, 200).
-				until((driver) -> {
-					List<WebElement> elementList = driver.findElements(by);
-					
-					//若获取的标题首行为标题行时，则判断为获取到大于1个元素时返回true，否则则大于0个元素返回true
-					if (isFristRowTitle) {
-						return elementList.size() > 1;
-					} else {
-						return elementList.size() > 0;
-					}
-				});
 	}
 }

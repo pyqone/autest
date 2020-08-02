@@ -10,8 +10,8 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.copy.Element;
-import pres.auxiliary.work.selenium.element.copy.ElementType;
+import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.ElementType;
 
 public class ElementTest {
 	/**

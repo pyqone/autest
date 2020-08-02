@@ -9,9 +9,9 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.CommonBy;
-import pres.auxiliary.work.selenium.element.DataListBy;
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.old.CommonBy;
+import pres.auxiliary.work.selenium.element.old.DataListBy;
+import pres.auxiliary.work.selenium.element.old.Element;
 
 /**
  * <p><b>文件名：</b>CommonElementTest.java</p>
@@ -64,7 +64,7 @@ public class TextEventTest {
 	}
 	
 	/**
-	 * 测试普通元素调用{@link TextEvent#getText(pres.auxiliary.work.selenium.element.Element)}方法
+	 * 测试普通元素调用{@link TextEvent#getText(pres.auxiliary.work.selenium.element.old.Element)}方法
 	 * @throws InterruptedException
 	 */
 	@Test
@@ -82,7 +82,7 @@ public class TextEventTest {
 	}
 	
 	/**
-	 * 测试列表元素调用{@link TextEvent#getText(pres.auxiliary.work.selenium.element.Element)}方法
+	 * 测试列表元素调用{@link TextEvent#getText(pres.auxiliary.work.selenium.element.old.Element)}方法
 	 * @throws InterruptedException
 	 */
 	@Test

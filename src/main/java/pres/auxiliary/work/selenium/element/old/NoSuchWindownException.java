@@ -1,4 +1,4 @@
-package pres.auxiliary.work.selenium.element;
+package pres.auxiliary.work.selenium.element.old;
 
 public class NoSuchWindownException extends RuntimeException {
 

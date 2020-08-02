@@ -5,7 +5,7 @@ import java.time.Duration;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.old.Element;
 
 public class EventWait {
 	/**

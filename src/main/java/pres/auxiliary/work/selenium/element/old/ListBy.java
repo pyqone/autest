@@ -1,4 +1,4 @@
-package pres.auxiliary.work.selenium.element.copy;
+package pres.auxiliary.work.selenium.element.old;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -9,7 +9,6 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.copy.AbstractBy.ElementInformation;
 
 /**
  * <p><b>文件名：</b>ListElement.java</p>
@@ -23,7 +22,7 @@ import pres.auxiliary.work.selenium.element.copy.AbstractBy.ElementInformation;
  * @since JDK 12
  *
  */
-public class ListBy extends AbstractBy {
+public abstract class ListBy extends MultiBy {
 	/**
 	 * 用于存储获取到的列表一列元素，key为列表名称，value为列表元素
 	 */
@@ -35,6 +34,23 @@ public class ListBy extends AbstractBy {
 	 */
 	public ListBy(AbstractBrower brower) {
 		super(brower);
+	}
+
+	/**
+	 * 构造对象并存储浏览器的{@link WebDriver}对象
+	 * 
+	 * @param driver 浏览器的{@link WebDriver}对象
+	 */
+	public ListBy(WebDriver driver) {
+		super(driver);
+	}
+	
+	/**
+	 * 通过{@link AbstractBy}对象对类进行构造，将传入的AbstractBy类中的关键参数设置到当前类对象中
+	 * @param brower {@link AbstractBy}对象
+	 */
+	public ListBy(AbstractBy by) {
+		super(by);
 	}
 	
 	/**

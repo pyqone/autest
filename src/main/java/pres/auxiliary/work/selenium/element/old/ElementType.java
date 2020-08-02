@@ -1,4 +1,4 @@
-package pres.auxiliary.work.selenium.element.copy;
+package pres.auxiliary.work.selenium.element.old;
 
 /**
  * <p><b>文件名：</b>EelementType.java</p>

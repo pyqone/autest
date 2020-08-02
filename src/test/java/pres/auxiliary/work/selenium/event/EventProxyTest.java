@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.CommonBy;
+import pres.auxiliary.work.selenium.element.old.CommonBy;
 import pres.auxiliary.work.selenium.event.EventProxy.ActionType;
 
 public class EventProxyTest {

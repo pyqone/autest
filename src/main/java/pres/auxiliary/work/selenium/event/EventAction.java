@@ -1,6 +1,6 @@
 package pres.auxiliary.work.selenium.event;
 
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.old.Element;
 
 /**
  * <p><b>文件名：</b>EventAction.java</p>
