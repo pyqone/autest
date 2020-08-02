@@ -19,8 +19,8 @@ autest的目标是使用代码来简化繁杂的测试工作，让测试工作�
 ### 1 测试用例编写工具
 该工具是通过预先写好的测试用例文件模板，调用其中添加内容的方法，对测试用例进行编写，之后再生成一个Excel文件，以方便测试用例阅读与上传。当然，看到这许多人就有疑问了，既然最后要生成一个Excel文件，那编写测试用例直接在Excel文档里写就好，何必还要编写代码，然后再生成呢？的确，在office的Excel软件中，其可视化界面确实要比写代码要强很多，但Excel软件也存在上下滚动不方便的缺点，并且，大家也清楚，很多测试用例都可以复用，在编写过程中难免会有大量的复制和替换的工作，对于少量的用例还好，一旦用例较多时，复制用例后，就容易遗漏需要替换文本的用例，或者多复制用例，导致编写出错。为解决这一类的问题，所以我封装了一个测试用例编写工具，将测试用例的编写工作，由Excel向eclipse（不要问我为什么不用IDEA，有伤T_T）转移，当然，缺点就是可视化差了一些。
 测试用例工具暂时做了Jira用例模板，故此处以Jira为例，讲解工具的使用，在最后，再讲解测试用例模板的扩展。
-
 #### 1.1 测试用例文件创建
+##### 1.1.1 测试用例模板配置文件创建
 在编写测试用例时，我们需要有一个存放测试用例的文件，之后在文件中编写测试用例，程序中也不例外，首先我们需要创建测试用例模板文件，该模板文件可以是自行创建，也可以是根据配置文件中编写的内容，通过程序进行创建，个人建议选择后者，因为我们创建的配置文件模板是符合我们在类中定义的字段位置的，若是通过自行创建的模板，此时可能遗漏字段或字段位置有误，导致程序失效。下面将介绍如何使用配置文件来创建测试用例模板。
 首先，配置文件采用xml的文件形式，其内容主要是对测试用例模板文件中一些基本的参数进行配置，例如行宽、字段名称、是否居中等等，其结构如下：
 ```xml
@@ -81,13 +81,59 @@ autest的目标是使用代码来简化繁杂的测试工作，让测试工作�
 |end_row|需要读取的结束行，该属性必须存在|
 
 ***注意：file标签所有属性完全参考 pres.auxiliary.work.selenium.datadriven.ListFileRead 类的内容，支持的文件及参数介绍可查询该类的api***
+
+##### 1.1.2 通过配置文件并创建测试用例模板文件
+当我们编辑完配置文件后，调用CreateCaseFile中的create()方法，即可完成测试用例模板文件的创建，具体方法如下（假设xml文件放在ConfigurationFiles/jira测试用例导入模板.xml路径下）：
+
 ```java
 @Test
 public void createCaseTemplate() {
-
+    //模板文件类对象，指向模板文件生成的路径
+    File tempFile = new File("Result/测试用例.xlsx");
+    //配置文件类对象，指向xml配置文件的存放路径
+    File conFile = new File("ConfigurationFiles/jira测试用例导入模板.xml");
+    
+    //构造对象
+    CreateCaseFile ccf = new CreateCaseFile(conFile, tempFile);
+    //创建文件
+    ccf.create();
 }
 ```
+在类中，有提供一种文件的保护机制，在多次生成同一个文件时，是否允许直接覆盖文件，默认是不允许直接覆盖文件，及多次创建文件名相同的文件时，程序将抛出异常，从而保护之前已创建的文件，如有需要，可通过方法将其设置为允许覆盖。例如以下两个测试方法：
+```java
+@Test
+public void createCaseTemplate() {
+    //模板文件类对象，指向模板文件生成的路径
+    File tempFile = new File("Result/测试用例.xlsx");
+    //配置文件类对象，指向xml配置文件的存放路径
+    File conFile = new File("ConfigurationFiles/jira测试用例导入模板.xml");
+    
+    //构造对象
+    CreateCaseFile ccf = new CreateCaseFile(conFile, tempFile);
+    
+    //设置允许覆盖文件
+	temp.setCoverFile(true);
+	temp.create();
+	temp.create();
+}
+
+@Test(expectedExceptions = IncorrectFileException.class)//捕捉IncorrectFileException异常
+public void createCaseTemplate() {
+    //模板文件类对象，指向模板文件生成的路径
+    File tempFile = new File("Result/测试用例.xlsx");
+    //配置文件类对象，指向xml配置文件的存放路径
+    File conFile = new File("ConfigurationFiles/jira测试用例导入模板.xml");
+    
+    //构造对象
+    CreateCaseFile ccf = new CreateCaseFile(conFile, tempFile);
+    
+    //设置不允许覆盖
+	temp.setCoverFile(false);
+	temp.create();
+	temp.create();//此时再次调用 创建方法时将抛出IncorrectFileException异常
+}
 ```
+到此，我们查看生成测试用例文件的路径中，已经存在我们测试用例模板文件，可继续进行下一步操作。
 #### 1.2 测试用例编写
 #### 1.3 测试用例模板
 ##### 1.3.1 测试用例模板使用
