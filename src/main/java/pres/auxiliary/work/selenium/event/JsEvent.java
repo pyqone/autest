@@ -2,6 +2,7 @@ package pres.auxiliary.work.selenium.event;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.openqa.selenium.By;
@@ -13,8 +14,8 @@ import org.openqa.selenium.WebElement;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import pres.auxiliary.work.selenium.element.old.Element;
-import pres.auxiliary.work.selenium.element.old.ElementType;
+import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.ElementType;
 
 /**
  * <p>	
@@ -145,7 +146,10 @@ public class JsEvent extends AbstractEvent {
 		// 获取新添加元素的xpath
 		String xpath = addElement(element, elementName);
 		// 查找新添加的元素（由于是新添加的元素，肯定能查找到，故无需编写等待）
-		Element newElement = new Element(driver, ElementType.COMMON_ELEMENT, By.xpath(xpath), "TeamElement");
+		Element newElement = new Element(driver, "TeamElement", ElementType.COMMON_ELEMENT);
+		List<By> byList = new ArrayList<>();
+		byList.add(By.xpath(xpath));
+		newElement.setByList(byList);
 
 		// 获取元素的所有属性
 		JSONArray attributes = elementJson.getJSONArray("attributes");

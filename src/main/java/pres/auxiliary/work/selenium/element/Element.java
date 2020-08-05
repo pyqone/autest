@@ -3,8 +3,10 @@ package pres.auxiliary.work.selenium.element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -26,7 +28,12 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
  * @since JDK 8
  *
  */
-public class Element {
+public class Element implements Cloneable {
+	/**
+	 * 用于对文本进行分隔
+	 */
+	private final String SPILT_SIGN = ",";
+	
 	/**
 	 * 存储元素
 	 */
@@ -46,7 +53,7 @@ public class Element {
 	/**
 	 * 存储获取需要获取的元素下标
 	 */
-	private int elementIndex;
+	private String elementIndex = "0";
 	
 	/**
 	 * 存储WebDriver对象，以查找相应元素
@@ -66,6 +73,11 @@ public class Element {
 	private ElementType elementType;
 	
 	/**
+	 * 表示当前通过有效By对象能获取到的元素个数
+	 */
+	private int size = -1;
+	
+	/**
 	 * 用于存储元素查找等待时间，默认3秒
 	 */
 	private long waitTime = 3;
@@ -76,9 +88,9 @@ public class Element {
 	private boolean isReplaceFind = false;
 	
 	/**
-	 * 用于表示当前通过By对象能获取到的元素总个数
+	 * 控制是否允许在随机时出现第一个元素
 	 */
-	private int size = -1;
+	private boolean isRandomZero = true;
 	
 	/**
 	 * TODO 确定构造后添加注释
@@ -87,6 +99,17 @@ public class Element {
 		super();
 		//存储Driver对象
 		this.driver = brower.getDriver();
+		this.name = name;
+		this.elementType = elementType;
+	}
+	
+	/**
+	 * TODO 确定构造后添加注释
+	 */
+	public Element(WebDriver driver, String name, ElementType elementType) {
+		super();
+		//存储Driver对象
+		this.driver = driver;
 		this.name = name;
 		this.elementType = elementType;
 	}
@@ -101,10 +124,9 @@ public class Element {
 		
 		//若element为null，则对元素进行一次查找
 		if (element == null || isReplaceFind || isPageRefresh()) {
-			findElemen();
+			findElement();
 		}
 		
-		//返回相应的内容
 		return element;
 	}
 	
@@ -168,20 +190,33 @@ public class Element {
 	}
 
 	/**
-	 * 用于返回元素在列表中的下标
-	 * @return 元素下标
-	 */
-	public int getElementIndex() {
-		return elementIndex;
-	}
-
-	/**
-	 * 用于设置元素的下标
+	 * 用于以数字方式设置元素的下标
 	 * @param elementIndex 元素下标
 	 */
 	public void setElementIndex(int elementIndex) {
-		this.elementIndex = elementIndex;
+		this.elementIndex = String.valueOf(elementIndex);
 		isReplaceFind = true;
+	}
+	
+	/**
+	 * 用于以文本方式设置元素下标，该下标用于以文本的形式查找元素
+	 * @param elementIndex 元素下标
+	 */
+	public void setElementIndex(String... elementIndexs) {
+		//拼接词语
+		this.elementIndex = "";
+		for (String elementIndex : elementIndexs) {
+			this.elementIndex += elementIndex;
+		}
+		isReplaceFind = true;
+	}
+
+	/**
+	 * 用于设置是否允许随机出元素组的第一个元素，默认为允许
+	 * @param isRandomZero 是否允许随机第一个元素
+	 */
+	public void setRandomZero(boolean isRandomZero) {
+		this.isRandomZero = isRandomZero;
 	}
 
 	/**
@@ -261,7 +296,7 @@ public class Element {
 	/**
 	 * 用于根据By对象集合，查找有效的By对象，并根据有效的By对象，查找相应的元素集合
 	 */
-	public void findElemen() {
+	public void findElement() {
 		//遍历By集合，查找有效的By对象，若所有的By对象均无法查到页面元素，则直接抛出超时异常
 		for (int i = 0; i < byList.size(); i++) {
 			//查找元素，若抛出异常，则移除该元素，保证有效的By对象在第一个元素上
@@ -284,26 +319,36 @@ public class Element {
 		}
 		
 		//获取元素
-		List<WebElement> elementList;
+		List<WebElement> elementList = getWebElementList();
+		
+		//记录元素个数
+		size = elementList.size();
+		
+		//转换下标，若下标能转换成数字，则以数字方式获取下标，若不能则以文本的形式转换下标，根据下标返回元素
+		try {
+			element = elementList.get(getIndex(elementList, Integer.valueOf(elementIndex)));
+		} catch (NumberFormatException e) {
+			element = elementList.get(getIndex(elementList, elementIndex));
+		}
+	}
+	
+	private List<WebElement> getWebElementList() {
 		//根据正确的By对象，通过Webdriver，查找到WebElement对象，存储
 		//由于在遍历byList时，无效的By对象被剔除，查找到By对象时会返回，故此时可直接使用第一个元素为有效的By对象
 		switch (elementType) {
 		case COMMON_ELEMENT:
 		case DATA_LIST_ELEMENT:
-		case SELECT_DATAS_ELEMENT:
-			elementList = driver.findElements(byList.get(0));
-			break;
-		case SELECT_OPTION_ELEMENT:
-			elementList = new Select(driver.findElement(byList.get(0))).getOptions();
-			break;
+			return driver.findElements(byList.get(0));
+		case SELECT_ELEMENT:
+			//判断第一个元素的TagName是否为select，若是select，则按照下拉选项进行获取
+			if (driver.findElement(byList.get(0)).getTagName().equals("select")) {
+				return new Select(driver.findElement(byList.get(0))).getOptions();
+			} else {
+				return driver.findElements(byList.get(0));
+			}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + elementType);
 		}
-		
-		//记录获取的元素个数
-		size = elementList.size();
-		//获取相应下标的元素
-		element = elementList.get(elementIndex);
 	}
 
 	/**
@@ -360,7 +405,7 @@ public class Element {
 	private WebElement findIframeElement() {
 		//若elementList为null或其内无元素，则对元素进行一次查找
 		if (element == null) {
-			findElemen();
+			findElement();
 		}
 		
 		//返回相应的内容
@@ -395,21 +440,79 @@ public class Element {
 		}
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Element other = (Element) obj;
-		if (element == null) {
-			if (other.element != null)
-				return false;
-		} else if (!element.equals(other.element))
-			return false;
-		return true;
+	/**
+	 * 由于方法允许传入负数和特殊数字0为下标，并且下标的序号由1开始，
+	 * 故可通过该方法对下标的含义进行转义，得到java能识别的下标
+	 * @param index 传入的下标
+	 * @param randomZero 标记是否可以随机出数字0
+	 * @return 可识别的下标
+	 * @throws NoSuchElementException 当元素无法查找到时抛出的异常
+	 */
+	int getIndex(List<WebElement> elementList, int index) {
+		//存储传入的元素组长度
+		int size = elementList.size();
+		
+		//若当前元素组中只有一个元素，则直接返回0
+		if (size == 1) {
+			return 0;
+		}
+		
+		//判断元素下标是否超出范围，由于可以传入负数，故需要使用绝对值
+		if (Math.abs(index) > size) {
+			throw new NoSuchElementException("指定的选项值大于选项的最大值。选项总个数：" + size + "，指定项：" + index);
+		}
+		
+		//判断index的值，若大于0，则从前向后遍历，若小于0，则从后往前遍历，若等于0，则随机输入
+		if (index > 0) {
+			//选择元素，正数的选项值从1开始，故需要减小1
+			return index - 1;
+		} else if (index < 0) {
+			//选择元素，由于index为负数，则长度加上选项值即可得到需要选择的选项
+			return size + index;
+		} else {
+			//为0，则进行随机选择，但需要判断是否允许随机出0（第一个元素）
+			int newindex = 0;
+			do {
+				newindex = new Random().nextInt(size);
+			} while(newindex == 0 && !isRandomZero);
+			
+			return newindex;
+		}
 	}
 	
+	/**
+	 * 以文本形式查找元素，返回文本对应元素的下标
+	 * @param elementList 元素组
+	 * @param text 需要查找的文本
+	 * @return 文本对应元素的下标
+	 */
+	int getIndex(List<WebElement> elementList, String text) {
+		//切分文本
+		String[] keys = text.split(SPILT_SIGN);
+		//遍历元素组，若存在文本为所传文本的元素，则进行返回
+		for (int index = 0; index < getSize(); index++) {
+			//遍历词语，将词语与元素的文本一一比对
+			for(String key : keys) {
+				//若存在不包含在元素文本的词语，则结束当前循环，查找下一个
+				if (elementList.get(index).getText().indexOf(key) < 0) {
+					break;
+				}
+				
+				//若所有的词语均包含在文本中，则直接返回当前下标
+				return index;
+			}
+		}
+		
+		//若所有词语均不包含文本，则抛出异常
+		throw new NoSuchElementException("无法找到指定文本的元素：" + text);
+	}
+	
+	@Override
+	public Element clone() {
+		try {
+			return (Element)super.clone();
+		} catch (CloneNotSupportedException e) {
+			return this;
+		}
+	}
 }

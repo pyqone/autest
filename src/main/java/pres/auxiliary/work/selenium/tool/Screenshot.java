@@ -2,8 +2,6 @@ package pres.auxiliary.work.selenium.tool;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
@@ -21,39 +19,19 @@ import org.openqa.selenium.WebDriverException;
  */
 public class Screenshot {
 	// 用于存储截图保存的路径
-	private StringBuilder savePath = new StringBuilder("C:\\AutoTest\\Screenshot\\");
-	// 用于存储截图的文件名称
-	private StringBuilder imageName = new StringBuilder("Image");
+	private File savePathFolder = new File("Screenshot/");
 	// 用于存储指定的WebDriver对象
 	private WebDriver driver;
 	// 用于存储截图的时间
 	private long time = 500;
 
 	/**
-	 * 用于按默认的方式创建截图保存位置及截图文件名称<br>
-	 * 默认位置为：C:/AutoTest/Screenshot/<br>
-	 * 默认文件名为（不带后缀）：Image
+	 * 用于按默认的方式创建截图，默认截图保存位置为项目目录下的“Screenshot”文件夹<br>
 	 * 
-	 * @param driver
-	 *            WebDriver对象
+	 * @param driver {@link WebDriver}对象
 	 */
 	public Screenshot(WebDriver driver) {
 		setDriver(driver);
-	}
-	
-	/**
-	 * 构造对象，<br>
-	 * 默认位置为：C:/AutoTest/Screenshot/<br>
-	 * 默认文件名为（不带后缀）：Image<br>
-	 * <b>注意：</b>该方法只构建对象，由于未传入WebDriver对象，故不能直接用于截图
-	 * 
-	 * @param driver
-	 *            WebDriver对象
-	 * @throws IncorrectDirectoryException
-	 *             传入路径不合法时抛出的异常
-	 */
-	public Screenshot(String savePath) {
-		setSavePath(savePath);
 	}
 
 	/**
@@ -69,71 +47,26 @@ public class Screenshot {
 	 * @throws IncorrectDirectoryException
 	 *             传入路径不合法时抛出的异常
 	 */
-	public Screenshot(WebDriver driver, String savePath) {
+	public Screenshot(WebDriver driver, File savePathFolder) {
 		setDriver(driver);
-		setSavePath(savePath);
+		setSavePathFolder(savePathFolder);
 	}
-
-	/**
-	 * 该方法用于返回截图的名称（不带后缀）
-	 * 
-	 * @return 返回截图的名称（不带后缀）
-	 */
-	public String getImageName() {
-		return imageName.toString();
-	}
-
-	/**
-	 * 该方法用于设置截图的文件名称，若传入的文件名不符合windows下文件的命名规则， 则抛出IncorrectDirectoryException异常
-	 * 
-	 * @param imageName
-	 *            指定的截图名称
-	 * @throws IncorrectDirectoryException
-	 *             文件命名不正确时抛出的异常
-	 */
-	public void setImageName(String imageName) {
-		// 判断传入的截图名称是否符合windows下的命名规则，若不符合，则抛出IncorrectDirectoryException异常
-		if (!MakeDirectory.isFileName(imageName)) {
-			throw new IncorrectDirectoryException("不合理的文件名称，文件名称：" + imageName);
-		}
-
-		// 通过判断后，则清空imageName存储的信息并将新的文件名称放入imageName种属性中
-		this.imageName.delete(0, this.imageName.length());
-		this.imageName.append(new SimpleDateFormat("yyyyMMddHHmmss_").format(new Date()));
-		this.imageName.append(imageName);
-	}
-
+	
 	/**
 	 * 该方法用于返回截图保存的路径
 	 * 
 	 * @return 返回截图保存的路径
 	 */
-	public String getSavePath() {
-		return savePath.toString();
+	public File getSavePathFolder() {
+		return savePathFolder;
 	}
 
 	/**
-	 * 该方法用于设置截图保存的位置，可传入相对路径，也可传入绝对路径，
-	 * 若传入的路径不符合windows下文件夹名称的命名规则时，则抛出IncorrectDirectoryException异常
-	 * 
-	 * @param savePath
-	 *            传入的截图保存路径
-	 * @throws IncorrectDirectoryException
-	 *             传入路径不合法时抛出的异常
+	 * 该方法用于设置截图文件保存路径
+	 * @param savePathFolder
 	 */
-	public void setSavePath(String savePath) {
-		// 将传入的路径封装成StringBuilder，以便格式化
-		StringBuilder sb = new StringBuilder(savePath);
-		// 格式化传入的路径
-		sb = MakeDirectory.formatPath(sb);
-
-		// 判断传入的路径是否符合windows下对文件夹名称命名的规则，如果不符合则抛出IncorrectDirectoryException异常
-		if (!MakeDirectory.isPath(sb.toString())) {
-			throw new IncorrectDirectoryException("不合理的文件夹路径，文件路径：" + sb.toString());
-		}
-
-		// 将通过判断的sb赋给savePath属性
-		this.savePath = sb;
+	public void setSavePathFolder(File savePathFolder) {
+		this.savePathFolder = savePathFolder;
 	}
 
 	/**
@@ -181,10 +114,8 @@ public class Screenshot {
 	 * @see #creatImage()
 	 */
 	public synchronized File creatImage(String imageName) throws WebDriverException, IOException {
-		// 将名称放入属性中
-		setImageName(imageName);
 		// 调用无参方法
-		return saveScreenshot();
+		return saveScreenshot(imageName);
 	}
 	
 	/**
@@ -217,24 +148,14 @@ public class Screenshot {
 	 * @throws WebDriverException
 	 *             WebDriver引用错误时抛出的异常
 	 */
-	private File saveScreenshot() throws WebDriverException, IOException {
+	private File saveScreenshot(String fileName) throws WebDriverException, IOException {
 		// 判断driver对象是否为空，
 		if (driver == null) {
 			throw new NullPointerException("无效的WebDriver对象");
 		}
-
-		// 判断截图保存路径和截图文件名是否存在，若不存在则抛出UndefinedDirectoryException异常
-		if ("".equals(savePath.toString()) || "".equals(imageName.toString())) {
-			throw new UndefinedDirectoryException(
-					"未定义文件路径或者文件名，文件路径:" + savePath.toString() + "，文件名：" + imageName.toString());
-		}
 				
 		// 将savePath中保存的路径作为截图保存路径创建文件夹
-		File f = new File(savePath.toString());
-		f.mkdirs();
-
-		// 在imageName的后面加上当前时间以及后缀名
-		imageName.append(".png");
+		savePathFolder.mkdirs();
 
 		// 判断是否有设置截图等待时间，若设置了，则加上等待时间
 		if (time != 0) {
@@ -244,19 +165,13 @@ public class Screenshot {
 				e.printStackTrace();
 			}
 		}
-
-		f = new File(f + "\\" + imageName.toString());
+		
+		File imageFile = new File(savePathFolder + fileName + ".png");
 
 		// 截图，并将得到的截图转移到指定的目录下
 		// 由于通过selenium的getScreenshotAs()得到的截图会不知道存储在哪，故需要通过文件流的方式将截图复制到指定的文件夹下
-		FileUtils.copyFile(((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE), f);
+		FileUtils.copyFile(((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE), imageFile);
 
-		return f;
+		return imageFile;
 	}
-
-	@Override
-	public String toString() {
-		return "savePath=" + savePath + "\r\nimageName=" + imageName + "\r\ndriver=" + driver;
-	}
-
 }

@@ -13,7 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import pres.auxiliary.tool.randomstring.RandomString;
 import pres.auxiliary.tool.randomstring.StringMode;
-import pres.auxiliary.work.selenium.element.old.Element;
+import pres.auxiliary.work.selenium.element.Element;
 import pres.auxiliary.work.selenium.tool.RecognitionImage;
 import pres.auxiliary.work.selenium.tool.Screenshot;
 
@@ -137,7 +137,7 @@ public class TextEvent extends AbstractEvent {
 		// 判断验证码信息是否加载，加载后，获取其Rectang对象
 		Rectangle r = codeImageElement.getWebElement().getRect();
 		// 构造截图对象，并创建截图
-		Screenshot sc = new Screenshot(driver, "Temp");
+		Screenshot sc = new Screenshot(driver, new File("Temp"));
 		File image = null;
 		try {
 			image = sc.creatImage("code");

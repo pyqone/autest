@@ -1,4 +1,4 @@
-package pres.auxiliary.work.selenium.element.old;
+package pres.auxiliary.work.selenium.element;
 
 /**
  * <p><b>文件名：</b>UnrecognizableLocationModeException.java</p>

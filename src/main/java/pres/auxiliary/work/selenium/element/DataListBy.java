@@ -1,17 +1,12 @@
 package pres.auxiliary.work.selenium.element;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.xml.ByType;
 
 /**
  * <p><b>文件名：</b>DataListElement.java</p>
@@ -24,40 +19,10 @@ import pres.auxiliary.work.selenium.xml.ByType;
  * <p><b>修改时间：</b>2020年4月29日下午6:18:46</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 8
  */
 public class DataListBy extends ListBy {
-	/**
-	 * 存储获取到的元素列表中最多元素列的元素个数
-	 */
-	private int maxColumnSize = -1;
-	/**
-	 * 存储获取到的元素列表中最多元素列的名称
-	 */
-	private ArrayList<String> maxColumnNameList = new ArrayList<>();
-	/**
-	 * 存储获取到的元素列表中最少元素列的元素个数
-	 */
-	private int minColumnSize = Integer.MAX_VALUE;
-	/**
-	 * 存储获取到的元素列表中最少元素列的名称
-	 */
-	private ArrayList<String> minColumnNameList = new ArrayList<>();
-	
-	/**
-	 * 用于判断列表的第一行元素是否为标题元素
-	 */
-	boolean isFristRowTitle = false;
-	
-	/**
-	 * 用于存储元素列累计的个数
-	 */
-//	private HashMap<String, Integer> elementSizeMap = new HashMap<String, Integer>(16);
-	
-	/**
-	 * 用于存储是否开始累加列表元素的个数
-	 */
-//	private boolean isStartAddSize = false;
+	//TODO 添加获取最大列方法
 	
 	/**
 	 * 通过浏览器对象{@link AbstractBrower}进行构造
@@ -68,62 +33,36 @@ public class DataListBy extends ListBy {
 	}
 
 	/**
-	 * 用于设置首行元素是否为标题元素
-	 * @param isFristRowTitle 首行是否为标题元素
-	 */
-	public void setFristRowTitle(boolean isFristRowTitle) {
-		this.isFristRowTitle = isFristRowTitle;
-	}
-
-	/**
-	 * 用于设置是否开始计算元素个数
-	 * @param isStartAddSize 是否开始计算元素个数
-	 */
-	/*
-	public void setStartAddSize(boolean isStartAddSize) {
-		this.isStartAddSize = isStartAddSize;
-	}
-	*/
-	
-	/**
 	 * 返回元素最多列的元素个数
 	 * @return 元素最多列的元素个数
 	 */
-	public int getMaxColumnSize() {
-		return maxColumnSize;
-	}
+//	public int getMaxColumnSize() {
+//		return maxColumnSize;
+//	}
 
 	/**
 	 * 返回元素最多列的列名称
 	 * @return 元素最多列的列名称
 	 */
-	public List<String> getMaxColumnName() {
-		return maxColumnNameList;
-	}
+//	public List<String> getMaxColumnName() {
+//		return maxColumnNameList;
+//	}
 
 	/**
 	 * 返回元素最少列的元素个数
 	 * @return 元素最少列的元素个数
 	 */
-	public int getMinColumnSize() {
-		return minColumnSize;
-	}
+//	public int getMinColumnSize() {
+//		return minColumnSize;
+//	}
 
 	/**
 	 * 返回元素最少列的列名称
 	 * @return 元素最少列的列名称
 	 */
-	public List<String> getMinColumnName() {
-		return minColumnNameList;
-	}
-	
-	@Override
-	void add(ElementInformation elementInformation) {
-		//重写父类的add方法，使元素能进行极值的统计
-		super.add(elementInformation);
-		//判断当前获取到的元素是否大于当前存储的元素的最大值或小于当前存储的最小值，若是，则将最大值或最小值进行替换
-		findLimitColumn(elementInformation);
-	}
+//	public List<String> getMinColumnName() {
+//		return minColumnNameList;
+//	}
 	
 	/**
 	 * 用于返回列表多个指定的元素，传入的下标可参见{@link #getWebElement(String, int)}
@@ -134,82 +73,95 @@ public class DataListBy extends ListBy {
 	 * @throws NoSuchElementException 当未对name列进行获取数据或index的绝对值大于列表最大值时抛出的异常
 	 * @see #getWebElement(String, int)
 	 */
-	public List<Element> getElements(String name, int... indexs) {
-		// 存储所有获取到的事件
-		ArrayList<Element> events = new ArrayList<>();
-
-		// 循环，解析所有的下标，并调用getEvent()方法，存储至events
-		for (int index : indexs) {
-			events.add(getElement(name, index));
+//	public List<Element> getElements(String name, int... indexs) {
+//		// 存储所有获取到的事件
+//		ArrayList<Element> events = new ArrayList<>();
+//
+//		// 循环，解析所有的下标，并调用getEvent()方法，存储至events
+//		for (int index : indexs) {
+//			events.add(getElement(name, index));
+//		}
+//
+//		return events;
+//	}
+	
+	/**
+	 * 根据元素列名称与外链词语，查找并返回该列所有的元素对象，。注意，调用该方法时，若未对元素
+	 * 进行查找，则会先查找一次元素，此时，若元素无法找到，则可能抛出异常
+	 * @param name 元素名称
+	 * @param linkKey 外链的词语，若不存在，则不传入
+	 * @return 指定列中所有的元素对象
+	 * @throws NoSuchElementException 当未对name列进行获取数据或index的绝对值大于列表最大值时抛出的异常
+	 */
+	public List<Element> getAllElement(String name, String...linkKey) {
+		//根据元素名称和外链词语，获取元素信息，用于获取元素
+		ElementInformation elementInfo = nameToElementInformation(name, Arrays.asList(linkKey));
+		
+		//若元素不存在，则抛出异常
+		if (elementInfo == null) {
+			throw new NoSuchElementException("不存在的元素或外链词语不正确：" + name + "=" + Arrays.asList(linkKey));
 		}
-
-		return events;
+		
+		//获取名称对应的元素
+		Element element = elementMap.get(elementInfo);
+		//获取元素能查找到的个数
+		int size = element.getSize();
+		//判断获取到的元素其长度是否为-1，若是-1，则表示未对元素进行获取，需要先对元素进行一次获取，再重新获取元素个数
+		if (element.getSize() == -1) {
+			element.getWebElement();
+			size = element.getSize();
+		}
+		
+		// 存储克隆的元素
+		ArrayList<Element> elementList = new ArrayList<>();
+		//循环，克隆并存储元素
+		for (int index = 0; index < size; index++) {
+			Element cloneElement = element.clone();
+			//下标从1开始，0为随机
+			cloneElement.setElementIndex(index + 1);
+			elementList.add(cloneElement);
+		}
+		
+		return elementList;
 	}
 	
 	/**
-	 * 用于返回列表中指定随机个数的元素
+	 * 用于根据列名称，查找并返回相应列的第一个元素
+	 * @param name 元素名称
+	 * @param linkKey 外链的词语，若不存在，则不传入
+	 * @return 对应列指定的元素
+	 */
+	public Element getElement(String name, String...linkKey) {
+		return getElement(name, 0, linkKey);
+	}
+
+	/**
+	 * 该方法用于根据列名称，查找到相应的列，并返回与传入下标对应的元素。下标支持从后向前获取，传入的下标
+	 * 与元素实际所在位置一致，当传入0时，则表示随机获取一个元素，如：<br>
+	 * {@code getWebElement("姓名", 1)}表示获取名称为“姓名”的列中的第1个元素<br>
+	 * {@code getWebElement("姓名", 0)}表示获取名称为“姓名”的列中在长度范围内随机一个元素<br>
+	 * {@code getWebElement("//*[@id='name']", -1)}表示获取“//*[@id='name']”对应列中的倒数第1个元素<br>
+	 * 注意，若使用了外链xml词语，则需要将词语写入到传参中，否则无法获取到相应的元素
 	 * 
 	 * @param name 列名称
-	 * @param length 需要返回列表事件的个数
-	 * @return 列表事件组
+	 * @param index 元素下标（即列表中对应的某一个元素）
+	 * @param linkKey 外链的词语，若不存在，则不传入
+	 * @return 对应列指定的元素
 	 */
-	public List<Element> getRandomElements(String name, int length) {
+	public Element getElement(String name, int index, String...linkKey) {
 		//获取元素信息，并判断元素是否存在，不存在则抛出异常
-		ElementInformation element = nameToElementInformation(name);
-		if (element == null) {
-			throw new NoSuchElementException("不存在的定位方式：" + name);
+		ElementInformation elementInfo = nameToElementInformation(name, Arrays.asList(linkKey));
+		if (elementInfo == null) {
+			throw new NoSuchElementException("不存在的元素：" + name);
 		}
-				
-		// 判断传入的长度是否大于等于当前
-		if (length >= elementMap.get(element).size()) {
-			return getAllElement(name);
-		}
-
-		// 存储通过随机得到的数字
-		ArrayList<Integer> indexsList = new ArrayList<Integer>();
-		int randomLength = elementMap.get(element).size() + 1;
-		// 循环，随机获取下标数字
-		for (int i = 0; i < length; i++) {
-			int randomIndex = 0;
-			// 循环，直到生成的随机数不在indexs中为止
-			while (indexsList.contains(randomIndex = new Random().nextInt(randomLength))) {
-			}
-			indexsList.add(randomIndex);
-		}
-
-		// 将indexsList转换成int[]
-		int[] indexs = new int[indexsList.size()];
-		for (int i = 0; i < indexsList.size(); i++) {
-			indexs[i] = indexsList.get(i);
-		}
-
-		return getElements(name, indexs);
+		
+		Element element = elementMap.get(elementInfo);
+		element.setElementIndex(index);
+		return element;
 	}
 	
-	/**
-	 * 用于根据参数，求取elementMap中最多或最少列表的元素个数以及列表的名称
-	 * @param key 需要计算的最小值
-	 * @return 极值以及极值所在的列
-	 */
-	private void findLimitColumn(ElementInformation key) {
-		//获取指向的元素列表的元素个数
-		int size = elementMap.get(key).size();
-		
-		//根据参数，判断获取的列是否为最大值所在的列，并对极值做进一步判断
-		if (maxColumnSize < size) {
-			maxColumnNameList.clear();
-			maxColumnSize = size;
-			maxColumnNameList.add(key.name);
-		} else if (maxColumnSize == size) {
-			maxColumnNameList.add(key.name);
-		}
-		
-		if (minColumnSize > size) {
-			minColumnNameList.clear();
-			minColumnSize = size;
-			minColumnNameList.add(key.name);
-		} else if (minColumnSize == size) {
-			minColumnNameList.add(key.name);
-		}
+	@Override
+	ElementType setElementType() {
+		return ElementType.DATA_LIST_ELEMENT;
 	}
 }

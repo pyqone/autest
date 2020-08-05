@@ -2,7 +2,6 @@ package pres.auxiliary.work.selenium.element;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.old.UnrecognizableLocationModeException;
 import pres.auxiliary.work.selenium.xml.ByType;
 import pres.auxiliary.work.selenium.xml.ReadXml;
 
@@ -81,11 +79,16 @@ public abstract class AbstractBy {
 	 * @param xmlFile 存储元素定位方式的xml文件对象
 	 * @param isBreakRootFrame 是否需要将窗体切回到顶层
 	 */
-	public void setXmlFile(File xmlFile) {
+	public void setXmlFile(File xmlFile, boolean isBreakRootFrame) {
 		if (xml == null) {
 			xml = new ReadXml(xmlFile);
 		} else {
 			xml.setXmlPath(xmlFile);
+		}
+		
+		//若需要切回顶层，则切换到顶层窗体
+		if (isBreakRootFrame) {
+			brower.getDriver().switchTo().defaultContent();
 		}
 	}
 	
@@ -298,7 +301,7 @@ public abstract class AbstractBy {
 			//设置父层元素的获取方式及等待时间
 			iframeElement.setWaitTime(getWaitTime(iframeName));
 			iframeElement.setByList(getXmlElementBy(iframeName, null));
-			iframeElement.setElementIndex(0);
+			iframeElement.setElementIndex(1);
 			
 			//设置父层
 			childElement.setIframeElement(iframeElement);
@@ -360,9 +363,9 @@ public abstract class AbstractBy {
 		 * @param linkKey 需要判断的外链xml文件词语
 		 * @return 是否与类中存储的词语一致
 		 */
-		public boolean linkKeyEquals(String...linkKey) {
+		public boolean linkKeyEquals(List<String> linkKey) {
 			//判断传入的linkKey是否为null，或未传入的linkKey为空，为空，则直接判断linkKeyList的状态
-			if (linkKey == null) {
+			if (linkKey == null || linkKey.size() == 0) {
 				//若linkKeyList为null或为空，则可直接返回true；反之，则返回false
 				if (linkKeyList == null || linkKeyList.size() == 0) {
 					return true;
@@ -373,7 +376,7 @@ public abstract class AbstractBy {
 			} 
 			
 			//判断linkKey中的元素是否完全存在于linkKeyList，且两个集合的长度一致，若存在一项判断不符合，则返回false
-			if (linkKeyList.containsAll(Arrays.asList(linkKey)) && linkKeyList.size() == linkKey.length) {
+			if (linkKeyList.containsAll(linkKey) && linkKeyList.size() == linkKey.size()) {
 				return true;
 			} else {
 				return false;

@@ -4,13 +4,10 @@ import java.io.File;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.CommonBy;
-import pres.auxiliary.work.selenium.element.old.DataListBy;
 
 /**
  * <p><b>文件名：</b>CommonElementTest.java</p>
@@ -83,7 +80,7 @@ public class CommonByTest {
 	@Test
 	public void exceptAutoLocationElementTest() {
 		File xmlFile = new File("src/test/java/pres/auxiliary/work/selenium/element/测试文件.xml");
-		ce.setXmlFile(xmlFile, false);
+		ce.setXmlFile(xmlFile);
 		//先切主窗体
 		ce.switchFrame("主窗体");
 		//在获取元素前，会判断元素所在窗体，由于主窗体是爷爷辈窗体，获取元素前会切换工资发放详情窗体

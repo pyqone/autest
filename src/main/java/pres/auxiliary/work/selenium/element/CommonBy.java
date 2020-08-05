@@ -85,6 +85,7 @@ public class CommonBy extends AbstractBy {
 		Element element = new Element(brower, elementInformation.name, elementInformation.elementType);
 		element.setWaitTime(getWaitTime(elementInformation.name));
 		element.setByList(recognitionElement(elementInformation));
+		element.setElementIndex(1);
 		
 		//构造元素的父层元素，若元素不存在窗体结构，则不进行构造
 		if (elementInformation.iframeList != null && elementInformation.iframeList.size() != 0) {
