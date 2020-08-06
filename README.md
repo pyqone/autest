@@ -19,6 +19,7 @@ autest的目标是使用代码来简化繁杂的测试工作，让测试工作�
 ### 1 测试用例编写工具
 该工具是通过预先写好的测试用例文件模板，调用其中添加内容的方法，对测试用例进行编写，之后再生成一个Excel文件，以方便测试用例阅读与上传。当然，看到这许多人就有疑问了，既然最后要生成一个Excel文件，那编写测试用例直接在Excel文档里写就好，何必还要编写代码，然后再生成呢？的确，在office的Excel软件中，其可视化界面确实要比写代码要强很多，但Excel软件也存在上下滚动不方便的缺点，并且，大家也清楚，很多测试用例都可以复用，在编写过程中难免会有大量的复制和替换的工作，对于少量的用例还好，一旦用例较多时，复制用例后，就容易遗漏需要替换文本的用例，或者多复制用例，导致编写出错。为解决这一类的问题，所以我封装了一个测试用例编写工具，将测试用例的编写工作，由Excel向eclipse（不要问我为什么不用IDEA，有伤T_T）转移，当然，缺点就是可视化差了一些。
 测试用例工具暂时做了Jira用例模板，故此处以Jira为例，讲解工具的使用，在最后，再讲解测试用例模板的扩展。
+
 #### 1.1 测试用例文件创建
 ##### 1.1.1 测试用例模板配置文件创建
 在编写测试用例时，我们需要有一个存放测试用例的文件，之后在文件中编写测试用例，程序中也不例外，首先我们需要创建测试用例模板文件，该模板文件可以是自行创建，也可以是根据配置文件中编写的内容，通过程序进行创建，个人建议选择后者，因为我们创建的配置文件模板是符合我们在类中定义的字段位置的，若是通过自行创建的模板，此时可能遗漏字段或字段位置有误，导致程序失效。下面将介绍如何使用配置文件来创建测试用例模板。
@@ -135,6 +136,152 @@ public void createCaseTemplate() {
 ```
 到此，我们查看生成测试用例文件的路径中，已经存在我们测试用例模板文件，可继续进行下一步操作。
 #### 1.2 测试用例编写
+##### 1.2.1 基本用例编写类
+首先通过以下xml文件来生成一个测试用例文件模板：
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<templet>
+	<sheet name='测试用例' freeze='2'>
+		<column id='标题' name='Name' wide='30.88' align='left'/>
+		<column id='目的' name='Objective' wide='18.25' align='left'/>
+		<column id='前置条件' name='Precondition' wide='18.25' align='left' index='true'/>
+		<column id='步骤' name='Test Script (Step-by-Step) - Step' wide='45.75' align='left' row_text='1' index='true'/>
+		<column id='预期' name='Test Script (Step-by-Step) - Expected Result' wide='45.75' align='left' row_text='1' index='true'/>
+		<column id='模块' name='Folder' wide='22.00' align='center'/>
+		<column id='状态' name='Status' wide='10.00' align='center'/>
+		<column id='优先级' name='Priority' wide='10.00' align='center'/>
+		<column id='项目' name='Component' wide='10.00' align='center'/>
+		<column id='设计者' name='Owner' wide='10.00' align='center'/>
+		<column id='关键用例' name='关键用例' wide='10.00' align='center'/>
+		<column id='关联需求' name='Coverage (Issues)' wide='20.00' align='center'/>
+	
+		<datas id='状态'>
+			<data name='Approved' />
+			<data name='Draft' />
+			<data name='Deprecated' />
+		</datas>
+		
+		<datas id='优先级'>
+			<data name='High' />
+			<data name='Normal' />
+			<data name='Low' />
+		</datas>
+		<datas id='关键用例'>
+			<data name='是' />
+			<data name='否' />
+		</datas>
+</templet>
+```
+得到测试用例模板文件后，我们则需要通过用例模板文件对象和创建模板使用的xml文件对象来构造编写测试用例的类对象，这里我们需要调用包中的BasicTestCaseWrite类，框架选用TestNG：
+```java
+/**
+ * 写在方法外，便于在测试方法中调用
+ */
+BasicTestCaseWrite wtc;
+/**
+ * 配置文件类对象
+ */
+File conFile = new File("ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/jira测试用例导入模板.xml");
+/**
+ * 模板文件类对象
+ */
+File tempFile = new File("Result/测试用例.xlsx");
+
+@BeforeClass
+public void createTemplet() throws DocumentException, IOException {
+	CreateCaseFile temp = new CreateCaseFile(conFile, tempFile);
+	temp.setCoverFile(true);
+	temp.create();
+
+	wtc = new BasicTestCaseWrite(conFile, tempFile);
+}
+```
+
+得到了测试用例类对象后，我们则需要对需求中的内容设计测试用例。假设有一个需求，需要对创建账号界面进行测试，界面上有一个姓名文本框（非必填，无输入限制）和一个身份证文本框（必填，校验是否为正确的身份证号），那么，我们需要在测试用例中添加以下用例（简单编写）：
+* 对姓名文本框的测试用例：
+
+```
+标题:
+    通过不同的姓名创建账号
+目的:
+    验证创建账号界面各个控件输入是否有效
+前置条件:
+    1.已在创建账号界面
+    2.除姓名字段外，其他信息均正确填写
+步骤:
+    1.“姓名”文本框不输入任何信息，点击“保存”按钮
+    2.在“姓名”文本框中只输入空格，点击“保存”按钮
+    3.在“姓名”文本框中输入HTML代码，点击“保存”按钮
+预期:
+    1.账号创建成功
+    2.账号创建成功
+    3.账号创建成功，且HTML代码不会被转义
+模块:
+    /测试项目/账号管理/创建账号
+状态:
+    Approved
+优先级:
+    Normal
+项目:
+    
+设计者:
+    test
+关键用例:
+    否
+关联需求:
+    TEST-1
+```
+* 对身份证文本框的测试用例：
+
+```
+标题:
+    通过不同的身份证创建账号
+目的:
+    验证创建账号界面各个控件输入是否有效
+前置条件:
+    1.已在创建账号界面
+    2.除身份证字段外，其他信息均正确填写
+步骤:
+    1.“身份证”文本框不输入任何信息，点击“保存”按钮
+    2.在“身份证”文本框中只输入空格，点击“保存”按钮
+    3.输入15位的证件信息，点击“保存”按钮
+    4.输入18位的证件信息，点击“保存”按钮
+    5.输入末尾带“X”或“x”的证件信息，点击“保存”按钮
+    6.输入大于18位的数字，点击“保存”按钮
+    7.输入小于18位但大于15位的数字，点击“保存”按钮
+    8.输入小于15位的数字，点击“保存”按钮
+    9.输入不符合证件规则但长度符合规则的数字（如123456789012345678），点击“保存”按钮
+    10.输入非数字字符，点击“保存”按钮
+预期:
+    1.账号创建失败，并给出相应的提示
+    2.账号创建失败，并给出相应的提示
+    3.账号创建成功
+    4.账号创建成功
+    5.账号创建成功
+    6.账号创建失败，并给出相应的提示
+    7.账号创建失败，并给出相应的提示
+    8.账号创建失败，并给出相应的提示
+    9.账号创建失败，并给出相应的提示
+    10.账号创建失败，并给出相应的提示
+模块:
+    /测试项目/账号管理/创建账号
+状态:
+    Approved
+优先级:
+    Normal
+项目:
+    
+设计者:
+    test
+关键用例:
+    否
+关联需求:
+    TEST-1
+```
+设计好测试用例后，我们则需要将相应的字段，以及内容写入到代码中：
+
+##### 1.2.2 jira用例编写类的使用
+
 #### 1.3 测试用例模板
 ##### 1.3.1 测试用例模板使用
 ##### 1.3.2 测试用例模板扩展
