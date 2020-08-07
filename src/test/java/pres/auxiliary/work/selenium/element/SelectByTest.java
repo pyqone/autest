@@ -8,9 +8,9 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.old.CommonBy;
-import pres.auxiliary.work.selenium.element.old.Element;
-import pres.auxiliary.work.selenium.element.old.SelectBy;
+import pres.auxiliary.work.selenium.element.delect.old.CommonBy;
+import pres.auxiliary.work.selenium.element.delect.old.Element;
+import pres.auxiliary.work.selenium.element.delect.old.SelectBy;
 import pres.auxiliary.work.selenium.event.ClickEvent;
 
 /**

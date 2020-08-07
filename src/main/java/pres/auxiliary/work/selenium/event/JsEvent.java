@@ -14,8 +14,8 @@ import org.openqa.selenium.WebElement;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import pres.auxiliary.work.selenium.element.Element;
-import pres.auxiliary.work.selenium.element.ElementType;
+import pres.auxiliary.work.selenium.element.delect.Element;
+import pres.auxiliary.work.selenium.element.delect.ElementType;
 
 /**
  * <p>	

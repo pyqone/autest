@@ -1,10 +1,19 @@
 package pres.auxiliary.work.selenium.element;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
+import pres.auxiliary.work.selenium.xml.ByType;
 
 /**
  * <p><b>文件名：</b>SelectBy.java</p>
@@ -39,15 +48,29 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
  * @since JDK 12
  *
  */
-public class SelectBy extends ListBy {
+public class SelectBy extends MultiBy {
 	/**
-	 * 用于指向存储的元素名称
+	 * 用于存储获取下拉选项时的信息
 	 */
-	private String name;
+	ElementInformation elementInfo;
 	/**
-	 * 用于指向存储的外链词语
+	 * 用于存储下拉选项的元素
 	 */
-	private List<String> linkKey;
+	ArrayList<Element> option = new ArrayList<>();
+	/**
+	 * 用于存储下拉选项的文本
+	 */
+	ArrayList<String> optionText = new ArrayList<>();
+	
+	/**
+	 * 设置标记的下拉选项的类型
+	 */
+	private ElementType elementType;
+	
+	/**
+	 * 控制元素首行是否为
+	 */
+	private boolean fristIsEmpty = false;
 	
 	/**
 	 * 通过浏览器对象{@link AbstractBrower}进行构造
@@ -57,34 +80,90 @@ public class SelectBy extends ListBy {
 	public SelectBy(AbstractBrower brower) {
 		super(brower);
 	}
+
+	/**
+	 * 构造对象并存储浏览器的{@link WebDriver}对象
+	 * 
+	 * @param driver 浏览器的{@link WebDriver}对象
+	 */
+	public SelectBy(WebDriver driver) {
+		super(driver);
+	}
+	
+	/**
+	 * 通过{@link AbstractBy}对象对类进行构造，将传入的AbstractBy类中的关键参数设置到当前类对象中
+	 * @param brower {@link AbstractBy}对象
+	 */
+	public SelectBy(AbstractBy by) {
+		super(by);
+	}
+	
+	/**
+	 * 设置首个选项是否为不可选择的选项
+	 * @param fristIsEmpty 首个选项是否为不可选择
+	 */
+	public void setFristIsEmpty(boolean fristIsEmpty) {
+		this.fristIsEmpty = fristIsEmpty;
+	}
+	
+	@Override
+	public void add(String name, ByType byType) {
+		add(new ElementInformation(name, byType, ElementType.SELECT_OPTION_ELEMENT));
+	}
+	
+	@Override
+	public void add(String name) {
+		add(new ElementInformation(name, null, ElementType.SELECT_OPTION_ELEMENT));
+	}
 	
 	@Override
 	void add(ElementInformation elementInformation) {
-		//存储元素信息
-		name = elementInformation.name;
-		linkKey = elementInformation.linkKeyList;
-		
-		//清空父类中的链表，重新插入数据
+		//判断传入的元素是否在xml文件中，若存在再判断是否自动切换窗体，若需要，则获取元素的所有父窗体并进行切换
+		if (xml != null && xml.isElement(elementInformation.name) && isAutoSwitchIframe) {
+			switchFrame(getParentFrameName(elementInformation.name));
+		}
+				
+		//清除原存储的内容
 		clear();
 		
-		super.add(elementInformation);
+		//获取元素的By对象
+		By by = recognitionElement(elementInformation);
+		//根据By获取元素
+		List<WebElement> elementList = driver.findElements(by);
+		//获取元素个数
+		int size = elementList.size();
+		
+		//根据第一个元素的tagname来判断是否为标准下拉元素
+		if ("select".equalsIgnoreCase(elementList.get(0).getTagName())) {
+			elementType = ElementType.SELECT_OPTION_ELEMENT;
+			
+			//若是标准下拉选项型，则需要改变size的值，方便后续添加数据
+			Select select = new Select(driver.findElement(by));
+			//获取所有的选项内容，并计算元素个数
+			elementList = select.getOptions();
+			size = elementList.size();
+		} else {
+			elementType = ElementType.SELECT_DATAS_ELEMENT;
+		}
+		
+		//构造Element对象
+		for (int i = 0; i < size; i++) {
+			//获取元素
+			option.add(new Element(driver, elementType, by, elementInformation.name, i));
+			//获取元素的文本内容
+			optionText.add(elementList.get(i).getText());
+		}
 	}
-
+	
 	/**
-	 * 该方法用于根据列名称，查找到相应的列，并返回与传入下标对应的元素。下标支持从后向前获取，传入的下标
-	 * 与元素实际所在位置一致，当传入0时，则表示随机获取一个元素，如：<br>
-	 * {@code getWebElement(1)}表示获取第1个选项<br>
-	 * {@code getWebElement(0)}表示获取随机一个选项<br>
-	 * {@code getWebElement(-1)}表示获取倒数第1个选项<br>
-	 * 
-	 * @param index 元素下标（即列表中对应的某一个元素）
-	 * @return 对应的选项
-	 * @throws NoSuchElementException 当未对name列进行获取数据或index的绝对值大于列表最大值时抛出的异常
+	 * 根据选项下标，返回相应的选项元素。下标与选项元素真实下标一致，支持传入负数，表示从后向前遍历元素；
+	 * 当传入0时，表示随机选择一个选项。
+	 * @param index 选项下标
+	 * @return 相应的选项元素
 	 */
 	public Element getElement(int index) {
-		Element element = findElement();
-		element.setElementIndex(index);
-		return element;
+		//当首选项为空时，则在随机时不允许产生0
+		return option.get(getIndex(option.size(), index, !fristIsEmpty));
 	}
 	
 	/**
@@ -97,27 +176,73 @@ public class SelectBy extends ListBy {
 	 * @throws NoSuchElementException 查找的选项不存在时抛出的异常
 	 */
 	public Element getElement(String...keys) {
-		Element element = findElement();
-		element.setElementIndex(keys);
-		return element;
-	}
-	
-	/**
-	 * 用于查找相应的元素
-	 * @return 需要查找的元素
-	 */
-	private Element findElement() {
-		//获取元素信息，并判断元素是否存在，不存在则抛出异常
-		ElementInformation elementInfo = nameToElementInformation(name, linkKey);
-		if (elementInfo == null) {
-			throw new NoSuchElementException("不存在的定位方式：" + name);
-		}
+		//查找完全符合关键词的元素
+		String elementName = optionText.stream().filter(text -> {
+			//遍历关键词，若元素不符合条件，则返回false
+			for (String key : keys) {
+				if (text.indexOf(key) < 0) {
+					return false;
+				}
+			}
+			
+			//若条件均符合，则返回true
+			return true;
+		}).findFirst().orElseThrow(() -> {
+			//若不存在符合条件的选项，则抛出NoSuchElementException异常，并返回相应的消息
+			StringBuilder keyText = new StringBuilder("[");
+			//拼接查询条件
+			Arrays.stream(keys).forEach(key -> {
+				keyText.append(key + ", ");
+			});
+			
+			return new NoSuchElementException("不存在符合条件的选项：" + keyText.substring(0, keyText.length() - ", ".length()) + "]");
+		});
 		
-		return elementMap.get(elementInfo);
+		return option.get(optionText.indexOf(elementName));
 	}
 	
 	@Override
-	ElementType setElementType() {
-		return ElementType.SELECT_ELEMENT;
+	public void againGetElement() {
+		clear();
+		add(elementInfo);
+	}
+	
+	@Override
+	boolean isExistElement(By by, long waitTime) {
+		//当查找到元素时，则返回true，若查不到元素，则会抛出异常，故返回false
+		return new WebDriverWait(driver, waitTime, 200).
+				until((driver) -> {
+					List<WebElement> elements = driver.findElements(by);
+					//根据是否能查找到元素进行判断
+					if (elements.size() > 0) {
+						//若获取到的第一个元素的标签名为select（标准下拉），则可以直接返回true
+						if ("select".equals(elements.get(0).getTagName())) {
+							return true;
+						}
+						
+						//若查到元素，再进一步判断元素内容是否完全加载
+						int textSize = elements.stream().filter(element -> {
+							return !element.getText().isEmpty();
+						}).collect(Collectors.toList()).size();
+						
+						//若首选项为空时，则加载的内容必须大于或等于总选项个数-1
+						//若首选项不为空时，则加载的内容必须与原选项个数一致
+						if (fristIsEmpty) {
+							return textSize >= elements.size() - 1;
+						} else {
+							return textSize == elements.size();
+						}
+					} else {
+						return false;
+					}
+				});
+	}
+	
+	/**
+	 * 用于清除原存储的内容
+	 */
+	void clear() {
+		option.clear();
+		optionText.clear();
 	}
 }

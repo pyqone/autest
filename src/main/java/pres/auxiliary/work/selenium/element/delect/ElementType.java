@@ -1,4 +1,4 @@
-package pres.auxiliary.work.selenium.element;
+package pres.auxiliary.work.selenium.element.delect;
 
 /**
  * <p><b>文件名：</b>EelementType.java</p>
@@ -22,11 +22,7 @@ public enum ElementType {
 	 */
 	DATA_LIST_ELEMENT, 
 	/**
-	 * 指向标准下拉框选择类型元素
+	 * 指向下拉框选择类型元素
 	 */
-	SELECT_OPTION_ELEMENT, 
-	/**
-	 * 指向列表型下拉框选择类型元素
-	 */
-	SELECT_DATAS_ELEMENT;
+	SELECT_ELEMENT, 
 }
