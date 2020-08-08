@@ -171,6 +171,7 @@ public abstract class AbstractTestCaseWrite<T extends AbstractTestCaseWrite<T>> 
 	 */
 	public void setFieldValue(String field, String content) {
 		// 为保证在写用例的时候也能生效，故将值设置进入fieldMap
+		//TODO 存在BUG,有待观察，后期再添加字段允许传入多个方法
 		addContent(field, content);
 
 		// 先将值设置入fieldMap中可以保证field字段是存在于fieldMap中，以减少此处再做判断

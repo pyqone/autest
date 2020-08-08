@@ -28,22 +28,32 @@ public class TestWriteCase {
 
 	@BeforeClass
 	public void createTemplet() throws DocumentException, IOException {
+		//创建测试用例模板文件
 		CreateCaseFile temp = new CreateCaseFile(conFile, tempFile);
 		temp.setCoverFile(true);
 		temp.create();
 
+		//构造用例编写类对象
 		wtc = new BasicTestCaseWrite(conFile, tempFile);
+		
+		//添加常量词语
+		wtc.setFieldValue("模块", "/测试项目/账号管理/创建账号");
+		wtc.setFieldValue("目的", "验证创建账号界面各个控件输入是否有效");
+		wtc.setFieldValue("状态", "1");
+		wtc.setFieldValue("设计者", "test");
+		wtc.setFieldValue("关联需求", "TEST-1");
 	}
 	
 	@AfterClass
 	public void openFolder() throws IOException {
+		//将测试用例内容写入到文件中
 		wtc.writeFile();
 	}
 
 	@Test
 	public void addCase() {
+		//添加姓名相关的用例
 		wtc.addContent("标题", "通过不同的姓名创建账号")
-				.addContent("目的", "验证创建账号界面各个控件输入是否有效")
 				.addContent("前置条件", 
 						"已在创建账号界面", 
 						"除姓名字段外，其他信息均正确填写"
@@ -58,15 +68,11 @@ public class TestWriteCase {
 						"账号创建成功", 
 						"账号创建成功，且HTML代码不会被转义"
 						)
-				.addContent("模块", "/测试项目/账号管理/创建账号")
-				.addContent("状态", "1")
 				.addContent("优先级", "2")
-				.addContent("项目", "")
-				.addContent("设计者", "test")
 				.addContent("关键用例", "2")
-				.addContent("关联需求", "TEST-1")
 				.end();
 
+		//添加身份证相关的用例
 		wtc.addContent("标题", "通过不同的身份证创建账号")
 				.addContent("目的", "验证创建账号界面各个控件输入是否有效")
 				.addContent("前置条件", 
@@ -97,13 +103,8 @@ public class TestWriteCase {
 						"账号创建失败，并给出相应的提示", 
 						"账号创建失败，并给出相应的提示"
 						)
-				.addContent("模块", "/测试项目/账号管理/创建账号")
-				.addContent("状态", "1")
 				.addContent("优先级", "1")
-				.addContent("项目", "")
-				.addContent("设计者", "test")
 				.addContent("关键用例", "1")
-				.addContent("关联需求", "TEST-1")
 				.end();
 	}
 }
