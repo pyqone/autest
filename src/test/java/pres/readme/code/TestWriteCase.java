@@ -10,12 +10,20 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.testcase.file.BasicTestCaseWrite;
 import pres.auxiliary.work.testcase.file.CreateCaseFile;
+import pres.auxiliary.work.testcase.file.JiraTestCaseWrite.JiraFieldIdType;
+import pres.auxiliary.work.testcase.templet.InformationCase;
+import pres.auxiliary.work.testcase.templet.LabelType;
 
 public class TestWriteCase {
 	/**
-	 * 写在方法外，便于在测试方法中调用
+	 * 用例编写类
 	 */
 	BasicTestCaseWrite wtc;
+	/**
+	 * 添加信息用例模板类
+	 */
+	InformationCase ic;
+	
 	/**
 	 * 配置文件类对象
 	 */
@@ -25,6 +33,10 @@ public class TestWriteCase {
 	 * 模板文件类对象
 	 */
 	File tempFile = new File("Result/测试用例.xlsx");
+	/**
+	 * 添加信息类测试用例模板文件
+	 */
+	File caseTempFile = new File("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/AddInformation.xml");
 
 	@BeforeClass
 	public void createTemplet() throws DocumentException, IOException {
@@ -42,6 +54,19 @@ public class TestWriteCase {
 		wtc.setFieldValue("状态", "1");
 		wtc.setFieldValue("设计者", "test");
 		wtc.setFieldValue("关联需求", "TEST-1");
+		
+		//添加与测试用例模板的字段关联
+		wtc.relevanceCase("步骤", LabelType.STEP.getName());
+		wtc.relevanceCase("预期", LabelType.EXCEPT.getName());
+		wtc.relevanceCase("前置条件", LabelType.PRECONDITION.getName());
+		wtc.relevanceCase("优先级", LabelType.RANK.getName());
+		wtc.relevanceCase("标题", LabelType.TITLE.getName());
+		
+		//构造测试用例模板类对象
+		ic = new InformationCase(caseTempFile);
+		//添加需要替换的词语
+		ic.setReplaceWord(InformationCase.ADD_INFORMATION, "账号");
+		ic.setReplaceWord(InformationCase.BUTTON_NAME, "保存");
 	}
 	
 	@AfterClass
@@ -52,59 +77,7 @@ public class TestWriteCase {
 
 	@Test
 	public void addCase() {
-		//添加姓名相关的用例
-		wtc.addContent("标题", "通过不同的姓名创建账号")
-				.addContent("前置条件", 
-						"已在创建账号界面", 
-						"除姓名字段外，其他信息均正确填写"
-						)
-				.addContent("步骤", 
-						"“姓名”文本框不输入任何信息，点击“保存”按钮", 
-						"在“姓名”文本框中只输入空格，点击“保存”按钮", 
-						"在“姓名”文本框中输入HTML代码，点击“保存”按钮"
-						)
-				.addContent("预期", 
-						"账号创建成功", 
-						"账号创建成功", 
-						"账号创建成功，且HTML代码不会被转义"
-						)
-				.addContent("优先级", "2")
-				.addContent("关键用例", "2")
-				.end();
-
-		//添加身份证相关的用例
-		wtc.addContent("标题", "通过不同的身份证创建账号")
-				.addContent("目的", "验证创建账号界面各个控件输入是否有效")
-				.addContent("前置条件", 
-						"已在创建账号界面", 
-						"除姓身份证段外，其他信息均正确填写"
-						)
-				.addContent("步骤", 
-						"“身份证”文本框不输入任何信息，点击“保存”按钮", 
-						"在“身份证”文本框中只输入空格，点击“保存”按钮", 
-						"输入15位的证件信息，点击“保存”按钮", 
-						"输入18位的证件信息，点击“保存”按钮", 
-						"输入末尾带“X”或“x”的证件信息，点击“保存”按钮", 
-						"输入大于18位的数字，点击“保存”按钮", 
-						"输入小于18位但大于15位的数字，点击“保存”按钮", 
-						"输入小于15位的数字，点击“保存”按钮", 
-						"输入不符合证件规则但长度符合规则的数字（如123456789012345678），点击“保存”按钮", 
-						"输入非数字字符，点击“保存”按钮"
-						)
-				.addContent("预期", 
-						"账号创建失败，并给出相应的提示", 
-						"账号创建失败，并给出相应的提示", 
-						"账号创建成功", 
-						"账号创建成功", 
-						"账号创建成功", 
-						"账号创建失败，并给出相应的提示", 
-						"账号创建失败，并给出相应的提示", 
-						"账号创建失败，并给出相应的提示", 
-						"账号创建失败，并给出相应的提示", 
-						"账号创建失败，并给出相应的提示"
-						)
-				.addContent("优先级", "1")
-				.addContent("关键用例", "1")
-				.end();
+		wtc.addCase(ic.addBasicTextboxCase("姓名", false, true, false)).end();
+		wtc.addCase(ic.addIdCardCase("身份证", true, false, false)).end();
 	}
 }

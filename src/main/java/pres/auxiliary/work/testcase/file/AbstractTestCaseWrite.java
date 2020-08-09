@@ -198,14 +198,14 @@ public abstract class AbstractTestCaseWrite<T extends AbstractTestCaseWrite<T>> 
 	 * @param caseLabel 测试用例生成方法的字段
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
-	public void relevanceCase(String field, String caseLabel) {
+	public void relevanceCase(String field, String labelType) {
 		// 判断字段是否存在，若不存在，则抛出异常
 		if (!fieldMap.containsKey(field)) {
 			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
 		}
 
 		// 添加字段
-		relevanceMap.put(field, caseLabel);
+		relevanceMap.put(field, labelType);
 	}
 
 
