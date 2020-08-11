@@ -30,7 +30,7 @@ import pres.auxiliary.work.selenium.xml.ReadXml;
  * <p><b>修改时间：</b>2020年4月25日 下午4:18:37</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  */
 public abstract class AbstractBy {
 	/**
