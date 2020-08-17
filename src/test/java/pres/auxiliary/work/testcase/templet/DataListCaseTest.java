@@ -7,8 +7,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.file.excel.CreateExcelFile;
 import pres.auxiliary.work.testcase.file.BasicTestCaseWrite;
-import pres.auxiliary.work.testcase.file.CreateCaseFile;
 
 public class DataListCaseTest {
 	/**
@@ -32,7 +32,7 @@ public class DataListCaseTest {
 
 	@BeforeClass
 	public void start() throws Exception {
-		CreateCaseFile tct = new CreateCaseFile(templetXml, testCaseFile);
+		CreateExcelFile tct = new CreateExcelFile(templetXml, testCaseFile);
 		//为方便演示，则允许覆盖用例文件
 		tct.setCoverFile(true);
 		//生成用例文件

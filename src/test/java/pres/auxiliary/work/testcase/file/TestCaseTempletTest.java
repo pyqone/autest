@@ -9,14 +9,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.file.excel.CreateExcelFile;
 import pres.auxiliary.work.testcase.file.IncorrectFileException;
-import pres.auxiliary.work.testcase.file.CreateCaseFile;
 
 public class TestCaseTempletTest {
 	/**
 	 * 类对象
 	 */
-	CreateCaseFile temp;
+	CreateExcelFile temp;
 	
 	/**
 	 * 模板文件类对象
@@ -33,7 +33,7 @@ public class TestCaseTempletTest {
 	 */
 	@BeforeClass
 	public void newTestCaseTemplet() throws DocumentException {
-		temp = new CreateCaseFile(conFile, tempFile);
+		temp = new CreateExcelFile(conFile, tempFile);
 		temp.setCoverFile(true);
 	}
 	
@@ -55,7 +55,7 @@ public class TestCaseTempletTest {
 	}
 	
 	/**
-	 * 测试{@link CreateCaseFile#create()}以及{@link CreateCaseFile#setCoverFile(boolean)} <br>
+	 * 测试{@link CreateExcelFile#create()}以及{@link CreateExcelFile#setCoverFile(boolean)} <br>
 	 * 断言将抛出IncorrectFileException异常
 	 * @throws IOException 
 	 */

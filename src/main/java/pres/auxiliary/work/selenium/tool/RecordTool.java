@@ -70,7 +70,7 @@ public class RecordTool {
 	/**
 	 * Record类对象，默认构造
 	 */
-	private static ExcelRecord record = new ExcelRecord(DEFAULT_FILE_PATH);
+	private static ExcelRecord_Old record = new ExcelRecord_Old(DEFAULT_FILE_PATH);
 	/**
 	 * Screenshot类对象，默认构造
 	 */
@@ -136,11 +136,11 @@ public class RecordTool {
 	}
 
 	/**
-	 * 返回{@link ExcelRecord}类对象
+	 * 返回{@link ExcelRecord_Old}类对象
 	 * 
-	 * @return {@link ExcelRecord}类对象
+	 * @return {@link ExcelRecord_Old}类对象
 	 */
-	public static ExcelRecord getRecord() {
+	public static ExcelRecord_Old getRecord() {
 		return record;
 	}
 

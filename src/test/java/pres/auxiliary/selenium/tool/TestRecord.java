@@ -12,14 +12,14 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.openqa.selenium.TimeoutException;
 
-import pres.auxiliary.work.selenium.tool.ExcelRecord;
+import pres.auxiliary.work.selenium.tool.ExcelRecord_Old;
 import pres.auxiliary.work.selenium.tool.RecordTool;
 import pres.auxiliary.work.selenium.tool.Screenshot;
 
 public class TestRecord {
 	@Rule
 	public TestName name = new TestName();
-	static ExcelRecord r;
+	static ExcelRecord_Old r;
 	static FirefoxBrower fb;
 	static Event event;
 	static Screenshot sc;

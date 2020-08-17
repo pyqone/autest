@@ -12,9 +12,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import pres.auxiliary.work.testcase.file.MarkColorsType;
-import pres.auxiliary.work.testcase.file.CreateCaseFile;
-import pres.auxiliary.work.testcase.file.AbstractTestCaseWrite;
-import pres.auxiliary.work.testcase.file.AbstractTestCaseWrite.CaseMark;
+import pres.auxiliary.tool.file.excel.AbstractWriteExcel;
+import pres.auxiliary.tool.file.excel.CreateExcelFile;
+import pres.auxiliary.tool.file.excel.AbstractWriteExcel.FieldMark;
 import pres.auxiliary.work.testcase.templet.InformationCase;
 import pres.auxiliary.work.testcase.templet.LabelType;
 
@@ -51,7 +51,7 @@ public class BasicTestCaseWriteTest {
 
 	@BeforeClass
 	public void createTemplet() throws DocumentException, IOException {
-		CreateCaseFile temp = new CreateCaseFile(conFile, tempFile);
+		CreateExcelFile temp = new CreateExcelFile(conFile, tempFile);
 		temp.setCoverFile(true);
 		temp.create();
 
@@ -95,7 +95,7 @@ public class BasicTestCaseWriteTest {
 	}
 
 	/**
-	 * 测试{@link AbstractTestCaseWrite#addContent(String, String)}方法
+	 * 测试{@link AbstractWriteExcel#addContent(String, String)}方法
 	 */
 	@Test
 	public void addContentTest_NotDataValidetion() {
@@ -103,7 +103,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#addContent(String, String)}方法
+	 * 测试{@link AbstractWriteExcel#addContent(String, String)}方法
 	 */
 	@Test
 	public void addContentTest_hasDataValidetion() {
@@ -111,7 +111,7 @@ public class BasicTestCaseWriteTest {
 	}
 
 	/**
-	 * 测试{@link AbstractTestCaseWrite#addCase(pres.auxiliary.work.n.testcase.Case)}方法
+	 * 测试{@link AbstractWriteExcel#addCase(pres.auxiliary.work.n.testcase.Case)}方法
 	 */
 	@Test
 	public void addCaseTest() {
@@ -127,7 +127,7 @@ public class BasicTestCaseWriteTest {
 	
 
 	/**
-	 * 测试{@link AbstractTestCaseWrite#setReplactWord(String, String)}方法
+	 * 测试{@link AbstractWriteExcel#setReplactWord(String, String)}方法
 	 */
 	@Test
 	public void setReplactWordTest() {
@@ -141,26 +141,26 @@ public class BasicTestCaseWriteTest {
 	}
 
 	/**
-	 * 测试{@link CaseMark#fieldComment(String, String)}方法
+	 * 测试{@link FieldMark#fieldComment(String, String)}方法
 	 */
 	@Test
 	public void markFieldTest() {
-		CaseMark cm = wtc.end().fieldComment("步骤", "步骤标记").fieldComment("预期", "预期标记");
+		FieldMark cm = wtc.end().fieldComment("步骤", "步骤标记").fieldComment("预期", "预期标记");
 		cm.fieldComment("目的", "目的标记");
 	}
 
 	/**
-	 * 测试{@link CaseMark#fieldBackground(String, MarkColorsType)}方法
+	 * 测试{@link FieldMark#fieldBackground(String, MarkColorsType)}方法
 	 */
 	@Test
 	public void fieldBackgroundTest() {
-		CaseMark cm = wtc.end().changeFieldBackground("步骤", MarkColorsType.BLUE).changeFieldBackground("预期",
+		FieldMark cm = wtc.end().changeFieldBackground("步骤", MarkColorsType.BLUE).changeFieldBackground("预期",
 				MarkColorsType.RED);
 		cm.changeFieldBackground("目的", MarkColorsType.GREEN);
 	}
 
 	/**
-	 * 测试{@link CaseMark#rowBackground(MarkColorsType)}方法
+	 * 测试{@link FieldMark#rowBackground(MarkColorsType)}方法
 	 */
 	@Test
 	public void rowBackgroundTest() {
@@ -168,7 +168,7 @@ public class BasicTestCaseWriteTest {
 	}
 
 	/**
-	 * 测试{@link CaseMark#markText(String, int, MarkColorsType)}方法
+	 * 测试{@link FieldMark#markText(String, int, MarkColorsType)}方法
 	 */
 	@Test
 	public void markTextTest() {
@@ -185,7 +185,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#removeContent(String, int...)}方法
+	 * 测试{@link AbstractWriteExcel#removeContent(String, int...)}方法
 	 */
 	@Test
 	public void removeContentTest_1() {
@@ -194,7 +194,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#removeContent(String, int...)}方法
+	 * 测试{@link AbstractWriteExcel#removeContent(String, int...)}方法
 	 */
 	@Test
 	public void removeContentTest_2() {
@@ -202,7 +202,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#removeContent(String, int...)}方法
+	 * 测试{@link AbstractWriteExcel#removeContent(String, int...)}方法
 	 */
 	@Test
 	public void removeContentTest_3() {
@@ -211,7 +211,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#insertContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#insertContent(String, int, String...)}方法
 	 */
 	@Test
 	public void insertContentTest_1() {
@@ -220,7 +220,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#insertContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#insertContent(String, int, String...)}方法
 	 */
 	@Test
 	public void insertContentTest_2() {
@@ -228,7 +228,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#insertContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#insertContent(String, int, String...)}方法
 	 */
 	@Test
 	public void insertContentTest_3() {
@@ -237,7 +237,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#insertContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#insertContent(String, int, String...)}方法
 	 */
 	@Test
 	public void insertContentTest_4() {
@@ -246,7 +246,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#insertContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#insertContent(String, int, String...)}方法
 	 */
 	@Test
 	public void insertContentTest_5() {
@@ -255,7 +255,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#replaceContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#replaceContent(String, int, String...)}方法
 	 */
 	@Test
 	public void replaceContentTest_1() {
@@ -264,7 +264,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#replaceContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#replaceContent(String, int, String...)}方法
 	 */
 	@Test
 	public void replaceContentTest_2() {
@@ -272,7 +272,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#replaceContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#replaceContent(String, int, String...)}方法
 	 */
 	@Test
 	public void replaceContentTest_3() {
@@ -281,7 +281,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#replaceContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#replaceContent(String, int, String...)}方法
 	 */
 	@Test
 	public void replaceContentTest_4() {
@@ -290,7 +290,7 @@ public class BasicTestCaseWriteTest {
 	}
 	
 	/**
-	 * 测试{@link AbstractTestCaseWrite#replaceContent(String, int, String...)}方法
+	 * 测试{@link AbstractWriteExcel#replaceContent(String, int, String...)}方法
 	 */
 	@Test
 	public void replaceContentTest_5() {

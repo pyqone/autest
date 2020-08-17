@@ -11,6 +11,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.file.excel.CreateExcelFile;
 import pres.auxiliary.work.testcase.file.JiraTestCaseWrite.JiraFieldIdType;
 import pres.auxiliary.work.testcase.templet.DataListCase;
 
@@ -38,7 +39,7 @@ public class JiraTestCaseWriteTest {
 
 	@BeforeClass
 	public void createTemplet() throws DocumentException, IOException {
-		CreateCaseFile temp = new CreateCaseFile(conFile, tempFile);
+		CreateExcelFile temp = new CreateExcelFile(conFile, tempFile);
 		temp.setCoverFile(true);
 		temp.create();
 

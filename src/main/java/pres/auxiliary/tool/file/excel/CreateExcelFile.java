@@ -1,4 +1,4 @@
-package pres.auxiliary.work.testcase.file;
+package pres.auxiliary.tool.file.excel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +21,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import pres.auxiliary.work.selenium.datadriven.ListFileRead;
+import pres.auxiliary.work.testcase.file.IncorrectFileException;
 import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
 
 /**
@@ -28,7 +29,7 @@ import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
  * <b>文件名：</b>CreateCaseFile.java
  * </p>
  * <p>
- * <b>用途：</b>用于根据测试用例模板xml配置文件来生成测试用例模板文件
+ * <b>用途：</b>用于根据模板xml配置文件来生成Excel模板文件
  * </p>
  * <p>
  * <b>编码时间：</b>2020年2月11日下午11:12:56
@@ -39,10 +40,10 @@ import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
  * 
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 8
  *
  */
-public class CreateCaseFile {
+public class CreateExcelFile {
 	/**
 	 * 用于对数据有效性在文件中标题的sheet与id之间的分隔符
 	 */
@@ -56,7 +57,7 @@ public class CreateCaseFile {
 	/**
 	 * 用于指向用例文件，并赋予其默认值
 	 */
-	private File templetFile = new File("Result/TestCase/测试用例.xlsx");
+	private File templetFile = new File("");
 
 	/**
 	 * 用于控制是否覆盖原文件
@@ -69,29 +70,33 @@ public class CreateCaseFile {
 	private Document xml;
 
 	/**
-	 * 构造TestCaseTemplet类，并指向xml配置文件位置以及模板文件生成文件位置
+	 * 根据xml配置文件位置以及模板文件生成文件位置进行构造
 	 * 
 	 * @param configurationFile xml配置文件
 	 * @param templetFile       测试用例模板文件生成位置
 	 * @throws DocumentException      当xml配置文件错误时抛出
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
-	public CreateCaseFile(File configurationFile, File templetFile) throws DocumentException {
-		// 判断传入的configurationFile是否为一个文件类对象，若非文件类对象，则抛出异常（isFile()方法包含判断文件是否存在）
-		// 再判断文件是否包含文件路径是否包含“.xml”
-		if (configurationFile.isFile() && configurationFile.getAbsolutePath().indexOf(".xml") > -1) {
-			// 读取xml文件的信息
-			xml = new SAXReader().read(configurationFile);
-		} else {
-			throw new IncorrectFileException("不正确的文件格式：" + configurationFile.getAbsolutePath());
-		}
-
+	public CreateExcelFile(File configurationFile, File templetFile) throws DocumentException {
+		this(new SAXReader().read(configurationFile), templetFile);
+	}
+	
+	/**
+	 * 根据文件模板xml的{@link Document}类对象以及模板文件生成文件位置进行构造
+	 * 
+	 * @param configDocument 文件模板xml的{@link Document}类对象
+	 * @param templetFile       测试用例模板文件生成位置
+	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
+	 */
+	public CreateExcelFile(Document configDocument, File templetFile) {
 		// 判断路径是否包含“.xlsx”（使用的方法为XSSFWork）
 		if (templetFile.getAbsolutePath().indexOf(".xlsx") > -1) {
 			this.templetFile = templetFile;
 		} else {
 			throw new IncorrectFileException("不正确的文件格式：" + templetFile.getAbsolutePath());
 		}
+		
+		xml = configDocument;
 	}
 
 	/**

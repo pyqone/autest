@@ -10,8 +10,8 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.file.excel.CreateExcelFile;
 import pres.auxiliary.work.testcase.file.BasicTestCaseWrite;
-import pres.auxiliary.work.testcase.file.CreateCaseFile;
 import pres.auxiliary.work.testcase.file.MarkColorsType;
 import pres.auxiliary.work.testcase.templet.InformationCase.InputRuleType;
 
@@ -45,7 +45,7 @@ public class ProgramWriteTestCaseDemo {
 	 */
 	@BeforeTest
 	public void createCaseFile() throws IOException, DocumentException {
-		CreateCaseFile tct = new CreateCaseFile(templetXml, testCaseFile);
+		CreateExcelFile tct = new CreateExcelFile(templetXml, testCaseFile);
 		//为方便演示，则允许覆盖用例文件
 		tct.setCoverFile(true);
 		//生成用例文件

@@ -8,8 +8,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.file.excel.CreateExcelFile;
 import pres.auxiliary.work.testcase.file.BasicTestCaseWrite;
-import pres.auxiliary.work.testcase.file.CreateCaseFile;
 import pres.auxiliary.work.testcase.file.JiraTestCaseWrite.JiraFieldIdType;
 import pres.auxiliary.work.testcase.templet.InformationCase;
 import pres.auxiliary.work.testcase.templet.LabelType;
@@ -41,7 +41,7 @@ public class TestWriteCase {
 	@BeforeClass
 	public void createTemplet() throws DocumentException, IOException {
 		//创建测试用例模板文件
-		CreateCaseFile temp = new CreateCaseFile(conFile, tempFile);
+		CreateExcelFile temp = new CreateExcelFile(conFile, tempFile);
 		temp.setCoverFile(true);
 		temp.create();
 
