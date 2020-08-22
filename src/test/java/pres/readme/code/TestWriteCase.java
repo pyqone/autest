@@ -10,7 +10,6 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.tool.file.excel.CreateExcelFile;
 import pres.auxiliary.work.testcase.file.BasicTestCaseWrite;
-import pres.auxiliary.work.testcase.file.JiraTestCaseWrite.JiraFieldIdType;
 import pres.auxiliary.work.testcase.templet.InformationCase;
 import pres.auxiliary.work.testcase.templet.LabelType;
 
@@ -71,6 +70,7 @@ public class TestWriteCase {
 	
 	@AfterClass
 	public void openFolder() throws IOException {
+		java.awt.Desktop.getDesktop().open(wtc.getCaseXml());
 		//将测试用例内容写入到文件中
 		wtc.writeFile();
 	}
@@ -79,5 +79,16 @@ public class TestWriteCase {
 	public void addCase() {
 		wtc.addCase(ic.addBasicTextboxCase("姓名", false, true, false)).end();
 		wtc.addCase(ic.addIdCardCase("身份证", true, false, false)).end();
+		
+		wtc.setFieldValue("模块", "/测试项目/账号管理/创建账号2");
+		wtc.addCase(ic.addIdCardCase("护照号", true, false, false)).end();
+	}
+	
+	@Test
+	public void myCaseTest() {
+		MyCase mc = new MyCase(new File("src/test/java/pres/readme/code/MyCase.xml"));
+		wtc.addCase(mc.myCase1()).end();
+		wtc.addCase(mc.myCase2("测试")).end();
+		wtc.addCase(mc.myCase3()).end();
 	}
 }

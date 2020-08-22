@@ -47,4 +47,33 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 		this.brower = brower;
 	}
 	
+	/**
+	 * 将xml文件中编写的文档内部超链接内容进行转换
+	 * @param linkContent 链接内容
+	 * @return 转换后的在poi使用的超链接代码
+	 */
+	private String getDocumentLinkPath(String linkContent) {
+		String[] linkContents = linkContent.split("|");
+		int length = linkContents.length;
+		
+		//获取超链接的sheet名称
+		String linkSheetName = linkContents[0];
+		//根据sheet名称以及字段id，获取该字段在sheet中的列数字下标，并将数字下标转换为英文下标
+		String linkColumnIndex = num2CharIndex(getColumnNumIndex(linkSheetName, linkContents[1]));
+		
+		String linkRowIndex = "";
+		//获取当前表格的最后一行元素个数
+		int lastIndex = xw.getSheet(linkSheetName).getLastRowNum();
+		//判断当前linkContents是否存在链接行数（即第三个元素）且链接的文本为数字
+		//若符合规则，则将linkRowIndex设置为当前编写的内容
+		//若不符合规则，则将linkRowIndex设置为当前sheet的最后一行
+		if (length > 2) {
+			linkRowIndex = String.valueOf(getPoiIndex(lastIndex + 1, Integer.valueOf(linkContents[2])));
+		} else {
+			linkRowIndex = String.valueOf(lastIndex);
+		}
+		
+		//返回文档链接的内容
+		return "'" + nowSheetName + "'!" + linkColumnIndex + linkRowIndex;
+	}
 }
