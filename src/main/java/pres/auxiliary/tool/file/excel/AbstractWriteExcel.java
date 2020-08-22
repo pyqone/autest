@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -238,7 +239,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
 	public T addContent(String field, String... contents) {
-		return insertContent(field, fieldMap.get(nowSheetName).get(field).content.size(), contents);
+		return insertContent(field, -1, contents);
 	}
 	
 	/**
@@ -284,15 +285,15 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 */
 	@SuppressWarnings("unchecked")
 	public T insertContent(String field, int index, String... contents) {
-		// 判断字段是否存在，若不存在，则抛出异常
-		if (!fieldMap.get(nowSheetName).containsKey(field)) {
-			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
-		}
-		
 		//若writeSheetNameList中未存储内容，则将当前的sheet名称存储到writeSheetNameList中，
 		//用于记录当前sheet有内容更新
-		if (writeSheetNameList.isEmpty()) {
+		if (!writeSheetNameList.contains(nowSheetName)) {
 			writeSheetNameList.add(nowSheetName);
+		}
+				
+		// 判断字段是否存在，若不存在，则抛出异常
+		if (!fieldMap.get(nowSheetName).containsKey(field)) {
+			throw new LabelNotFoundException("当前“" + nowSheetName + "”sheet中不存在标签id：" + field);
 		}
 		
 		//若未传值或传入null，则直接结束
@@ -300,11 +301,9 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			return (T) this;
 		}
 		
-		//若传入的下标大于相应的最大段落数时，则直接结束
-		if (index > fieldMap.get(nowSheetName).get(field).content.size()) {
-			return (T) this;
-		}
-		
+		//还原下标
+		index = getPoiIndex(fieldMap.get(nowSheetName).get(field).content.size(), index);
+						
 		if (fieldMap.get(nowSheetName).get(field).datas.size() != 0) {
 			//查找数据有效性，若当前字段存在数据有效性，则将数据有效性转义，若添加的字段无法转义，则存储原内容
 			contents = dataValidityChange(contents, fieldMap.get(nowSheetName).get(field));
@@ -405,6 +404,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			for (Element element : ((List<Element>) (contentXml.getRootElement().elements("sheet")))) {
 				if (element.attributeValue("name").equals(sheetName)) {
 					sheetElement = element;
+					break;
 				}
 			}
 			
@@ -415,7 +415,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			
 			Element caseElement = sheetElement.addElement("case").addAttribute("id", caseUuid);
 			// 为fieldMap中的所有key创建field标签，并记录相应的value
-			fieldMap.get(nowSheetName).forEach((id, field) -> {
+			fieldMap.get(sheetName).forEach((id, field) -> {
 				//判断字段是否需要进行编号，若需要编号，则调用编号方法
 				if (field.serialNumber) {
 					addSerialNumber(field);
@@ -423,7 +423,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 				
 				// 添加field标签，并设置name属性（字段名称），mark属性（备注内容）
 				// dom4j当属性值传入null时，则直接不会创建该属性，故此处无需做判断字段id是否在fieldMarkMap中
-				Element fieldElement = caseElement.addElement("field").addAttribute("name", id);
+				Element fieldElement = caseElement.addElement("field").addAttribute("id", id).addAttribute("name", field.name);
 				
 				// 判断当前是否有添加内容，若未添加内容，则创建一个value属性为空的text标签
 				if (field.content != null && !field.content.isEmpty()) {
@@ -515,9 +515,9 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		// 遍历所有的field标签，将标签的内容写入到文件中
 		for (Element fieldElement : fieldElements) {
 			// 获取相应的Field对象
-			String fieldId = fieldElement.attributeValue("name");
+			String fieldId = fieldElement.attributeValue("id");
 			// 获取字段的field对象
-			Field field = fieldMap.get(nowSheetName).get(fieldId);
+			Field field = fieldMap.get(xs.getSheetName()).get(fieldId);
 			// 获取text标签
 			List<Element> textList = fieldElement.elements("text");
 			
@@ -527,9 +527,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			} else {
 				writeSpecificField(xs, fieldElement, fieldId, field, textList, index);
 			}
-			
-			//TODO 根据field中的link字段，添加超链接信息
-			
 		}
 	}
 
@@ -561,6 +558,8 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		field.addDataValidation(xs, index, index);
 		// 向单元格中添加Comment注解
 		addComment(xs, xc, fieldElement);
+		//向单元格中添加超链接
+		addLink(xc, fieldElement.attributeValue("link"));
 
 		// 将字段内容写入单元格
 		writeText(xc, textList);
@@ -610,6 +609,8 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			field.addDataValidation(xs, index, index);
 			// 向单元格中添加Comment注解
 			addComment(xs, xc, fieldElement);
+			//向单元格中添加超链接
+			addLink(xc, fieldElement.attributeValue("link"));
 
 			// 存储裁剪后的text元素
 			ArrayList<Element> subTextList = new ArrayList<Element>();
@@ -631,10 +632,9 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	}
 	
 	/**
-	 * 用于添加超链接内容
-	 * @param xc
-	 * @param excel
-	 * @param linkContent
+	 * 用于根据超链接内容，向单元格中添加超链接
+	 * @param xc 单元格对象
+	 * @param linkContent 超链接内容（形式“超链接类型=超链接内容”）
 	 */
 	private void addLink(XSSFCell xc, String linkContent) {
 		//若不存在链接内容，则不添加链接
@@ -642,36 +642,61 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			return;
 		}
 		
+		//获取分隔超链接类型与内容的符号位置
+		int splitIndex = linkContent.indexOf("=");
+		//拆分读取到的超链接文本，以此分为超链接类型与超链接内容
+		String linkTypeName = linkContent.substring(0, splitIndex);
+		String linkText = linkContent.substring(splitIndex + 1);
+		
 		CreationHelper createHelper = xw.getCreationHelper();
 		XSSFHyperlink link = null;
 		
 		// 添加本地文件链接
-		HyperlinkType hyperlinkType = getHyperlinkType(linkContent);
+		HyperlinkType hyperlinkType = getHyperlinkType(linkTypeName);
 		link = (XSSFHyperlink) createHelper.createHyperlink(hyperlinkType);
-		//添加超链接，若添加超链接类型为DOCUMENT，则将链接文本进行转换后写入到链接中
-		link.setAddress(hyperlinkType == HyperlinkType.DOCUMENT ? getDocumentLinkPath(linkContent) : linkContent);
+		//添加超链接
+		link.setAddress(linkText);
 					
 		// 在单元格上添加超链接
 		xc.setHyperlink(link);
 		// 新增单元格的样式
-		CellStyleType.LINK_TEXT.getXSSFCellStyle(xc);
+//		CellStyleType.LINK_TEXT.getXSSFCellStyle(xc);
+		// 获取字体信息
+		XSSFFont xf = xc.getCellStyle().getFont();
+		// 添加下划线
+		xf.setUnderline((byte) 1);
+		// 设置字体颜色为蓝色
+		xf.setColor(IndexedColors.BLUE.getIndex());
 	}
 	
 	/**
-	 * 用于根据链接内容，返回相应的超链接枚举（{@link HyperlinkType}）
-	 * @param linkContent 标签中link属性的内容
+	 * 用于根据链接类型名称，返回相应的超链接枚举（{@link HyperlinkType}）
+	 * @param linkTypeName 超链接类型名称
 	 * @return 超链接枚举
 	 */
-	protected HyperlinkType getHyperlinkType(String linkContent) {
-		//根据链接内容，与相应的正则进行判断，根据结果，返回相应的HyperlinkType类
-		if (RegexType.URL.judgeString(linkContent)) {
-			return HyperlinkType.URL;
-		} else if (RegexType.EMAIL.judgeString(linkContent)) {
-			return HyperlinkType.EMAIL;
-		} else if (RegexType.FOLDER_PATH.judgeString(linkContent)) {
-			return HyperlinkType.FILE;
-		} else {
+	protected HyperlinkType getHyperlinkType(String linkTypeName) {
+		LinkType linkType = null;
+		for (LinkType type : LinkType.values()) {
+			if (type.getName().equals(linkTypeName)) {
+				linkType = type;
+			}
+		}
+		
+		if (linkType == null) {
+			throw new NoSuchTypeException("错误的枚举名称：" + linkTypeName);
+		}
+		
+		switch (linkType) {
+		case DOMCUMENT:
 			return HyperlinkType.DOCUMENT;
+		case EMAIL:
+			return HyperlinkType.EMAIL;
+		case FILE:
+			return HyperlinkType.FILE;
+		case URL: 
+			return HyperlinkType.URL;
+		default:
+			return HyperlinkType.NONE;
 		}
 	}
 	
@@ -813,11 +838,14 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 				if (!fieldMap.containsKey(sheetName)) {
 					fieldMap.put(sheetName, new HashMap<String, Field>(16));
 				}
-				nowSheetName = sheetName;
+				
+				nowSheetName = nowSheetName.isEmpty() ? sheetName : nowSheetName;
 				
 				// 存储字段信息
 				fieldMap.get(sheetName).put(column.get(index).attributeValue("id"),
-						new Field(column.get(index).attributeValue("id"), column.get(index).attributeValue("align"), index,
+						new Field(column.get(index).attributeValue("id"), 
+								column.get(index).attributeValue("name"),
+								column.get(index).attributeValue("align"), index,
 								column.get(index).attributeValue("row_text"), datas,
 								Boolean.valueOf(column.get(index).attributeValue("index"))));
 			}
@@ -1019,13 +1047,13 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 */
 	protected int getPoiIndex(int length, int index) {
 		//判断下标的绝对值是否大于总长度，若大于总长度，则根据index的正负来判断返回值
-		if (Math.abs(index) > length) {
+		if (Math.abs(index) >= length) {
 			return index > 0 ? length - 1 : 0;
 		}
 		
 		//若下标绝对值小于length，则判断下标正负，正数则直接返回，负数，则通过总长度
 		//减去下标（由于下标是负数，故计算时用总长度加上下标）
-		return index > 0 ? index : length + index;
+		return index < 0 ? length + index : index;
 	}
 	
 	/**
@@ -1106,7 +1134,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		@SuppressWarnings("unchecked")
 		public FieldMark fieldComment(String sheetName, String field, String content) {
 			//查找nowSheetName指向的sheet中的与uuid一致的单元格
-			Element caseElement = getElement(sheetName);
+			Element caseElement = getCaseElement(sheetName);
 			
 			// 判断字段是否存在，若不存在，则抛出异常
 			if (!fieldMap.get(nowSheetName).containsKey(field)) {
@@ -1114,7 +1142,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			}
 
 			// 向包含uuid的标签下添加相应的属性
-			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("name").equals(field))
+			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("id").equals(field))
 					.forEach(e -> e.addAttribute("comment", content));
 
 			return this;
@@ -1141,7 +1169,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		@SuppressWarnings("unchecked")
 		public FieldMark changeFieldBackground(String sheetName, String field, MarkColorsType markColorsType) {
 			//查找nowSheetName指向的sheet中的与uuid一致的单元格
-			Element caseElement = getElement(sheetName);
+			Element caseElement = getCaseElement(sheetName);
 
 			// 判断字段是否存在，若不存在，则抛出异常
 			if (!fieldMap.get(nowSheetName).containsKey(field)) {
@@ -1149,7 +1177,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			}
 
 			// 向包含uuid的标签下添加相应的属性
-			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("name").equals(field))
+			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("id").equals(field))
 					.forEach(e -> e.addAttribute("background", String.valueOf(markColorsType.getColorsValue())));
 
 			return this;
@@ -1174,11 +1202,11 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		@SuppressWarnings("unchecked")
 		public FieldMark changeRowBackground(String sheetName, MarkColorsType markColorsType) {
 			//查找nowSheetName指向的sheet中的与uuid一致的单元格
-			Element caseElement = getElement(sheetName);
+			Element caseElement = getCaseElement(sheetName);
 
 			// 将case下所有标签的name属性传至fieldBackground方法
 			((List<Element>) (caseElement.elements())).stream()
-					.forEach(e -> changeFieldBackground(e.attributeValue("name"), markColorsType));
+					.forEach(e -> changeFieldBackground(e.attributeValue("id"), markColorsType));
 
 			return this;
 		}
@@ -1202,12 +1230,12 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		@SuppressWarnings("unchecked")
 		public FieldMark changeRowTextColor(String sheetName, MarkColorsType markColorsType) {
 			//查找nowSheetName指向的sheet中的与uuid一致的单元格
-			Element caseElement = getElement(sheetName);
+			Element caseElement = getCaseElement(sheetName);
 
 			// 将case下所有标签的name属性传至fieldBackground方法
 			((List<Element>) (caseElement.elements())).forEach(fieldElement -> {
 				List<Element> textElements = fieldElement.elements();
-				changeTextColor(fieldElement.attributeValue("name"), 0, textElements.size(), markColorsType);
+				changeTextColor(fieldElement.attributeValue("id"), 0, textElements.size(), markColorsType);
 			});
 
 			return this;
@@ -1268,19 +1296,23 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		@SuppressWarnings("unchecked")
 		public FieldMark changeTextColor(String sheetName, String field, int startIndex, int endIndex, MarkColorsType markColorsType) {
 			//查找nowSheetName指向的sheet中的与uuid一致的单元格
-			Element caseElement = getElement(sheetName);
-
+			Element caseElement = getCaseElement(sheetName);
+			
 			// 获取case下的name属性与所传参数相同的field标签
-			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("name").equals(field))
+			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("id").equals(field))
 					.forEach(fieldElement -> {
 						// 获取其下的所有field标签
 						List<Element> textElements = (fieldElement.elements());
 						// 判断是否存在text标签，若不存在，则结束
 						if (textElements.size() != 0) {
+							//转换下标
+							int changeStartIndex = getPoiIndex(textElements.size(), startIndex);
+							int changeEndIndex = getPoiIndex(textElements.size(), endIndex);
+							
 							// 处理最大与最小值，保证数据不会错误
-							boolean endIndexBig = startIndex < endIndex;
-							int smallIndex = endIndexBig ? startIndex : endIndex;
-							int bigIndex = endIndexBig ? endIndex : startIndex;
+							boolean endIndexBig = changeStartIndex < changeEndIndex;
+							int smallIndex = endIndexBig ? changeStartIndex : changeEndIndex;
+							int bigIndex = endIndexBig ? changeEndIndex : changeStartIndex;
 							// 判断最大最小值是否相同，相同则最大值+1
 							bigIndex = bigIndex == smallIndex ? (bigIndex + 1) : bigIndex;
 
@@ -1321,8 +1353,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		}
 		
 		/**
-		 * 用于向当前指向的sheet下的指定字段添加超链接。超链接文本可传入excel允许的超链接形式，详情可
-		 * 参见{@link #fieldLink(String, String, String)}
+		 * 用于向当前指向的sheet下的指定字段添加超链接。超链接文本可传入excel允许的超链接形式
 		 * @param field 字段id
 		 * @param linkContent 需要链接的内容
 		 * @return 类本身
@@ -1332,35 +1363,41 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		}
 		
 		/**
-		 * 用于向指定的的sheet下的指定字段添加超链接。超链接文本可传入excel允许的超链接形式，包括：
+		 * 用于向指定的的sheet下的指定字段添加超链接。超链接文本可传入excel允许的超链接形式
 		 * 
 		 * @param field 字段id
 		 * @param linkContent 需要链接的内容
 		 * @return 类本身
 		 */
 		public FieldMark fieldLink(String sheetName, String field, String linkContent) {
-			//查找nowSheetName指向的sheet中的与uuid一致的单元格
-			Element caseElement = getElement(sheetName);
+			//查找sheetName指向的sheet中的与uuid一致的单元格
+			Element fieldElement = getFieldElement(getCaseElement(sheetName), field);
+			
+			fieldElement.addAttribute("link", judgelinkText(linkContent));
+			
+			return this;
 		}
 		
 		/**
-		 * 用于根据链接内容，返回相应的超链接类型名称
+		 * 用于根据链接内容，返回相应的超链接类型名称，返回的形式为“超链接类型=超链接内容”
 		 * @param linkContent 标签中link属性的内容
 		 * @return 超链接类型名称
 		 */
-		private String getlinkText(String linkContent) {
+		private String judgelinkText(String linkContent) {
+			//文件超链接判定规则
 			String fileRegex = "(([a-zA-Z]:(\\/|\\\\))|(\\.(\\/|\\\\)))([^/:*?<>\\\"|\\\\]+(\\/|\\\\)?)+[^/:*?<>\\\"|\\\\].[^/:*?<>\\\"|\\\\]";
+			//文档内超链接判定规则
 			String domRegex = "'[^\\\\\\/\\?\\*\\[\\]]{1,31}'![A-Za-z]+\\d+";
 			
 			//根据链接内容，与相应的正则进行判断，根据结果，返回相应的HyperlinkType类
 			if (RegexType.URL.judgeString(linkContent)) {
-				return "url=" + linkContent;
+				return LinkType.URL.getName() + "=" + linkContent;
 			} else if (RegexType.EMAIL.judgeString(linkContent)) {
-				return "email=" + linkContent;
+				return LinkType.EMAIL.getName() + "=" + linkContent;
 			} else if (linkContent.matches(fileRegex)) {
-				return "file=" + linkContent;
+				return LinkType.FILE.getName() + "=" + linkContent;
 			} else if (linkContent.matches(domRegex)) {
-				return "dom=" + linkContent;
+				return LinkType.DOMCUMENT.getName() + "=" + linkContent;
 			} else {
 				throw new IncorrectIndexException("无法识别的超链接：" + linkContent);
 			}
@@ -1371,12 +1408,28 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * @param sheetName sheet名称
 		 * @return 指定sheet名称下的case标签元素
 		 */
-		private Element getElement(String sheetName) {
-			if (writeSheetNameList.contains(sheetName)) {
+		private Element getCaseElement(String sheetName) {
+			if (!writeSheetNameList.contains(sheetName)) {
 				throw new IncorrectIndexException("不存在的sheet名称：" + sheetName);
 			}
 			
 			return ((Element) (contentXml.selectSingleNode("//sheet[@name='" + sheetName +"']/case[@id='" + uuid + "']")));
+		}
+		
+		/**
+		 * 用于获取在指定的case标签元素中的字段元素
+		 * @param caseElement case标签元素
+		 * @param field case标签下的字段id
+		 * @return
+		 */
+		private Element getFieldElement(Element caseElement, String field) {
+			for (Object fieldElement : caseElement.elements("field")) {
+				if (((Element)fieldElement).attributeValue("id").equals(field)) {
+					return (Element)fieldElement;
+				}
+			}
+			
+			throw new IncorrectIndexException("当前sheet（" + caseElement.getParent().attributeValue("name") + "）中不存在字段：" + field);
 		}
 	}
 
@@ -1404,6 +1457,10 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * 用于存储字段在配置文件中的id
 		 */
 		public String id;
+		/**
+		 * 用于存储字段在配置文件中的name
+		 */
+		public String name;
 		/**
 		 * 用于存储字段对应单元格内文本的水平对齐方式
 		 */
@@ -1442,8 +1499,9 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * @param numberSign 字段是否需要编号
 		 * @param link 超链接内容
 		 */
-		public Field(String id, String align, int index, String rowText, ArrayList<String> datas, boolean numberSign) {
+		public Field(String id, String name, String align, int index, String rowText, ArrayList<String> datas, boolean numberSign) {
 			this.id = id;
+			this.name = name;
 			this.align = align;
 			this.index = index;
 			this.datas = datas;

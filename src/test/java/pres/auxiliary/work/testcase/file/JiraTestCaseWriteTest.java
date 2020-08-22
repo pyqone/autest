@@ -56,7 +56,7 @@ public class JiraTestCaseWriteTest {
 		wtc.writeFile();
 		System.out.println("----------------------------");
 		java.awt.Desktop.getDesktop().open(tempFile.getParentFile());
-		java.awt.Desktop.getDesktop().open(tempFile);
+//		java.awt.Desktop.getDesktop().open(tempFile);
 	}
 
 	@BeforeMethod
