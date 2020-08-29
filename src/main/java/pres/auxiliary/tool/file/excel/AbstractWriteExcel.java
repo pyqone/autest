@@ -54,7 +54,7 @@ import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
  * <b>编码时间：</b>2020年2月17日下午9:36:00
  * </p>
  * <p>
- * <b>修改时间：</b>2020年8月12日 下午14:29:37
+ * <b>修改时间：</b>2020年8月22日 下午17:29:37
  * </p>
  * 
  * @author 彭宇琦
@@ -180,14 +180,16 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 
 		// 将相应的sheet标签的name属性存储至sheetName中
 		this.nowSheetName = sheetName;
-		writeSheetNameList.add(sheetName);
+		if (!writeSheetNameList.contains(sheetName)) {
+			writeSheetNameList.add(sheetName);
+		}
 		
 		return (T) this;
 	}
 
 
 	/**
-	 * 设置字段名称的常值，通过该设置，则之后该字段将直接填入设置的值，无需再次写入字段的值
+	 * 用于在当前指向的sheet中设置字段名称的常值，通过该设置，则之后该字段将直接填入设置的值，无需再次写入字段的值
 	 * 
 	 * @param field   字段id
 	 * @param content 相应字段的内容
@@ -195,22 +197,29 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
 	public void setFieldValue(String field, String content) {
-		// 为保证在写用例的时候也能生效，故将值设置进入fieldMap
-		//为保证内容被重复添加，故需要清空原始内容
-//		clearContent(field);
-//		addContent(field, content);
-
-		// 先将值设置入fieldMap中可以保证field字段是存在于fieldMap中，以减少此处再做判断
-		// 将字段内容写入caseValueMap
-//		constValueMap.put(field, content);
+		setFieldValue(nowSheetName, field, content);
+	}
+	
+	/**
+	 * 用于在指定的sheet中设置字段名称的常值，通过该设置，则之后该字段将直接填入设置的值，无需再次写入字段的值
+	 * 
+	 * @param sheetName   指定的sheet名称
+	 * @param field   字段id
+	 * @param content 相应字段的内容
+	 * 
+	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
+	 */
+	public void setFieldValue(String sheetName, String field, String content) {
 		//若当前sheetName中不存在常量，则先构造HashMap
-		if (!constValueMap.containsKey(nowSheetName)) {
-			constValueMap.put(nowSheetName, new HashMap<String, String>(16));
+		if (!constValueMap.containsKey(sheetName)) {
+			constValueMap.put(sheetName, new HashMap<String, String>(16));
 		}
 		
 		//添加常量
-		constValueMap.get(nowSheetName).put(field, content);
+		constValueMap.get(sheetName).put(field, content);
 	}
+	
+	
 
 	/**
 	 * 用于设置需要被替换的词语。添加词语时无需添加特殊字符
@@ -393,6 +402,9 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			sheetElement = contentXml.getRootElement().addElement("sheet").addAttribute("name", sheetName);
 		}
 		*/
+		if (writeSheetNameList.isEmpty()) {
+			throw new IncorrectIndexException("当前不存在需要写入的sheet内容");
+		}
 		
 		//生成case标签的uuid
 		String caseUuid = UUID.randomUUID().toString();
@@ -457,6 +469,8 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			*/
 		});
 		
+		//清空sheet写入记录
+		writeSheetNameList.clear();
 		return new FieldMark(caseUuid);
 	}
 
@@ -558,11 +572,11 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		field.addDataValidation(xs, index, index);
 		// 向单元格中添加Comment注解
 		addComment(xs, xc, fieldElement);
-		//向单元格中添加超链接
-		addLink(xc, fieldElement.attributeValue("link"));
 
 		// 将字段内容写入单元格
 		writeText(xc, textList);
+		//向单元格中添加超链接
+		addLink(xc, fieldElement.attributeValue("link"));
 	}
 
 	/**
@@ -793,7 +807,11 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * 清空fieldMap内的存储字段信息，不清除字段
 	 */
 	private void clearFieldContent() {
-		fieldMap.get(nowSheetName).forEach((key, value) -> value.clearContent());
+		fieldMap.forEach((sheetName, sheetFieldMap) -> {
+			sheetFieldMap.forEach((fieldId, field) -> {
+				field.clearContent();
+			});
+		});
 	}
 
 	/**
@@ -1102,7 +1120,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	public class FieldMark {
 		// 用于存储case标签元素
 //		Element caseElement;
-		String uuid;
+		protected String uuid;
 
 		/**
 		 * 构造类，但不允许外部进行构造
@@ -1297,7 +1315,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		public FieldMark changeTextColor(String sheetName, String field, int startIndex, int endIndex, MarkColorsType markColorsType) {
 			//查找nowSheetName指向的sheet中的与uuid一致的单元格
 			Element caseElement = getCaseElement(sheetName);
-			
 			// 获取case下的name属性与所传参数相同的field标签
 			((List<Element>) (caseElement.elements())).stream().filter(e -> e.attributeValue("id").equals(field))
 					.forEach(fieldElement -> {
@@ -1404,14 +1421,16 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		}
 		
 		/**
-		 * 用于根据指定的sheet名称获取其下相应的case标签，并返回其元素
+		 * 用于根据指定的sheet名称获取其下相应的case标签，并返回其元素，若查不到元素，则返回null
 		 * @param sheetName sheet名称
 		 * @return 指定sheet名称下的case标签元素
 		 */
-		private Element getCaseElement(String sheetName) {
+		public Element getCaseElement(String sheetName) {
+			/*
 			if (!writeSheetNameList.contains(sheetName)) {
-				throw new IncorrectIndexException("不存在的sheet名称：" + sheetName);
+				return null;
 			}
+			*/
 			
 			return ((Element) (contentXml.selectSingleNode("//sheet[@name='" + sheetName +"']/case[@id='" + uuid + "']")));
 		}
@@ -1652,6 +1671,15 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			// 数据有效性对象
 			DataValidation d = new XSSFDataValidationHelper(caseSheet).createValidation(constraint, regions);
 			caseSheet.addValidationData(d);
+		}
+		
+		/**
+		 * 根据下标返回字段中存储的内容，下标允许传入负数，表示从后向前遍历
+		 * @param index 下标
+		 * @return 下标对应的字段内容
+		 */
+		public String getContent(int index) {
+			return content.get(getPoiIndex(content.size(), index));
 		}
 	}
 }
