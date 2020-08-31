@@ -105,4 +105,36 @@ public class ExcelRecordTest {
 	public void caseExpectTest() {
 		er.caseExpect("测试用例预期1", "测试用例预期2");
 	}
+	
+	@Test
+	public void addAllContentTest() {
+		er.caseTitle("测试成功运行标题")
+			.caseStep("测试第1步")
+			.caseExpect("测试第1预期")
+			.caseCondition("前置条件1")
+			.runStep("实际第1步")
+			.runStep("实际第2步")
+			.runStep("实际第3步", "实际第4步")
+			.runResult("实际结果1", false)
+			.runResult("实际结果2", true)
+			.runMark("实际备注")
+			.runScreenshot(imageFile)
+			.end();
+		
+		er.reckonByTime()
+			.caseTitle("测试失败运行标题")
+			.caseStep("测试第1步")
+			.caseExpect("测试第1预期")
+			.caseCondition("前置条件1")
+			.runStep("实际第1步")
+			.runStep("实际第2步", "实际第3步")
+			.exception(new NullPointerException("此时抛出了NullPointerException异常"), imageFile)
+			.runStep("实际第4步")
+			.runStep("实际第5步")
+			.exception(new RecordStateException("这里出现了RecordStateException异常"))
+			.runResult("实际结果1", false)
+			.runResult("实际结果2", true)
+			.runMark("实际备注")
+			.runScreenshot(imageFile);
+	}
 }

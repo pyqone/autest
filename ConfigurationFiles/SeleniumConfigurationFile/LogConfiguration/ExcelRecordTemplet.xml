@@ -44,10 +44,10 @@
 		<column id="id" name="序号" wide="8" align="center"/>
 		<column id="class_name" name="类名" wide="25" align="left"/>
 		<column id="method_name" name="方法名" wide="15" align="left"/>
-		<column id="error_step" name="错误步骤" wide="25" align="left"/>
-		<column id="error_class" name="异常类" wide="25" align="left"/>
-		<column id="error_information" name="异常信息" wide="25" align="left"/>
-		<column id="screenshot_position" name="截图位置" wide="25" align="left"/>
+		<column id="error_step" name="错误步骤" wide="25" align="left" index='true' row_text='1'/>
+		<column id="error_class" name="异常类" wide="25" align="left" index='true' row_text='1'/>
+		<column id="error_information" name="异常信息" wide="25" align="left" index='true' row_text='1'/>
+		<column id="screenshot_position" name="截图位置" wide="25" align="left" index='true' row_text='1'/>
 	</sheet>
 	
 	<!--  

@@ -311,8 +311,13 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		}
 		
 		//还原下标
+		/*
+		System.out.print(nowSheetName + " = ");
+		System.out.print(fieldMap.get(nowSheetName).get(field).name + " = ");
+		System.out.println(fieldMap.get(nowSheetName).get(field).content.size());
+		*/
 		index = getPoiIndex(fieldMap.get(nowSheetName).get(field).content.size(), index);
-						
+		
 		if (fieldMap.get(nowSheetName).get(field).datas.size() != 0) {
 			//查找数据有效性，若当前字段存在数据有效性，则将数据有效性转义，若添加的字段无法转义，则存储原内容
 			contents = dataValidityChange(contents, fieldMap.get(nowSheetName).get(field));
@@ -322,7 +327,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		
 		// 将字段内容写入fieldMap，若插入的下标不正确，则不做任何处理
 		try {
-			fieldMap.get(nowSheetName).get(field).content.addAll(index, Arrays.asList(contents));
+			fieldMap.get(nowSheetName).get(field).content.addAll(fieldMap.get(nowSheetName).get(field).content.size() == 0 ? 0 : index + 1, Arrays.asList(contents));
 		} catch (Exception e) {
 		}
 		
@@ -387,21 +392,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	/**
 	 * 用于结束一条用例写作的标志，调用该方法后将结束一条用例的编写， 该方法以下的添加用例内容的方法均为编辑另一条用例
 	 */
-	@SuppressWarnings("unchecked")
 	public FieldMark end() {
-		/*
-		// 写入到caseXml中
-		// 获取所有的sheet标签， 并筛选出name属性为sheetName的标签
-		List<Element> sheetList = ((List<Element>) (contentXml.getRootElement().elements("sheet"))).stream()
-				.filter(e -> e.attributeValue("name").equals(sheetName)).collect(Collectors.toList());
-		Element sheetElement = null;
-		// 判断是否存在sheet标签，若存在，则直接获筛选后的第一个数据，若不存在，则创建
-		if (sheetList.size() != 0) {
-			sheetElement = sheetList.get(0);
-		} else {
-			sheetElement = contentXml.getRootElement().addElement("sheet").addAttribute("name", sheetName);
-		}
-		*/
 		if (writeSheetNameList.isEmpty()) {
 			throw new IncorrectIndexException("当前不存在需要写入的sheet内容");
 		}
@@ -411,14 +402,17 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		// 创建case标签
 		writeSheetNameList.forEach(sheetName -> {
 			// 写入到caseXml中
-			// 获取所有的sheet标签， 并筛选出name属性为sheetName的标签
-			Element sheetElement = null;
+			// 通过xpath查询到相应的sheet标签
+			String finSheetXpath = "//sheet[@name='" + sheetName + "']";
+			Element sheetElement = (Element) (contentXml.selectSingleNode(finSheetXpath));
+			/*
 			for (Element element : ((List<Element>) (contentXml.getRootElement().elements("sheet")))) {
 				if (element.attributeValue("name").equals(sheetName)) {
 					sheetElement = element;
 					break;
 				}
 			}
+			*/
 			
 			// 判断是否存在sheet标签，若不存在，则创建相应的标签
 			if (sheetElement == null) {
@@ -453,9 +447,9 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 					}
 				}
 			});
-
+			
 			// 清空fieldMap中的内容
-			clearFieldContent();
+			clearFieldContent(sheetName);
 			// 将字段常值设置入fieldMap中，若抛出异常，则不进行处理
 			/*
 			if (constValueMap != null && constValueMap.size() != 0) {
@@ -806,12 +800,10 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	/**
 	 * 清空fieldMap内的存储字段信息，不清除字段
 	 */
-	private void clearFieldContent() {
-		fieldMap.forEach((sheetName, sheetFieldMap) -> {
-			sheetFieldMap.forEach((fieldId, field) -> {
+	private void clearFieldContent(String sheetName) {
+		fieldMap.get(sheetName).forEach((fieldId, field) -> {
 				field.clearContent();
 			});
-		});
 	}
 
 	/**
@@ -1431,7 +1423,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 				return null;
 			}
 			*/
-			
 			return ((Element) (contentXml.selectSingleNode("//sheet[@name='" + sheetName +"']/case[@id='" + uuid + "']")));
 		}
 		

@@ -105,9 +105,11 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 	/**
 	 * 用于记录执行开始时间，记录结束时，会写入相应的结束时间
 	 */
-	public void reckonByTime() {
+	public ExcelRecord reckonByTime() {
 		//若设定当前状态为开始记录状态，则存储当前的时间戳
 		startTime = System.currentTimeMillis();
+		
+		return this;
 	}
 	
 	/**
@@ -182,6 +184,7 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 	 * @return 类本身
 	 */
 	public ExcelRecord exception(Exception exception, File screenshotFile) {
+		errorScreenhotFile = screenshotFile;
 		return exception(exception)
 				.switchSheet("错误记录")
 				.addContent("screenshot_position", screenshotFile.getPath());
