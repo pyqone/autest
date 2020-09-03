@@ -66,7 +66,7 @@ public class RecordTool {
 	/**
 	 * Log类对象，默认构造
 	 */
-	private static Log log = new Log(DEFAULT_FILE_PATH);
+	private static Log_Old log = new Log_Old(DEFAULT_FILE_PATH);
 	/**
 	 * Record类对象，默认构造
 	 */
@@ -127,11 +127,11 @@ public class RecordTool {
 	private static boolean startRecord = false;
 
 	/**
-	 * 返回{@link Log}类对象
+	 * 返回{@link Log_Old}类对象
 	 * 
-	 * @return {@link Log}类对象
+	 * @return {@link Log_Old}类对象
 	 */
-	public static Log getLog() {
+	public static Log_Old getLog() {
 		return log;
 	}
 

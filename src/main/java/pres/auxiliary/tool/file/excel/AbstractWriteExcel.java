@@ -231,7 +231,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		word = WORD_SIGN + word + WORD_SIGN;
 		replaceWordMap.put(word, replactWord);
 	}
-
+	
 	/**
 	 * 通过传入的字段id，将对应的字段内容写入到用例最后的段落中，字段id对应xml配置文件中的单元格标签的id属性。
 	 * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>

@@ -1,2 +1,178 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cases><sheet name="运行记录"><case id="2c206a2f-2c1c-43e1-a633-374561096866"><field id="active_person" name="执行者"><text value="yuqipeng_d"/></field><field id="use_time" name="执行耗时"><text value="0.01s"/></field><field id="version" name="版本"><text value=""/></field><field id="result" name="执行结果"><text value="1.实际结果1"/><text value="2.实际结果2" colors="10"/></field><field id="screenshot_position" name="截图位置" link="file=./微信图片_20200828101657.png"><text value="src\test\java\pres\auxiliary\work\selenium\tool\微信图片_20200828101657.png"/></field><field id="active_time" name="执行时间"><text value="2020-08-31 12:50:19"/></field><field id="brower" name="浏览器"><text value=""/></field><field id="bug_number" name="Bug数量"><text value="1"/></field><field id="system" name="操作系统"><text value=""/></field><field id="method_name" name="方法名"><text value="addAllContentTest"/></field><field id="case_id" name="用例编号" link="dom='测试用例'!A2"><text value=""/></field><field id="step" name="执行步骤"><text value="1.实际第1步"/><text value="2.实际第2步"/><text value="3.实际第3步"/><text value="4.实际第4步"/></field><field id="id" name="序号"><text value=""/></field><field id="state" name="执行状态"><text value="正常"/></field><field id="class_name" name="类名"><text value="pres.auxiliary.work.selenium.tool.ExcelRecordTest"/></field><field id="mark" name="备注"><text value="实际备注"/></field></case><case id="1ce766aa-f62c-4df3-bc09-80e63ab67a41"><field id="active_person" name="执行者"><text value="yuqipeng_d"/></field><field id="use_time" name="执行耗时"><text value="0.004s"/></field><field id="version" name="版本"><text value=""/></field><field id="result" name="执行结果"><text value="1.实际结果1"/><text value="2.实际结果2" colors="10"/></field><field id="screenshot_position" name="截图位置" link="file=./微信图片_20200828101657.png"><text value="src\test\java\pres\auxiliary\work\selenium\tool\微信图片_20200828101657.png"/></field><field id="active_time" name="执行时间"><text value="2020-08-31 12:50:19"/></field><field id="brower" name="浏览器"><text value=""/></field><field id="bug_number" name="Bug数量"><text value="1"/></field><field id="system" name="操作系统"><text value=""/></field><field id="method_name" name="方法名"><text value="addAllContentTest"/></field><field id="case_id" name="用例编号" link="dom='测试用例'!A3"><text value=""/></field><field id="step" name="执行步骤"><text value="1.实际第1步"/><text value="2.实际第2步"/><text value="3.实际第3步"/><text value="4.实际第4步"/><text value="5.实际第5步"/></field><field id="id" name="序号"><text value=""/></field><field id="state" name="执行状态" link="dom='错误记录'!A2"><text value="异常" colors="10"/></field><field id="class_name" name="类名"><text value="pres.auxiliary.work.selenium.tool.ExcelRecordTest"/></field><field id="mark" name="备注"><text value="实际备注"/></field></case></sheet><sheet name="测试用例"><case id="2c206a2f-2c1c-43e1-a633-374561096866"><field id="expect" name="预期"><text value="测试第1预期"/></field><field id="condition" name="前置条件"><text value="1.前置条件1"/></field><field id="case_id" name="用例编号" link="dom='运行记录'!B2"><text value=""/></field><field id="step" name="步骤"><text value="测试第1步"/></field><field id="title" name="用例标题"><text value="测试成功运行标题"/></field></case><case id="1ce766aa-f62c-4df3-bc09-80e63ab67a41"><field id="expect" name="预期"><text value="测试第1预期"/></field><field id="condition" name="前置条件"><text value="1.前置条件1"/></field><field id="case_id" name="用例编号" link="dom='运行记录'!B3"><text value=""/></field><field id="step" name="步骤"><text value="测试第1步"/></field><field id="title" name="用例标题"><text value="测试失败运行标题"/></field></case></sheet><sheet name="错误记录"><case id="1ce766aa-f62c-4df3-bc09-80e63ab67a41"><field id="screenshot_position" name="截图位置" link="file=./微信图片_20200828101657.png"><text value="1.src\test\java\pres\auxiliary\work\selenium\tool\微信图片_20200828101657.png"/></field><field id="error_information" name="异常信息"><text value="1.此时抛出了NullPointerException异常"/><text value="2.这里出现了RecordStateException异常"/></field><field id="error_class" name="异常类"><text value="1.java.lang.NullPointerException"/><text value="2.pres.auxiliary.work.selenium.tool.RecordStateException"/></field><field id="method_name" name="方法名" link="dom='运行记录'!D3"><text value="addAllContentTest"/></field><field id="error_step" name="错误步骤"><text value="1.实际第3步"/><text value="2.实际第5步"/></field><field id="id" name="序号"><text value=""/></field><field id="class_name" name="类名"><text value="pres.auxiliary.work.selenium.tool.ExcelRecordTest"/></field></case></sheet></cases>
+<cases>
+	<sheet name="运行记录">
+		<case id="2c206a2f-2c1c-43e1-a633-374561096866">
+			<field id="active_person" name="执行者">
+				<text value="yuqipeng_d"/>
+			</field>
+			<field id="use_time" name="执行耗时">
+				<text value="0.01s"/>
+			</field>
+			<field id="version" name="版本">
+				<text value=""/>
+			</field>
+			<field id="result" name="执行结果">
+				<text value="1.实际结果1"/>
+				<text value="2.实际结果2" colors="10"/>
+			</field>
+			<field id="screenshot_position" name="截图位置" link="file=./微信图片_20200828101657.png">
+				<text value="src\test\java\pres\auxiliary\work\selenium\tool\微信图片_20200828101657.png"/>
+			</field>
+			<field id="active_time" name="执行时间">
+				<text value="2020-08-31 12:50:19"/>
+			</field>
+			<field id="brower" name="浏览器">
+				<text value=""/>
+			</field>
+			<field id="bug_number" name="Bug数量">
+				<text value="1"/>
+			</field>
+			<field id="system" name="操作系统">
+				<text value=""/>
+			</field>
+			<field id="method_name" name="方法名">
+				<text value="addAllContentTest"/>
+			</field>
+			<field id="case_id" name="用例编号" link="dom='测试用例'!A2">
+				<text value=""/>
+			</field>
+			<field id="step" name="执行步骤">
+				<text value="1.实际第1步"/>
+				<text value="2.实际第2步"/>
+				<text value="3.实际第3步"/>
+				<text value="4.实际第4步"/>
+			</field>
+			<field id="id" name="序号">
+				<text value=""/>
+			</field>
+			<field id="state" name="执行状态">
+				<text value="正常"/>
+			</field>
+			<field id="class_name" name="类名">
+				<text value="pres.auxiliary.work.selenium.tool.ExcelRecordTest"/>
+			</field>
+			<field id="mark" name="备注">
+				<text value="实际备注"/>
+			</field>
+		</case>
+		<case id="1ce766aa-f62c-4df3-bc09-80e63ab67a41">
+			<field id="active_person" name="执行者">
+				<text value="yuqipeng_d"/>
+			</field>
+			<field id="use_time" name="执行耗时">
+				<text value="0.004s"/>
+			</field>
+			<field id="version" name="版本">
+				<text value=""/>
+			</field>
+			<field id="result" name="执行结果">
+				<text value="1.实际结果1"/>
+				<text value="2.实际结果2" colors="10"/>
+			</field>
+			<field id="screenshot_position" name="截图位置" link="file=./微信图片_20200828101657.png">
+				<text value="src\test\java\pres\auxiliary\work\selenium\tool\微信图片_20200828101657.png"/>
+			</field>
+			<field id="active_time" name="执行时间">
+				<text value="2020-08-31 12:50:19"/>
+			</field>
+			<field id="brower" name="浏览器">
+				<text value=""/>
+			</field>
+			<field id="bug_number" name="Bug数量">
+				<text value="1"/>
+			</field>
+			<field id="system" name="操作系统">
+				<text value=""/>
+			</field>
+			<field id="method_name" name="方法名">
+				<text value="addAllContentTest"/>
+			</field>
+			<field id="case_id" name="用例编号" link="dom='测试用例'!A3">
+				<text value=""/>
+			</field>
+			<field id="step" name="执行步骤">
+				<text value="1.实际第1步"/>
+				<text value="2.实际第2步"/>
+				<text value="3.实际第3步"/>
+				<text value="4.实际第4步"/>
+				<text value="5.实际第5步"/>
+			</field>
+			<field id="id" name="序号">
+				<text value=""/>
+			</field>
+			<field id="state" name="执行状态" link="dom='错误记录'!A2">
+				<text value="异常" colors="10"/>
+			</field>
+			<field id="class_name" name="类名">
+				<text value="pres.auxiliary.work.selenium.tool.ExcelRecordTest"/>
+			</field>
+			<field id="mark" name="备注">
+				<text value="实际备注"/>
+			</field>
+		</case>
+	</sheet>
+	<sheet name="测试用例">
+		<case id="2c206a2f-2c1c-43e1-a633-374561096866">
+			<field id="expect" name="预期">
+				<text value="测试第1预期"/>
+			</field>
+			<field id="condition" name="前置条件">
+				<text value="1.前置条件1"/>
+			</field>
+			<field id="case_id" name="用例编号" link="dom='运行记录'!B2">
+				<text value=""/>
+			</field>
+			<field id="step" name="步骤">
+				<text value="测试第1步"/>
+			</field>
+			<field id="title" name="用例标题">
+				<text value="测试成功运行标题"/>
+			</field>
+		</case>
+		<case id="1ce766aa-f62c-4df3-bc09-80e63ab67a41">
+			<field id="expect" name="预期">
+				<text value="测试第1预期"/>
+			</field>
+			<field id="condition" name="前置条件">
+				<text value="1.前置条件1"/>
+			</field>
+			<field id="case_id" name="用例编号" link="dom='运行记录'!B3">
+				<text value=""/>
+			</field>
+			<field id="step" name="步骤">
+				<text value="测试第1步"/>
+			</field>
+			<field id="title" name="用例标题">
+				<text value="测试失败运行标题"/>
+			</field>
+		</case>
+	</sheet>
+	<sheet name="错误记录">
+		<case id="1ce766aa-f62c-4df3-bc09-80e63ab67a41">
+			<field id="screenshot_position" name="截图位置" link="file=./微信图片_20200828101657.png">
+				<text value="1.src\test\java\pres\auxiliary\work\selenium\tool\微信图片_20200828101657.png"/>
+			</field>
+			<field id="error_information" name="异常信息">
+				<text value="1.此时抛出了NullPointerException异常"/>
+				<text value="2.这里出现了RecordStateException异常"/>
+			</field>
+			<field id="error_class" name="异常类">
+				<text value="1.java.lang.NullPointerException"/>
+				<text value="2.pres.auxiliary.work.selenium.tool.RecordStateException"/>
+			</field>
+			<field id="method_name" name="方法名" link="dom='运行记录'!D3">
+				<text value="addAllContentTest"/>
+			</field>
+			<field id="error_step" name="错误步骤">
+				<text value="1.实际第3步"/>
+				<text value="2.实际第5步"/>
+			</field>
+			<field id="id" name="序号">
+				<text value=""/>
+			</field>
+			<field id="class_name" name="类名">
+				<text value="pres.auxiliary.work.selenium.tool.ExcelRecordTest"/>
+			</field>
+		</case>
+	</sheet>
+</cases>

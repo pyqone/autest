@@ -31,15 +31,6 @@
 		</datas>
 	</sheet>
 	
-	<!--  
-	<sheet name="运行记录截图" freeze="0">
-		<column id="id" name="序号" wide="8" align="center"/>
-		<column id="class_name" name="类名" wide="25" align="left"/>
-		<column id="method_name" name="方法名" wide="15" align="left" link="运行记录|id"/>
-		<column id="screenshot" name="截图" wide="25" align="left" link="本地"/>
-	</sheet>
-	-->
-	
 	<sheet name="错误记录" freeze="4">
 		<column id="id" name="序号" wide="8" align="center"/>
 		<column id="class_name" name="类名" wide="25" align="left"/>
@@ -49,13 +40,4 @@
 		<column id="error_information" name="异常信息" wide="25" align="left" index='true' row_text='1'/>
 		<column id="screenshot_position" name="截图位置" wide="25" align="left" index='true' row_text='1'/>
 	</sheet>
-	
-	<!--  
-	<sheet name="错误记录截图" freeze="0">
-		<column id="id" name="序号" wide="8" align="center"/>
-		<column id="class_name" name="类名" wide="25" align="left"/>
-		<column id="method_name" name="方法名" wide="15" align="left" link="错误记录|id"/>
-		<column id="screenshot" name="截图" wide="25" align="left" link="本地"/>
-	</sheet>
-	-->
 </templet>
