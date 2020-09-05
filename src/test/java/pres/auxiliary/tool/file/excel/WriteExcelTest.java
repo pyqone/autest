@@ -8,6 +8,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.date.Time;
+
 public class WriteExcelTest {
 	final File configXml = new File("src/test/java/pres/auxiliary/tool/file/excel/WriteExcelTest.xml");
 	final File excelFile = new File("src/test/java/pres/auxiliary/tool/file/excel/WriteExcelTest.xlsx");
@@ -43,5 +45,23 @@ public class WriteExcelTest {
 			.fieldLink("标题", "'测试Sheet2'!A1")
 			.fieldLink("测试Sheet2", "设计者", "'测试Sheet1'!B2")
 			;
+	}
+	
+	@Test
+	public void setReplactWordTest() {
+		we.setReplactWord("title", "标题");
+		we.setReplactWord("格式化时间", (word) -> {
+			return new Time().getFormatTime();
+		});
+		we.setReplactWord("不格式化时间", (word) -> {
+			Time time = new Time();
+			time.setTimeFormat("yyyyMMddHHmmss");
+			return time.getFormatTime();
+		});
+		
+		we.switchSheet("测试Sheet1")
+			.addContent("标题", "测试#title#")
+			.addContent("步骤", "#格式化时间#", "#不格式化时间#")
+			.end();
 	}
 }

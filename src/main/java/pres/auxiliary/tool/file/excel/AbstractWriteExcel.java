@@ -19,7 +19,6 @@ import org.apache.poi.ss.usermodel.DataValidation;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -88,7 +87,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	/**
 	 * 用于存储待替换的词语以及被替换的词语
 	 */
-	protected HashMap<String, String> replaceWordMap = new HashMap<>(16);
+	protected HashMap<String, ReplactFunction> replaceWordMap = new HashMap<>(16);
 	
 	/**
 	 * 用于存储当前用例中正在编写的
@@ -228,8 +227,18 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * @param replactWord 被替换的词语
 	 */
 	public void setReplactWord(String word, String replactWord) {
-		word = WORD_SIGN + word + WORD_SIGN;
-		replaceWordMap.put(word, replactWord);
+			setReplactWord(word, (text) -> {
+			return replactWord;
+		});
+	}
+	
+	/**
+	 * 用于根据需要替换的词语，设置需要动态写入到文本的内容。添加词语时无需添加特殊字符
+	 * @param word 需要替换的词语
+	 * @param replactFunction 替换规则
+	 */
+	public void setReplactWord(String word, ReplactFunction replactFunction) {
+		replaceWordMap.put(word, replactFunction);
 	}
 	
 	/**
@@ -571,6 +580,17 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		writeText(xc, textList);
 		//向单元格中添加超链接
 		addLink(xc, fieldElement.attributeValue("link"));
+		
+		/*
+		if (fieldElement.attribute("link") != null) {
+			// 获取字体信息
+			XSSFFont xf = xc.getCellStyle().getFont(); 
+			// 添加下划线
+			xf.setUnderline((byte) 1);
+			// 设置字体颜色为蓝色
+			xf.setColor(IndexedColors.BLUE.getIndex());
+		}
+		*/
 	}
 
 	/**
@@ -670,11 +690,11 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		// 新增单元格的样式
 //		CellStyleType.LINK_TEXT.getXSSFCellStyle(xc);
 		// 获取字体信息
-		XSSFFont xf = xc.getCellStyle().getFont();
+//		XSSFFont xf = xc.getCellStyle().getFont();
 		// 添加下划线
-		xf.setUnderline((byte) 1);
+//		xf.setUnderline((byte) 1);
 		// 设置字体颜色为蓝色
-		xf.setColor(IndexedColors.BLUE.getIndex());
+//		xf.setColor(IndexedColors.BLUE.getIndex());
 	}
 	
 	/**
@@ -728,7 +748,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 			xcs.setFillPattern(FillPatternType.THIN_FORWARD_DIAG);
 			xcs.setFillForegroundColor(backgroundcolor);
 		}
-
+		
 		return xcs;
 	}
 
@@ -911,13 +931,13 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * 用于对需要进行替换的特殊词语进行替换
 	 * @param contents 文本内容
 	 */
-	private String[] replaceWord(String[] contents) {
+	protected String[] replaceWord(String[] contents) {
 		// 查找特殊词语，并对词语进行替换
 		for (String word : replaceWordMap.keySet()) {
-			// 查找所有的内容，并将特殊词语进行替换
+			// 查找所有的0内容，并将特殊词语进行替换
 			for (int i = 0; i < contents.length; i++) {
-				// 若需要添加序号，则先获取当前列表中的字段个数，以便于继续编号
-				contents[i] = contents[i].replaceAll(word, replaceWordMap.get(word));
+				String regex = WORD_SIGN + word + WORD_SIGN;
+				contents[i] = contents[i].replaceAll(regex, replaceWordMap.get(word).replact(word));
 			}
 		}
 		

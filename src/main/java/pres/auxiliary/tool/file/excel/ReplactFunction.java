@@ -15,8 +15,7 @@ public interface ReplactFunction {
 	/**
 	 * 根据替换的词语，以及在该位置上的原始内容，对词语所在位置内容进行替换
 	 * @param replactWord 需要替换的词语
-	 * @param value 原始内容
 	 * @return 被替换的内容
 	 */
-	public String replact(String replactWord, String value);
+	public String replact(String replactWord);
 }
