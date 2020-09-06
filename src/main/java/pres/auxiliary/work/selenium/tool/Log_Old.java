@@ -15,7 +15,7 @@ import java.util.Date;
  * @version Ver1.0
  * @since JDK 12
  */
-public class Log {
+public class Log_Old {
 	/**
 	 * 用于存储文件的保存路径
 	 */
@@ -45,7 +45,7 @@ public class Log {
 	 * 默认位置为：C:\\AutoTestting\\TestResults\\<br/>
 	 * 默认文件名为（不带后缀）：TestResults
 	 */
-	public Log() {
+	public Log_Old() {
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class Log {
 	 * @throws IncorrectDirectoryException
 	 *             传入路径不合法时抛出的异常
 	 */
-	public Log(String savePath) {
+	public Log_Old(String savePath) {
 		setSavePath(savePath);
 	}
 
@@ -73,7 +73,7 @@ public class Log {
 	 * @throws IncorrectDirectoryException
 	 *             传入的路径不合法或者文件名不合法时抛出的异常
 	 */
-	public Log(String savePath, String fileName) {
+	public Log_Old(String savePath, String fileName) {
 		setSavePath(savePath);
 		setFileName(fileName);
 	}

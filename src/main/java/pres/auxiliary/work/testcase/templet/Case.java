@@ -27,16 +27,16 @@ public abstract class Case {
 	/**
 	 * 用于标记获取标签下所有的文本
 	 */
-	final String ALL = "-1:getAllText";
+	protected final String ALL = "-1:getAllText";
 	
 	/**
 	 * 用于存储需要替换的词语的开始标记
 	 */
-	final String START_SIGN = "*{";
+	protected final String START_SIGN = "*{";
 	/**
 	 * 用于存储需要替换的词语的结束标记
 	 */
-	final String END_SIGN = "}*";
+	protected final String END_SIGN = "}*";
 	
 	/**
 	 * 用于存储传入到正则表达式中的开始标记
@@ -46,17 +46,17 @@ public abstract class Case {
 	/**
 	 * 用于指向测试用例xml文件的Document对象
 	 */
-	Document configXml;	
+	protected Document configXml;	
 	
 	/**
 	 * 存储xml文件中其需要替换的词语
 	 */
-	HashMap<String, String> wordMap = new HashMap<String, String>(16);
+	protected HashMap<String, String> wordMap = new HashMap<String, String>(16);
 	
 	/**
 	 * 存储字段的文本内容
 	 */
-	HashMap<String, ArrayList<String>> fieldTextMap = new HashMap<String, ArrayList<String>>(16);
+	protected HashMap<String, ArrayList<String>> fieldTextMap = new HashMap<String, ArrayList<String>>(16);
 	
 	/**
 	 * 根据用例xml文件来构造Case类
@@ -96,7 +96,7 @@ public abstract class Case {
 	 * @param text 需要替换的文本
 	 * @return 替换后的文本
 	 */
-	String replaceText(String text) {
+	protected String replaceText(String text) {
 		StringBuilder sb = new StringBuilder(text);
 		//存储替换符的位置
 		int index = 0;
@@ -119,11 +119,24 @@ public abstract class Case {
 	/**
 	 * 用于获取用例xml中对应用例的标签内的文本，并返回替换词语后的文本
 	 * @param caseName 用例名称
-	 * @param label 标签枚举
+	 * @param labelType 标签枚举{@link LabelType}
 	 * @param id 对应标签的id属性
 	 * @return 标签中存储的文本，并进行处理
 	 */
-	String getLabelText(String caseName, LabelType label, String id) {
+	protected String getLabelText(String caseName, LabelType labelType, String id) {
+		//返回处理替换的单词后相应的文本
+		return getLabelText(caseName, labelType.getName(), id);
+		
+	}
+	
+	/**
+	 * 用于获取用例xml中对应用例的标签内的文本，并返回替换词语后的文本
+	 * @param caseName 用例名称
+	 * @param labelName 标签名称
+	 * @param id 对应标签的id属性
+	 * @return 标签中存储的文本，并进行处理
+	 */
+	protected String getLabelText(String caseName, String labelName, String id) {
 		//定位case标签的名称属性名
 		String caseLabelNameAttribute = "name";
 		//定位标签中能指向调用用例的属性（id）
@@ -134,7 +147,7 @@ public abstract class Case {
 		//拼接xpath，规则"//case[@name='caseName']//标签名称[@id='id']"
 		String xpath = "//" + LabelType.CASE.getName() + 
 				"[@" + caseLabelNameAttribute + "='" + 
-				caseName + "']//" + label.getName() + 
+				caseName + "']//" + labelName + 
 				"[@" + labelIdAttribute + "='" + id +"']";
 		
 		//获取相应的文本内容
@@ -143,7 +156,7 @@ public abstract class Case {
 		
 		//判断集合是否存在元素，若不存在元素，则抛出异常
 		if (textElement == null) {
-			throw new LabelNotFoundException("不存在的标签：<" + label.getName() + " " + labelIdAttribute + "='" + id +"'...>");
+			throw new LabelNotFoundException("不存在的标签：<" + labelName + " " + labelIdAttribute + "='" + id +"'...>");
 		}
 		
 		//返回处理替换的单词后相应的文本
@@ -158,7 +171,7 @@ public abstract class Case {
 	 * @return 标签中存储的文本，并进行处理
 	 */
 	@SuppressWarnings("unchecked")
-	ArrayList<String> getAllLabelText(String caseName, LabelType label) {
+	protected ArrayList<String> getAllLabelText(String caseName, LabelType label) {
 		//定位case标签的名称属性名
 		String caseLabelNameAttribute = "name";
 		//定位相应标签中存储用例内容的属性
@@ -209,7 +222,7 @@ public abstract class Case {
 	 * 用于保存xml文件中的字段
 	 */
 	@SuppressWarnings("unchecked")
-	void saveField() {
+	protected void saveField() {
 		//获取case标签下所有的标签，存储至fieldTextMap，以初始化所有的字段名称
 		((List<Element>) (configXml.getRootElement().elements("case"))).forEach(caseElement -> {
 			((List<Element>) caseElement.elements()).forEach(labelElement -> {
@@ -225,8 +238,26 @@ public abstract class Case {
 	 * @param label 标签名称（枚举）
 	 * @param text 相应内容
 	 */
-	void addFieldText(LabelType label, String text) {
+	protected void addFieldText(LabelType label, String text) {
 		fieldTextMap.get(label.getName()).add(text);
+	}
+	
+	/**
+	 * 用于添加多行文本
+	 * @param label 标签名称
+	 * @param texts 相应内容
+	 */
+	protected void addFieldText(String labelName, List<String> texts) {
+		fieldTextMap.get(labelName).addAll(texts);
+	}
+	
+	/**
+	 * 用于添加一行文本
+	 * @param label 标签名称
+	 * @param text 相应内容
+	 */
+	protected void addFieldText(String labelName, String text) {
+		fieldTextMap.get(labelName).add(text);
 	}
 	
 	/**
@@ -234,14 +265,14 @@ public abstract class Case {
 	 * @param label 标签名称（枚举）
 	 * @param texts 相应内容
 	 */
-	void addFieldText(LabelType label, List<String> texts) {
+	protected void addFieldText(LabelType label, List<String> texts) {
 		fieldTextMap.get(label.getName()).addAll(texts);
 	}
 	
 	/**
 	 * 用于清空字段的内容，以避免存储上一次输入的用例
 	 */
-	void clearFieldText() {
+	protected void clearFieldText() {
 		fieldTextMap.forEach((key, value) -> {
 			fieldTextMap.get(key).clear();
 		});
@@ -255,7 +286,7 @@ public abstract class Case {
 		return fieldTextMap;
 	}
 	
-	/**`	
+	/**	
 	 * 由于添加与参数相关的数据时需要将关联的字段（如步骤及结果）都添加至其中，
 	 * 若后期关联字段增加，则代码量将是成倍的增加，故将关联的内容提取出来，在
 	 * 外部进行添加，之后修改关联字段时只需修改该方法即可。若传入-1，则表示
@@ -268,7 +299,7 @@ public abstract class Case {
 	 * @param caseName 读取的用例名称
 	 * @param ids id参数串
 	 */
-	void relevanceAddData(String caseName, String...ids) {
+	protected void relevanceAddData(String caseName, String...ids) {
 		//添加步骤
 		if (ids[0].equals(ALL)) {
 			addFieldText(LabelType.STEP, getAllLabelText(caseName, LabelType.STEP));

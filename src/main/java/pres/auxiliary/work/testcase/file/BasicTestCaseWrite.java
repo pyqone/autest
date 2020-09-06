@@ -2,6 +2,8 @@ package pres.auxiliary.work.testcase.file;
 
 import java.io.File;
 
+import org.dom4j.DocumentException;
+
 /**
  * <p><b>文件名：</b>BasicTestCaseWrite.java</p>
  * <p><b>用途：</b>在无相应的测试用例文件类时，可使用本类，对自定义的一个测试用例模板进行编辑</p>
@@ -19,9 +21,10 @@ public class BasicTestCaseWrite extends AbstractTestCaseWrite<BasicTestCaseWrite
 	 * 
 	 * @param configFile 测试文件模板xml配置文件类对象
 	 * @param caseFile   测试用例文件类对象
+	 * @throws DocumentException 
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
-	public BasicTestCaseWrite(File configFile, File caseFile) {
+	public BasicTestCaseWrite(File configFile, File caseFile) throws DocumentException {
 		super(configFile, caseFile);
 	}
 }

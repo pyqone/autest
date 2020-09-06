@@ -371,6 +371,7 @@ public abstract class AbstractBrower {
 		pageMap.put(popuHandle, popuPage);
 		//将当前页面指向到弹窗页面上
 		nowPage = popuPage;
+		windowHandleSet.add(popuHandle);
 		
 		//返回切换弹窗成功
 		return true;

@@ -22,10 +22,9 @@ import pres.auxiliary.work.selenium.xml.ReadXml;
 /**
  * <p><b>文件名：</b>AbstractElement.java</p>
  * <p><b>用途：</b></p>
- * <p><pre>
- *   对辅助化测试工具selenium的获取元素代码进行的二次封装，通过类中提供的方法以及配合相应存储元素的
+ * <p>对辅助化测试工具selenium的获取元素代码进行的二次封装，通过类中提供的方法以及配合相应存储元素的
  * xml文件，以更简便的方式对页面元素进行获取，减少编程时的代码量。
- * </pre></p>
+ * </p>
  * <p><b>编码时间：</b>2020年4月25日 下午4:18:37</p>
  * <p><b>修改时间：</b>2020年4月25日 下午4:18:37</p>
  * @author 彭宇琦
@@ -34,7 +33,7 @@ import pres.auxiliary.work.selenium.xml.ReadXml;
  */
 public abstract class AbstractBy {
 	/**
-	 * 用于存储浏览器的WebDriver对象，设为静态，保证所有的子类只使用一个WebDriver对象，以避免造成WebDriver不正确导致的Bug
+	 * 用于存储浏览器的WebDriver对象
 	 */
 	WebDriver driver;
 	/**
@@ -70,7 +69,7 @@ public abstract class AbstractBy {
 	private long waitTime = 5;
 	
 	/**
-	 * 控制是否自动切换窗体，由于通过Event类调用时会构造另一个事件类，但每个类都应共享一个开关，故需要加上static
+	 * 控制是否自动切换窗体，由于通过Event类调用时会构造另一个事件类
 	 */
 	boolean isAutoSwitchIframe = true;
 	
@@ -109,9 +108,9 @@ public abstract class AbstractBy {
 	}
 
 	/**
-	 * 用于设置事件等待时间，默认时间为5秒
+	 * 用于设置元素等待时间，默认时间为5秒
 	 * 
-	 * @param waitTime 事件等待时间
+	 * @param waitTime 元素等待时间
 	 */
 	public void setWaitTime(long waitTime) {
 		this.waitTime = waitTime;

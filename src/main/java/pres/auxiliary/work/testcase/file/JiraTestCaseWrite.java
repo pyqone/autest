@@ -2,6 +2,8 @@ package pres.auxiliary.work.testcase.file;
 
 import java.io.File;
 
+import org.dom4j.DocumentException;
+
 import pres.auxiliary.work.testcase.templet.LabelType;
 
 /**
@@ -24,9 +26,10 @@ public class JiraTestCaseWrite extends CommonTestCaseWrite<JiraTestCaseWrite> {
 	 * 
 	 * @param configFile 测试文件模板xml配置文件类对象
 	 * @param caseFile   测试用例文件类对象
+	 * @throws DocumentException 
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
-	public JiraTestCaseWrite(File configFile, File caseFile) {
+	public JiraTestCaseWrite(File configFile, File caseFile) throws DocumentException {
 		super(configFile, caseFile);
 		
 		//TODO 添加与测试用例模板的关联，若测试用例模板字段有所改变，则在此改变关联字段

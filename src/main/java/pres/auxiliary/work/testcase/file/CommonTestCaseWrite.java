@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.dom4j.DocumentException;
+
 /**
  * <p><b>文件名：</b>CommonTestCaseWrite.java</p>
  * <p><b>用途：</b>定义了测试用例中一些基本方法的添加，如添加步骤、预期方法等，使编码时更加直观</p>
@@ -21,9 +23,10 @@ public abstract class CommonTestCaseWrite<T extends CommonTestCaseWrite<T>> exte
 	 * 
 	 * @param configFile 测试文件模板xml配置文件类对象
 	 * @param caseFile   测试用例文件类对象
+	 * @throws DocumentException 
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
-	public CommonTestCaseWrite(File configFile, File caseFile) {
+	public CommonTestCaseWrite(File configFile, File caseFile) throws DocumentException {
 		super(configFile, caseFile);
 	}
 	
@@ -117,7 +120,7 @@ public abstract class CommonTestCaseWrite<T extends CommonTestCaseWrite<T>> exte
 		//1.命中一个结果，则直接存入结果
 		//2.命中多个结果或未命中结果，则以“/key1/key2/key3/.../keyN”的形式拼接字符串
 		//获取数据有效性
-		ArrayList<String> dataList = fieldMap.get(getModuleName()).matchDataValidation(keys);
+		ArrayList<String> dataList = fieldMap.get(nowSheetName).get(getModuleName()).matchDataValidation(keys);
 		//存储最终得到的模块信息
 		StringBuilder dataText = new StringBuilder();
 		if (dataList.size() == 1) {

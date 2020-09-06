@@ -71,7 +71,7 @@ public abstract class AbstractTestCaseWrite<T extends AbstractTestCaseWrite<T>> 
 	 */
 	public void relevanceCase(String field, String labelType) {
 		// 判断字段是否存在，若不存在，则抛出异常
-		if (!fieldMap.containsKey(field)) {
+		if (!fieldMap.get(nowSheetName).containsKey(field)) {
 			throw new LabelNotFoundException("当前sheet不存在的标签id：" + field);
 		}
 

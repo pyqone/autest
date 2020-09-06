@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templet>
+	<sheet name='测试Sheet1' freeze='2'>
+		<column id='标题' name='Name' wide='30.88' align='left'/>
+		<column id='步骤' name='Test Script (Step-by-Step) - Step' wide='45.75' align='left' row_text='1' index='true'/>
+		<column id='状态' name='Status' wide='10.00' align='center'/>
+	
+		<datas id='状态'>
+			<data name='Approved' />
+			<data name='Draft' />
+			<data name='Deprecated' />
+		</datas>
+	</sheet>
+	
+	<sheet name='测试Sheet2' freeze='1'>
+		<column id='关键用例' name='Component' wide='10.00' align='center'/>
+		<column id='设计者' name='Owner' wide='10.00' align='center'/>
+	
+		<datas id='关键用例'>
+			<data name='是' />
+			<data name='否' />
+		</datas>
+	</sheet>
+</templet>
