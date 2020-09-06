@@ -10,9 +10,9 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.file.MarkColorsType;
 import pres.auxiliary.tool.file.excel.CreateExcelFile;
 import pres.auxiliary.work.testcase.file.BasicTestCaseWrite;
-import pres.auxiliary.work.testcase.file.MarkColorsType;
 import pres.auxiliary.work.testcase.templet.InformationCase.InputRuleType;
 
 public class ProgramWriteTestCaseDemo {

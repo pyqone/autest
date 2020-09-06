@@ -11,7 +11,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.testcase.file.MarkColorsType;
+import pres.auxiliary.tool.file.MarkColorsType;
 import pres.auxiliary.tool.file.excel.AbstractWriteExcel;
 import pres.auxiliary.tool.file.excel.CreateExcelFile;
 import pres.auxiliary.tool.file.excel.AbstractWriteExcel.FieldMark;

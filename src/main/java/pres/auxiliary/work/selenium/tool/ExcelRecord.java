@@ -8,9 +8,9 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
 import pres.auxiliary.tool.date.Time;
+import pres.auxiliary.tool.file.MarkColorsType;
 import pres.auxiliary.tool.file.excel.AbstractWriteExcel;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.testcase.file.MarkColorsType;
 
 /**
  * <p><b>文件名：</b>ExcelRecord.java</p>

@@ -36,10 +36,10 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import pres.auxiliary.tool.file.MarkColorsType;
 import pres.auxiliary.tool.regex.RegexType;
 import pres.auxiliary.work.selenium.datadriven.ListFileRead;
 import pres.auxiliary.work.testcase.file.IncorrectFileException;
-import pres.auxiliary.work.testcase.file.MarkColorsType;
 import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
 
 /**
