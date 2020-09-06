@@ -621,7 +621,215 @@ public void addCase() {
 }
 ```
 
-##### 1.3.2 测试用例模板扩展
+##### 1.3.2 测试用例模板文件扩展
+同配置测试用例文件模板一样，测试用例模板也是通过xml文件进行配置，目的是为了方便后续的字段扩展以及用例的扩展，其xml文件相对与文件模板而言就简单一些，大致结构如下：
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<cases>
+	<case name=''>
+		<steps>
+			<step id='' value=''/>
+			<step id='' value=''/>
+		</steps>
+		<excepts>
+			<except id='' value=''/>
+		</excepts>
+		<titles>
+			<title id='' value='' />
+		</titles>
+		<preconditions>
+			<precondition id='' value='' />
+		</preconditions>
+		<ranks>
+			<rank id='' value='' />
+		</ranks>
+		<keys>
+			<key id='' value='' />
+		</keys>
+	</case>
+</cases>
+```
+当然，除了编写配置文件外，我们还需要编写一个类，这样才能实现测试用例的扩展，其测试用例类的编写将在下一节中讲解。先解释下xml配置文件的标签：
+- cases是根标签，其不包含属性，可包含多个case标签
+- case标签表示一条用例模板的开始，可包含测试用例所需要的字段内容标签，子标签可根据需要进行扩展，但扩展的标签需要按照一定的规则编写，其具有以下属性：
+
+|     属性      |  介绍     |
+|-------------|------------|
+|name|标记用例在代码中的标识，代码中将根据该字段查找相应的用例模板，该属性必须存在|
+
+--case下其他子标签：用例标签下的子标签为扩展的字段标签，表示用例下的字段的取值可以在其中找到，虽然该标签可以自定义，但还是需要遵循一定的规则：
+1. 字段的名称必须是“扩展字段名+"s"”，例如其中的steps、titles等标签
+2. 其标签下必须包含与其同名，但不包含s的标签，表示该字段的可选值，例如steps下的step。该标签可以同时存在多个，其应包含以下属性：
+
+|     属性      |  介绍     |
+|-------------|------------|
+|id|标记该可选值在代码中的标识，在代码中使用其值时通过该属性值获取，该属性必须存在|
+|value|表示需要填写至测试用例中的内容，该属性必须存在|
+
+需要注意的是，标签的value属性允许编写可替换的词语，使用“\*{词语}\*”进行标记
+
+例如，以下是一个比较完整的测试用例模板配置文件，截取至已有的文件：
+
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<cases project='BrowseList'>
+	<case name='addAppBrowseListCase'>
+		<titles>
+			<title id='1' value='浏览*{信息}*列表' />
+		</titles>
+		<keys>
+			<key id='1' value='*{信息}*列表,刷新,加载' />
+		</keys>
+		<ranks>
+			<rank id='1' value='1' />
+		</ranks>
+		<preconditions>
+			<precondition id='1' value='列表中有信息存在' />
+		</preconditions>
+		<steps>
+			<step id='1' value='查看*{信息}*列表' />
+			<step id='2' value='下拉刷新列表' />
+			<step id='3' value='上拉加载列表' />
+			<step id='4' value='在无剩余数据时，上拉加载列表' />
+			<step id='5' value='加载或刷新列表时点击某一个信息或某一个按钮' />
+		</steps>
+		<excepts>
+			<except id='1' value='能看到当前存在的所有信息，且信息按一定规则排序'/>
+			<except id='2' value='列表被刷新，若有新增信息则被显示出来，且原有数据排序不会混乱'/>
+			<except id='3' value='能加载剩下的信息'/>
+			<except id='4' value='上拉有效，但不加载出数据或数据不会错乱'/>
+			<except id='5' value='app不会闪退，且能正常显示'/>
+		</excepts>
+	</case>
+	
+	<case name='addWebBrowseListCase'>
+		<titles>
+			<title id='1' value='浏览*{信息}*列表' />
+		</titles>
+		<keys>
+			<key id='1' value='*{信息}*列表,刷新,加载' />
+		</keys>
+		<ranks>
+			<rank id='1' value='1' />
+		</ranks>
+		<preconditions>
+			<precondition id='1' value='列表中有信息存在' />
+		</preconditions>
+		<steps>
+			<step id='1' value='查看*{信息}*列表' />
+			<step id='2' value='翻页查看*{信息}*列表' />
+			<step id='3' value='在首页上点击“首页”按钮' />
+			<step id='4' value='在首页上点击“上一页”按钮' />
+			<step id='5' value='在尾页上点击“尾页”按钮' />
+			<step id='6' value='在尾页上点击“下一页”按钮' />
+		</steps>
+		<excepts>
+			<except id='1' value='能看到当前存在的所有信息，且信息按一定规则排序'/>
+			<except id='2' value='能看到不同页上的列表信息，且切换页后列表的排序不变'/>
+			<except id='3' value='按钮无法点击或点击无效，且当前页列表排序不变'/>
+			<except id='4' value='按钮无法点击或点击无效，且当前页列表排序不变'/>
+			<except id='5' value='按钮无法点击或点击无效，且当前页列表排序不变'/>
+			<except id='6' value='按钮无法点击或点击无效，且当前页列表排序不变'/>
+		</excepts>
+	</case>
+</cases>
+```
+
+##### 1.3.3 测试用例模板类代码扩展
+由于公司不同或者说测试用例编写风格不同，其测试用例的字段也大相径庭，为避免模板过于死板，所以就没对模板中的字段做过多的指定，也正因如此，才需要编写一个与之匹配的测试用例模板类来支撑测试用例的获取。
+首先我们先创建一个类，命名为“MyCacse”，并继承包中的“pres.auxiliary.work.testcase.templet.Case”类，添加两个父类的构造方法后可得到如下'代码：
+
+```java
+public class MyCase extends Case {
+	public MyCase(File configXmlFile) {
+		super(configXmlFile);
+	}
+}
+```
+
+之后便是获取测试用例模板xml文件中的内容，这里将要用到内容获取以及词语替换方法。<br>
+**内容获取：** 即从测试用例模板xml文件中获取到相应的文本内容。在父类中提供了<br>
+
+```java
+protected String getLabelText(String caseName, String labelName, String id)
+```
+ 
+方法，用于获取到在xml文件中指定标签下的内容，其caseName参数与case标签的name属性对应，labelName属性与case标签下的字段标签名称对应（不带“s”的标签），id与相应字段标签中的id属性对应。例如，在上述xml文件中，我们要获取用例名称为"BrowseList"下的steps标签下的第四个子标签的内容：
+
+```java
+String text = getLabelText("addAppBrowseListCase", "step", "4");
+```
+
+**单词替换：** 在上一节介绍中，有提到关于词语的替换，需要使用“\*{单词}\*”来标记，在调用getLabelText方法后，系统会查找预设替换的词语，若存在与之匹配的词语后，则对文本进行词语替换。设置预设词语则需要使用父类的一个属性“wordMap”，该属性是一个HashMap类，直接调用其put方法，添加需要替换的词语即可。例如，我们需要替换上述例子中的“信息”词语：
+
+```java
+wordMap.put("信息", "用户");
+```
+
+**文本存储：** 当我们获取到写在xml文件内容并添加了相应需要替换的词语后，我们就需要将用例文本的最终内容写入到类中进行存储，以方便写入到测试用例文件中。存储测试用例文本的方法也写在父类中，可调用以下方法：
+
+```java
+protected void addFieldText(String labelName, String text)
+```
+
+其中，labelName为在需要写入的类中的字段名称，其必须与写在xml文件中的标签字段名称一致，否则在调用方式时将抛出异常；text即需要写入的内容。使用该方法不仅可以写入在xml文件获取的内容，也可以写入自定义的内容。该方法还有三个重载方法：
+
+```java
+protected void addFieldText(String labelName, List<String> texts)
+protected void addFieldText(LabelType label, String text)
+protected void addFieldText(LabelType label, List<String> texts)
+```
+
+对于第一个重载方法，即可根据字段内容，传入一组文本内容。对于第三、四个重载方法，其形参label表示标签枚举，即对于一些常用的标签进行了枚举，方便标签名称与关联字段能统一进行管理，具体枚举的内容可参考代码中的LabelType枚举类。
+例如，对于上述xml中，我们需要获取并存储第一条用例的标题时，可以通过以下方法实现：
+
+```java
+addFieldText("title", getLabelText("addAppBrowseListCase", "title", "1"));
+```
+
+或者
+
+```java
+addFieldText(LabelType.TITLE, getLabelText("addAppBrowseListCase", LabelType.TITLE, "1"));
+```
+
+通过以上介绍的方法，并对需要获取的测试用例内容自由获取、组合，便可得到一个测试用例模板类。例如，上述的MyCase类，我们可以做如下的改造：
+
+```java
+public class MyCase extends Case {
+	public MyCase(File configXmlFile) {
+		super(configXmlFile);
+	}
+	
+	public Case appBrowseListCase() {
+	    //必须调用该方法来清除类中上一次调用存储的内容，否则会重复
+		clearFieldText();
+		wordMap.put("信息", "用户");
+		String caseName = "addAppBrowseListCase";
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		relevanceAddData(caseName, ALL, ALL);
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		return this;
+	}
+	
+	public Case webBrowseListCase() {
+		clearFieldText();
+		wordMap.put("信息", "用户");
+		String caseName = "addWebBrowseListCase";
+		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+		relevanceAddData(caseName, ALL, ALL);
+		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+		return this;
+	}
+}
+```
+
+之后，我们在写入测试用例用例类中，构造该类，并调用其中的方法，即可将模板中的内容写入到测试用例文件中
+
 #### 1.4 测试用例字段标记
 #### 1.5 测试用例编写类扩展
 ##### 1.5.1 jira测试用例编写类的使用
