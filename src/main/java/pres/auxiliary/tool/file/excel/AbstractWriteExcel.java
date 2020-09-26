@@ -227,7 +227,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * @param replactWord 被替换的词语
 	 */
 	public void setReplactWord(String word, String replactWord) {
-			setReplactWord(word, (text) -> {
+		setReplactWord(word, (text) -> {
 			return replactWord;
 		});
 	}

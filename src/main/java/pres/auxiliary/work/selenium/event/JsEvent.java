@@ -205,7 +205,13 @@ public class JsEvent extends AbstractEvent {
 
 		// 执行代码，由于在获取元素信息时已经对元素的过期进行了判断，故此处无需在做判断
 		js.executeScript(script, element.getWebElement());
-
+		
+		/*
+		var a = document.getElementById('psd')
+		var aa = a.parentNode
+		aa.removeChild(a)
+		 * 
+		 * */
 		return json;
 	}
 

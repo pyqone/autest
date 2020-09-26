@@ -3,9 +3,9 @@ package pres.auxiliary.testcase.writecase;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import pres.auxiliary.work.old.testcase.change.Tab;
 import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
@@ -20,7 +20,7 @@ public class TestAddInformation {
 	static AddInformation a;
 	
 	@BeforeClass
-	public static void createTemplet() throws Exception {
+	public void createTemplet() throws Exception {
 		ZentaoTemplet.setCoverFile(true);
 		ZentaoTemplet.create();
 		

@@ -63,6 +63,7 @@ public class JiraTestCaseWriteTest {
 	@BeforeMethod
 	public void addContent(Method method) {
 		System.out.println("=======正在运行：" + method.getName() + "=======");
+		wtc.switchSheet("测试用例");
 	}
 
 	/**
@@ -154,28 +155,5 @@ public class JiraTestCaseWriteTest {
 		DataListCase dlc = new DataListCase(new File("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/BrowseList.xml"));
 		dlc.setReplaceWord(DataListCase.DATA_NAME, "用户");
 		wtc.addCase(dlc.appBrowseListCase());
-	}
-	
-	/**
-	 * 综合测试
-	 */
-	@Test
-	public void synthesizeTest() {
-		wtc.addTitle("测试一个标题")
-			.addModule("企业", "标段现场")
-			.addStep("步骤1", "步骤2")
-			.addExcept("预期1", "预期2")
-			.addStepAndExcept("步骤3", "预期3")
-			.addContent(JiraFieldIdType.CASE_KEY.getName(), "1")
-			.addContent(JiraFieldIdType.COMPONENT.getName(), "4")
-			.addContent(JiraFieldIdType.ISSUES.getName(), "4")
-			.addContent(JiraFieldIdType.OBJECTIVE.getName(), "目的")
-			.addContent(JiraFieldIdType.OWNER.getName(), "彭宇琦")
-			.addContent(JiraFieldIdType.PRECONDITION.getName(), "前置1", "前置2")
-			.addContent(JiraFieldIdType.PRIORITY.getName(), "1")
-			.addContent(JiraFieldIdType.STATUS.getName(), "3")
-			.end()
-			.changeTextColor(JiraFieldIdType.STEP.getName(), 0, MarkColorsType.GREEN)
-			.fieldComment(JiraFieldIdType.FOLDER.getName(), "模块标记");
 	}
 }
