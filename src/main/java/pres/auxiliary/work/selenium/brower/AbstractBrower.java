@@ -197,7 +197,7 @@ public abstract class AbstractBrower {
 	 */
 	abstract void openBrower();
 
-	public JSONObject getAllInformation() {
+	public String getAllInformation() {
 		// 遍历所有标签页，存储标签页信息
 		JSONArray labelInformation = new JSONArray();
 		pageMap.forEach((name, page) -> {
@@ -206,9 +206,9 @@ public abstract class AbstractBrower {
 		// 存储标签页信息
 		informationJson.put("标签信息", labelInformation);
 					
-		return informationJson;
+		return informationJson.toJSONString();
 	}
-
+	
 	/**
 	 * 用于返回当前在浏览器中被打开的页面
 	 * @return 在浏览器中被打开的{@link Page}对象

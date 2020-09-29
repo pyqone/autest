@@ -7,6 +7,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
+import com.alibaba.fastjson.JSONObject;
+
 import pres.auxiliary.tool.date.Time;
 import pres.auxiliary.tool.file.MarkColorsType;
 import pres.auxiliary.tool.file.excel.AbstractWriteExcel;
@@ -71,7 +73,12 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 	 * @return 类本身
 	 */
 	public ExcelRecord setBrowerInformation(AbstractBrower brower) {
-		//TODO 添加浏览器信息内容
+		//获取浏览器信息，将其转换为JSONObject对象
+		JSONObject json = JSONObject.parseObject(brower.getAllInformation());
+		switchSheet("运行记录")
+			.addContent("brower", json.get("浏览器名称").toString())
+			.addContent("version", json.get("浏览器版本").toString())
+			.addContent("system", json.get("操作系统版本").toString());
 		
 		return this;
 	}
@@ -165,6 +172,16 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 	}
 	
 	/**
+	 * 用于添加运行记录编号
+	 * @param text 编号文本
+	 * @return 类本身
+	 */
+	public ExcelRecord runId(String text) {
+		return switchSheet("运行记录")
+				.addContent("id", text);
+	}
+	
+	/**
 	 * 用于添加异常步骤的信息，传入异常类后，将会自动记录异常步骤
 	 * @param exception 异常类
 	 * @return 类本身
@@ -172,6 +189,9 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 	public ExcelRecord exception(Exception exception) {
 		isError = true;
 		return switchSheet("错误记录")
+				.addContent("id", fieldMap.get("运行记录").get("id").getContent(0))
+				.addContent("class_name", fieldMap.get("运行记录").get("class_name").getContent(0))
+				.addContent("method_name", fieldMap.get("运行记录").get("method_name").getContent(0))
 				.addContent("error_step", fieldMap.get("运行记录").get("step").content.size() == 0 ? "" : fieldMap.get("运行记录").get("step").getContent(-1))
 				.addContent("error_class", exception.getClass().getName())
 				.addContent("error_information", exception.getMessage());
@@ -198,6 +218,20 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 	 */
 	public ExcelRecord caseCondition(String... text) {
 		return switchSheet("测试用例").addContent("condition", text);
+	}
+	
+	/**
+	 * 用于添加测试用例的用例编号，不支持传入多个用例编号，每次调用方法后将覆盖之前传入的内容
+	 * @param text 用例编号
+	 * @return 类本身
+	 */
+	public ExcelRecord caseId(String text) {
+		return switchSheet("测试用例")
+				.clearContent("case_id")
+				.addContent("case_id", text)
+				.switchSheet("运行记录")
+				.clearContent("case_id")
+				.addContent("case_id", text);
 	}
 	
 	/**
