@@ -2,6 +2,8 @@ package pres.auxiliary.work.selenium.location;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -46,8 +48,19 @@ public class ReadXml extends AbstractRead {
 	 */
 	private Document dom;
 	
-	public ReadXml(File xmlFile) throws DocumentException {
-		dom = new SAXReader().read(xmlFile);
+	/**
+	 * 构造对象
+	 * @param xmlFile xml文件对象
+	 * @throws IncorrectFileException xml文件有误时抛出的异常
+	 */
+	public ReadXml(File xmlFile) {
+		//将编译时异常转换为运行时异常
+		try {
+			dom = new SAXReader().read(xmlFile);
+		} catch (DocumentException e) {
+			throw new IncorrectFileException("xml文件异常，文件位置：" + xmlFile.getAbsolutePath());
+		}
+		
 	}
 	
 	@Override
@@ -66,48 +79,71 @@ public class ReadXml extends AbstractRead {
 
 	@Override
 	public ArrayList<String> getValueList(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<String> valueList = new ArrayList<>();
+		//查询元素
+		Element element = getElementLabelElement(name);
+		
+		//遍历元素下所有的定位标签，并将其转换为相应的ByType枚举，存储至byTypeList中
+		for (Object byElement : element.elements()) {
+			valueList.add(((Element)byElement).getText());
+			//TODO 获取到元素内容后需要判断元素是否需要读取模板
+		}
+		
+		return valueList;
 	}
 
 	@Override
 	public ElementType getElementType(String name) {
 		//查询元素
 		Element element = getElementLabelElement(name);
-		//获取元素的元素类型属性
-		String elementTypeText = element.attributeValue("element_type");
-		//若属性不存在，则使其指向普通元素
-		elementTypeText = elementTypeText == null ? "0" : elementTypeText;
-		
-		//转换元素类型枚举，并返回
-		switch (elementTypeText) {
-		case "0":
-			return ElementType.COMMON_ELEMENT;
-		case "1":
-			return ElementType.DATA_LIST_ELEMENT;
-		case "2":
-			return ElementType.SELECT_DATAS_ELEMENT;
-		case "3":
-			return ElementType.SELECT_OPTION_ELEMENT;
-		case "4":
-			return ElementType.IFRAME_ELEMENT;
-		default:
-			break;
+		//若元素标签为iframe，则无法获取属性，直接赋予窗体类型
+		if (element.getName().equals("iframe")) {
+			return toElementType("4");
+		} else {
+			//非窗体元素，则获取元素的元素类型属性
+			String elementTypeText = element.attributeValue("element_type");
+			//若属性不存在，则使其指向普通元素
+			return toElementType(elementTypeText == null ? "0" : elementTypeText);
 		}
-				
-		return null;
 	}
 
 	@Override
 	public ArrayList<String> getIframeNameList(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		//查询元素
+		Element element = getElementLabelElement(name);
+		
+		//存储父层iframe元素名称
+		ArrayList<String> iframeName = new ArrayList<>();
+		
+		//循环，获取元素的父层级，直到获取到顶层为止
+		while (!element.isRootElement()) {
+			//定位到元素的父层
+			element = element.getParent();
+			//判断当前元素的标签名称，若为iframe标签，则获取其名称，并存储至集合中
+			if (element.getName().equals("iframe")) {
+				iframeName.add(element.attributeValue("name"));
+			}
+		}
+		
+		//反序集合，使最上层窗体排在最前面
+		Collections.reverse(iframeName);
+		return iframeName;
 	}
 
 	@Override
 	public long getWaitTime(String name) {
-		// TODO Auto-generated method stub
-		return 0;
+		//查询元素
+		Element element = getElementLabelElement(name);
+		//获取元素存储等待时间属性值，并转换为long类型
+		try {
+			String text = element.attributeValue("wait");
+			//将属性值进行转换，若属性值不存在，则赋为-1
+			long time = Long.valueOf(text == null ? "-1" : text);
+			//若转换的时间小于0，则返回-1
+			return time < 0 ? -1L : time;
+		} catch (NumberFormatException e) {
+			return -1L;
+		}
 	}
 	
 	/**
@@ -143,7 +179,8 @@ public class ReadXml extends AbstractRead {
 	 */
 	private Element getElementLabelElement(String name) {
 		//定义获取元素的xpath
-		String selectElementXpath = "//element[@name='" + name +"']";
-		return (Element) dom.selectSingleNode(selectElementXpath);
+		String selectElementXpath = "//*[@name='" + name +"']";
+		//根据xpath获取元素，若无法获取到元素，则抛出空指针异常
+		return Optional.of((Element) dom.selectSingleNode(selectElementXpath)).get();
 	}
 }

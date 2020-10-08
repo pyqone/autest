@@ -46,4 +46,27 @@ public abstract class AbstractRead {
 	 * @return 元素的等待时间
 	 */
 	public abstract long getWaitTime(String name);
+	
+	/**
+	 * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
+	 * @param value 元素类型文本值
+	 * @return 元素类型枚举类对象
+	 */
+	protected ElementType toElementType(String value) {
+		//转换元素类型枚举，并返回
+		switch (value) {
+		case "0":
+			return ElementType.COMMON_ELEMENT;
+		case "1":
+			return ElementType.DATA_LIST_ELEMENT;
+		case "2":
+			return ElementType.SELECT_DATAS_ELEMENT;
+		case "3":
+			return ElementType.SELECT_OPTION_ELEMENT;
+		case "4":
+			return ElementType.IFRAME_ELEMENT;
+		default:
+			return null;
+		}
+	}
 }
