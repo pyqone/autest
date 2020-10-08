@@ -28,5 +28,10 @@ public enum ElementType {
 	/**
 	 * 指向列表型下拉框选择类型元素
 	 */
-	SELECT_DATAS_ELEMENT;
+	SELECT_DATAS_ELEMENT, 
+	/**
+	 * 指向窗体型元素
+	 */
+	IFRAME_ELEMENT
+	;
 }

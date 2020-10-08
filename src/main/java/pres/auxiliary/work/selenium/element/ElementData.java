@@ -51,12 +51,11 @@ public class ElementData {
 		this.name = name;
 		
 		//根据传入的读取配置文件类对象，使用其中的返回方法，初始化元素信息
-		arc.setElementName(name);
-		byTypeList = arc.getElementByTypeList();
-		valueList = arc.getValueList();
-		elementType = arc.getElementType();
-		iframeNameList = arc.getIframeNameList();
-		waitTime = arc.getWaitTime();
+		byTypeList = arc.getElementByTypeList(name);
+		valueList = arc.getValueList(name);
+		elementType = arc.getElementType(name);
+		iframeNameList = arc.getIframeNameList(name);
+		waitTime = arc.getWaitTime(name);
 	}
 
 	/**

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import pres.auxiliary.work.selenium.element.ElementType;
@@ -50,32 +51,99 @@ public class ReadXml extends AbstractRead {
 	}
 	
 	@Override
-	public ArrayList<ByType> getElementByTypeList() {
+	public ArrayList<ByType> getElementByTypeList(String name) {
+		ArrayList<ByType> byTypeList = new ArrayList<ByType>();
+		//查询元素
+		Element element = getElementLabelElement(name);
+		
+		//遍历元素下所有的定位标签，并将其转换为相应的ByType枚举，存储至byTypeList中
+		for (Object byElement : element.elements()) {
+			byTypeList.add(getByType(((Element)byElement).getName()));
+		}
+		
+		return byTypeList;
+	}
+
+	@Override
+	public ArrayList<String> getValueList(String name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ArrayList<String> getValueList() {
+	public ElementType getElementType(String name) {
+		//查询元素
+		Element element = getElementLabelElement(name);
+		//获取元素的元素类型属性
+		String elementTypeText = element.attributeValue("element_type");
+		//若属性不存在，则使其指向普通元素
+		elementTypeText = elementTypeText == null ? "0" : elementTypeText;
+		
+		//转换元素类型枚举，并返回
+		switch (elementTypeText) {
+		case "0":
+			return ElementType.COMMON_ELEMENT;
+		case "1":
+			return ElementType.DATA_LIST_ELEMENT;
+		case "2":
+			return ElementType.SELECT_DATAS_ELEMENT;
+		case "3":
+			return ElementType.SELECT_OPTION_ELEMENT;
+		case "4":
+			return ElementType.IFRAME_ELEMENT;
+		default:
+			break;
+		}
+				
+		return null;
+	}
+
+	@Override
+	public ArrayList<String> getIframeNameList(String name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ElementType getElementType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<String> getIframeNameList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public long getWaitTime() {
+	public long getWaitTime(String name) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	/**
+	 * 该方法用于根据标签的名称，返回相应的定位方式枚举
+	 * @param labelName 标签名称
+	 * @return {@link ByType}枚举
+	 */
+	private ByType getByType(String labelName) {
+		switch (labelName) {
+		case "xpath":
+			return ByType.XPATH;
+		case "css":
+			return ByType.CSS;
+		case "classname":
+			return ByType.CLASSNAME;
+		case "id":
+			return ByType.ID;
+		case "linktext":
+			return ByType.LINKTEXT;
+		case "name":
+			return ByType.NAME;
+		case "tagname":
+			return ByType.TAGNAME;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + labelName);
+		}
+	}
+	
+	/**
+	 * 用于返回元素标签对象
+	 * @param name 元素名称
+	 * @return 相应的元素标签类对象
+	 */
+	private Element getElementLabelElement(String name) {
+		//定义获取元素的xpath
+		String selectElementXpath = "//element[@name='" + name +"']";
+		return (Element) dom.selectSingleNode(selectElementXpath);
 	}
 }

@@ -18,53 +18,32 @@ import pres.auxiliary.work.selenium.xml.ByType;
  */
 public abstract class AbstractRead {
 	/**
-	 * 指向元素名称
-	 */
-	protected String name;
-	
-	/**
-	 * 用于设置元素名称
-	 * @param name 元素名称
-	 */
-	public void setElementName(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * 用于返回元素名称
-	 * @return 元素名称
-	 */
-	public String getElementName() {
-		return name;
-	}
-	
-	/**
 	 * 用于返回元素的所有定位方式集合
 	 * @return 元素的所有定位方式（{@link ByType}枚举）集合
 	 */
-	public abstract ArrayList<ByType> getElementByTypeList();
+	public abstract ArrayList<ByType> getElementByTypeList(String name);
 	
 	/**
 	 * 用于返回与定位方式对应的元素定位内容集合
 	 * @return 元素定位内容集合
 	 */
-	public abstract ArrayList<String> getValueList();
+	public abstract ArrayList<String> getValueList(String name);
 	
 	/**
 	 * 用于返回元素的类型
 	 * @return 元素类型（{@link ElementType}枚举）
 	 */
-	public abstract ElementType getElementType();
+	public abstract ElementType getElementType(String name);
 	
 	/**
 	 * 用于返回元素的所有父窗体名称集合
 	 * @return 元素的所有父窗体名称集合
 	 */
-	public abstract ArrayList<String> getIframeNameList();
+	public abstract ArrayList<String> getIframeNameList(String name);
 	
 	/**
 	 * 用于返回元素的等待时间
 	 * @return 元素的等待时间
 	 */
-	public abstract long getWaitTime();
+	public abstract long getWaitTime(String name);
 }
