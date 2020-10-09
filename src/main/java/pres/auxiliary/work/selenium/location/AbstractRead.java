@@ -3,7 +3,6 @@ package pres.auxiliary.work.selenium.location;
 import java.util.ArrayList;
 
 import pres.auxiliary.work.selenium.element.ElementType;
-import pres.auxiliary.work.selenium.xml.ByType;
 
 /**
  * <p><b>文件名：</b>AbstractReadConfig.java</p>

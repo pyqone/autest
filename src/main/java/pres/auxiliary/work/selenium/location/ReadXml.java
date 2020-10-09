@@ -11,7 +11,6 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import pres.auxiliary.work.selenium.element.ElementType;
-import pres.auxiliary.work.selenium.xml.ByType;
 
 /**
  * <p>
