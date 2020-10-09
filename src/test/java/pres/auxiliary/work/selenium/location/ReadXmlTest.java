@@ -30,19 +30,19 @@ public class ReadXmlTest {
 	}
 	
 	/**
-	 * 测试{@link ReadXml#getElementByTypeList(String)}方法
+	 * 测试{@link ReadXml#findElementByTypeList(String)}方法
 	 * 预期：
 	 * XPATH
 	 * CSS
 	 * XPATH
 	 */
 	@Test
-	public void getElementByTypeListTest() {
-		rx.getElementByTypeList("XX控件11").forEach(System.out :: println);
+	public void findElementByTypeListTest() {
+		rx.findElementByTypeList("XX控件11").forEach(System.out :: println);
 	}
 	
 	/**
-	 * 测试{@link ReadXml#getElementType(String)}方法
+	 * 测试{@link ReadXml#findElementType(String)}方法
 	 * 预期：
 	 * COMMON_ELEMENT
 	 * COMMON_ELEMENT
@@ -52,29 +52,29 @@ public class ReadXmlTest {
 	 * IFRAME_ELEMENT
 	 */
 	@Test
-	public void getElementTypeTest() {
-		System.out.println(rx.getElementType("XX控件11"));
-		System.out.println(rx.getElementType("XX控件16"));
-		System.out.println(rx.getElementType("XX控件17"));
-		System.out.println(rx.getElementType("XX控件18"));
-		System.out.println(rx.getElementType("XX控件19"));
-		System.out.println(rx.getElementType("窗体3"));
+	public void findElementTypeTest() {
+		System.out.println(rx.findElementType("XX控件11"));
+		System.out.println(rx.findElementType("XX控件16"));
+		System.out.println(rx.findElementType("XX控件17"));
+		System.out.println(rx.findElementType("XX控件18"));
+		System.out.println(rx.findElementType("XX控件19"));
+		System.out.println(rx.findElementType("窗体3"));
 	}
 	
 	/**
-	 * 测试{@link ReadXml#getIframeNameList(String)}方法
+	 * 测试{@link ReadXml#findIframeNameList(String)}方法
 	 * 预期：
 	 * 窗体1
 	 * 窗体1.1
 	 * 窗体1.1.1
 	 */
 	@Test
-	public void getIframeNameListTest() {
-		rx.getIframeNameList("XX控件6").forEach(System.out :: println);
+	public void findIframeNameListTest() {
+		rx.findIframeNameList("XX控件6").forEach(System.out :: println);
 	}
 	
 	/**
-	 * 测试{@link ReadXml#getWaitTime(String)}方法
+	 * 测试{@link ReadXml#findWaitTime(String)}方法
 	 * 预期：
 	 * -1
 	 * 100
@@ -84,12 +84,41 @@ public class ReadXmlTest {
 	 * -1
 	 */
 	@Test
-	public void getWaitTimeTest() {
-		System.out.println(rx.getWaitTime("XX控件14"));
-		System.out.println(rx.getWaitTime("XX控件15"));
-		System.out.println(rx.getWaitTime("XX控件16"));
-		System.out.println(rx.getWaitTime("XX控件17"));
-		System.out.println(rx.getWaitTime("XX控件18"));
-		System.out.println(rx.getWaitTime("XX控件19"));
+	public void findWaitTimeTest() {
+		System.out.println(rx.findWaitTime("XX控件14"));
+		System.out.println(rx.findWaitTime("XX控件15"));
+		System.out.println(rx.findWaitTime("XX控件16"));
+		System.out.println(rx.findWaitTime("XX控件17"));
+		System.out.println(rx.findWaitTime("XX控件18"));
+		System.out.println(rx.findWaitTime("XX控件19"));
+	}
+	
+	/**
+	 * 测试{@link ReadXml#findValueList(String)}方法
+	 * 预期：
+	 * //XXX模板控件1[@X='XX控件11']/div/div[@src='Test']/input
+	 * http body div
+	 * //XXX模板控件1[@X='${src}']/div[@name='XX控件11']
+	 * 测试控件
+	 */
+	@Test
+	public void findValueListTest() {
+		rx.findValueList("XX控件11").forEach(System.out :: println);
+	}
+	
+	/**
+	 * 测试查找不存在的元素
+	 */
+	@Test(expectedExceptions = UndefinedElementException.class)
+	public void noElementTest() {
+		rx.findElementByTypeList("呵呵");
+	}
+	
+	/**
+	 * 测试查找不存在的模板
+	 */
+	@Test(expectedExceptions = UndefinedElementException.class)
+	public void noTemplateTest() {
+		rx.findValueList("XX控件20");
 	}
 }

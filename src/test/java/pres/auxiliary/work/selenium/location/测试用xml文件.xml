@@ -6,6 +6,7 @@
 		<xpath id='3'>//XXX模板控件1[@X='${src}']/div[@name='${name}']</xpath>
 		<xpath id='4'>//XXX模板控件1[@X='${src}']/div[@name='${name}']/div[@is='${str1}' and text()='${str1}']</xpath>
 		<xpath id='5'>//XXX模板控件1[@X='${src}']/div[@name='${name}']/div[@is='${str1}' and text()='${src}']/span[text()='${str2}']/span[id='${aaaa}']</xpath>
+		<id id='6'>${name}</id>
 	</templet>
 	
 	<element name='XX控件1'>
@@ -66,6 +67,7 @@
 			<xpath is_use='true' temp_id='1' id='Test' att='src'/>
 			<css is_use='true' temp_id='2' tagName='div'/>
 			<xpath is_use='true' temp_id='3' />
+			<id temp_id='6' name='测试控件'/>
 		</element>
 		
 		<element name='XX控件12'> 
@@ -97,6 +99,10 @@
 		</element>
 		<element name='XX控件19' element_type='3' wait='ddsf'> 
 			<xpath is_use='true' temp_id='1' id='Test' att='src'/>
+		</element>
+		
+		<element name='XX控件20' element_type='3' wait='ddsf'> 
+			<xpath is_use='true' temp_id='测试' id='Test' att='src'/>
 		</element>
 	</iframe>
 </project>

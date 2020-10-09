@@ -21,31 +21,31 @@ public abstract class AbstractRead {
 	 * 用于返回元素的所有定位方式集合
 	 * @return 元素的所有定位方式（{@link ByType}枚举）集合
 	 */
-	public abstract ArrayList<ByType> getElementByTypeList(String name);
+	public abstract ArrayList<ByType> findElementByTypeList(String name);
 	
 	/**
 	 * 用于返回与定位方式对应的元素定位内容集合
 	 * @return 元素定位内容集合
 	 */
-	public abstract ArrayList<String> getValueList(String name);
+	public abstract ArrayList<String> findValueList(String name);
 	
 	/**
 	 * 用于返回元素的类型
 	 * @return 元素类型（{@link ElementType}枚举）
 	 */
-	public abstract ElementType getElementType(String name);
+	public abstract ElementType findElementType(String name);
 	
 	/**
 	 * 用于返回元素的所有父窗体名称集合
 	 * @return 元素的所有父窗体名称集合
 	 */
-	public abstract ArrayList<String> getIframeNameList(String name);
+	public abstract ArrayList<String> findIframeNameList(String name);
 	
 	/**
 	 * 用于返回元素的等待时间
 	 * @return 元素的等待时间
 	 */
-	public abstract long getWaitTime(String name);
+	public abstract long findWaitTime(String name);
 	
 	/**
 	 * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象

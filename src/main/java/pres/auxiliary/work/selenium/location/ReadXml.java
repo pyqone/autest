@@ -3,8 +3,8 @@ package pres.auxiliary.work.selenium.location;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -49,6 +49,23 @@ public class ReadXml extends AbstractRead {
 	private Document dom;
 	
 	/**
+	 * 定义用于正则的替换符开始标记
+	 */
+	public static final String MATCH_START_SIGN = "\\$\\{";
+	/**
+	 * 定义替换符开始标志
+	 */
+	public static final String START_SIGN = "${";
+	/**
+	 * 定义用于正则的替换符结束标记
+	 */
+	public static final String MATCH_END_SIGN = "\\}";
+	/**
+	 * 定义替换符结束标志
+	 */
+	public static final String END_SIGN = "}";
+	
+	/**
 	 * 构造对象
 	 * @param xmlFile xml文件对象
 	 * @throws IncorrectFileException xml文件有误时抛出的异常
@@ -64,7 +81,7 @@ public class ReadXml extends AbstractRead {
 	}
 	
 	@Override
-	public ArrayList<ByType> getElementByTypeList(String name) {
+	public ArrayList<ByType> findElementByTypeList(String name) {
 		ArrayList<ByType> byTypeList = new ArrayList<ByType>();
 		//查询元素
 		Element element = getElementLabelElement(name);
@@ -78,22 +95,33 @@ public class ReadXml extends AbstractRead {
 	}
 
 	@Override
-	public ArrayList<String> getValueList(String name) {
+	public ArrayList<String> findValueList(String name) {
 		ArrayList<String> valueList = new ArrayList<>();
 		//查询元素
 		Element element = getElementLabelElement(name);
 		
 		//遍历元素下所有的定位标签，并将其转换为相应的ByType枚举，存储至byTypeList中
 		for (Object byElement : element.elements()) {
-			valueList.add(((Element)byElement).getText());
-			//TODO 获取到元素内容后需要判断元素是否需要读取模板
+			//判断元素是否启用，若元素未启用，则下一个循环
+			String isUserText = ((Element) byElement).attributeValue("is_user");
+			if (isUserText != null && !Boolean.valueOf(isUserText)) {
+				continue;
+			}
+			
+			//判断元素是否启用模板，若启用模板，则获取模板内容，并将定位内容进行转换
+			String tempId = ((Element) byElement).attributeValue("temp_id");
+			String value = tempId != null ? 
+					getTemplateValue(tempId, getByType(((Element) byElement).getName())) :
+					((Element)byElement).getText();
+			
+			valueList.add(replaceValue(((Element) byElement), value));
 		}
 		
 		return valueList;
 	}
 
 	@Override
-	public ElementType getElementType(String name) {
+	public ElementType findElementType(String name) {
 		//查询元素
 		Element element = getElementLabelElement(name);
 		//若元素标签为iframe，则无法获取属性，直接赋予窗体类型
@@ -108,7 +136,7 @@ public class ReadXml extends AbstractRead {
 	}
 
 	@Override
-	public ArrayList<String> getIframeNameList(String name) {
+	public ArrayList<String> findIframeNameList(String name) {
 		//查询元素
 		Element element = getElementLabelElement(name);
 		
@@ -131,7 +159,7 @@ public class ReadXml extends AbstractRead {
 	}
 
 	@Override
-	public long getWaitTime(String name) {
+	public long findWaitTime(String name) {
 		//查询元素
 		Element element = getElementLabelElement(name);
 		//获取元素存储等待时间属性值，并转换为long类型
@@ -168,7 +196,7 @@ public class ReadXml extends AbstractRead {
 		case "tagname":
 			return ByType.TAGNAME;
 		default:
-			throw new IllegalArgumentException("Unexpected value: " + labelName);
+			throw new IllegalArgumentException("不存在的定位方式: " + labelName);
 		}
 	}
 	
@@ -176,11 +204,65 @@ public class ReadXml extends AbstractRead {
 	 * 用于返回元素标签对象
 	 * @param name 元素名称
 	 * @return 相应的元素标签类对象
+	 * @throws UndefinedElementException 元素不存在时抛出的异常
 	 */
 	private Element getElementLabelElement(String name) {
 		//定义获取元素的xpath
 		String selectElementXpath = "//*[@name='" + name +"']";
-		//根据xpath获取元素，若无法获取到元素，则抛出空指针异常
-		return Optional.of((Element) dom.selectSingleNode(selectElementXpath)).get();
+		//根据xpath获取元素，若无法获取到元素，则抛出异常
+		Element element = (Element) dom.selectSingleNode(selectElementXpath);
+		if (element != null) {
+			return element;
+		} else {
+			throw new UndefinedElementException("不存在的元素名称：" + name);
+		}
+	}
+	
+	/**
+	 * 获取模板中的定位内容
+	 * @param tempId 模板id
+	 * @param byType 定位方式枚举
+	 * @return 相应的定位内容
+	 * @throws UndefinedElementException 模板不存在时抛出的异常
+	 */
+	private String getTemplateValue(String tempId, ByType byType) {
+		String selectTempXpath = "//templet/" + byType.getValue() + "[@id='" + tempId + "']";
+		//根据xpath获取元素，若无法获取到元素，则抛出异常
+		Element element = (Element) dom.selectSingleNode(selectTempXpath);
+		if (element != null) {
+			return element.getText();
+		} else {
+			throw new UndefinedElementException("不存在的模板：" + selectTempXpath);
+		}
+	}
+	
+	/**
+	 * 用于对获取的元素内容进行转换，得到完整的定位内容
+	 * @param element 元素类对象
+	 * @param value 定位内容
+	 * @return 完整的定位内容
+	 */
+	private String replaceValue(Element element, String value) {
+		//判断元素是否存在需要替换的内容，若不存在，则不进行替换
+		if (value.indexOf(START_SIGN) == -1) {
+			return value;
+		}
+		
+		String repalceText = "";
+		
+		//遍历元素的所有属性，并一一进行替换
+		for (Object att : element.attributes()) {
+			//定义属性替换符
+			repalceText = MATCH_START_SIGN + ((Attribute) att).getName() + MATCH_END_SIGN;
+			//替换value中所有与repalceText匹配的字符
+			value = value.replaceAll(repalceText, ((Attribute) att).getValue());
+		}
+		
+		//替换父层节点的name属性
+		repalceText = MATCH_START_SIGN + "name" + MATCH_END_SIGN;
+		//替换value中所有与repalceText匹配的字符
+		value = value.replaceAll(repalceText, element.getParent().attributeValue("name"));
+		
+		return value;
 	}
 }
