@@ -3,7 +3,7 @@ package pres.auxiliary.work.selenium.element;
 import java.util.ArrayList;
 
 import pres.auxiliary.work.selenium.location.AbstractRead;
-import pres.auxiliary.work.selenium.xml.ByType;
+import pres.auxiliary.work.selenium.location.ByType;
 
 /**
  * <p><b>文件名：</b>ElementData.java</p>
@@ -40,22 +40,28 @@ public class ElementData {
 	 * 存储元素
 	 */
 	private long waitTime;
+	/**
+	 * 存储当前采用的读取文件的方式
+	 */
+	private AbstractRead read;
 	
 	/**
 	 * 根据元素名称，在配置文件中查找元素，将元素的信息进行存储
 	 * @param name 元素名称
-	 * @AbstractReadConfig 配置文件类对象
+	 * @param AbstractRead 配置文件类对象
 	 */
-	public ElementData(String name, AbstractRead arc) {
+	public ElementData(String name, AbstractRead read) {
 		//存储元素名称
 		this.name = name;
+		//存储读取文件的方式
+		this.read = read;
 		
 		//根据传入的读取配置文件类对象，使用其中的返回方法，初始化元素信息
-		byTypeList = arc.findElementByTypeList(name);
-		valueList = arc.findValueList(name);
-		elementType = arc.findElementType(name);
-		iframeNameList = arc.findIframeNameList(name);
-		waitTime = arc.findWaitTime(name);
+		byTypeList = read.findElementByTypeList(name);
+		valueList = read.findValueList(name);
+		elementType = read.findElementType(name);
+		iframeNameList = read.findIframeNameList(name);
+		waitTime = read.findWaitTime(name);
 	}
 
 	/**
@@ -105,6 +111,13 @@ public class ElementData {
 	public long getWaitTime() {
 		return waitTime;
 	}
-	
+
+	/**
+	 * 返回元素读取方式类对象
+	 * @return {@link AbstractRead}子类对象
+	 */
+	public AbstractRead getRead() {
+		return read;
+	}
 	
 }
