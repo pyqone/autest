@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.AbstractBy.Element;
 
 /**
  * <p><b>文件名：</b>ClickEvent.java</p>
@@ -51,7 +51,7 @@ public class ClickEvent extends AbstractEvent {
 				} catch (ElementClickInterceptedException e) {
 					return false;
 				} catch (StaleElementReferenceException e) {
-					element.findElement();
+					element.againFindElement();
 					return false;
 				}
 			});
@@ -76,7 +76,7 @@ public class ClickEvent extends AbstractEvent {
 				} catch (ElementClickInterceptedException e) {
 					return false;
 				} catch (StaleElementReferenceException e) {
-					element.findElement();
+					element.againFindElement();
 					return false;
 				}
 			});
@@ -100,7 +100,7 @@ public class ClickEvent extends AbstractEvent {
 				} catch (ElementClickInterceptedException e) {
 					return false;
 				} catch (StaleElementReferenceException e) {
-					element.findElement();
+					element.againFindElement();
 					return false;
 				}
 			});

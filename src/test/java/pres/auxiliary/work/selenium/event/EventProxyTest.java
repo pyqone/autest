@@ -15,7 +15,7 @@ public class EventProxyTest {
 	EventProxy<ClickEvent> clickProxy;
 	EventProxy<TextEvent> inputProxy;
 	ChromeBrower chrome;
-	CommonBy by;
+	CommonBy_Old by;
 	
 	@BeforeClass
 	public void init() {
@@ -23,7 +23,7 @@ public class EventProxyTest {
 		chrome.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
 		clickProxy = new EventProxy<>(new ClickEvent(chrome.getDriver()));
 		inputProxy = new EventProxy<>(new TextEvent(chrome.getDriver()));
-		by = new CommonBy(chrome);
+		by = new CommonBy_Old(chrome);
 	}
 	
 	@AfterClass

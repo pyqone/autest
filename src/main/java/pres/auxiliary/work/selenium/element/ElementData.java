@@ -1,6 +1,8 @@
 package pres.auxiliary.work.selenium.element;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import pres.auxiliary.work.selenium.location.AbstractRead;
 import pres.auxiliary.work.selenium.location.ByType;
@@ -40,10 +42,11 @@ public class ElementData {
 	 * 存储元素
 	 */
 	private long waitTime;
+	
 	/**
-	 * 存储当前采用的读取文件的方式
+	 * 用于存储外链的词语
 	 */
-	private AbstractRead read;
+	private ArrayList<String> linkWordList = new ArrayList<>();
 	
 	/**
 	 * 根据元素名称，在配置文件中查找元素，将元素的信息进行存储
@@ -53,8 +56,6 @@ public class ElementData {
 	public ElementData(String name, AbstractRead read) {
 		//存储元素名称
 		this.name = name;
-		//存储读取文件的方式
-		this.read = read;
 		
 		//根据传入的读取配置文件类对象，使用其中的返回方法，初始化元素信息
 		byTypeList = read.findElementByTypeList(name);
@@ -85,6 +86,33 @@ public class ElementData {
 	 * @return 元素定位内容集合
 	 */
 	public ArrayList<String> getValueList() {
+		//若存储的外链词语不为空，则对需要外链的定位内容进行处理
+		if (!linkWordList.isEmpty()) {
+			for (int i = 0; i < valueList.size(); i++) {
+				//判断字符串是否包含替换词语的开始标志，若不包含，则进行不进行替换操作
+				if (!valueList.get(i).contains(AbstractRead.START_SIGN)) {
+					continue;
+				}
+				
+				//获取替换词语集合的迭代器
+				Iterator<String> linkWordIter = linkWordList.iterator();
+				//存储当前定位内容文本
+				StringBuilder value = new StringBuilder(valueList.get(i));
+				//循环，替换当前定位内容中所有需要替换的词语，直到无词语替换或定位内容不存在需要替换的词语为止
+				while(linkWordIter.hasNext() && value.indexOf(AbstractRead.START_SIGN) > -1) {
+					//存储替换符的开始和结束位置
+					int replaceStartIndex = value.indexOf(AbstractRead.START_SIGN);
+					int replaceEndIndex = value.indexOf(AbstractRead.END_SIGN);
+					
+					//对当前位置的词语进行替换
+					value.replace(replaceStartIndex, replaceEndIndex + 1, linkWordIter.next());
+				} 
+				
+				//存储当前替换后的定位内容
+				valueList.set(i, value.toString());
+			}
+		}
+		
 		return valueList;
 	}
 
@@ -113,11 +141,49 @@ public class ElementData {
 	}
 
 	/**
-	 * 返回元素读取方式类对象
-	 * @return {@link AbstractRead}子类对象
+	 * 用于添加元素定位外链词语
+	 * @param linkWords 外链词语
 	 */
-	public AbstractRead getRead() {
-		return read;
+	public void addLinkWord(String...linkWords) {
+		if (linkWords != null && linkWords.length != 0) {
+			linkWordList.addAll(Arrays.asList(linkWords));
+		}
 	}
-	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((iframeNameList == null) ? 0 : iframeNameList.hashCode());
+		result = prime * result + ((linkWordList == null) ? 0 : linkWordList.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ElementData other = (ElementData) obj;
+		if (iframeNameList == null) {
+			if (other.iframeNameList != null)
+				return false;
+		} else if (!iframeNameList.equals(other.iframeNameList))
+			return false;
+		if (linkWordList == null) {
+			if (other.linkWordList != null)
+				return false;
+		} else if (!linkWordList.equals(other.linkWordList))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
 }

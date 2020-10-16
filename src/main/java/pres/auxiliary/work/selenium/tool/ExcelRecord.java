@@ -189,9 +189,9 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 	public ExcelRecord exception(Exception exception) {
 		isError = true;
 		return switchSheet("错误记录")
-				.addContent("id", fieldMap.get("运行记录").get("id").getContent(0))
-				.addContent("class_name", fieldMap.get("运行记录").get("class_name").getContent(0))
-				.addContent("method_name", fieldMap.get("运行记录").get("method_name").getContent(0))
+				.addContent("id", fieldMap.get("运行记录").get("id").content.size() == 0 ? "" : fieldMap.get("运行记录").get("id").getContent(0))
+				.addContent("class_name", fieldMap.get("运行记录").get("class_name").content.size() == 0 ? "" : fieldMap.get("运行记录").get("class_name").getContent(0))
+				.addContent("method_name", fieldMap.get("运行记录").get("method_name").content.size() == 0 ? "" : fieldMap.get("运行记录").get("method_name").getContent(0))
 				.addContent("error_step", fieldMap.get("运行记录").get("step").content.size() == 0 ? "" : fieldMap.get("运行记录").get("step").getContent(-1))
 				.addContent("error_class", exception.getClass().getName())
 				.addContent("error_information", exception.getMessage());

@@ -14,8 +14,8 @@ import org.openqa.selenium.WebElement;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import pres.auxiliary.work.selenium.element.delect.Element;
-import pres.auxiliary.work.selenium.element.delect.ElementType;
+import pres.auxiliary.work.selenium.element.AbstractBy.Element;
+import pres.auxiliary.work.selenium.element.ElementType;
 
 /**
  * <p>	
@@ -65,7 +65,7 @@ public class JsEvent extends AbstractEvent {
 					try {
 						return element.getWebElement();
 					} catch (StaleElementReferenceException e) {
-						element.findElement();
+						element.againFindElement();
 						return null;
 					}
 				})));
@@ -90,7 +90,7 @@ public class JsEvent extends AbstractEvent {
 				try {
 					return element.getWebElement();
 				} catch (StaleElementReferenceException e) {
-					element.findElement();
+					element.againFindElement();
 					return null;
 				}
 			}));
@@ -121,7 +121,7 @@ public class JsEvent extends AbstractEvent {
 				try {
 					return element.getWebElement();
 				} catch (StaleElementReferenceException e) {
-					element.findElement();
+					element.againFindElement();
 					return null;
 				}
 			}));
@@ -191,7 +191,7 @@ public class JsEvent extends AbstractEvent {
 				try {
 					return element.getWebElement();
 				} catch (StaleElementReferenceException e) {
-					element.findElement();
+					element.againFindElement();
 					return null;
 				}
 			}));

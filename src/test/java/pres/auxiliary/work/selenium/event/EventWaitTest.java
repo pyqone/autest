@@ -30,13 +30,13 @@ public class EventWaitTest {
 	EventWait wait;
 	ClickEvent c;
 	TextEvent t;
-	CommonBy cby;
+	CommonBy_Old cby;
 	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
 	
 	@BeforeClass
 	public void init() {
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
-		cby = new CommonBy(cb);
+		cby = new CommonBy_Old(cb);
 		c = new ClickEvent(cb.getDriver());
 		t = new TextEvent(cb.getDriver());
 		wait = new EventWait(cb.getDriver());
@@ -54,7 +54,7 @@ public class EventWaitTest {
 	@Test
 	public void disappearTest() {
 		//获取编号列
-		DataListBy element = new DataListBy(cb);
+		DataListBy_Old element = new DataListBy_Old(cb);
 		element.add("/html/body/div[1]/div/div/section/div/div[2]/div[3]/table//td[contains(@class,'el-table_1_column_1 ')]/div/span");
 		
 		System.out.println(element.getMinColumnSize());

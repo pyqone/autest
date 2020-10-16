@@ -32,9 +32,9 @@
 	</sheet>
 	
 	<sheet name="错误记录" freeze="4">
-		<column id="id" name="运行记录编号" wide="8" align="center"/>
-		<column id="class_name" name="类名" wide="25" align="left"/>
-		<column id="method_name" name="方法名" wide="15" align="left"/>
+		<column id="id" name="运行记录编号" wide="8" align="center" row_text='1'/>
+		<column id="class_name" name="类名" wide="25" align="left" row_text='1'/>
+		<column id="method_name" name="方法名" wide="15" align="left" row_text='1'/>
 		<column id="error_step" name="错误步骤" wide="25" align="left" index='true' row_text='1'/>
 		<column id="error_class" name="异常类" wide="25" align="left" index='true' row_text='1'/>
 		<column id="error_information" name="异常信息" wide="25" align="left" index='true' row_text='1'/>

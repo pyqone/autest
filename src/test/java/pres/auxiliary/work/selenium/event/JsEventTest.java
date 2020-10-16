@@ -34,7 +34,7 @@ public class JsEventTest {
 	/**
 	 * 输入文本框元素对象
 	 */
-	Element inputElemnt;
+	Element_Old inputElemnt;
 	JsEvent event;
 	ChromeBrower cb;
 	
@@ -45,7 +45,7 @@ public class JsEventTest {
 	public void init() {
 		cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
-		inputElemnt = new CommonBy(cb).getElement("//*[@id='kw']");
+		inputElemnt = new CommonBy_Old(cb).getElement("//*[@id='kw']");
 		
 		//初始化js类
 		event = new JsEvent(cb.getDriver());
@@ -99,8 +99,8 @@ public class JsEventTest {
 	 */
 	@Test
 	public void addElementTest_Json() {
-		JSONObject json = event.deleteElement(new CommonBy(cb.getDriver()).getElement("//*[@value = '百度一下']"));
-		Element e = new CommonBy(cb.getDriver()).getElement("//*[text() = '我的关注']");
+		JSONObject json = event.deleteElement(new CommonBy_Old(cb.getDriver()).getElement("//*[@value = '百度一下']"));
+		Element_Old e = new CommonBy_Old(cb.getDriver()).getElement("//*[text() = '我的关注']");
 		System.out.println(event.addElement(e, json));
 	}
 }

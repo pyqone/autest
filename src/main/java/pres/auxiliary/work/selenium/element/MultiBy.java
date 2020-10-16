@@ -1,115 +1,186 @@
 package pres.auxiliary.work.selenium.element;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.xml.ByType;
+import pres.auxiliary.work.selenium.element.AbstractBy.Element;
 
 /**
- * <p><b>文件名：</b>MultiElement.java</p>
- * <p><b>用途：</b>
- * 提供获取多个元素时使用的基本方法
+ * <p>
+ * <b>文件名：</b>ListBy.java
  * </p>
- * <p><b>编码时间：</b>2020年5月22日上午7:54:28</p>
- * <p><b>修改时间：</b>2020年5月22日上午7:54:28</p>
- * @author 彭宇琦
+ * <p>
+ * <b>用途：</b> 提供对多元素获取与返回的基本方法
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2020年10月14日下午6:54:46
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2020年10月14日下午6:54:46
+ * </p>
+ * 
+ * @author
  * @version Ver1.0
- * @since JDK 12
  *
  */
 public abstract class MultiBy extends AbstractBy {
 	/**
-	 * 通过浏览器对象{@link AbstractBrower}进行构造
-	 * @param brower {@link AbstractBrower}对象
+	 * 用于记录当前元素集合中第一个元素是否为不可选择的元素，用于对元素的随机返回
+	 */
+	protected boolean firstEmpty = false;
+
+	/**
+	 * 构造方法，初始化浏览器对象
+	 * 
+	 * @param brower {@link AbstractBrower}类对象
 	 */
 	public MultiBy(AbstractBrower brower) {
 		super(brower);
 	}
 
 	/**
-	 * 构造对象并存储浏览器的{@link WebDriver}对象
+	 * 用于设置当前元素集合中首元素是否为允许随机返回的元素<br>
+	 * 例如：获取列表元素时，首元素为标题元素；获取下拉选项元素集合时， 第一个元素为空选项或者为类似“请选择”等选项
 	 * 
-	 * @param driver 浏览器的{@link WebDriver}对象
+	 * @param firstEmpty 首元素是否为允许随机返回的元素
 	 */
-	public MultiBy(WebDriver driver) {
-		super(driver);
+	public void setFirstEmpty(boolean firstEmpty) {
+		this.firstEmpty = firstEmpty;
 	}
-	
+
 	/**
-	 * 用于根据传入的元素在xml文件中的名称或者元素的定位内容，添加元素。由于该方法不指定元素的定位
-	 * 方式，若传入的参数不是xml元素且非xpath路径或绝对css路径时，其识别效率较慢，建议在该情况下
-	 * 调用{@link #add(String, ByType)}方法，指定元素定位方法
-	 * @param name 元素在xml文件或者元素的定位内容
-	 * @see #add(String, ByType)
-	 * @throws TimeoutException 元素在指定时间内无法找到时抛出的异常
+	 * 用于指定查找的元素集合名称，二次查找元素时，将覆盖上一次查找的元素。调用该方法在
+	 * 无法查到页面元素时，其不会抛出{@link TimeoutException}异常
+	 * 
+	 * @param elementName 元素名称
+	 * @param linkKeys    外链词语
 	 */
-	public abstract void add(String name);
-	
+	public void find(String elementName, String... linkKeys) {
+		//根据元素名称，获取元素信息数据
+		elementData = new ElementData(elementName, read);
+		elementData.addLinkWord(linkKeys);
+		
+		//判断是否需要自动切换窗体，若需要，则对元素窗体进行切换
+		if (isAutoSwitchIframe) {
+			autoSwitchFrame(elementData.getIframeNameList());
+		}
+		
+		//获取元素数据在页面上对应的一组元素，若无法查到元素，则记录elementList为null
+		try {
+			elementList = recognitionElement(elementData);
+		} catch (TimeoutException e) {
+			elementList = new ArrayList<>();
+		}
+	}
+
 	/**
-	 * 用于根据传入的元素在xml文件中的名称或者元素的定位内容，以及元素的定位方式，添加元素。
-	 * @param name 元素在xml文件或者元素的定位内容
-	 * @param byType 元素定位方式枚举对象（{@link ByType}枚举）
-	 * @see #add(String)
-	 * @throws TimeoutException 元素在指定时间内无法找到时抛出的异常
+	 * 用于返回当前存储的元素集合长度，若未对元素进行获取，则返回0
+	 * 
+	 * @return 元素集合长度
 	 */
-	public abstract void add(String name, ByType byType);
-	
+	public int size() {
+		return elementList == null ? 0 : elementList.size();
+	}
+
 	/**
-	 * 添加元素的底层方法
-	 * @param elementInformation 元素信息类对象
-	 * @param isAddSize 是否需要统计
+	 * 用于移除元素集合中的指定下标的元素。其下标所传入的数字即为元素所在的真实下标，可参见
+	 * {@link #getElement(int)}方法的参数说明。若未调用{@link #find(String, String...)}
+	 * 方法对元素进行查找，或者查无元素时，调用该方法将不进行任何操作
+	 * 
+	 * @param index 元素下标
+	 * @return 是否删除成功
 	 */
-	abstract void add(ElementInformation elementInformation);
-	
+	public boolean removeElement(int index) {
+		//当且仅当元素集合存在，并且下标传入正确时，将元素删除，并返回成功
+		if (elementList != null && elementList.size() != 0) {
+			int newIndex = toElementIndex(elementList.size(), index);
+			if (newIndex != -1) {
+				elementList.remove(toElementIndex(elementList.size(), index));
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	/**
-	 * 该方法用于根据存入的元素名称或定位方式，对元素进行重新获取的操作。主要用于当列表数据翻页后，
-	 * 其原存入的数据将会失效，必须重新获取。注意，调用该方法后会清空原存储的数据。
+	 * <p>
+	 * 用于获取元素集合中指定下标的元素，该下标允许反向遍历与随机返回，其下标所传入的数字即为元素所在的真实下标。
+	 * </p>
+	 * <p>
+	 * 例如：
+	 * <ul>
+	 * <li>传入1时，表示获取元素集合中的第1个元素</li>
+	 * <li>传入0时，表示获取元素集合中在长度范围内随机一个元素</li>
+	 * <li>传入-1时，表示获取元素集合中的倒数第1个元素</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>调用该方法前，若未调用{@link #find(String, String...)}方法对元素进行查找，
+	 * 或者查无元素时，调用该方法不会抛出异常，但当调用{@link Element#getWebElement()}方法时，
+	 * 由于未查到元素则会抛出异常
+	 * </p>
+	 * 
+	 * @param index 元素下标
+	 * @return {@link Element}类对象
 	 */
-	public abstract void againGetElement();
-	
+	public Element getElement(int index) {
+		return new Element(toElementIndex(elementList.size(), index));
+	}
+
 	/**
-	 * 用于清除或移除指定的列及列中的元素，当参数传入false时，则只清理列表中存储的元素，不移除
-	 * 整个列，若传入true时，则直接移除整个列。若列名称对应的列未被获取，则返回null
-	 * @param name 已被获取的元素列名称
-	 * @param isRemove 是否需要将该列移除
-	 * @return 被移除列中存储的所有元素
+	 * 用于返回当前元素集合中所有的元素集合。若未调用{@link #find(String, String...)}方法对元素进行查找，
+	 * 或者查无元素时，则调用该方法时会抛出超时异常
+	 * 
+	 * @return {@link Element}类对象{@link List}集合
+	 * @throws TimeoutException 元素在页面不存在时抛出的异常
 	 */
-//	public abstract List<Element> clearColumn(String name, boolean isRemove);
-	
+	public List<Element> getAllElement() {
+		//定义返回元素的集合
+		List<Element> elementList = new ArrayList<>();
+		
+		//判断当前列表是否为空，若为空，则向集合中添加一条假数据，以便于后续调用时抛出异常
+		if (this.elementList == null || this.elementList.size() == 0) {
+			throw new TimeoutException("页面上无相应定位方式的元素，元素名称：" + elementData.getName());
+		} 
+
+		//循环，遍历类中的elementList，根据其长度，构造Elemenet对象，并进行添加
+		for (int index = 0; index < this.elementList.size(); index++) {
+			elementList.add(new Element(index));
+		}
+		
+		return elementList;
+	}
+
 	/**
-	 * 由于方法允许传入负数和特殊数字0为下标，并且下标的序号由1开始，
-	 * 故可通过该方法对下标的含义进行转义，得到java能识别的下标
+	 * 由于方法允许传入负数和特殊数字0为下标，并且下标的序号由1开始，故可通过该方法对下标的含义进行转义，得到java能识别的下标
+	 * 
 	 * @param length 元素的个数
-	 * @param index 传入的下标
-	 * @param randomZero 标记是否可以随机出数字0
+	 * @param index  传入的下标
 	 * @return 可识别的下标
 	 * @throws NoSuchElementException 当元素无法查找到时抛出的异常
 	 */
-	int getIndex(int length, int index, boolean randomZero) {
-		//判断元素下标是否超出范围，由于可以传入负数，故需要使用绝对值
+	protected int toElementIndex(int length, int index) {
+		// 判断元素下标是否超出范围，由于可以传入负数，故需要使用绝对值
 		if (Math.abs(index) > length) {
-			throw new NoSuchElementException("指定的选项值大于选项的最大值。选项总个数：" + length + "，指定项：" + index);
+			return -1;
 		}
-		
-		//判断index的值，若大于0，则从前向后遍历，若小于0，则从后往前遍历，若等于0，则随机输入
+
+		// 判断index的值，若大于0，则从前向后遍历，若小于0，则从后往前遍历，若等于0，则随机输入
 		if (index > 0) {
-			//选择元素，正数的选项值从1开始，故需要减小1
+			// 选择元素，正数的选项值从1开始，故需要减小1
 			return index - 1;
 		} else if (index < 0) {
-			//选择元素，由于index为负数，则长度加上选项值即可得到需要选择的选项
+			// 选择元素，由于index为负数，则长度加上选项值即可得到需要选择的选项
 			return length + index;
 		} else {
-			//为0，则进行随机选择，但需要判断是否允许随机出0（第一个元素）
-			int newindex = 0;
-			do {
-				newindex = new Random().nextInt(length);
-			} while(newindex == 0 && !randomZero);
-			
-			return newindex;
+			Random ran = new Random();
+			return firstEmpty ? (ran.nextInt(length - 1) + 1) : ran.nextInt(length);
 		}
 	}
 }

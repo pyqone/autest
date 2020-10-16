@@ -16,7 +16,7 @@ import pres.auxiliary.work.selenium.event.ClickEvent;
 /**
  * <p><b>文件名：</b>SelectByText.java</p>
  * <p><b>用途：</b>
- * 对{@link SelectBy}类进行测试
+ * 对{@link SelectBy_Old}类进行测试
  * </p>
  * <p><b>页面：</b>
  * 对标准型下拉选项测试页面为jira提BUG弹窗，对非标准型下拉为运营系统测试环境消息推送管理页面
@@ -30,16 +30,16 @@ import pres.auxiliary.work.selenium.event.ClickEvent;
  */
 public class SelectByTest {
 	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
-	SelectBy s;
-	CommonBy cby;
+	SelectBy_Old s;
+	CommonBy_Old cby;
 	ClickEvent ce;
 	
 	@BeforeClass(alwaysRun = true)
 	public void init() {
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
 		
-		s = new SelectBy(cb);
-		cby = new CommonBy(cb);
+		s = new SelectBy_Old(cb);
+		cby = new CommonBy_Old(cb);
 		ce = new ClickEvent(cb.getDriver());
 	}
 	
@@ -54,7 +54,7 @@ public class SelectByTest {
 	 */
 	@Test(groups = "list")
 	public void changeElement_List() throws InterruptedException {
-		Element e = cby.getElement("/html/body/div[1]/div/div/section/div/div[1]/div[4]/div[1]/input");
+		Element_Old e = cby.getElement("/html/body/div[1]/div/div/section/div/div[1]/div[4]/div[1]/input");
 		ce.click(e);
 		s.add("/html/body/div/div/div[1]/ul/li/span");
 		

@@ -12,7 +12,7 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.Element_Old;
 
 /**
  * <p><b>文件名：</b>EventProxy.java</p>
@@ -205,9 +205,9 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
 	 * @param actionMap 需要执行的通知
 	 */
 	private void runElementAction(EventInformation eventInformation, LinkedHashMap<String, ArrayList<EventAction>> actionMap) {
-    	Arrays.stream(eventInformation.getParam()).filter(arg -> arg instanceof Element).forEach(arg -> {
+    	Arrays.stream(eventInformation.getParam()).filter(arg -> arg instanceof Element_Old).forEach(arg -> {
     		actionMap.forEach((key, value) -> {
-    			if (Pattern.compile(key).matcher(((Element) arg).getName()).matches()) {
+    			if (Pattern.compile(key).matcher(((Element_Old) arg).getName()).matches()) {
         			value.forEach(action -> {
         				try {
         					action.action(eventInformation);

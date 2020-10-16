@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -13,7 +14,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import pres.auxiliary.tool.randomstring.RandomString;
 import pres.auxiliary.tool.randomstring.StringMode;
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.AbstractBy.Element;
 import pres.auxiliary.work.selenium.tool.RecognitionImage;
 import pres.auxiliary.work.selenium.tool.Screenshot;
 
@@ -57,7 +58,7 @@ public class TextEvent extends AbstractEvent {
 				element.getWebElement().clear();
 				return true;
 			} catch (StaleElementReferenceException e) {
-				element.findElement();
+				element.againFindElement();
 				return false;
 			}
 		});
@@ -80,7 +81,7 @@ public class TextEvent extends AbstractEvent {
 			try {
 				return element.getWebElement().getAttribute(attributeName);
 			} catch (StaleElementReferenceException e) {
-				element.findElement();
+				element.againFindElement();
 				return null;
 			}
 		});
@@ -98,30 +99,36 @@ public class TextEvent extends AbstractEvent {
 					WebElement webElement = element.getWebElement();
 					return "input".equalsIgnoreCase(webElement.getTagName()) ? webElement.getAttribute("value") : webElement.getText();
 				} catch (StaleElementReferenceException e) {
-					element.findElement();
+					element.againFindElement();
 					return null;
 				}
 			});
 	}
 
 	/**
-	 * 用于在指定的控件中输入相应的内容
+	 * 用于在指定的控件中输入相应的内容，允许向控件中传入{@link Keys}枚举
 	 * @param element 通过查找页面得到的控件元素对象
-	 * @param text 需要输入到控件中的
+	 * @param keysToSend 需要输入到控件中的
 	 * @return 在控件中输入的内容
 	 */
-	public String input(Element element, String text) {
+	public String input(Element element, CharSequence... keysToSend) {
 		//等待事件可操作后对事件进行操作
 		wait.until(driver -> {
 			try {
-				element.getWebElement().sendKeys(text);
+				element.getWebElement().sendKeys(keysToSend);
 				return true;
 			} catch (Exception e) {
 				return false;
 			}
 		});
 		
-		return text;
+		//TODO 拆成两个方法，否则不好写返回结果
+		String result = "[";
+		for (CharSequence key : keysToSend) {
+			result += key.toString() + ", ";
+		}
+		
+		return keysToSend.toString();
 	}
 
 	/**

@@ -17,6 +17,23 @@ import pres.auxiliary.work.selenium.element.ElementType;
  */
 public abstract class AbstractRead {
 	/**
+	 * 定义用于正则的替换符开始标记
+	 */
+	public static final String MATCH_START_SIGN = "\\$\\{";
+	/**
+	 * 定义替换符开始标志
+	 */
+	public static final String START_SIGN = "${";
+	/**
+	 * 定义用于正则的替换符结束标记
+	 */
+	public static final String MATCH_END_SIGN = "\\}";
+	/**
+	 * 定义替换符结束标志
+	 */
+	public static final String END_SIGN = "}";
+	
+	/**
 	 * 用于返回元素的所有定位方式集合
 	 * @return 元素的所有定位方式（{@link ByType}枚举）集合
 	 */

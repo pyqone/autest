@@ -5,7 +5,7 @@ import java.time.Duration;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import pres.auxiliary.work.selenium.element.Element;
+import pres.auxiliary.work.selenium.element.Element_Old;
 
 public class EventWait {
 	/**
@@ -42,7 +42,7 @@ public class EventWait {
 	 * 用于等待元素消失
 	 * @param waitElement 需要等待的元素
 	 */ 
-	public void disappear(Element waitElement) {
+	public void disappear(Element_Old waitElement) {
 		wait.until(driver -> {
 			return !waitElement.getWebElement().isDisplayed();
 		});
@@ -52,7 +52,7 @@ public class EventWait {
 	 * 用于等待元素元素内出现文本
 	 * @param waitElement 需要等待的元素
 	 */ 
-	public void showText(Element waitElement) {
+	public void showText(Element_Old waitElement) {
 		wait.until(driver -> {
 			return !new TextEvent(driver).getText(waitElement).isEmpty();
 		});

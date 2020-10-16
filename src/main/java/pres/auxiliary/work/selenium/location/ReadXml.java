@@ -48,23 +48,6 @@ public class ReadXml extends AbstractRead {
 	private Document dom;
 	
 	/**
-	 * 定义用于正则的替换符开始标记
-	 */
-	public static final String MATCH_START_SIGN = "\\$\\{";
-	/**
-	 * 定义替换符开始标志
-	 */
-	public static final String START_SIGN = "${";
-	/**
-	 * 定义用于正则的替换符结束标记
-	 */
-	public static final String MATCH_END_SIGN = "\\}";
-	/**
-	 * 定义替换符结束标志
-	 */
-	public static final String END_SIGN = "}";
-	
-	/**
 	 * 构造对象
 	 * @param xmlFile xml文件对象
 	 * @throws IncorrectFileException xml文件有误时抛出的异常

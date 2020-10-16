@@ -37,16 +37,16 @@ public class TextEventTest {
 	final String ID_LIST_XPATH = "//*[@class=\"el-table__body-wrapper\"]/table/tbody/tr/td[1]/div/span";
 	
 	ChromeBrower cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe"));
-	CommonBy ce;
-	DataListBy dle;
+	CommonBy_Old ce;
+	DataListBy_Old dle;
 	TextEvent t;
-	Element turningButton;
+	Element_Old turningButton;
 	
 	@BeforeClass
 	public void init() {
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
-		ce = new CommonBy(cb.getDriver());
-		dle = new DataListBy(cb.getDriver());
+		ce = new CommonBy_Old(cb.getDriver());
+		dle = new DataListBy_Old(cb.getDriver());
 		
 		t = new TextEvent(cb.getDriver());
 		
@@ -64,7 +64,7 @@ public class TextEventTest {
 	}
 	
 	/**
-	 * 测试普通元素调用{@link TextEvent#getText(pres.auxiliary.work.selenium.element.Element)}方法
+	 * 测试普通元素调用{@link TextEvent#getText(pres.auxiliary.work.selenium.element.Element_Old)}方法
 	 * @throws InterruptedException
 	 */
 	@Test
@@ -82,7 +82,7 @@ public class TextEventTest {
 	}
 	
 	/**
-	 * 测试列表元素调用{@link TextEvent#getText(pres.auxiliary.work.selenium.element.Element)}方法
+	 * 测试列表元素调用{@link TextEvent#getText(pres.auxiliary.work.selenium.element.Element_Old)}方法
 	 * @throws InterruptedException
 	 */
 	@Test
