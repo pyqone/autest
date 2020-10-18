@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import pres.auxiliary.work.selenium.element.Element_Old;
+import pres.auxiliary.work.selenium.element.AbstractBy.Element;
 
 /**
  * <p><b>文件名：</b>EventInformation.java</p>
@@ -29,7 +29,7 @@ public class EventInformation {
 	/**
 	 * 存储传入到方法中的元素类对象，由args进行分离
 	 */
-	private ArrayList<Element_Old> elementList = new ArrayList<>();
+	private ArrayList<Element> elementList = new ArrayList<>();
 	
 	/**
 	 * 构造对象
@@ -64,7 +64,7 @@ public class EventInformation {
 	 * 用于返回传入到方法中{@link Element_Old}类对象集合
 	 * @return {@link Element_Old}类对象集合
 	 */
-	public ArrayList<Element_Old> getElement() {
+	public ArrayList<Element> getElement() {
 		return elementList;
 	}
 	
@@ -73,8 +73,8 @@ public class EventInformation {
 	 */
 	private void toElement() {
 		Arrays.stream(args).forEach(arg -> {
-			if (arg instanceof Element_Old) {
-				elementList.add((Element_Old) arg);
+			if (arg instanceof Element) {
+				elementList.add((Element) arg);
 			}
 		});
 	}

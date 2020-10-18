@@ -316,13 +316,12 @@ public abstract class AbstractBy {
 		/**
 		 * 用于返回当前存储的{@link WebElement}对象，若该对象为空，则抛出元素查找超时异常
 		 * @return {@link WebElement}对象
-		 * @throws TimeoutException 元素在页面不存在时抛出的异常
-		 * @throws NoSuchElementException 元素集合不存在指定的下标时抛出的异常
+		 * @throws NoSuchElementException 元素在页面不存在时或元素集合不存在指定的下标时抛出的异常
 		 */
 		public WebElement getWebElement() {
 			//判断元素集合是否为空，若为空，则抛出查找超时异常
 			if (elementList == null || elementList.size() == 0) {
-				throw new TimeoutException("页面上无相应定位方式的元素，当前元素名称：" + elementData.getName());
+				throw new NoSuchElementException("页面上无相应定位方式的元素，当前元素名称：" + elementData.getName());
 			}
 			
 			//判断元素下标是否为-1，若为-1，则抛出元素不存在异常
@@ -331,6 +330,14 @@ public abstract class AbstractBy {
 			}
 			
 			return elementList.get(index);
+		}
+		
+		/**
+		 * 用于返回当前元素的{@link ElementData}类对象
+		 * @return 当前元素的{@link ElementData}类对象
+		 */
+		public ElementData getElementData() {
+			return elementData;
 		}
 		
 		/**

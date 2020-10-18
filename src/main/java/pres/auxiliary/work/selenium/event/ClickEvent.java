@@ -1,11 +1,11 @@
 package pres.auxiliary.work.selenium.event;
 
-import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import pres.auxiliary.work.selenium.brower.AbstractBrower;
 import pres.auxiliary.work.selenium.element.AbstractBy.Element;
 
 /**
@@ -14,103 +14,107 @@ import pres.auxiliary.work.selenium.element.AbstractBy.Element;
  * 定义了对控件进行点击操作相关的方法，可通过该类，对页面进行基本的点击操作
  * </p>
  * <p><b>编码时间：</b>2019年8月29日下午3:24:34</p>
- * <p><b>修改时间：</b>2020年7月10日上午16:49:37</p>
+ * <p><b>修改时间：</b>2020年10月17日下午16:34:37</p>
  * 
  * @author 彭宇琦
  * @version Ver2.0
- * @since JDK 12
+ * @since JDK 8
  *
  */
 public class ClickEvent extends AbstractEvent {
 	/**
-	 * 构造ClickEvent类对象
+	 * 构造对象
 	 * 
-	 * @param driver WebDriver类对象
+	 * @param brower 浏览器{@link AbstractBrower}类对象
 	 */
-	public ClickEvent(WebDriver driver) {
-		super(driver);
+	public ClickEvent(AbstractBrower brower) {
+		super(brower);
 	}
 
 	/**
 	 * 鼠标左键单击事件
 	 * 
-	 * @param element 通过查找页面得到的控件元素对象
+	 * @param element {@link Element}对象
+	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 */
 	public void click(Element element) {
-		//在等待时间内判断元素是否可以点击
-		try {
-			wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
-		} catch (Exception e) {
-		}
+		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
+		locationElement(element);
 		
-		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
+		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
 		wait.until((driver) -> {
 				try {
 					element.getWebElement().click();
 					return true;
-				} catch (ElementClickInterceptedException e) {
-					return false;
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
-					return false;
+					throw e;
 				}
 			});
+		
+		logText = "左键点击“" + element.getElementData().getName() + "”元素";
+		resultText = "";
 	}
 
 	/**
 	 * 鼠标左键双击事件
 	 * 
-	 * @param element 通过查找页面得到的控件元素对象
+	 * @param element {@link Element}对象
+	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 */
 	public void doubleClick(Element element) {
-		//在等待时间内判断元素是否可以点击
-		try {
-			wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
-		} catch (Exception e) {
-		}
- 		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
+		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
+		locationElement(element);
+		
+		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
 		wait.until((driver) -> {
 				try {
 					new Actions(driver).doubleClick(element.getWebElement()).perform();
 					return true;
-				} catch (ElementClickInterceptedException e) {
-					return false;
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
-					return false;
+					throw e;
 				}
 			});
+		
+		logText = "左键双击“" + element.getElementData().getName() + "”元素";
+		resultText = "";
 	}
 
 	/**
 	 * 鼠标右键点击事件
-	 * @param element 通过查找页面得到的控件元素对象
+	 * @param element {@link Element}对象
+	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 */
 	public void rightClick(Element element) {
-		//在等待时间内判断元素是否可以点击
-		try {
-			wait.until(ExpectedConditions.elementToBeClickable(element.getWebElement()));
-		} catch (Exception e) {
-		}
-		//进行操作，若仍抛出ElementClickInterceptedException异常，则再等待，直到不再抛出异常
+		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
+		locationElement(element);
+		
+		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
 		wait.until((driver) -> {
 				try {
 					new Actions(driver).contextClick(element.getWebElement()).perform();
 					return true;
-				} catch (ElementClickInterceptedException e) {
-					return false;
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
-					return false;
-				}
+					throw e;
+				} 
 			});
+		
+		logText = "右键点击“" + element.getElementData().getName() + "”元素";
+		resultText = "";
 	}
 	
 	/**
 	 * 连续进行指定次数的鼠标左键点击事件
-	 * @param element 通过查找页面得到的控件元素对象
+	 * @param element {@link Element}对象
 	 * @param clickCount 点击次数
 	 * @param sleepInMillis 操作时间间隔，单位为毫秒
+	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 */
 	public void continuousClick(Element element, int clickCount, long sleepInMillis) {
 		for(int i = 0; i < clickCount; i++) {
@@ -122,5 +126,8 @@ public class ClickEvent extends AbstractEvent {
 				continue;
 			}
 		}
+		
+		logText = "左键连续点击“" + element.getElementData().getName() + "”元素" + clickCount + "次";
+		resultText = "";
 	}
 }

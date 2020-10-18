@@ -8,13 +8,11 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.delect.old.CommonBy;
-import pres.auxiliary.work.selenium.element.delect.old.DataListBy;
 
 /**
  * <p><b>文件名：</b>EventWaitTest.java</p>
  * <p><b>用途：</b>
- * 用于对{@link EventWait}类进行测试
+ * 用于对{@link WaitEvent}类进行测试
  * </p>
  * <p><b>页面：</b>
  * 运维管理系统，岗前答题库模块
@@ -27,7 +25,7 @@ import pres.auxiliary.work.selenium.element.delect.old.DataListBy;
  *
  */
 public class EventWaitTest {
-	EventWait wait;
+	WaitEvent wait;
 	ClickEvent c;
 	TextEvent t;
 	CommonBy_Old cby;
@@ -39,7 +37,7 @@ public class EventWaitTest {
 		cby = new CommonBy_Old(cb);
 		c = new ClickEvent(cb.getDriver());
 		t = new TextEvent(cb.getDriver());
-		wait = new EventWait(cb.getDriver());
+		wait = new WaitEvent(cb.getDriver());
 		
 	}
 	
@@ -49,7 +47,7 @@ public class EventWaitTest {
 	}
 	
 	/**
-	 * 测试{@link EventWait#disappear(pres.auxiliary.work.selenium.element.Element)}方法
+	 * 测试{@link WaitEvent#disappear(pres.auxiliary.work.selenium.element.Element)}方法
 	 */
 	@Test
 	public void disappearTest() {

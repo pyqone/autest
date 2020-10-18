@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.dom4j.DocumentException;
@@ -40,7 +41,7 @@ public class SandMailFrame extends JFrame {
 	 */
 	public SandMailFrame() {
 		setTitle("\u68C0\u67E5\u90AE\u4EF6\u63A5\u6536\u4EBA");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setBounds(100, 100, 487, 607);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

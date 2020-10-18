@@ -2,20 +2,17 @@ package pres.auxiliary.work.selenium.event;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import pres.auxiliary.work.selenium.brower.AbstractBrower;
 import pres.auxiliary.work.selenium.element.AbstractBy.Element;
-import pres.auxiliary.work.selenium.element.ElementType;
 
 /**
  * <p>	
@@ -28,12 +25,12 @@ import pres.auxiliary.work.selenium.element.ElementType;
  * <b>编码时间：</b>2018年12月2日 下午12:51:19
  * </p>
  * <p>
- * <b>修改时间：</b>2020年5月17日 下午5:21:44
+ * <b>修改时间：</b>2020年10月18日 下午3:52:44
  * </p>
  * 
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 8
  */
 public class JsEvent extends AbstractEvent {
 	/**
@@ -44,21 +41,23 @@ public class JsEvent extends AbstractEvent {
 	/**
 	 * 构造对象
 	 * 
-	 * @param driver 页面WebDriver对象
+	 * @param brower 浏览器{@link AbstractBrower}类对象
 	 */
-	public JsEvent(WebDriver driver) {
-		super(driver);
-		js = (JavascriptExecutor) this.driver;
+	public JsEvent(AbstractBrower brower) {
+		super(brower);
 	}
 
 	/**
 	 * 获取元素的指定的属性值，若属性不存在时，则返回空串。
 	 * 
-	 * @param element       元素
+	 * @param element {@link Element}对象
 	 * @param attributeName 属性名
 	 * @return 元素对应属性的内容
 	 */
 	public String getAttribute(Element element, String attributeName) {
+		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
+		locationElement(element);
+				
 		// 获取对应元素的内容
 		String text = (String) (js.executeScript("return arguments[0].getAttribute('" + attributeName + "');",
 				wait.until(driver -> {
@@ -66,24 +65,30 @@ public class JsEvent extends AbstractEvent {
 						return element.getWebElement();
 					} catch (StaleElementReferenceException e) {
 						element.againFindElement();
-						return null;
+						throw e;
 					}
 				})));
-		// 返回对应属性的内容，若传入的属性不存在，则返回空串
-		return (text == null) ? "" : text;
+		
+		logText = "获取“" + element.getElementData().getName() + "”元素的" + attributeName + "属性的属性值";
+		resultText = (text == null) ? "" : text;
+		
+		return resultText;
 	}
 
 	/**
 	 * 设置元素的属性值，并返回属性的原值，若设置的属性名不存在时，则在该元素上增加相应的属性
 	 * 
-	 * @param element       元素
+	 * @param element       {@link Element}对象
 	 * @param attributeName 需要设置的属性名
 	 * @param value         需要设置的属性值
 	 * @return 属性的原值
 	 */
 	public String putAttribute(Element element, String attributeName, String value) {
+		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
+		locationElement(element);
+		
 		// 获取原属性中的值
-		String oldValue = getAttribute(element, attributeName);
+		resultText = getAttribute(element, attributeName);
 
 		// 执行代码
 		js.executeScript("arguments[0].setAttribute('" + attributeName + "','" + value + "');", wait.until(driver -> {
@@ -91,21 +96,26 @@ public class JsEvent extends AbstractEvent {
 					return element.getWebElement();
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
-					return null;
+					throw e;
 				}
 			}));
-		return oldValue;
+		
+		logText = "设置“" + element.getElementData().getName() + "”元素的" + attributeName + "属性的属性值";
+		return resultText;
 	}
 
 	/**
 	 * 在指定的元素下方添加一个元素，元素将带一个名为temp_attribute的属性，其属性的值为一个uuid，并且添加成功后
 	 * 方法返回该元素定位xpath，格式为“//标签名[@temp_attribute='uuid']”
 	 * 
-	 * @param element     元素
+	 * @param element     {@link Element}对象
 	 * @param elementName 新元素（标签）的名称
 	 * @return 新增元素的定位方式
 	 */
 	public String addElement(Element element, String elementName) {
+		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
+		locationElement(element);
+				
 		// 获取并将其作为
 		String script = "var oldElement = arguments[0];";
 		// 拼接添加元素的代码
@@ -122,44 +132,14 @@ public class JsEvent extends AbstractEvent {
 					return element.getWebElement();
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
-					return null;
+					throw e;
 				}
 			}));
 
-		return "//" + elementName + "[@temp_attribute='" + uuid + "']";
-	}
-
-	/**
-	 * 根据json中的属性及元素名称信息，在指定元素下添加一个元素，元素将带一个
-	 * 名为temp_attribute的属性，其属性的值为一个uuid，并且添加成功后
-	 * 方法返回该元素定位xpath，格式为“//标签名[@temp_attribute='uuid']”。
-	 * 传入的json格式可以参照{@link #deleteElement(WebElement)}方法中 返回的json形式
-	 * 
-	 * @param element     元素
-	 * @param elementJson 新元素（标签）的信息
-	 * @return 新增元素的定位方式
-	 */
-	public String addElement(Element element, JSONObject elementJson) {
-		// 添加元素
-		String elementName = elementJson.getString("tagname");
-
-		// 获取新添加元素的xpath
-		String xpath = addElement(element, elementName);
-		// 查找新添加的元素（由于是新添加的元素，肯定能查找到，故无需编写等待）
-		Element newElement = new Element(driver, "TeamElement", ElementType.COMMON_ELEMENT);
-		List<By> byList = new ArrayList<>();
-		byList.add(By.xpath(xpath));
-		newElement.setByList(byList);
-
-		// 获取元素的所有属性
-		JSONArray attributes = elementJson.getJSONArray("attributes");
-		// 遍历属性信息，向元素中添加属性
-		for (int i = 0; i < attributes.size(); i++) {
-			JSONObject attJson = attributes.getJSONObject(i);
-			putAttribute(newElement, attJson.getString("name"), attJson.getString("value"));
-		}
-
-		return xpath;
+		logText = "在“" + element.getElementData().getName() + "”元素下添加“" + elementName + "”元素";
+		resultText = "//" + elementName + "[@temp_attribute='" + uuid + "']";
+		
+		return resultText;
 	}
 
 	/**
@@ -186,13 +166,16 @@ public class JsEvent extends AbstractEvent {
 	 * @return 元素的信息
 	 */
 	public JSONObject deleteElement(Element element) {
+		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
+		locationElement(element);
+				
 		//获取元素信息
 		JSONObject json = getElementInfromation(wait.until(driver -> {
 				try {
 					return element.getWebElement();
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
-					return null;
+					throw e;
 				}
 			}));
 
@@ -206,24 +189,10 @@ public class JsEvent extends AbstractEvent {
 		// 执行代码，由于在获取元素信息时已经对元素的过期进行了判断，故此处无需在做判断
 		js.executeScript(script, element.getWebElement());
 		
-		/*
-		var a = document.getElementById('psd')
-		var aa = a.parentNode
-		aa.removeChild(a)
-		 * 
-		 * */
+		logText = "删除“" + element.getElementData().getName() + "”元素";
+		resultText = json.toJSONString();
+		
 		return json;
-	}
-
-	/**
-	 * 用于执行已经写好的js脚本
-	 * 
-	 * @param script js脚本
-	 * @return 执行结果
-	 */
-	public Object runScript(String script) {
-		// 执行代码
-		return js.executeScript(script);
 	}
 
 	/**
@@ -234,6 +203,9 @@ public class JsEvent extends AbstractEvent {
 	 * @return 执行结果
 	 */
 	public Object runScript(String script, Object... args) {
+		logText = "执行脚本：" + script;
+		resultText = "";
+		
 		// 执行代码
 		return js.executeScript(script, args);
 	}

@@ -38,9 +38,6 @@ import org.dom4j.io.XMLWriter;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import pres.auxiliary.work.selenium.xml.ByType;
-import pres.auxiliary.work.selenium.xml.ReadXml;
-
 /**
  * 该类用于从禅道上导出的BUG列表，使用项目路径下Templet的模版文件（TestReportTemplet.docx），来生成测试报告，
  * 支持压缩测试报告文件以及发送邮件到项目相关的人员（邮件功能需要配置项目路径下的ConfigurationFiles/

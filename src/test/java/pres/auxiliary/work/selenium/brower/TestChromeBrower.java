@@ -1,9 +1,11 @@
 package pres.auxiliary.work.selenium.brower;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
@@ -36,9 +38,7 @@ public class TestChromeBrower {
 	 */
 	@AfterClass
 	public void quit() {
-		cb.getAllInformation().forEach((k, v) -> {
-			System.out.println(k + "：" + v);
-		});
+		System.out.println(cb.getAllInformation());
 		Scanner sc = new Scanner(System.in);
 		sc.next();
 		cb.closeBrower();
@@ -133,6 +133,27 @@ public class TestChromeBrower {
 		cb.openUrl(new Page("http://www.baidu.com", "百度"), true);
 		Thread.sleep(5000);
 		cb.openUrl(new Page("http://www.hao123.com", "hao123"), true);
+	}
+	
+	@Test
+	public void sendKey() {
+		cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/83.0.4103.39/chromedriver.exe"));
+		
+		//1027*768的分辨率启动
+		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
+		cb.getDriver().findElement(By.id("kw")).sendKeys(Keys.CONTROL, "vfffsdfg");
+		show(Keys.CONTROL, "vfffsdfg");
+	}
+	
+	public void show(CharSequence... keysToSend) {
+		Arrays.asList(keysToSend).stream().map(key -> {
+			if (key instanceof Keys) {
+				return ((Keys) key).name();
+			}
+			
+			return key.toString();
+		})
+			.forEach(System.out :: println);
 	}
 	
 	/**

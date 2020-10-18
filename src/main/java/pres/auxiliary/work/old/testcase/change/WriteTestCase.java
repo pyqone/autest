@@ -15,7 +15,6 @@ import pres.auxiliary.work.old.testcase.writecase.BrowseList;
 import pres.auxiliary.work.old.testcase.writecase.FileType;
 import pres.auxiliary.work.old.testcase.writecase.InputType;
 import pres.auxiliary.work.old.testcase.writecase.PhoneType;
-import pres.auxiliary.work.selenium.xml.IncorrectXmlPathException;
 
 /**
  * 该类用于通过XML文件结构来生成测试用例

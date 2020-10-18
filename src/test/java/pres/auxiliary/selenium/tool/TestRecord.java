@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.openqa.selenium.TimeoutException;
 
-import pres.auxiliary.work.selenium.tool.ExcelRecord_Old;
 import pres.auxiliary.work.selenium.tool.RecordTool;
 import pres.auxiliary.work.selenium.tool.Screenshot;
 

@@ -7,6 +7,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import pres.auxiliary.tool.date.Time;
@@ -74,7 +75,7 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 	 */
 	public ExcelRecord setBrowerInformation(AbstractBrower brower) {
 		//获取浏览器信息，将其转换为JSONObject对象
-		JSONObject json = JSONObject.parseObject(brower.getAllInformation());
+		JSONObject json = JSON.parseObject(brower.getAllInformation());
 		switchSheet("运行记录")
 			.addContent("brower", json.get("浏览器名称").toString())
 			.addContent("version", json.get("浏览器版本").toString())

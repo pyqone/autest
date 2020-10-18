@@ -4,8 +4,6 @@ import java.io.File;
 
 import org.junit.Test;
 
-import pres.auxiliary.work.selenium.xml.XmlFileNameIsNullException;
-
 /**
  * FileName: TestCreateXML.java
  * 

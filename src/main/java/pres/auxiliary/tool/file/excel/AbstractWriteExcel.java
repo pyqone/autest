@@ -1062,7 +1062,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		//遍历所有字符，计算相应的值
 		for (int i = 0; i < indexs.length; i++) {
 			//按照“(字母对应数字) * 26 ^ (字母位下标)”的公式对计算的数字进行累加，得到对应的数字下标
-			numberIndex += (((int)(indexs[i] - 'A' + 1)) * Math.pow(26, indexs.length - i - 1));
+			numberIndex += ((indexs[i] - 'A' + 1) * Math.pow(26, indexs.length - i - 1));
 		}
 		
 		return numberIndex;

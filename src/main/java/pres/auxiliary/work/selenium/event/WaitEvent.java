@@ -5,29 +5,32 @@ import java.time.Duration;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import pres.auxiliary.work.selenium.element.Element_Old;
+import pres.auxiliary.work.selenium.brower.AbstractBrower;
 
-public class EventWait {
+public class WaitEvent extends AbstractEvent{
 	/**
 	 * 控制等待
 	 */
 	private WebDriverWait wait;
 	
 	/**
-	 * 构造WaitEvent类对象，默认60秒的查询超时时间，可设置超时时间，见{@link #setOvertime(long)}
-	 * @param driver WebDriver类对象
+	 * 构造对象
+	 * 
+	 * @param brower 浏览器{@link AbstractBrower}类对象
 	 */
-	public EventWait(WebDriver driver) {
-		this(driver, 60);
+	public WaitEvent(AbstractBrower brower) {
+		this(brower, 60);
 	}
 	
 	/**
-	 * 构造WaitEvent类对象，并设置等待超时时间，单位为秒
-	 * @param driver WebDriver类对象
+	 * 构造对象
+	 * 
+	 * @param brower 浏览器{@link AbstractBrower}类对象
 	 */
-	public EventWait(WebDriver driver, long overtime) {
-		wait = new WebDriverWait(driver, overtime, 200);
-		wait.withMessage("元素仍然存在，操作超时：" + overtime + "秒");
+	public WaitEvent(AbstractBrower brower, long waitTime) {
+		super(brower);
+		wait = new WebDriverWait(brower.getDriver(), waitTime, 200);
+		wait.withMessage("等待超时，事件等待失败：" + waitTime + "秒");
 	}
 
 	/**

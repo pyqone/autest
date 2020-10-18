@@ -9,9 +9,6 @@ import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
-import pres.auxiliary.work.selenium.element.delect.old.CommonBy;
-import pres.auxiliary.work.selenium.element.delect.old.DataListBy;
-import pres.auxiliary.work.selenium.element.delect.old.Element;
 
 /**
  * <p><b>文件名：</b>CommonElementTest.java</p>
