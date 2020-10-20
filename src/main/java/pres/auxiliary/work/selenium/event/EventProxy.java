@@ -6,12 +6,13 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.regex.Pattern;
 
-import org.openqa.selenium.WebDriver;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
+import pres.auxiliary.work.selenium.brower.AbstractBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
+import pres.auxiliary.work.selenium.element.AbstractBy.Element;
 
 /**
  * <p><b>文件名：</b>EventProxy.java</p>
@@ -28,11 +29,12 @@ import pres.auxiliary.work.selenium.brower.ChromeBrower;
  * 	<li>方法最终通知：根据方法名，匹配到相应的方法后，在执行事件后（无论是否抛出异常）执行的方法</li>
  * </ol>
  * 可参考以下示例：
+ * </p>
  * <p>
  * 假设存在元素xpah:元素1“//*[text()='登录']”、元素2“//*[@name='account']”、元素3“//*[@name='password']”，
  * 在点击元素1前，需要先在元素2和元素3中分别输入“admin”、“123456”，并且在此前定义了{@link ChromeBrower}浏览器对象，变量名为
  * chrome，此时，可以将代码写作<br>
- * <pre>{@code 
+ * <pre>
  * EventProxy<ClickEvent> clickEventProxy = new EventProxy(new ClickEvent(chrome.getDriver()));
  * 
  * clickProxy.addAcion(ActionType.ELEMENT_BEFORE, ".*登录.*", (info) -> {
@@ -41,15 +43,16 @@ import pres.auxiliary.work.selenium.brower.ChromeBrower;
  * 			text.input(by.getElement("//*[@name='password']"), "1111111");
  * 		});
  * clickEventProxy.getProxyInstance().click(new CommnBy(chrome).getElement("//*[text()='登录']"));
- * 	
  * </pre>
  * </p>
- * </p>
  * <p><b>编码时间：</b>2020年7月12日 下午1:35:22</p>
- * <p><b>修改时间：</b>2020年7月12日 下午1:35:22</p>
- * @author 彭宇琦
+ * <p><b>修改时间：</b>2020年10月20日下午7:54:15</p>
+ * 
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 8
+ * @author 彭宇琦
+ * 
+ * @param <T> 继承自{@link AbstractEvent}的事件类
  */
 public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
 	/**
@@ -81,7 +84,7 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
      * 事件类对象
      */
     private T target;
-    private WebDriver driver;
+    private AbstractBrower brower;
 
     /**
      * 构造代理类
@@ -89,7 +92,7 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
      */
     public EventProxy(T target) {
         this.target = target;
-         driver = ((AbstractEvent) target).getDriver();
+        brower = ((AbstractEvent) target).getBrower();
     }
 
     /**
@@ -106,7 +109,7 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
         //设置回调函数
         en.setCallback(this);
         //创建子类(代理对象)
-        return (T) en.create(new Class[] {WebDriver.class}, new Object[] {driver});
+        return (T) en.create(new Class[] {AbstractBrower.class}, new Object[] {brower});
 //        return (T) en.create();
     }
     
@@ -204,9 +207,9 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
 	 * @param actionMap 需要执行的通知
 	 */
 	private void runElementAction(EventInformation eventInformation, LinkedHashMap<String, ArrayList<EventAction>> actionMap) {
-    	Arrays.stream(eventInformation.getParam()).filter(arg -> arg instanceof Element_Old).forEach(arg -> {
+    	Arrays.stream(eventInformation.getParam()).filter(arg -> arg instanceof Element).forEach(arg -> {
     		actionMap.forEach((key, value) -> {
-    			if (Pattern.compile(key).matcher(((Element_Old) arg).getName()).matches()) {
+    			if (Pattern.compile(key).matcher(((Element) arg).getElementData().getName()).matches()) {
         			value.forEach(action -> {
         				try {
         					action.action(eventInformation);

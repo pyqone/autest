@@ -48,10 +48,13 @@ public class TextEvent extends AbstractEvent {
 	 * 文本
 	 * @param element {@link Element}对象
 	 * @return 被清空的文本内容
-	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String clear(Element element) {
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
+		
 		//由于需要存储步骤，若直接调用getText方法进行返回时，其会更改存储的step，为保证step正确，故存储返回值进行返回
 		resultText = getText(element);
 		//由于在获取元素时，已对元素进行相应操作等待，故此处将不再重新获取
@@ -66,17 +69,20 @@ public class TextEvent extends AbstractEvent {
 	 * @param element {@link Element}对象
 	 * @param attributeName 属性名称
 	 * @return 对应属性的值
-	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String getAttributeValue(Element element, String attributeName) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
 		
 		//在指定的时间内判断是否能进行操作，若抛出StaleElementReferenceException异常，则重新获取元素
 		resultText = wait.until((driver) -> {
 			try {
-				return element.getWebElement().getAttribute(attributeName);
+				WebElement we = element.getWebElement();
+				//定位到元素上
+				locationElement(we);
+				return we.getAttribute(attributeName);
 			} catch (StaleElementReferenceException e) {
 				element.againFindElement();
 				throw e;
@@ -91,18 +97,20 @@ public class TextEvent extends AbstractEvent {
 	 * 用于获取相应元素中的文本内容
 	 * @param element {@link Element}对象
 	 * @return 对应元素中的文本内容
-	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String getText(Element element) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
 		
 		//在指定的时间内判断是否能进行操作，若抛出StaleElementReferenceException异常，则重新获取元素
 		resultText = wait.until((driver) -> {
 			try {
-				WebElement webElement = element.getWebElement();
-				return "input".equalsIgnoreCase(webElement.getTagName()) ? webElement.getAttribute("value") : webElement.getText();
+				WebElement we = element.getWebElement();
+				//定位到元素上
+				locationElement(we);
+				return "input".equalsIgnoreCase(we.getTagName()) ? we.getAttribute("value") : we.getText();
 			} catch (StaleElementReferenceException e) {
 				element.againFindElement();
 				throw e;
@@ -118,15 +126,20 @@ public class TextEvent extends AbstractEvent {
 	 * @param element {@link Element}对象
 	 * @param text 需要输入到控件中的
 	 * @return 在控件中输入的内容
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String input(Element element, String text) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
 		
 		//在指定的时间内判断是否能进行操作，若抛出StaleElementReferenceException异常，则重新获取元素
 		wait.until((driver) -> {
 			try {
-				element.getWebElement().sendKeys(text);
+				WebElement we = element.getWebElement();
+				//定位到元素上
+				locationElement(we);
+				we.sendKeys(text);
 				return true;
 			} catch (StaleElementReferenceException e) {
 				element.againFindElement();
@@ -148,15 +161,20 @@ public class TextEvent extends AbstractEvent {
 	 * @param element {@link Element}对象
 	 * @param keys 需要传入的按键，可传入{@link Keys}枚举类或字符串,若传入字符串，则只取字符串中第一个字母
 	 * @return 发送按键组合，每个按键间用“ + ”字符串连接
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String keyToSend(Element element, CharSequence... keys) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
 		
 		//在指定的时间内判断是否能进行操作，若抛出StaleElementReferenceException异常，则重新获取元素
 		wait.until((driver) -> {
 			try {
-				element.getWebElement().sendKeys(keys);
+				WebElement we = element.getWebElement();
+				//定位到元素上
+				locationElement(we);
+				we.sendKeys(keys);
 				return true;
 			} catch (StaleElementReferenceException e) {
 				element.againFindElement();
@@ -178,7 +196,7 @@ public class TextEvent extends AbstractEvent {
 		});
 		
 		//删除最后多余的符号
-		resultText = textBul.substring(0, textBul.indexOf(" + "));
+		resultText = textBul.substring(0, textBul.lastIndexOf(" + "));
 		logText = "在“" + element.getElementData().getName() + "”元素发送按键“" + resultText + "”";
 		
 		return resultText;
@@ -192,8 +210,14 @@ public class TextEvent extends AbstractEvent {
 	 * @param textElement 通过查找页面得到的文本框控件{@link Element}对象
 	 * @param codeImageElement 通过查找页面得到的验证码图片控件{@link Element}对象
 	 * @return 输入的内容
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String codeInput(Element textElement, Element codeImageElement) {
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		codeImageElement.getWebElement();
+		textElement.getWebElement();
+		
 		// 判断验证码信息是否加载，加载后，获取其Rectang对象
 		Rectangle r = codeImageElement.getWebElement().getRect();
 		// 构造截图对象，并创建截图
@@ -231,6 +255,8 @@ public class TextEvent extends AbstractEvent {
 	 * @param textElements 通过查找页面得到的一组控件元素对象
 	 * @return 由于涉及到多个文本框，故其返回值有多个，将以“值1,值2,值3...”的形式进行返回
 	 * @deprecated 当前方法有些BUG，请勿调用，下个版本修复
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	@Deprecated
 	public String avgIntergeInput(int num, Element... elements) {
@@ -278,6 +304,8 @@ public class TextEvent extends AbstractEvent {
 	 * @param element {@link Element}对象
 	 * @param updataFile 需要上传到控件中的文件
 	 * @return 上传的文件路径
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String updataFile(Element element, File updataFile) {
 		resultText = input(element, updataFile.getAbsolutePath());

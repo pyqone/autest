@@ -1,9 +1,11 @@
 package pres.auxiliary.work.selenium.event;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
@@ -82,18 +84,59 @@ public abstract class AbstractEvent {
 	public String getResultText() {
 		return resultText;
 	}
+	
+	/**
+	 * 用于返回当前指向的{@link AbstractBrower}类对象
+	 * @return {@link AbstractBrower}类对象
+	 */
+	protected AbstractBrower getBrower() {
+		return brower;
+	}
 
 	/**
 	 * 用于通过js脚本，将页面定位元素所在位置
 	 * @param element {@link Element}对象
 	 */
-	protected void locationElement(Element element) {
+	protected void locationElement(WebElement  element) {
 		//若抛出NoSuchElementException异常，则将异常抛出，其他异常将不做处理
 		try {
-			((JavascriptExecutor) brower.getDriver()).executeScript(LOCATION_ELEMENT_JS, element.getWebElement());
-		} catch (NoSuchElementException e) {
-			throw e;
+			((JavascriptExecutor) brower.getDriver()).executeScript(LOCATION_ELEMENT_JS, element);
 		} catch (Exception e) {
+			throw e;
 		}
+	}
+	
+	/**
+	 * 用于判断元素是否存在
+	 * @param element {@link Element}对象
+	 * @return 当前指定的元素是否存在
+	 */
+	protected boolean isExistElement(Element element) {
+		//判断元素是否存在，若返回元素时抛出异常，则返回false
+		try {
+			element.getWebElement();
+			return true;
+		} catch (NoSuchElementException e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * 用于将字符串数组内容转成字符串形式返回
+	 * @param keys 字符串数组
+	 * @return 数组文本
+	 */
+	protected String arrayToString(String...keys) {
+		if (keys == null || keys.length == 0) {
+			return "[]";
+		}
+		
+		StringBuilder text = new StringBuilder("[");
+		Arrays.asList(keys).forEach(key -> {
+			text.append(key);
+			text.append(", ");
+		});
+		
+		return text.substring(0, text.lastIndexOf(", "));
 	}
 }

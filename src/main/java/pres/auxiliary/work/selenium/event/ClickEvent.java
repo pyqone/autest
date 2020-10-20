@@ -3,6 +3,7 @@ package pres.auxiliary.work.selenium.event;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
@@ -35,17 +36,20 @@ public class ClickEvent extends AbstractEvent {
 	 * 鼠标左键单击事件
 	 * 
 	 * @param element {@link Element}对象
-	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
-	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws TimeoutException 元素无法操作时抛出的异常
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public void click(Element element) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
 		
 		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
 		wait.until((driver) -> {
 				try {
-					element.getWebElement().click();
+					WebElement we = element.getWebElement();
+					//定位到元素上
+					locationElement(we);
+					we.click();
 					return true;
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
@@ -61,21 +65,24 @@ public class ClickEvent extends AbstractEvent {
 	 * 鼠标左键双击事件
 	 * 
 	 * @param element {@link Element}对象
-	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public void doubleClick(Element element) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
-		
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
+				
 		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
 		wait.until((driver) -> {
 				try {
-					new Actions(driver).doubleClick(element.getWebElement()).perform();
+					WebElement we = element.getWebElement();
+					//定位到元素上
+					locationElement(we);
+					new Actions(driver).doubleClick(we).perform();
 					return true;
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
-					throw e;
+					throw e ;
 				}
 			});
 		
@@ -86,17 +93,20 @@ public class ClickEvent extends AbstractEvent {
 	/**
 	 * 鼠标右键点击事件
 	 * @param element {@link Element}对象
-	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public void rightClick(Element element) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
 		
 		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
 		wait.until((driver) -> {
 				try {
-					new Actions(driver).contextClick(element.getWebElement()).perform();
+					WebElement we = element.getWebElement();
+					//定位到元素上
+					locationElement(we);
+					new Actions(driver).contextClick(we).perform();
 					return true;
 				} catch (StaleElementReferenceException e) {
 					element.againFindElement();
@@ -113,8 +123,8 @@ public class ClickEvent extends AbstractEvent {
 	 * @param element {@link Element}对象
 	 * @param clickCount 点击次数
 	 * @param sleepInMillis 操作时间间隔，单位为毫秒
-	 * @throws NoSuchElementException 元素不存在或下标有误时抛出的异常
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public void continuousClick(Element element, int clickCount, long sleepInMillis) {
 		for(int i = 0; i < clickCount; i++) {

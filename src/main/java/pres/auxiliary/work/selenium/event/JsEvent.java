@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 
 import com.alibaba.fastjson.JSONArray;
@@ -53,11 +55,13 @@ public class JsEvent extends AbstractEvent {
 	 * @param element {@link Element}对象
 	 * @param attributeName 属性名
 	 * @return 元素对应属性的内容
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String getAttribute(Element element, String attributeName) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
-				
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
+		
 		// 获取对应元素的内容
 		String text = (String) (js.executeScript("return arguments[0].getAttribute('" + attributeName + "');",
 				wait.until(driver -> {
@@ -82,10 +86,12 @@ public class JsEvent extends AbstractEvent {
 	 * @param attributeName 需要设置的属性名
 	 * @param value         需要设置的属性值
 	 * @return 属性的原值
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String putAttribute(Element element, String attributeName, String value) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
 		
 		// 获取原属性中的值
 		resultText = getAttribute(element, attributeName);
@@ -111,11 +117,13 @@ public class JsEvent extends AbstractEvent {
 	 * @param element     {@link Element}对象
 	 * @param elementName 新元素（标签）的名称
 	 * @return 新增元素的定位方式
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String addElement(Element element, String elementName) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
-				
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
+		
 		// 获取并将其作为
 		String script = "var oldElement = arguments[0];";
 		// 拼接添加元素的代码
@@ -162,13 +170,14 @@ public class JsEvent extends AbstractEvent {
 	 * }
 	 * </pre>
 	 * 
-	 * @param element 元素
-	 * @return 元素的信息
+	 * @param element {@link Element}对象
+	 * @return 被删除的元素信息
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 */
 	public JSONObject deleteElement(Element element) {
-		//定位到元素上，若元素不存在或下标有误时，会抛出相应的异常
-		locationElement(element);
-				
+		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
+		element.getWebElement();
+		
 		//获取元素信息
 		JSONObject json = getElementInfromation(wait.until(driver -> {
 				try {
@@ -201,6 +210,7 @@ public class JsEvent extends AbstractEvent {
 	 * @param script js脚本
 	 * @param args   传入的参数
 	 * @return 执行结果
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 */
 	public Object runScript(String script, Object... args) {
 		logText = "执行脚本：" + script;
@@ -230,8 +240,9 @@ public class JsEvent extends AbstractEvent {
 	 * }
 	 * </pre>
 	 * 
-	 * @param element 元素
+	 * @param element {@link Element}对象
 	 * @return 元素属性的信息，以json的形式返回
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 */
 	@SuppressWarnings("unchecked")
 	private JSONObject getElementInfromation(WebElement element) {
