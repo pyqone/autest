@@ -8,7 +8,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p><b>文件名：</b>WaitEvent.java</p>

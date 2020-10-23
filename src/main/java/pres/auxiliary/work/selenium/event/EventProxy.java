@@ -12,7 +12,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p><b>文件名：</b>EventProxy.java</p>

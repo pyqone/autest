@@ -135,53 +135,6 @@ public class Page {
 	}
 	
 	/**
-	 * 定位到弹框上并且点击确定按钮，并返回弹框上的文本
-	 * 
-	 * @return 弹框上的文本
-	 */
-	public String alertAccept() {
-		String text = alertGetText();
-		brower.getDriver().switchTo().alert().accept();
-
-		return text;
-
-	}
-
-	/**
-	 * 定位到弹框上并且点击取消按钮，并返回弹框上的文本
-	 * 
-	 * @return 弹框上的文本
-	 */
-	public String alertDimiss() {
-		String text = alertGetText();
-		brower.getDriver().switchTo().alert().dismiss();
-
-		return text;
-	}
-
-	/**
-	 * 定位到弹框上并且在其文本框中输入信息
-	 * 
-	 * @param content 需要输入的信息
-	 * @return 弹框上的文本
-	 */
-	public String alertInput(String content) {
-		String text = alertGetText();
-		brower.getDriver().switchTo().alert().sendKeys("");
-
-		return text;
-	}
-
-	/**
-	 * 获取弹框上的文本
-	 * 
-	 * @return 弹框上的文本
-	 */
-	public String alertGetText() {
-		return brower.getDriver().switchTo().alert().getText();
-	}
-	
-	/**
 	 * 用于通过浏览器加载页面，并根据页面断言，返回页面是否加载成功。若未设置断言，则无论
 	 * 页面是否成功加载，均返回true
 	 * @param driver WebDriver对象，通过可通过{@link AbstractBrower}类及其子类来生成

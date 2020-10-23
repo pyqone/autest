@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p>	
@@ -59,19 +59,15 @@ public class JsEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String getAttribute(Element element, String attributeName) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
+		//指定脚本
+		String script = "return arguments[0].getAttribute('" + attributeName + "');";
+		actionOperate(element, null);
 		
 		// 获取对应元素的内容
-		String text = (String) (js.executeScript("return arguments[0].getAttribute('" + attributeName + "');",
-				wait.until(driver -> {
-					try {
-						return element.getWebElement();
-					} catch (StaleElementReferenceException e) {
-						element.againFindElement();
-						throw e;
-					}
-				})));
+//		String text = (String) (
+//				js.executeScript("return arguments[0].getAttribute('" + attributeName + "');",
+//				webElement));
+		String text = (String) runScript(script, webElement);
 		
 		logText = "获取“" + element.getElementData().getName() + "”元素的" + attributeName + "属性的属性值";
 		resultText = (text == null) ? "" : text;
@@ -90,21 +86,23 @@ public class JsEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String putAttribute(Element element, String attributeName, String value) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-		
 		// 获取原属性中的值
 		resultText = getAttribute(element, attributeName);
 
 		// 执行代码
-		js.executeScript("arguments[0].setAttribute('" + attributeName + "','" + value + "');", wait.until(driver -> {
-				try {
-					return element.getWebElement();
-				} catch (StaleElementReferenceException e) {
-					element.againFindElement();
-					throw e;
-				}
-			}));
+//		js.executeScript("arguments[0].setAttribute('" + attributeName + "','" + value + "');", wait.until(driver -> {
+//				try {
+//					return element.getWebElement();
+//				} catch (StaleElementReferenceException e) {
+//					element.againFindElement();
+//					throw e;
+//				}
+//			}));
+		//指定脚本
+		String script = "arguments[0].setAttribute('" + attributeName + "','" + value + "');";
+		actionOperate(element, null);
+		
+		runScript(script, webElement);
 		
 		logText = "设置“" + element.getElementData().getName() + "”元素的" + attributeName + "属性的属性值";
 		return resultText;
@@ -135,15 +133,19 @@ public class JsEvent extends AbstractEvent {
 		script += "oldElement.appendChild(newElement);";
 
 		// 执行代码
-		js.executeScript(script, wait.until(driver -> {
-				try {
-					return element.getWebElement();
-				} catch (StaleElementReferenceException e) {
-					element.againFindElement();
-					throw e;
-				}
-			}));
-
+//		js.executeScript(script, wait.until(driver -> {
+//				try {
+//					return element.getWebElement();
+//				} catch (StaleElementReferenceException e) {
+//					element.againFindElement();
+//					throw e;
+//				}
+//			}));
+		
+		actionOperate(element, null);
+		
+		runScript(script, webElement);
+		
 		logText = "在“" + element.getElementData().getName() + "”元素下添加“" + elementName + "”元素";
 		resultText = "//" + elementName + "[@temp_attribute='" + uuid + "']";
 		
@@ -196,7 +198,9 @@ public class JsEvent extends AbstractEvent {
 		script += "parentNode.removeChild(deleteNode)";
 
 		// 执行代码，由于在获取元素信息时已经对元素的过期进行了判断，故此处无需在做判断
-		js.executeScript(script, element.getWebElement());
+//		js.executeScript(script, element.getWebElement());
+		actionOperate(element, null);
+		runScript(script, webElement);
 		
 		logText = "删除“" + element.getElementData().getName() + "”元素";
 		resultText = json.toJSONString();

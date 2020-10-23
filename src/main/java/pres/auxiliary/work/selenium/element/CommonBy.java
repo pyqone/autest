@@ -56,6 +56,6 @@ public class CommonBy extends AbstractBy {
 		}
 		
 		//返回元素对象
-		return new Element(0);
+		return new Element(0, elementList, elementData, this);
 	}
 }

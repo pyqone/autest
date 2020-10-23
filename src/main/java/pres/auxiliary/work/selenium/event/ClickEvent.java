@@ -1,13 +1,11 @@
 package pres.auxiliary.work.selenium.event;
 
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p><b>文件名：</b>ClickEvent.java</p>
@@ -40,25 +38,12 @@ public class ClickEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public void click(Element element) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-		
-		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
-		wait.until((driver) -> {
-				try {
-					WebElement we = element.getWebElement();
-					//定位到元素上
-					locationElement(we);
-					we.click();
-					return true;
-				} catch (StaleElementReferenceException e) {
-					element.againFindElement();
-					throw e;
-				}
-			});
+		actionOperate(element, (e) -> {
+			e.getWebElement().click();
+			return "";
+		});
 		
 		logText = "左键点击“" + element.getElementData().getName() + "”元素";
-		resultText = "";
 	}
 
 	/**
@@ -69,25 +54,12 @@ public class ClickEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public void doubleClick(Element element) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-				
-		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
-		wait.until((driver) -> {
-				try {
-					WebElement we = element.getWebElement();
-					//定位到元素上
-					locationElement(we);
-					new Actions(driver).doubleClick(we).perform();
-					return true;
-				} catch (StaleElementReferenceException e) {
-					element.againFindElement();
-					throw e ;
-				}
-			});
+		actionOperate(element, (e) -> {
+			new Actions(brower.getDriver()).doubleClick(e.getWebElement()).perform();
+			return "";
+		});
 		
 		logText = "左键双击“" + element.getElementData().getName() + "”元素";
-		resultText = "";
 	}
 
 	/**
@@ -97,25 +69,12 @@ public class ClickEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public void rightClick(Element element) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-		
-		//在指定的时间内判断是否能进行点击，若抛出StaleElementReferenceException异常，则重新获取元素
-		wait.until((driver) -> {
-				try {
-					WebElement we = element.getWebElement();
-					//定位到元素上
-					locationElement(we);
-					new Actions(driver).contextClick(we).perform();
-					return true;
-				} catch (StaleElementReferenceException e) {
-					element.againFindElement();
-					throw e;
-				} 
-			});
+		actionOperate(element, (e) -> {
+			new Actions(brower.getDriver()).contextClick(e.getWebElement()).perform();
+			return "";
+		});
 		
 		logText = "右键点击“" + element.getElementData().getName() + "”元素";
-		resultText = "";
 	}
 	
 	/**
@@ -138,6 +97,5 @@ public class ClickEvent extends AbstractEvent {
 		}
 		
 		logText = "左键连续点击“" + element.getElementData().getName() + "”元素" + clickCount + "次";
-		resultText = "";
 	}
 }

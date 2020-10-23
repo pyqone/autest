@@ -4,7 +4,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p>

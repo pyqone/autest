@@ -8,13 +8,12 @@ import java.util.Random;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Rectangle;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
+import pres.auxiliary.work.selenium.element.Element;
 import pres.auxiliary.work.selenium.tool.RecognitionImage;
 import pres.auxiliary.work.selenium.tool.Screenshot;
 
@@ -52,13 +51,10 @@ public class TextEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String clear(Element element) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-		
 		//由于需要存储步骤，若直接调用getText方法进行返回时，其会更改存储的step，为保证step正确，故存储返回值进行返回
 		resultText = getText(element);
 		//由于在获取元素时，已对元素进行相应操作等待，故此处将不再重新获取
-		element.getWebElement().clear();
+		webElement.clear();
 		
 		logText = "清除“" + element.getElementData().getName() + "”元素中的文本内容";
 		return resultText;
@@ -73,20 +69,8 @@ public class TextEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String getAttributeValue(Element element, String attributeName) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-		
-		//在指定的时间内判断是否能进行操作，若抛出StaleElementReferenceException异常，则重新获取元素
-		resultText = wait.until((driver) -> {
-			try {
-				WebElement we = element.getWebElement();
-				//定位到元素上
-				locationElement(we);
-				return we.getAttribute(attributeName);
-			} catch (StaleElementReferenceException e) {
-				element.againFindElement();
-				throw e;
-			}
+		actionOperate(element, (e) -> {
+			return e.getWebElement().getAttribute(attributeName);
 		});
 		
 		logText = "获取“" + element.getElementData().getName() + "”元素的" + attributeName + "属性的属性值";
@@ -101,20 +85,9 @@ public class TextEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String getText(Element element) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-		
-		//在指定的时间内判断是否能进行操作，若抛出StaleElementReferenceException异常，则重新获取元素
-		resultText = wait.until((driver) -> {
-			try {
-				WebElement we = element.getWebElement();
-				//定位到元素上
-				locationElement(we);
-				return "input".equalsIgnoreCase(we.getTagName()) ? we.getAttribute("value") : we.getText();
-			} catch (StaleElementReferenceException e) {
-				element.againFindElement();
-				throw e;
-			}
+		actionOperate(element, (e) -> {
+			WebElement we = e.getWebElement();
+			return "input".equalsIgnoreCase(we.getTagName()) ? we.getAttribute("value") : we.getText();
 		});
 		
 		logText = "获取“" + element.getElementData().getName() + "”元素的文本内容";
@@ -130,25 +103,12 @@ public class TextEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String input(Element element, String text) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-		
-		//在指定的时间内判断是否能进行操作，若抛出StaleElementReferenceException异常，则重新获取元素
-		wait.until((driver) -> {
-			try {
-				WebElement we = element.getWebElement();
-				//定位到元素上
-				locationElement(we);
-				we.sendKeys(text);
-				return true;
-			} catch (StaleElementReferenceException e) {
-				element.againFindElement();
-				throw e;
-			}
+		actionOperate(element, (e) -> {
+			e.getWebElement().sendKeys(text);
+			return text;
 		});
 		
 		logText = "在“" + element.getElementData().getName() + "”元素中输入" + text;
-		resultText = text;
 		
 		return resultText;
 	}
@@ -165,21 +125,9 @@ public class TextEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String keyToSend(Element element, CharSequence... keys) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		element.getWebElement();
-		
-		//在指定的时间内判断是否能进行操作，若抛出StaleElementReferenceException异常，则重新获取元素
-		wait.until((driver) -> {
-			try {
-				WebElement we = element.getWebElement();
-				//定位到元素上
-				locationElement(we);
-				we.sendKeys(keys);
-				return true;
-			} catch (StaleElementReferenceException e) {
-				element.againFindElement();
-				throw e;
-			}
+		actionOperate(element, (e) -> {
+			e.getWebElement().sendKeys(keys);
+			return "";
 		});
 		
 		StringBuilder textBul = new StringBuilder();
@@ -214,12 +162,9 @@ public class TextEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public String codeInput(Element textElement, Element codeImageElement) {
-		//由于在until()方法中无法直接抛出元素不存在的异常，故此处直接调用返回元素的方法，让元素不存在的异常抛出
-		codeImageElement.getWebElement();
-		textElement.getWebElement();
-		
+		actionOperate(codeImageElement, null);
 		// 判断验证码信息是否加载，加载后，获取其Rectang对象
-		Rectangle r = codeImageElement.getWebElement().getRect();
+		Rectangle r = webElement.getRect();
 		// 构造截图对象，并创建截图
 		Screenshot sc = new Screenshot(brower.getDriver(), new File("Temp"));
 		File image = null;

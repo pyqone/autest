@@ -2,14 +2,18 @@ package pres.auxiliary.work.selenium.event;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
+import pres.auxiliary.work.selenium.element.Element;
 
 /**
  * <p><b>文件名：</b>AbstractEvent.java</p>
@@ -50,6 +54,13 @@ public abstract class AbstractEvent {
 	protected String resultText = "";
 	
 	/**
+	 * 存储当前操作的元素类
+	 */
+	protected WebElement webElement;
+	
+	protected HashSet<String> exceptionSet = new HashSet<>();
+	
+	/**
 	 * 构造对象并存储浏览器对象
 	 * 
 	 * @param brower 浏览器{@link AbstractBrower}对象
@@ -57,7 +68,6 @@ public abstract class AbstractEvent {
 	public AbstractEvent(AbstractBrower brower) {
 		this.brower = brower;
 		wait = new WebDriverWait(brower.getDriver(), waitTime, 200);
-		wait.withMessage("操作超时，当前元素无法进行该操作");
 	}
 
 	/**
@@ -83,6 +93,14 @@ public abstract class AbstractEvent {
 	 */
 	public String getResultText() {
 		return resultText;
+	}
+	
+	/**
+	 * 用于返回当前在执行等待时被捕获的异常信息集合
+	 * @return 异常信息集合
+	 */
+	public Set<String> getExceptionInfomation() {
+		return exceptionSet;
 	}
 	
 	/**
@@ -138,5 +156,77 @@ public abstract class AbstractEvent {
 		});
 		
 		return text.substring(0, text.lastIndexOf(", "));
+	}
+	
+	/**
+	 * 用于对元素进行指定操作，并统一处理异常情况。操作必须包含一个{@link String}类型的返回值，
+	 * 方法中将该返回值存储至{@link AbstractEvent#resultText}属性中。
+	 * 
+	 * @param element {@link Element}对象
+	 * @param action 需要执行的操作
+	 */
+	protected void actionOperate(Element element, Function<Element, String> action) {
+		//清空异常信息
+		exceptionSet.clear();
+		
+		if (action != null) {
+			//在指定的时间内判断是否能进行操作
+			wait.withMessage("操作超时，元素“" + element.getElementData().getName() + "”无法进行相应操作");
+			resultText = wait.until((driver) -> {
+					try {
+						//定位到元素
+						locationElement(element.getWebElement());
+						return action.apply(element);
+					} catch (StaleElementReferenceException e) {
+						//添加异常信息
+						exceptionSet.add(toExceptionString(e));
+						//若抛出元素过期异常，则调用重新获取元素的方法，并返回失败结果，继续等待再次操作
+						element.againFindElement();
+						return null;
+					} catch (NoSuchElementException e) {
+						//添加异常信息
+						exceptionSet.add(toExceptionString(e));
+						//若出现元素不存在异常，则直接抛出
+						throw e;
+					} catch (Exception e) {
+						//添加异常信息
+						exceptionSet.add(toExceptionString(e));
+						//其他异常则返回一个失败的结果，使其继续等待
+						return null;
+					}
+				});
+			webElement = element.getWebElement();
+		} else {
+			//在指定的时间内判断是否能进行操作
+			wait.withMessage("操作超时，元素“" + element.getElementData().getName() + "”无法获取");
+			webElement = wait.until((driver) -> {
+					try {
+						return element.getWebElement();
+					} catch (StaleElementReferenceException e) {
+						//若抛出元素过期异常，则调用重新获取元素的方法，并返回失败结果，继续等待再次操作
+						element.againFindElement();
+						return null;
+					} catch (NoSuchElementException e) {
+						//若出现元素不存在异常，则直接抛出
+						throw e;
+					} catch (Exception e) {
+						//添加异常信息
+						exceptionSet.add(toExceptionString(e));
+						//其他异常则返回一个失败的结果，使其继续等待
+						return null;
+					}
+				});
+			
+			resultText = "";
+		}
+	}
+	
+	/**
+	 * 用于将异常信息转换为字符串，转换的格式为“类名:异常信息”
+	 * @param exception 异常类对象
+	 * @return 转换后的异常信息 
+	 */
+	private String toExceptionString(Exception exception) {
+		return exception.getClass().getName() + ":" + exception.getMessage();
 	}
 }

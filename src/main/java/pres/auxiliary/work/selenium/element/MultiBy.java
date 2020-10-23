@@ -8,7 +8,6 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
 
 /**
  * <p>
@@ -45,11 +44,12 @@ public abstract class MultiBy extends AbstractBy {
 
 	/**
 	 * 用于设置当前元素集合中首元素是否为允许随机返回的元素<br>
-	 * 例如：获取列表元素时，首元素为标题元素；获取下拉选项元素集合时， 第一个元素为空选项或者为类似“请选择”等选项
+	 * 例如：获取列表元素时，首元素为标题元素；获取下拉选项元素集合时，
+	 * 第一个元素为空选项或者为类似“请选择”等选项
 	 * 
 	 * @param firstEmpty 首元素是否为允许随机返回的元素
 	 */
-	public void setFirstEmpty(boolean firstEmpty) {
+	public void setFirstIsEmpty(boolean firstEmpty) {
 		this.firstEmpty = firstEmpty;
 	}
 
@@ -130,7 +130,7 @@ public abstract class MultiBy extends AbstractBy {
 	 * @return {@link Element}类对象
 	 */
 	public Element getElement(int index) {
-		return new Element(toElementIndex(elementList.size(), index));
+		return new Element(toElementIndex(elementList.size(), index), elementList, elementData, this);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public abstract class MultiBy extends AbstractBy {
 
 		//循环，遍历类中的elementList，根据其长度，构造Elemenet对象，并进行添加
 		for (int index = 0; index < this.elementList.size(); index++) {
-			elementList.add(new Element(index));
+			elementList.add(new Element(index, this.elementList, elementData, this));
 		}
 		
 		return elementList;

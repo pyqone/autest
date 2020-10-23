@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.openqa.selenium.support.ui.Select;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.element.AbstractBy.Element;
 
 public class SelectBy extends MultiBy {
 	/**
@@ -90,17 +89,17 @@ public class SelectBy extends MultiBy {
 	 */
 	public Element getElement(String selectText) {
 		//判断当前内容是否存在于selectTextList中，存在，则获取下标，并返回相应的元素；不存在，则构造元素下标为-1
-		int index = selectTextList.indexOf(selectText);
+		int index = textToIndex(selectText);
 		if (index > -1) {
-			return getElement(index);
+			return getElement(index + 1);
 		} else {
-			return new Element(-1);
+			return new Element(-1, elementList, elementData, this);
 		}
 	}
 	
 	@Override
 	public boolean removeElement(int index) {
-		if (super.removeElement(index)) {
+		if (super.removeElement(index + 1)) {
 			selectTextList.remove(index);
 			return true;
 		}
@@ -115,7 +114,7 @@ public class SelectBy extends MultiBy {
 	 */
 	public boolean removeElement(String selectText) {
 		//判断当前内容是否存在于selectTextList中，存在，则获取下标，并返回相应的元素；不存在，则构造元素下标为-1
-		int index = selectTextList.indexOf(selectText);
+		int index = textToIndex(selectText);
 		if (index > -1) {
 			return removeElement(index);
 		} else {
@@ -134,5 +133,23 @@ public class SelectBy extends MultiBy {
 				return element.getAttribute(attributeName);
 			}
 		}).collect(Collectors.toList());
+	}
+	
+	/**
+	 * 用于将下拉的文本转换为下标
+	 * @param text 文本内容
+	 * @return 文本所在集合中的下标
+	 */
+	private int textToIndex(String text) {
+		int index = 0;
+		//遍历selectTextList，查找第一个包含text的内容，返回相应的下标
+		for (; index < selectTextList.size(); index++) {
+			if (selectTextList.get(index).contains(text)) {
+				return index;
+			}
+		}
+		
+		//若循环结束仍未找到相应的下标，则返回-1
+		return -1;
 	}
 }
