@@ -1,5 +1,7 @@
 package pres.auxiliary.work.selenium.event;
 
+import java.util.function.Function;
+
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 
@@ -99,10 +101,13 @@ public class AssertEvent extends AbstractEvent {
 	 */
 	public boolean assertTextContainKey(Element element, boolean isJudgeAllKey, String... keys) {
 		//判断是否传入关键词
-		boolean result = true;
-		if (keys != null && keys.length != 0) {
-			result = judgetText(textEvent.getText(element), isJudgeAllKey, false, keys);	
-		}
+//		boolean result = true;
+//		if (keys != null && keys.length != 0) {
+//			result = judgetText(textEvent.getText(element), isJudgeAllKey, false, keys);	
+//		}
+		
+		boolean result = assertTextContainKey(element, (e) -> textEvent.getText(e), 
+				isJudgeAllKey, keys);
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素的文本内容包含"
 				+ (isJudgeAllKey ? "所有" : "部分") + "关键词" + arrayToString(keys);
@@ -110,7 +115,7 @@ public class AssertEvent extends AbstractEvent {
 		
 		return result;
 	}
-
+	
 	/**
 	 * <p>
 	 * 	断言元素的文本内容中不包含指定的关键词。可设置元素的文本内容是否需要判断传入的所有关键词，即
@@ -155,10 +160,13 @@ public class AssertEvent extends AbstractEvent {
 	 */
 	public boolean assertTextNotContainKey(Element element, boolean isJudgeAllKey, String... keys) {
 		//判断是否传入关键词
-		boolean result = true;
-		if (keys != null && keys.length != 0) {
-			result = judgetText(textEvent.getText(element), isJudgeAllKey, true, keys);	
-		}
+//		boolean result = true;
+//		if (keys != null && keys.length != 0) {
+//			result = judgetText(textEvent.getText(element), isJudgeAllKey, true, keys);	
+//		}
+		
+		boolean result = assertTextNotContainKey(element, (e) -> textEvent.getText(e), 
+				isJudgeAllKey, keys);
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素的文本内容不包含"
 				+ (isJudgeAllKey ? "所有" : "部分") + "关键词" + arrayToString(keys);
@@ -182,10 +190,12 @@ public class AssertEvent extends AbstractEvent {
 	public boolean assertAttributeContainKey(Element element, String attributeName, boolean isJudgeAllKey,
 			String... keys) {
 		//判断是否传入关键词
-		boolean result = true;
-		if (keys != null && keys.length != 0) {
-			result = judgetText(textEvent.getAttributeValue(element, attributeName), isJudgeAllKey, false, keys);	
-		}
+//		boolean result = true;
+//		if (keys != null && keys.length != 0) {
+//			result = judgetText(textEvent.getAttributeValue(element, attributeName), isJudgeAllKey, false, keys);	
+//		}
+		boolean result = assertTextContainKey(element, (e) -> textEvent.getAttributeValue(e, attributeName), 
+				isJudgeAllKey, keys);
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素的“" + attributeName
 				+ "”属性值包含"
@@ -209,14 +219,75 @@ public class AssertEvent extends AbstractEvent {
 	 */
 	public boolean assertAttributeNotContainKey(Element element, String attributeName, boolean isJudgeAllKey,
 			String... keys) {
-		//判断是否传入关键词
-		boolean result = true;
-		if (keys != null && keys.length != 0) {
-			result = judgetText(textEvent.getAttributeValue(element, attributeName), isJudgeAllKey, true, keys);	
-		}
+//		//判断是否传入关键词
+//		boolean result = true;
+//		if (keys != null && keys.length != 0) {
+//			result = judgetText(textEvent.getAttributeValue(element, attributeName), isJudgeAllKey, true, keys);	
+//		}
+		
+		boolean result = assertTextNotContainKey(element, (e) -> textEvent.getAttributeValue(e, attributeName), 
+				isJudgeAllKey, keys);
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素的“" + attributeName
 				+ "”属性值不包含"
+				+ (isJudgeAllKey ? "所有" : "部分") + "关键词" + arrayToString(keys);
+		resultText = String.valueOf(result);
+		
+		return result;
+	}
+	
+	/**
+	 * 对元素内容进行处理，并断言处理后的文本内容中包含指定的关键词。
+	 * 可设置元素的文本内容是否需要判断传入的所有关键词，具体参数介绍
+	 * 可参考{@link #assertTextContainKey(Element, boolean, String...)}方法
+	 * 
+	 * @param element {@link Element}对象
+	 * @param dispose 对元素内容的处理方法，传入的参数为{@link Element}对象，返回的参数为字符串
+	 * @param isJudgeAllKey 是否需要完全判断所有关键词
+	 * @param keys 关键词组
+	 * @return 断言结果
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
+	 */
+	public boolean assertTextContainKey(Element element, Function<Element, String> dispose, boolean isJudgeAllKey, String... keys) {
+		//判断是否传入关键词
+		boolean result = true;
+		String text = "";
+		if (keys != null && keys.length != 0) {
+			text = dispose.apply(element);
+			result = judgetText(text, isJudgeAllKey, false, keys);	
+		}
+		
+		logText = "断言“" + element.getElementData().getName() + "”元素处理后的文本内容（" + text +"）包含"
+				+ (isJudgeAllKey ? "所有" : "部分") + "关键词" + arrayToString(keys);
+		resultText = String.valueOf(result);
+		
+		return result;
+	}
+	
+	/**
+	 * 对元素内容进行处理，并断言处理后的文本内容中不包含指定的关键词。
+	 * 可设置元素的文本内容是否需要判断传入的所有关键词，
+	 * 具体参数介绍可参考{@link #assertTextContainKey(Element, boolean, String...)}方法
+	 * 
+	 * @param element {@link Element}对象
+	 * @param dispose 对元素内容的处理方法，传入的参数为{@link Element}对象，返回的参数为字符串
+	 * @param isJudgeAllKey 是否需要完全判断所有关键词
+	 * @param keys 关键词组
+	 * @return 断言结果
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
+	 */
+	public boolean assertTextNotContainKey(Element element, Function<Element, String> dispose, boolean isJudgeAllKey, String... keys) {
+		//判断是否传入关键词
+		boolean result = true;
+		String text = "";
+		if (keys != null && keys.length != 0) {
+			text = dispose.apply(element);
+			result = judgetText(text, isJudgeAllKey, true, keys);	
+		}
+		
+		logText = "断言“" + element.getElementData().getName() + "”元素处理后的文本内容（" + text +"）包含"
 				+ (isJudgeAllKey ? "所有" : "部分") + "关键词" + arrayToString(keys);
 		resultText = String.valueOf(result);
 		
@@ -235,7 +306,8 @@ public class AssertEvent extends AbstractEvent {
 		//判断是否传入关键词
 		text = text == null ? "" : text;
 		
-		boolean result = judgetText(textEvent.getText(element), true, false, text);	
+//		boolean result = judgetText(textEvent.getText(element), true, false, text);	
+		boolean result = assertTextContainKey(element, true, text);
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素的文本内容为“" + text + "”";
 		resultText = String.valueOf(result);
@@ -255,7 +327,8 @@ public class AssertEvent extends AbstractEvent {
 		//判断是否传入关键词
 		text = text == null ? "" : text;
 		
-		boolean result = judgetText(textEvent.getText(element), true, true, text);	
+//		boolean result = judgetText(textEvent.getText(element), true, true, text);	
+		boolean result = assertTextNotContainKey(element, true, text);
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素的文本内容不为“" + text + "”";
 		resultText = String.valueOf(result);

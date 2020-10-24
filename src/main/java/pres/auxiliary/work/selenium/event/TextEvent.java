@@ -3,7 +3,6 @@ package pres.auxiliary.work.selenium.event;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Random;
 
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
@@ -160,7 +159,9 @@ public class TextEvent extends AbstractEvent {
 	 * @return 输入的内容
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
+	 * @deprecated 下个版本删除该方法，改为使用{@link #getImageText(Element)}与{@link #input(Element, String)}方法结合代替
 	 */
+	@Deprecated
 	public String codeInput(Element textElement, Element codeImageElement) {
 		actionOperate(codeImageElement, null);
 		// 判断验证码信息是否加载，加载后，获取其Rectang对象
@@ -191,58 +192,39 @@ public class TextEvent extends AbstractEvent {
 		
 		return resultText;
 	}
-
+	
 	/**
-	 * 该方法用于将一个指定的整数随机填写到传入的控件组中<br>
-	 * <b><i>建议在指定值远远大于控件的数量时再使用该方法，否则将会出现不可预期的问题</i></b>
-	 * 
-	 * @param num 指定的整数
-	 * @param textElements 通过查找页面得到的一组控件元素对象
-	 * @return 由于涉及到多个文本框，故其返回值有多个，将以“值1,值2,值3...”的形式进行返回
-	 * @deprecated 当前方法有些BUG，请勿调用，下个版本修复
-	 * @throws TimeoutException 元素无法操作时抛出的异常 
-	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
+	 * 用于对“数字+英文”类型的图片内容进行识别的方法，根据图片元素位置，识别图片中的内容。
+	 * 注意，该方法识别成功的概率不高，在“数字+英文”的模式下，经常将数字识别为英文。
+	 * @param element 图片元素
+	 * @return 识别图片的结果
 	 */
-	@Deprecated
-	public String avgIntergeInput(int num, Element... elements) {
-		//TODO 存在BUG，需要修改
-		//定义存储控件数量及需要随机的数量
-		int contrlNum = elements.length;
-		String inputNumText = "";
-		String[] inputNum = new String[contrlNum];
-		
-		// 向下取整获得平均数
-		int avgNum = num / contrlNum;
-		// 向上取整获得差值
-		int diffNum = (int) Math.ceil(avgNum / 10.0);
+	public String getImageText(Element element) {
+		actionOperate(element, null);
+		// 判断验证码信息是否加载，加载后，获取其Rectang对象
+		Rectangle r = webElement.getRect();
+		// 构造截图对象，并创建截图
+		Screenshot sc = new Screenshot(brower.getDriver(), new File("Temp"));
+		File image = null;
+		try {
+			image = sc.creatImage("code");
+		} catch (WebDriverException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-		//求取通过随机得出的值之和，用于计算最终其随机值之和与实际值的差值
-		int sum = 0;
-		//循环，生成控件个数个随机值，其随机值在给定数值的均值之前
-		for (int i = 0; i < contrlNum; i++) {
-			//注意：2 * diffNum为以下算式的简写：
-			//minNum = avgNum - diffNum;
-			//maxNum = avgNum + diffNum;
-			//int ranNum = new Random().nextInt(maxNum - minNum + 1) + minNum;
-			int ranNum = new Random().nextInt(2 * diffNum + 1) + (avgNum - diffNum);
-			sum += ranNum;
-			inputNum[i] = String.valueOf(ranNum);
-		}
+		// 设置图片识别的语言包存放位置
+		RecognitionImage.setTessdataPath(new File(TESSDATA));
+		// 识别图片，并存储至结果中
+		resultText = RecognitionImage.judgeImage(image, r.x, r.y, r.width, r.height);
 		
-		//由于数值是随机的，可能会出现随机值相加不为指定值，故需要补上差值，但由于差值通过算法后不会很大，故可随机附加到一个控件值上
-		if ( (diffNum = sum - num) != 0 ) {
-			inputNum[new Random().nextInt(contrlNum)] = String.valueOf(Integer.valueOf(inputNum[new Random().nextInt(contrlNum)]) - diffNum);
-		}
+		logText = "识别“" + element.getElementData().getName() + "”图片中内容，内容为："
+				+ resultText;
 		
-		//将随机值填写至控件中
-		for (int i = 0; i < contrlNum; i++) {
-			inputNumText += (input(elements[i], inputNum[i]) + ",");
-		}
-		
-		return inputNumText.substring(0, inputNumText.length() - 1);
+		return resultText;
 	}
-
-
+	
 	/**
 	 * 用于向控件中上传指定的文件。
 	 * 

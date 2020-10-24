@@ -47,6 +47,7 @@ public class JsEvent extends AbstractEvent {
 	 */
 	public JsEvent(AbstractBrower brower) {
 		super(brower);
+		js = (JavascriptExecutor) brower.getDriver();
 	}
 
 	/**
