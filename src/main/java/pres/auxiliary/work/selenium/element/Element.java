@@ -1,8 +1,5 @@
 package pres.auxiliary.work.selenium.element;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
@@ -24,10 +21,6 @@ public class Element {
 	 */
 	private int index;
 	/**
-	 * 存储获取的元素类对象
-	 */
-	private List<WebElement> elementList;
-	/**
 	 * 存储元素的信息
 	 */
 	private ElementData elementData;
@@ -39,14 +32,12 @@ public class Element {
 	/**
 	 * 构造对象。其传入的下标允许为-1，表示当前元素集合中不存在该元素
 	 * @param index 元素下标
-	 * @param elementList 元素类对象数据
 	 * @param elementData 元素信息
 	 * @param abstractBy 元素获取类对象
 	 */
-	public Element(int index, List<WebElement> elementList, ElementData elementData, AbstractBy abstractBy) {
+	public Element(int index, ElementData elementData, AbstractBy abstractBy) {
 		super();
 		this.index = index;
-		this.elementList = elementList;
 		this.elementData = elementData;
 		this.abstractBy = abstractBy;
 	}
@@ -60,16 +51,21 @@ public class Element {
 	 */
 	public WebElement getWebElement() {
 		//判断元素集合是否为空，若为空，则抛出查找超时异常
-		if (elementList == null || elementList.size() == 0) {
+		if (abstractBy.elementList == null || abstractBy.elementList.size() == 0) {
 			throw new NoSuchElementException("页面上无相应定位方式的元素，当前元素名称：" + elementData.getName());
 		}
 		
 		//判断元素下标是否为-1，若为-1，则抛出元素不存在异常
 		if (index == -1) {
-			throw new NoSuchElementException("指定的元素下标值不存在，当前元素集合个数：" + elementList.size());
+			throw new NoSuchElementException("指定的元素下标值不存在，当前元素集合个数：" + abstractBy.elementList.size());
 		}
 		
-		return elementList.get(index);
+		//判断当前类中存储的元素数据类对象是否与abstractBy中存储的数据类对象一致，若不一致，则重新获取元素
+		if (!this.elementData.getName().equals(abstractBy.elementData.getName())) {
+			againFindElement();
+		}
+		
+		return abstractBy.elementList.get(index);
 	}
 	
 	/**
@@ -85,9 +81,9 @@ public class Element {
 	 */
 	public void againFindElement() {
 		//重新构造elementList
-		elementList = new ArrayList<WebElement>();
+		abstractBy.elementList.clear();
 		try {
-			elementList.addAll(abstractBy.recognitionElement(elementData));
+			abstractBy.elementList.addAll(abstractBy.recognitionElement(elementData));
 		}catch (TimeoutException e) {
 		}
 	}
