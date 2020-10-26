@@ -48,7 +48,7 @@ public class ReadXml extends AbstractRead {
 	private Document dom;
 	
 	/**
-	 * 构造对象
+	 * 根据xml文件对象进行构造
 	 * @param xmlFile xml文件对象
 	 * @throws IncorrectFileException xml文件有误时抛出的异常
 	 */
@@ -60,6 +60,14 @@ public class ReadXml extends AbstractRead {
 			throw new IncorrectFileException("xml文件异常，文件位置：" + xmlFile.getAbsolutePath());
 		}
 		
+	}
+	
+	/**
+	 * 根据xml文件的{@link Document}对象进行构造
+	 * @param dom {@link Document}对象
+	 */
+	public ReadXml(Document dom) {
+		this.dom = dom;
 	}
 	
 	@Override
