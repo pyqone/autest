@@ -47,11 +47,11 @@ public abstract class AbstractEvent {
 	/**
 	 * 存储操作的日志文本
 	 */
-	protected String logText = "";
+	protected static String logText = "";
 	/**
 	 * 存储操作的返回值文本
 	 */
-	protected String resultText = "";
+	protected static String resultText = "";
 	
 	/**
 	 * 存储当前操作的元素类
@@ -83,7 +83,7 @@ public abstract class AbstractEvent {
 	 * 返回操作的日志
 	 * @return 操作日志
 	 */
-	public String getLogText() {
+	public static String getLogText() {
 		return logText;
 	}
 
@@ -91,7 +91,7 @@ public abstract class AbstractEvent {
 	 * 返回操作的返回值，若操作无返回值时，则返回空串
 	 * @return 操作返回值
 	 */
-	public String getResultText() {
+	public static String getResultText() {
 		return resultText;
 	}
 	
