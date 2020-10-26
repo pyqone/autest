@@ -30,11 +30,10 @@ public class CommonBy extends AbstractBy {
 	}
 	
 	/**
-	 * 用于根据元素名称与需要获取的元素位置，返回指定的元素。调用该方法在无法查到页面元素时，其不会
-	 * 抛出{@link TimeoutException}异常，但当调用{@link Element#getWebElement()}方法时，由于未查到元素
+	 * 用于根据元素名称与元素定位相应的外链词语，返回从页面上获取到的第一个元素。调用该方法在无法查到页面元素时，
+	 * 其不会抛出{@link TimeoutException}异常，但当调用{@link Element#getWebElement()}方法时，由于未查到元素
 	 * 则会抛出异常
 	 * @param elementName 元素名称
-	 * @param index 元素所在下标
 	 * @param linkKeys 外链词语组
 	 * @return {@link Element}类对象
 	 */
@@ -56,6 +55,47 @@ public class CommonBy extends AbstractBy {
 		}
 		
 		//返回元素对象
-		return new Element(0, elementList, elementData, this);
+		return new Element(0, elementData, this);
+	}
+	
+	/**
+	 * <p>
+	 * 用于根据元素名称与元素定位相应的外链词语，返回从页面上获取到的指定下标的元素。调用该方法在无
+	 * 法查到页面元素时，其不会抛出异常，但当调用{@link Element#getWebElement()}
+	 * 方法时，由于未查到元素则会抛出异常。
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * 	<li>下标允许传入负数，具体的参数逻辑可以参考{@link MultiBy#getElement(int)}方法的参数说明。</li>
+	 * 	<li>若下标超出当前从页面获取到元素的最大值时，其不会抛出异常，但当调用{@link Element#getWebElement()}
+	 * 方法时，则会抛出元素不存在异常。</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @param elementName 元素名称
+	 * @param index 元素所在下标
+	 * @param linkKeys 外链词语组
+	 * @return {@link Element}类对象
+	 */
+	public Element getElement(String elementName, int index, String...linkKeys) {
+		//根据元素名称，获取元素信息数据
+		elementData = new ElementData(elementName, read);
+		elementData.addLinkWord(linkKeys);
+		
+		//判断是否需要自动切换窗体，若需要，则对元素窗体进行切换
+		if (isAutoSwitchIframe) {
+			autoSwitchFrame(elementData.getIframeNameList());
+		}
+		
+		//获取元素数据在页面上对应的一组元素，若无法查到元素，则记录elementList为null
+		try {
+			elementList = recognitionElement(elementData);
+		} catch (TimeoutException e) {
+			elementList = new ArrayList<>();
+		}
+		
+		//返回元素对象
+		return new Element(toElementIndex(elementList.size(), index, false), elementData, this);
 	}
 }
