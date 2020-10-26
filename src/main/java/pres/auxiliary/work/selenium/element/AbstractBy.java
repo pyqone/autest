@@ -2,8 +2,10 @@ package pres.auxiliary.work.selenium.element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -294,6 +296,33 @@ public abstract class AbstractBy {
 					});
 		} catch (TimeoutException e) {
 			return new ArrayList<WebElement>();
+		}
+	}
+	
+	/**
+	 * 由于方法允许传入负数和特殊数字0为下标，并且下标的序号由1开始，故可通过该方法对下标的含义进行转义，得到java能识别的下标
+	 * 
+	 * @param length 元素的个数
+	 * @param index  传入的下标
+	 * @return 可识别的下标
+	 * @throws NoSuchElementException 当元素无法查找到时抛出的异常
+	 */
+	protected int toElementIndex(int length, int index, boolean firstEmpty) {
+		// 判断元素下标是否超出范围，由于可以传入负数，故需要使用绝对值
+		if (Math.abs(index) > length) {
+			return -1;
+		}
+
+		// 判断index的值，若大于0，则从前向后遍历，若小于0，则从后往前遍历，若等于0，则随机输入
+		if (index > 0) {
+			// 选择元素，正数的选项值从1开始，故需要减小1
+			return index - 1;
+		} else if (index < 0) {
+			// 选择元素，由于index为负数，则长度加上选项值即可得到需要选择的选项
+			return length + index;
+		} else {
+			Random ran = new Random();
+			return firstEmpty ? (ran.nextInt(length - 1) + 1) : ran.nextInt(length);
 		}
 	}
 }

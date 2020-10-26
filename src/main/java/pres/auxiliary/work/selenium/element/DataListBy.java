@@ -15,7 +15,7 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
  * @version Ver1.0
  *
  */
-public class DataListBy extends MultiBy {
+public class DataListBy extends MultiBy<DataListBy> {
 	/**
 	 * 构造方法，初始化浏览器对象
 	 * @param brower {@link AbstractBrower}类对象

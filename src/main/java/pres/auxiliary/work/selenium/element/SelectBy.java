@@ -8,7 +8,7 @@ import org.openqa.selenium.support.ui.Select;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 
-public class SelectBy extends MultiBy {
+public class SelectBy extends MultiBy<SelectBy> {
 	/**
 	 * 定义标准下拉选项的tagname
 	 */
@@ -59,11 +59,11 @@ public class SelectBy extends MultiBy {
 	}
 	
 	@Override
-	public void find(String elementName, String... linkKeys) {
+	public SelectBy find(String elementName, String... linkKeys) {
 		super.find(elementName, linkKeys);
 		//判断当前存储的元素集合中是否为空，若为空，则直接返回
 		if (elementList == null || elementList.size() == 0) {
-			return;
+			return this;
 		}
 		
 		//判断当前元素集合中，第一个元素的tagName是否为select，若为select，则表示其为标准下拉
@@ -71,12 +71,13 @@ public class SelectBy extends MultiBy {
 		if (SELECT_TAGNAME.equals(elementList.get(0).getTagName())) {
 			elementList = new Select(elementList.get(0)).getOptions();
 			if (elementList == null || elementList.size() == 0) {
-				return;
+				return this;
 			}
 		}
 		
 		//按照设置的查找方式，查找元素内容
 		findElementContent();
+		return this;
 	}
 	
 	/**
@@ -93,7 +94,7 @@ public class SelectBy extends MultiBy {
 		if (index > -1) {
 			return getElement(index + 1);
 		} else {
-			return new Element(-1, elementList, elementData, this);
+			return new Element(-1, elementData, this);
 		}
 	}
 	
