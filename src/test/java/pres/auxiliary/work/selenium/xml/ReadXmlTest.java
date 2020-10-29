@@ -9,14 +9,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class ReadXmlTest {
-ReadXml r;
+XmlLocation r;
 	
 	/**
 	 * 初始化数据
 	 */
 	@BeforeClass
 	public void newReadXML() {
-		r = new ReadXml(new File("src/test/java/pres/auxiliary/work/selenium/xml/测试用xml文件.xml"));
+		r = new XmlLocation(new File("src/test/java/pres/auxiliary/work/selenium/xml/测试用xml文件.xml"));
 	}
 	
 	@AfterMethod
@@ -25,7 +25,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getBy(String, ByType)}方法，获取普通元素
+	 * 用于测试{@link XmlLocation#getBy(String, ByType)}方法，获取普通元素
 	 */
 	@Test
 	public void getByTest_Element() {
@@ -33,7 +33,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getBy(String, ByType)}方法，获取窗体元素
+	 * 用于测试{@link XmlLocation#getBy(String, ByType)}方法，获取窗体元素
 	 */
 	@Test
 	public void getByTest_Iframe() {
@@ -41,7 +41,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getBy(String, ByType)}方法，获取模板元素
+	 * 用于测试{@link XmlLocation#getBy(String, ByType)}方法，获取模板元素
 	 */
 	@Test
 	public void getByTest_Templet() {
@@ -50,7 +50,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getBy(String, ByType)}方法，获取顶层元素
+	 * 用于测试{@link XmlLocation#getBy(String, ByType)}方法，获取顶层元素
 	 */
 	@Test
 	public void getByTest_RootElement() {
@@ -58,7 +58,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, ByType)}方法，获取普通元素
+	 * 用于测试{@link XmlLocation#getValue(String, ByType)}方法，获取普通元素
 	 */
 	@Test
 	public void getElementValueTest_Element() {
@@ -66,7 +66,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, ByType)}方法，获取窗体元素
+	 * 用于测试{@link XmlLocation#getValue(String, ByType)}方法，获取窗体元素
 	 */
 	@Test
 	public void getElementValueTest_Iframe() {
@@ -74,7 +74,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, ByType)}方法，获取模板元素
+	 * 用于测试{@link XmlLocation#getValue(String, ByType)}方法，获取模板元素
 	 */
 	@Test
 	public void getElementValueTest_Templet() {
@@ -83,7 +83,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, ByType)}方法，获取顶层元素
+	 * 用于测试{@link XmlLocation#getValue(String, ByType)}方法，获取顶层元素
 	 */
 	@Test
 	public void getElementValueTest_RootElement() {
@@ -91,7 +91,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getIframeName(String, ByType)}方法，获取普通元素
+	 * 用于测试{@link XmlLocation#getIframeName(String, ByType)}方法，获取普通元素
 	 */
 	@Test
 	public void getIframeNameTest_Element() {
@@ -99,7 +99,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getIframeName(String, ByType)}方法，获取窗体元素
+	 * 用于测试{@link XmlLocation#getIframeName(String, ByType)}方法，获取窗体元素
 	 */
 	@Test
 	public void getIframeNameTest_Iframe() {
@@ -107,7 +107,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getIframeName(String, ByType)}方法，获取模板元素
+	 * 用于测试{@link XmlLocation#getIframeName(String, ByType)}方法，获取模板元素
 	 */
 	@Test
 	public void getIframeNameTest_Templet() {
@@ -116,7 +116,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getIframeName(String)}方法，获取顶层元素
+	 * 用于测试{@link XmlLocation#getIframeName(String)}方法，获取顶层元素
 	 */
 	@Test
 	public void getIframeNameTest_RootElement() {
@@ -124,7 +124,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getIframeName(String)}方法，获取模板元素
+	 * 用于测试{@link XmlLocation#getIframeName(String)}方法，获取模板元素
 	 */
 	@Test
 	public void getIframeNameTest_NoPram() {
@@ -132,7 +132,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, ByType)}方法，未查找到替换的属性
+	 * 用于测试{@link XmlLocation#getValue(String, ByType)}方法，未查找到替换的属性
 	 */
 	@Test
 	public void getValueTest_NoPram() {
@@ -141,7 +141,7 @@ ReadXml r;
 	}
 	
 	/**
-	 * 用于测试{@link ReadXml#getValue(String, ByType)}方法，外链关键词
+	 * 用于测试{@link XmlLocation#getValue(String, ByType)}方法，外链关键词
 	 */
 	@Test
 	public void getValueTest_Link() {

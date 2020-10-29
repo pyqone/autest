@@ -6,8 +6,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import pres.auxiliary.work.selenium.location.AbstractRead;
-import pres.auxiliary.work.selenium.location.ReadXml;
+import pres.auxiliary.work.selenium.location.AbstractLocation;
+import pres.auxiliary.work.selenium.location.XmlLocation;
 
 /**
  * <p><b>文件名：</b>ElementDataTest.java</p>
@@ -21,14 +21,14 @@ import pres.auxiliary.work.selenium.location.ReadXml;
  *
  */
 public class ElementDataTest {
-	AbstractRead ar;
+	AbstractLocation ar;
 	ElementData test;
 	
 	final File XML_FILE = new File("src/test/java/pres/auxiliary/work/selenium/element/测试用xml文件.xml");
 	
 	@BeforeClass
 	public void init() {
-		ar = new ReadXml(XML_FILE);
+		ar = new XmlLocation(XML_FILE);
 	}
 	
 	@BeforeMethod

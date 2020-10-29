@@ -11,7 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
-import pres.auxiliary.work.selenium.location.AbstractRead;
+import pres.auxiliary.work.selenium.location.AbstractLocation;
 import pres.auxiliary.work.selenium.location.ByType;
 
 /**
@@ -39,7 +39,7 @@ public abstract class AbstractBy {
 	/**
 	 * 存储元素的定位方式读取类对象，由于多个子类之间需要互通，故此处标记为static
 	 */
-	protected static AbstractRead read;
+	protected static AbstractLocation read;
 	
 	/**
 	 * 用于存储浏览器对象
@@ -111,7 +111,7 @@ public abstract class AbstractBy {
 	 * @param xmlFile 存储元素定位方式的xml文件对象
 	 * @param isBreakRootFrame 是否需要将窗体切回到顶层
 	 */
-	public void setReadMode(AbstractRead read, boolean isBreakRootFrame) {
+	public void setReadMode(AbstractLocation read, boolean isBreakRootFrame) {
 		AbstractBy.read = read;
 		
 		if (isBreakRootFrame) {

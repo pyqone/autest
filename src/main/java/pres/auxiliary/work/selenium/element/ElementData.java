@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import pres.auxiliary.work.selenium.location.AbstractRead;
+import pres.auxiliary.work.selenium.location.AbstractLocation;
 import pres.auxiliary.work.selenium.location.ByType;
 
 /**
@@ -51,9 +51,9 @@ public class ElementData {
 	/**
 	 * 根据元素名称，在配置文件中查找元素，将元素的信息进行存储
 	 * @param name 元素名称
-	 * @param AbstractRead 配置文件类对象
+	 * @param AbstractLocation 配置文件类对象
 	 */
-	public ElementData(String name, AbstractRead read) {
+	public ElementData(String name, AbstractLocation read) {
 		//存储元素名称
 		this.name = name;
 		
@@ -90,7 +90,7 @@ public class ElementData {
 		if (!linkWordList.isEmpty()) {
 			for (int i = 0; i < valueList.size(); i++) {
 				//判断字符串是否包含替换词语的开始标志，若不包含，则进行不进行替换操作
-				if (!valueList.get(i).contains(AbstractRead.START_SIGN)) {
+				if (!valueList.get(i).contains(AbstractLocation.START_SIGN)) {
 					continue;
 				}
 				
@@ -99,10 +99,10 @@ public class ElementData {
 				//存储当前定位内容文本
 				StringBuilder value = new StringBuilder(valueList.get(i));
 				//循环，替换当前定位内容中所有需要替换的词语，直到无词语替换或定位内容不存在需要替换的词语为止
-				while(linkWordIter.hasNext() && value.indexOf(AbstractRead.START_SIGN) > -1) {
+				while(linkWordIter.hasNext() && value.indexOf(AbstractLocation.START_SIGN) > -1) {
 					//存储替换符的开始和结束位置
-					int replaceStartIndex = value.indexOf(AbstractRead.START_SIGN);
-					int replaceEndIndex = value.indexOf(AbstractRead.END_SIGN);
+					int replaceStartIndex = value.indexOf(AbstractLocation.START_SIGN);
+					int replaceEndIndex = value.indexOf(AbstractLocation.END_SIGN);
 					
 					//对当前位置的词语进行替换
 					value.replace(replaceStartIndex, replaceEndIndex + 1, linkWordIter.next());

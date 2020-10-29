@@ -1023,7 +1023,7 @@ public class TestReport extends AbstractReport {
 		// 定义Control对象，读取禅道元素定位信息配置文件
 		Event event = Event.newInstance(d);
 		event.setXmlFile(new File(xpath));
-		ReadXml r = new ReadXml(new File(xpath));
+		XmlLocation r = new XmlLocation(new File(xpath));
 		// 操作浏览器
 		event.getTextEvent().input("用户名", username);
 		event.getTextEvent().input("密码", password);

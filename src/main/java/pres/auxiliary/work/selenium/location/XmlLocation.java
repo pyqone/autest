@@ -11,6 +11,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import pres.auxiliary.work.selenium.element.ElementType;
+import pres.auxiliary.work.selenium.location.UndefinedElementException.ExceptionElementType;
 
 /**
  * <p>
@@ -41,7 +42,7 @@ import pres.auxiliary.work.selenium.element.ElementType;
  * @since JDK 8
  *
  */
-public class ReadXml extends AbstractRead {
+public class XmlLocation extends AbstractLocation {
 	/**
 	 * 存储构造后的Document类对象，以读取xml文件中的内容
 	 */
@@ -52,7 +53,7 @@ public class ReadXml extends AbstractRead {
 	 * @param xmlFile xml文件对象
 	 * @throws IncorrectFileException xml文件有误时抛出的异常
 	 */
-	public ReadXml(File xmlFile) {
+	public XmlLocation(File xmlFile) {
 		//将编译时异常转换为运行时异常
 		try {
 			dom = new SAXReader().read(xmlFile);
@@ -66,7 +67,7 @@ public class ReadXml extends AbstractRead {
 	 * 根据xml文件的{@link Document}对象进行构造
 	 * @param dom {@link Document}对象
 	 */
-	public ReadXml(Document dom) {
+	public XmlLocation(Document dom) {
 		this.dom = dom;
 	}
 	
@@ -78,7 +79,7 @@ public class ReadXml extends AbstractRead {
 		
 		//遍历元素下所有的定位标签，并将其转换为相应的ByType枚举，存储至byTypeList中
 		for (Object byElement : element.elements()) {
-			byTypeList.add(getByType(((Element)byElement).getName()));
+			byTypeList.add(toByType(((Element)byElement).getName()));
 		}
 		
 		return byTypeList;
@@ -101,7 +102,7 @@ public class ReadXml extends AbstractRead {
 			//判断元素是否启用模板，若启用模板，则获取模板内容，并将定位内容进行转换
 			String tempId = ((Element) byElement).attributeValue("temp_id");
 			String value = tempId != null ? 
-					getTemplateValue(tempId, getByType(((Element) byElement).getName())) :
+					getTemplateValue(tempId, toByType(((Element) byElement).getName())) :
 					((Element)byElement).getText();
 			
 			valueList.add(replaceValue(((Element) byElement), value));
@@ -165,32 +166,6 @@ public class ReadXml extends AbstractRead {
 	}
 	
 	/**
-	 * 该方法用于根据标签的名称，返回相应的定位方式枚举
-	 * @param labelName 标签名称
-	 * @return {@link ByType}枚举
-	 */
-	private ByType getByType(String labelName) {
-		switch (labelName) {
-		case "xpath":
-			return ByType.XPATH;
-		case "css":
-			return ByType.CSS;
-		case "classname":
-			return ByType.CLASSNAME;
-		case "id":
-			return ByType.ID;
-		case "linktext":
-			return ByType.LINKTEXT;
-		case "name":
-			return ByType.NAME;
-		case "tagname":
-			return ByType.TAGNAME;
-		default:
-			throw new IllegalArgumentException("不存在的定位方式: " + labelName);
-		}
-	}
-	
-	/**
 	 * 用于返回元素标签对象
 	 * @param name 元素名称
 	 * @return 相应的元素标签类对象
@@ -204,7 +179,7 @@ public class ReadXml extends AbstractRead {
 		if (element != null) {
 			return element;
 		} else {
-			throw new UndefinedElementException("不存在的元素名称：" + name);
+			throw new UndefinedElementException(name, ExceptionElementType.ELEMENT);
 		}
 	}
 	
@@ -222,7 +197,7 @@ public class ReadXml extends AbstractRead {
 		if (element != null) {
 			return element.getText();
 		} else {
-			throw new UndefinedElementException("不存在的模板：" + selectTempXpath);
+			throw new UndefinedElementException(tempId, ExceptionElementType.TEMPLET);
 		}
 	}
 	
