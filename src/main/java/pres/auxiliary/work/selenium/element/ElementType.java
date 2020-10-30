@@ -16,22 +16,33 @@ public enum ElementType {
 	/**
 	 * 指向普通类型元素
 	 */
-	COMMON_ELEMENT, 
+	COMMON_ELEMENT(0), 
 	/**
 	 * 指向数据列表类型元素
 	 */
-	DATA_LIST_ELEMENT, 
+	DATA_LIST_ELEMENT(1), 
 	/**
 	 * 指向标准下拉框选择类型元素
 	 */
-	SELECT_OPTION_ELEMENT, 
+	SELECT_OPTION_ELEMENT(2), 
 	/**
 	 * 指向列表型下拉框选择类型元素
 	 */
-	SELECT_DATAS_ELEMENT, 
+	SELECT_DATAS_ELEMENT(3), 
 	/**
 	 * 指向窗体型元素
 	 */
-	IFRAME_ELEMENT
+	IFRAME_ELEMENT(4)
 	;
+	
+	int value;
+
+	private ElementType(int value) {
+		this.value = value;
+	}
+
+	public int getValue() {
+		return value;
+	}
+	
 }

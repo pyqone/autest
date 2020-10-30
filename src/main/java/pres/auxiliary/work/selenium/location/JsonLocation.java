@@ -28,32 +28,35 @@ public class JsonLocation extends AbstractLocation {
 	/**
 	 * 指向json中的模板key值
 	 */
-	protected final String KEY_TEMPLETE = "templet";
+	public static final String KEY_TEMPLETE = "templet";
 	/**
 	 * 指向json中的元素key值
 	 */
-	protected final String KEY_ELEMENT = "element";
+	public static final String KEY_ELEMENT = "element";
 	/**
 	 * 指向json中的元素定位方式key值
 	 */
-	protected final String KEY_LOCATION = "location";
+	public static final String KEY_LOCATION = "location";
 	/**
 	 * 指向json中的元素定位模板key值
 	 */
-	protected final String KEY_TEMP = "temp";
+	public static final String KEY_TEMP = "temp";
 	/**
 	 * 指向json中的元素定位模板key值
 	 */
-	protected final String KEY_VALUE = "value";
+	public static final String KEY_VALUE = "value";
 	/**
 	 * 指向json中的元素定位类型key值
 	 */
-	protected final String KEY_TYPE = "type";
+	public static final String KEY_TYPE = "type";
 	/**
 	 * 指向json中的元素等待时间key值
 	 */
-	protected final String KEY_WAIT = "wait";
-	protected final String KEY_IFRAME = "iframe";
+	public static final String KEY_WAIT = "wait";
+	/**
+	 * 指向json中的元素所在窗体key值
+	 */
+	public static final String KEY_IFRAME = "iframe";
 	
 	/**
 	 * 存储转换后获得到的模板json对象
@@ -81,7 +84,7 @@ public class JsonLocation extends AbstractLocation {
 		}
 		
 		//转换读取的json内容
-		toJsonObject(jsonText.toString());
+		analysisJson(jsonText.toString());
 	}
 	
 	/**
@@ -89,7 +92,7 @@ public class JsonLocation extends AbstractLocation {
 	 * @param json json文本
 	 */
 	public JsonLocation(String jsonText) {
-		toJsonObject(jsonText);
+		analysisJson(jsonText);
 	}
 
 	@Override
@@ -153,31 +156,6 @@ public class JsonLocation extends AbstractLocation {
 		return valueList;
 	}
 
-	/**
-	 * 用于返回读取到的模板内容
-	 * @param locationJson 定位方式json
-	 * @return 经过转换的定位方式
-	 */
-	private String analysisTemplet(JSONObject locationJson) {
-		//获取模板名称
-		String tempText = locationJson.getString(KEY_TEMP);
-		//判断名称是否存在，若不存在，则抛出异常
-		if (!templateJson.containsKey(tempText)) {
-			throw new UndefinedElementException(tempText, ExceptionElementType.TEMPLET);
-		}
-		
-		//读取模板内容
-		String tempValueText = templateJson.getString(tempText);
-		
-		//遍历所有键值对，将相应的内容进行存储
-		for (String key : locationJson.keySet()) {
-			String matchKey = MATCH_START_SIGN + key + MATCH_END_SIGN;
-			tempValueText = tempValueText.replaceAll(matchKey, locationJson.getString(key));
-		}
-		
-		return tempValueText;
-	}
-
 	@Override
 	public ElementType findElementType(String name) {
 		//获取元素json
@@ -233,17 +211,13 @@ public class JsonLocation extends AbstractLocation {
 	 * @param text json文本
 	 * @throws UndefinedElementException json中无元素信息时抛出的异常
 	 */
-	private void toJsonObject(String text) {
+	protected void analysisJson(String text) {
 		//将文件解析成JSONObject类对象
 		JSONObject json = JSONObject.parseObject(text);
 		
 		//获取元素json，若不存在元素json，则抛出异常
 		if (json.containsKey(KEY_ELEMENT)) {
 			this.elementJson = json.getJSONObject(KEY_ELEMENT);
-			//判断获取到的元素json是否为空，若为空，则抛出异常
-			if (this.elementJson.isEmpty()) {
-				throw new UndefinedElementException("Json的“" + KEY_ELEMENT + "”key值中不存在元素信息");
-			}
 		} else {
 			throw new UndefinedElementException("Json中不存在“" + KEY_ELEMENT + "”key值");
 		}
@@ -280,5 +254,30 @@ public class JsonLocation extends AbstractLocation {
 		//获取元素父窗体的名称
 		String iframeName = elementJson.getString(KEY_IFRAME);
 		return iframeName == null ? "" : iframeName;
+	}
+	
+	/**
+	 * 用于返回读取到的模板内容
+	 * @param locationJson 定位方式json
+	 * @return 经过转换的定位方式
+	 */
+	private String analysisTemplet(JSONObject locationJson) {
+		//获取模板名称
+		String tempText = locationJson.getString(KEY_TEMP);
+		//判断名称是否存在，若不存在，则抛出异常
+		if (!templateJson.containsKey(tempText)) {
+			throw new UndefinedElementException(tempText, ExceptionElementType.TEMPLET);
+		}
+		
+		//读取模板内容
+		String tempValueText = templateJson.getString(tempText);
+		
+		//遍历所有键值对，将相应的内容进行存储
+		for (String key : locationJson.keySet()) {
+			String matchKey = MATCH_START_SIGN + key + MATCH_END_SIGN;
+			tempValueText = tempValueText.replaceAll(matchKey, locationJson.getString(key));
+		}
+		
+		return tempValueText;
 	}
 }

@@ -1,7 +1,5 @@
 package pres.auxiliary.work.selenium.location;
 
-import java.util.ArrayList;
-
 import pres.auxiliary.work.selenium.element.ElementType;
 
 /**
@@ -15,7 +13,7 @@ import pres.auxiliary.work.selenium.element.ElementType;
  * @version Ver1.0
  *
  */
-public abstract class AbstractLocation {
+public abstract class AbstractLocation implements ReadLocation {
 	/**
 	 * 定义用于正则的替换符开始标记
 	 */
@@ -33,35 +31,6 @@ public abstract class AbstractLocation {
 	 */
 	public static final String END_SIGN = "}";
 	
-	/**
-	 * 用于返回元素的所有定位方式集合
-	 * @return 元素的所有定位方式（{@link ByType}枚举）集合
-	 */
-	public abstract ArrayList<ByType> findElementByTypeList(String name);
-	
-	/**
-	 * 用于返回与定位方式对应的元素定位内容集合
-	 * @return 元素定位内容集合
-	 */
-	public abstract ArrayList<String> findValueList(String name);
-	
-	/**
-	 * 用于返回元素的类型
-	 * @return 元素类型（{@link ElementType}枚举）
-	 */
-	public abstract ElementType findElementType(String name);
-	
-	/**
-	 * 用于返回元素的所有父窗体名称集合
-	 * @return 元素的所有父窗体名称集合
-	 */
-	public abstract ArrayList<String> findIframeNameList(String name);
-	
-	/**
-	 * 用于返回元素的等待时间
-	 * @return 元素的等待时间
-	 */
-	public abstract long findWaitTime(String name);
 	
 	/**
 	 * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
