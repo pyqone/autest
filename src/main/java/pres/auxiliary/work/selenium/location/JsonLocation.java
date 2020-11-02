@@ -211,7 +211,7 @@ public class JsonLocation extends AbstractLocation {
 	 * @param text json文本
 	 * @throws UndefinedElementException json中无元素信息时抛出的异常
 	 */
-	protected void analysisJson(String text) {
+	public void analysisJson(String text) {
 		//将文件解析成JSONObject类对象
 		JSONObject json = JSONObject.parseObject(text);
 		
