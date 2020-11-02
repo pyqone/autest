@@ -20,16 +20,17 @@ public interface WriteTempletLocation {
 	public abstract void putTemplet(String templetId, String templetValue);
 	
 	/**
-	 * 用于设置元素调用模板时，该内容允许多次设置，将存储多个替换模板的词语
+	 * 用于设置元素调用模板时，该内容允许多次设置，将存储多个替换模板的词语。若元素不存在相应的模板，则抛出异常
 	 * @param name 元素名称
 	 * @param templetId 模板id
 	 * @param key 被替换的关键词
 	 * @param value 替换的内容
+	 * @throws UndefinedElementException 模板id不存在时抛出的异常
 	 */
 	public abstract void putTempletReplaceKey(String name, String templetId, String key, String value);
 	
 	/**
-	 * 用于设置元素调用模板的id，该内容允许多次设置，将存储多个元素定位方式模板
+	 * 用于设置元素调用模板的id，该内容允许多次设置，将存储多个元素定位方式模板。若元素名称不存在，则创建元素
 	 * @param name 元素名称
 	 * @param byType 元素定位类型{@link ByType}枚举
 	 * @param templetId 模板id

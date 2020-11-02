@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import pres.auxiliary.work.selenium.element.ElementType;
+import pres.auxiliary.work.selenium.location.UndefinedElementException.ExceptionElementType;
 
 /**
  * <p><b>文件名：</b>NoFileLocation.java</p>
@@ -40,10 +41,9 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 		nowLocationJson = new JSONObject();
 		nowLocationJson.put(JsonLocation.KEY_TEMPLETE, new JSONObject());
 		nowLocationJson.put(JsonLocation.KEY_ELEMENT, new JSONObject());
-		//克隆当前元素json信息
-		newLocationJson = (JSONObject) nowLocationJson.clone();
+		//复制当前元素json信息
+		newLocationJson = JSONObject.parseObject(nowLocationJson.toJSONString());
 		
-		//初始化json定位类对象
 		jsonLocation = new JsonLocation(nowLocationJson.toJSONString());
 	}
 	
@@ -108,45 +108,61 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 
 	@Override
 	public void putTempletReplaceKey(String name, String templetId, String key, String value) {
-		// TODO Auto-generated method stub
+		//获取元素定位方式列表
+		JSONObject elementJson = getElementJson(name);
+		//获取元素定位方式集合
+		JSONArray locationList = elementJson.getJSONArray(JsonLocation.KEY_LOCATION);
+		//若当前元素不存在定位方式集合，则抛出异常
+		if (locationList == null) {
+			throw new UndefinedElementException(templetId, ExceptionElementType.ELEMENT);
+		}
 		
+		//遍历集合，获取与当前指定的模板id一致的模板，在其下记录相应的key与value
+		for (int i = 0; i < locationList.size(); i++) {
+			JSONObject locationJson = locationList.getJSONObject(i);
+			//判断当前json是否包含模板Id的key
+			if (locationJson.containsKey(JsonLocation.KEY_TEMP)) {
+				String tempId = locationJson.getString(JsonLocation.KEY_TEMP);
+				//判断当前id是否与所传的id一致，若一致，则在json下记录相应的属性值，并结束当前方法
+				if (templetId.equals(tempId)) {
+					locationJson.put(key, value);
+					return;
+				}
+			}
+		}
+		
+		//若循环完毕后仍未找到模板，则抛出异常
+		throw new UndefinedElementException(templetId, ExceptionElementType.ELEMENT);
 	}
 
 	@Override
 	public ArrayList<ByType> findElementByTypeList(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		//对json定位方式读取类进行重构判断，并调用相应的方法
+		return getJsonLocation().findElementByTypeList(name);
 	}
 
 	@Override
 	public ArrayList<String> findValueList(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		//对json定位方式读取类进行重构判断，并调用相应的方法
+		return getJsonLocation().findValueList(name);
 	}
 
 	@Override
 	public ElementType findElementType(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		//对json定位方式读取类进行重构判断，并调用相应的方法
+		return getJsonLocation().findElementType(name);
 	}
 
 	@Override
 	public ArrayList<String> findIframeNameList(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		//对json定位方式读取类进行重构判断，并调用相应的方法
+		return getJsonLocation().findIframeNameList(name);
 	}
 
 	@Override
 	public long findWaitTime(String name) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-	/**
-	 * TODO 测试使用，返回元素信息
-	 */
-	public String getJson() {
-		return newLocationJson.toJSONString();
+		//对json定位方式读取类进行重构判断，并调用相应的方法
+		return getJsonLocation().findWaitTime(name);
 	}
 	
 	/**
@@ -161,5 +177,26 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 		}
 		
 		return newLocationJson.getJSONObject(JsonLocation.KEY_ELEMENT).getJSONObject(name);
+	}
+	
+	/**
+	 * 用于构建JsonLocation类，若当前json未改变，则不重新构造；反之，则重新构造元素定位方式
+	 * @return 返回JsonLocation类
+	 */
+	private JsonLocation getJsonLocation() {
+		if (!isJsonChange()) {
+			jsonLocation.analysisJson(newLocationJson.toJSONString());
+			nowLocationJson = JSONObject.parseObject(newLocationJson.toJSONString());
+		}
+		
+		return jsonLocation;
+	}
+	
+	/**
+	 * 用于判断当前json是否有变化，即是否对当前的json进行过变更
+	 * @return json是否存在变化
+	 */
+	private boolean isJsonChange() {
+		return nowLocationJson.equals(newLocationJson);
 	}
 }
