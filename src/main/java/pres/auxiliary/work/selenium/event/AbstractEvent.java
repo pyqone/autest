@@ -61,6 +61,11 @@ public abstract class AbstractEvent {
 	protected HashSet<String> exceptionSet = new HashSet<>();
 	
 	/**
+	 * 指向当前是否需要自动定位到元素所在位置
+	 */
+	protected boolean isLocationElement = true;
+	
+	/**
 	 * 构造对象并存储浏览器对象
 	 * 
 	 * @param brower 浏览器{@link AbstractBrower}对象
@@ -77,6 +82,10 @@ public abstract class AbstractEvent {
 	 */
 	public void setWaitTime(long waitTime) {
 		wait.withTimeout(Duration.ofSeconds(waitTime));
+	}
+	
+	public void setLocationElement(boolean isLocationElement) {
+		this.isLocationElement = isLocationElement;
 	}
 	
 	/**
@@ -175,7 +184,9 @@ public abstract class AbstractEvent {
 			resultText = wait.until((driver) -> {
 					try {
 						//定位到元素
-						locationElement(element.getWebElement());
+						if (isLocationElement) {
+							locationElement(element.getWebElement());
+						}
 						return action.apply(element);
 					} catch (StaleElementReferenceException e) {
 						//添加异常信息

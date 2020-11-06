@@ -90,7 +90,7 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	}
 
 	@Override
-	public void putIframeNameList(String name, String iframeName) {
+	public void putIframeName(String name, String iframeName) {
 		//获取元素对象，并存储键值
 		getElementJson(name).put(JsonLocation.KEY_IFRAME, iframeName);
 	}
@@ -132,7 +132,7 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 		}
 		
 		//若循环完毕后仍未找到模板，则抛出异常
-		throw new UndefinedElementException(templetId, ExceptionElementType.ELEMENT);
+		throw new UndefinedElementException(templetId, ExceptionElementType.TEMPLET);
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import pres.auxiliary.work.selenium.location.UndefinedElementException.Exception
 /**
  * <p><b>文件名：</b>JsonLocation.java</p>
  * <p><b>用途：</b>
- * 用于读取以json形式的读取到的元素定位信息
+ * 用于读取以json形式存储的元素定位信息
  * </p>
  * <p><b>编码时间：</b>2020年10月28日上午8:24:56</p>
  * <p><b>修改时间：</b>2020年10月28日上午8:24:56</p>

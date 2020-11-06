@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import pres.auxiliary.work.selenium.location.AbstractLocation;
 import pres.auxiliary.work.selenium.location.ByType;
+import pres.auxiliary.work.selenium.location.ReadLocation;
 
 /**
  * <p><b>文件名：</b>ElementData.java</p>
@@ -53,7 +54,7 @@ public class ElementData {
 	 * @param name 元素名称
 	 * @param AbstractLocation 配置文件类对象
 	 */
-	public ElementData(String name, AbstractLocation read) {
+	public ElementData(String name, ReadLocation read) {
 		//存储元素名称
 		this.name = name;
 		

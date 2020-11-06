@@ -55,13 +55,13 @@ public class NoFileLocationTest {
 	}
 	
 	/**
-	 * 用于测试{@link NoFileLocation#putIframeNameList(String, String)}方法<br>
+	 * 用于测试{@link NoFileLocation#putIframeName(String, String)}方法<br>
 	 * 预期：<br>
 	 * 
 	 */
 	@Test 
 	public void putIframeNameListTest() {
-		test.putIframeNameList("测试控件8", "窗体1");
+		test.putIframeName("测试控件8", "窗体1");
 	}
 	
 	/**
@@ -140,7 +140,7 @@ public class NoFileLocationTest {
 		//添加元素
 		test.putElementType(name, ElementType.COMMON_ELEMENT);
 		//添加元素所在窗体
-		test.putIframeNameList(name, "窗体1");
+		test.putIframeName(name, "窗体1");
 		//添加元素等待时间
 		test.putWaitTime(name, 10);
 		

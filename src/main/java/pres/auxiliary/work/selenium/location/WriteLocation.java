@@ -34,7 +34,7 @@ public interface WriteLocation {
 	 * @param name 元素名称
 	 * @param iframeName 元素父窗体名称
 	 */
-	public abstract void putIframeNameList(String name, String iframeName);
+	public abstract void putIframeName(String name, String iframeName);
 	
 	/**
 	 * 用于设置元素的等待时间，多次设置内容时将覆盖上一次设置的内容

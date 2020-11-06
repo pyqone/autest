@@ -1,7 +1,6 @@
 package pres.auxiliary.work.selenium.element;
 
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -81,11 +80,12 @@ public class Element {
 	 */
 	public void againFindElement() {
 		//重新构造elementList
-		abstractBy.elementList.clear();
-		try {
-			abstractBy.elementList.addAll(abstractBy.recognitionElement(elementData));
-		}catch (TimeoutException e) {
-		}
+//		abstractBy.elementList.clear();
+//		try {
+//			abstractBy.elementList.addAll(abstractBy.recognitionElement(elementData));
+//		}catch (TimeoutException e) {
+//		}
+		abstractBy.elementList = abstractBy.recognitionElement(elementData);
 	}
 
 	@Override
