@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
@@ -33,7 +34,7 @@ import com.alibaba.fastjson.JSONArray;
  * 向浏览器添加相应的配置，在启动浏览器时，添加的配置会自动加载。</p>
  * <p>若添加配置在调用{@link #getDriver()}方法之后，则设置的配置不会生效。</p>
  * <p><b>编码时间：</b>2020年4月17日下午2:56:08</p>
- * <p><b>修改时间：</b>2020年4月17日下午2:56:08</p>
+ * <p><b>修改时间：</b>2020年11月7日下午7:12:48</p>
  * @author 
  * @version Ver1.0
  * @since Selenium 3.14.0
@@ -45,6 +46,12 @@ public class ChromeBrower extends AbstractBrower {
 	 * 用于存储需要对浏览器进行配置的参数
 	 */
 	HashSet<ChromeOptionType> chromeConfigSet = new HashSet<ChromeOptionType>();
+	
+	/**
+	 * 存储谷歌可执行文件路径
+	 */
+	File binaryFile;
+	
 
 	/**
 	 * 指定驱动文件路径并添加一个待测站点
@@ -87,6 +94,22 @@ public class ChromeBrower extends AbstractBrower {
 		chromeOptionType.setValue(value);
 		chromeConfigSet.add(chromeOptionType);
 	}
+	
+	/**
+	 * <p>
+	 * 用于设置谷歌浏览器可执行文件路径，在启动浏览器时，将打开该路径下的浏览器。
+	 * 通过该方法可用于打开为谷歌浏览器内核的浏览器
+	 * </p>
+	 * <p>
+	 * 	<b>注意：</b>若浏览器启动后再设置浏览器启动路径时，会重新打开一个新的浏览器，且
+	 * 	{@link WebDriver}对象将重新构造，指向新打开的浏览器
+	 * </p>
+	 * @param path 浏览器执行路径
+	 */
+	public void setBinary(File path) {
+		this.binaryFile = path;
+		driver = null;
+	}
 
 	/**
 	 * 用于添加浏览器无需带参数的配置
@@ -118,13 +141,17 @@ public class ChromeBrower extends AbstractBrower {
 		// 添加谷歌浏览器驱动的存储位置
 		System.setProperty("webdriver.chrome.driver", driverFile.getAbsolutePath());
 
-		// 添加配置，并构建WebDriver对象，若未添加配置，则调用无参构造
-		if (chromeConfigSet.size() == 0) {
-			driver = new ChromeDriver();
-		} else {
-			driver = new ChromeDriver(browerConfig());
+		ChromeOptions co = new ChromeOptions();
+		//判断是否存在浏览器启动路径
+		if (binaryFile != null) {
+			co.setBinary(binaryFile);
 		}
-
+		//判断是否存在配置
+		if (chromeConfigSet.size() != 0) {
+			co = browerConfig();
+		}
+		driver = new ChromeDriver(co);
+		
 		// 添加操作信息
 		informationJson.put("浏览器名称", ((ChromeDriver) driver).getCapabilities().getBrowserName());
 		informationJson.put("浏览器版本", ((ChromeDriver) driver).getCapabilities().getVersion());

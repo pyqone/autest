@@ -1,7 +1,11 @@
 package pres.auxiliary.work.selenium.location;
 
+import java.io.File;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import pres.auxiliary.tool.file.DisposeText;
 
 public class TextLocationTest {
 	TextLocation test;
@@ -23,6 +27,8 @@ public class TextLocationTest {
 				"测试控件7==xpath==//span[@name='${name}']//div[@id='${id}']\n" + 
 				"窗体2==id==2\n" + 
 				"	测试控件8==xpath==//span[@name='${name}']//div[@id='${id}']";
+		
+		text = DisposeText.readFile(new File("src/test/java/pres/auxiliary/work/selenium/location/测试txt文件.txt"));
 		test = new TextLocation(text);
 	}
 	

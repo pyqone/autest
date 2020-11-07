@@ -19,7 +19,7 @@ import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
  * <p><b>修改时间：</b>2020年4月17日下午3:40:47</p>
  * @author 
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public class TestChromeBrower {
@@ -316,5 +316,17 @@ public class TestChromeBrower {
 			}
 			System.out.println(i++);
 		} while(cb.switchPopuWindow());
+	}
+	
+	/**
+	 * 用于测试{@link ChromeBrower#setBinary(File)}方法<br>
+	 * 预期：<br>
+	 * 
+	 */
+	@Test 
+	public void setBinaryTest() {
+		cb = new ChromeBrower(driverFile, "https://www.hao123.com", "好123");
+		cb.setBinary(new File("D:\\3.soft\\360浏览器\\360Chrome\\Chrome\\Application\\360chrome.exe"));
+		cb.getDriver();
 	}
 }

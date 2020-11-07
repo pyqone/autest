@@ -187,35 +187,39 @@ public class DisposeText {
 	 * 
 	 * @param f 封装的文件对象
 	 * @return 文本中的内容
-	 * @throws IOException
+	 * @throws UnsupportedFileException 文件格式或读取有误时抛出的异常
 	 */
-	private static String readFile(File f) throws IOException {
+	public static String readFile(File f) {
 		// 用于存储读取文件中的内容
 		String text = "";
 		// 用于存储文件的后缀名，以判断文件的格式
 		String[] fileName = f.getName().split("\\.");
 		String suffix = fileName[fileName.length - 1];
-
-		switch (suffix) {
-		case "doc":
-		case "docx":
-			text = readWord(f);
-			break;
-
-		case "xls":
-		case "xlsx":
-			text = readExcel(f);
-			break;
-
-		case "txt":
-			text = readTxt(f);
-			break;
-
-		case "csv":
-			text = readCsv(f);
-			break;
-		default:
-			throw new UnsupportedFileException("无法解析“" + suffix + "”文件格式");
+		
+		try  {
+			switch (suffix) {
+			case "doc":
+			case "docx":
+				text = readWord(f);
+				break;
+	
+			case "xls":
+			case "xlsx":
+				text = readExcel(f);
+				break;
+	
+			case "txt":
+				text = readTxt(f);
+				break;
+	
+			case "csv":
+				text = readCsv(f);
+				break;
+			default:
+				throw new UnsupportedFileException("无法解析“" + suffix + "”文件格式");
+			}
+		} catch (IOException e) {
+			throw new UnsupportedFileException("无法解析文件：" + f.getAbsolutePath());
 		}
 
 		return text;

@@ -1,0 +1,15 @@
+测试控件1==xpath==//*[@text()='测试1']==10==0
+窗体1==css==html body div==2
+	测试控件2==id==test==11
+	窗体1.1==name==tiframe==dfsg==dsfg
+		测试控件3==classname==textclass==sdf==1
+		窗体1.1.1==name==窗体1.1.1
+			测试控件9==xpath==//span[@name='${name}']//div[@id='9']
+			测试控件10==xpath==//span[@name='${name}']//div[@id='10']
+	测试控件4==id==4 sfda
+	窗体1.2==linktext==窗体==fsa
+		测试控件5==tagname==span
+	测试控件6==xpath==//span[@name='${name}']
+测试控件7==xpath==//span[@name='${name}']//div[@id='${id}']
+窗体2==id==2
+	测试控件8==xpath==//span[@name='${name}']//div[@id='${id}'];
