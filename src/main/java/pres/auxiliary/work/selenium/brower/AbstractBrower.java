@@ -38,6 +38,9 @@ public abstract class AbstractBrower {
 	 */
 	HashMap<String, Page> pageMap = new HashMap<String, Page>(16);
 	
+	/**
+	 * 存储浏览器打开的窗口handle值
+	 */
 	HashSet<String> windowHandleSet = new HashSet<>();
 
 	/**
@@ -180,9 +183,11 @@ public abstract class AbstractBrower {
 	public WebDriver getDriver() {
 		// 若driver对象未生成，则进行开启浏览器的操作
 		if (driver == null) {
+			// 添加驱动的存储位置
+			System.setProperty(getBrowerDriverSetName(), driverFile.getAbsolutePath());
 			// 打开浏览器
 			openBrower();
-
+			
 			// 若存在需要打开的页面，则打开第一个页面
 			if (nowPage != null) {
 				openUrl(nowPage, false);
@@ -196,6 +201,11 @@ public abstract class AbstractBrower {
 	 * 用于打开浏览器
 	 */
 	abstract void openBrower();
+	/**
+	 * 用于返回浏览器驱动设置的名称，由于每个浏览器不同，导致启动驱动名称也不同
+	 * @return 驱动设置名称
+	 */
+	abstract String getBrowerDriverSetName();
 
 	public String getAllInformation() {
 		// 遍历所有标签页，存储标签页信息

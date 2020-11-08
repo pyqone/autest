@@ -13,20 +13,20 @@ import com.alibaba.fastjson.JSONArray;
 /**
  * <p><b>文件名：</b>ChromeBrower.java</p>
  * <p><b>用途：</b>用于启动谷歌浏览器，并加载相应的待测页面，支持对浏览器进行部分个性化的配置，
- * 以达到相应的测试效果。使用方法时，必须指定谷歌浏览器驱动所在位置，以保证浏览器能正常启动</p>
+ * 以达到相应的测试效果。</p>
  * <p>启动浏览器需要调用{@link #getDriver()}方法启动浏览器，若在构造方法中定义了{@link Page}类，则
  * 启动浏览器时会自动对页面进行加载，若未定义，则只打开浏览器，如:</p>
  * <p>
  * 若调用方法：<br>
- * ChromeBrower chrome = new {@link #ChromeBrower(File)}<br>
- * chrome.{@link #getDriver()}<br>
+ * ChromeBrower brower = new {@link #ChromeBrower(File)}<br>
+ * brower.{@link #getDriver()}<br>
  * 后将只全屏打开浏览器，不会加载页面
  * </p>
  * <p>
  * 若调用方法：<br>
- * ChromeBrower chrome = new {@link #ChromeBrower(File, Page)}<br>
- * 或ChromeBrower chrome = new {@link #ChromeBrower(File, String, String)}<br>
- * chrome.{@link #getDriver()}<br>
+ * ChromeBrower brower = new {@link #ChromeBrower(File, Page)}<br>
+ * 或ChromeBrower brower = new {@link #ChromeBrower(File, String, String)}<br>
+ * brower.{@link #getDriver()}<br>
  * 后将全屏打开浏览器，并加载相应的页面
  * </p>
  * <p>对于个性化配置，在调用{@link #getDriver()}方法前调用{@link #addConfig(ChromeOptionType)}
@@ -35,7 +35,7 @@ import com.alibaba.fastjson.JSONArray;
  * <p>若添加配置在调用{@link #getDriver()}方法之后，则设置的配置不会生效。</p>
  * <p><b>编码时间：</b>2020年4月17日下午2:56:08</p>
  * <p><b>修改时间：</b>2020年11月7日下午7:12:48</p>
- * @author 
+ * @author 彭宇琦
  * @version Ver1.0
  * @since Selenium 3.14.0
  * @since JDK 1.8
@@ -46,6 +46,10 @@ public class ChromeBrower extends AbstractBrower {
 	 * 用于存储需要对浏览器进行配置的参数
 	 */
 	HashSet<ChromeOptionType> chromeConfigSet = new HashSet<ChromeOptionType>();
+	/**
+	 * 用于对谷歌浏览器的配置
+	 */
+	ChromeOptions chromeOption = new ChromeOptions();
 	
 	/**
 	 * 存储谷歌可执行文件路径
@@ -96,6 +100,15 @@ public class ChromeBrower extends AbstractBrower {
 	}
 	
 	/**
+	 * 用于添加浏览器无需带参数的配置
+	 * 
+	 * @param chromeOptionType 浏览器配置枚举（{@link ChromeOptionType}枚举类）
+	 */
+	public void addConfig(ChromeOptionType chromeOptionType) {
+		chromeConfigSet.add(chromeOptionType);
+	}
+	
+	/**
 	 * <p>
 	 * 用于设置谷歌浏览器可执行文件路径，在启动浏览器时，将打开该路径下的浏览器。
 	 * 通过该方法可用于打开为谷歌浏览器内核的浏览器
@@ -109,15 +122,6 @@ public class ChromeBrower extends AbstractBrower {
 	public void setBinary(File path) {
 		this.binaryFile = path;
 		driver = null;
-	}
-
-	/**
-	 * 用于添加浏览器无需带参数的配置
-	 * 
-	 * @param chromeOptionType 浏览器配置枚举（{@link ChromeOptionType}枚举类）
-	 */
-	public void addConfig(ChromeOptionType chromeOptionType) {
-		chromeConfigSet.add(chromeOptionType);
 	}
 
 	/**
@@ -138,39 +142,38 @@ public class ChromeBrower extends AbstractBrower {
 
 	@Override
 	void openBrower() {
-		// 添加谷歌浏览器驱动的存储位置
-		System.setProperty("webdriver.chrome.driver", driverFile.getAbsolutePath());
-
-		ChromeOptions co = new ChromeOptions();
 		//判断是否存在浏览器启动路径
 		if (binaryFile != null) {
-			co.setBinary(binaryFile);
+			chromeOption.setBinary(binaryFile);
 		}
 		//判断是否存在配置
 		if (chromeConfigSet.size() != 0) {
-			co = browerConfig();
+			browerConfig();
 		}
-		driver = new ChromeDriver(co);
+		driver = new ChromeDriver(chromeOption);
 		
 		// 添加操作信息
 		informationJson.put("浏览器名称", ((ChromeDriver) driver).getCapabilities().getBrowserName());
 		informationJson.put("浏览器版本", ((ChromeDriver) driver).getCapabilities().getVersion());
 		informationJson.put("操作系统版本", System.getProperties().getProperty("os.name"));
 	}
+	
+	@Override
+	String getBrowerDriverSetName() {
+		return "webdriver.chrome.driver";
+	}
 
 	/**
 	 * 用于将配置添加至浏览器中
 	 */
-	ChromeOptions browerConfig() {
+	void browerConfig() {
 		// 用于存储浏览器的配置信息
 		JSONArray configJsonArray = new JSONArray();
-		// 用于添加配置
-		ChromeOptions chromeOption = new ChromeOptions();
 		
 		//若配置中存在控制已打开的浏览器，则直接添加相应的配置，并结束方法，否则会报错
 		if (chromeConfigSet.contains(ChromeOptionType.CONTRAL_OPEN_BROWER)) {
 			chromeOption.setExperimentalOption(ChromeOptionType.CONTRAL_OPEN_BROWER.getKey(), String.valueOf(ChromeOptionType.CONTRAL_OPEN_BROWER.getValue()));
-			return chromeOption;
+			return;
 		}
 				
 		// 用于存储谷歌浏览器个性化配置
@@ -216,7 +219,7 @@ public class ChromeBrower extends AbstractBrower {
 		// 添加配置信息
 		informationJson.put("浏览器配置", configJsonArray);
 
-		return chromeOption;
+		return;
 	}
 
 	/**
