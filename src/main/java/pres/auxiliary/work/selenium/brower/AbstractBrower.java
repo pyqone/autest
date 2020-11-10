@@ -10,6 +10,7 @@ import java.util.Set;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -187,6 +188,11 @@ public abstract class AbstractBrower {
 			System.setProperty(getBrowerDriverSetName(), driverFile.getAbsolutePath());
 			// 打开浏览器
 			openBrower();
+			
+			// 添加操作信息
+			informationJson.put("浏览器名称", ((RemoteWebDriver) driver).getCapabilities().getBrowserName());
+			informationJson.put("浏览器版本", ((RemoteWebDriver) driver).getCapabilities().getVersion());
+			informationJson.put("操作系统版本", System.getProperties().getProperty("os.name"));
 			
 			// 若存在需要打开的页面，则打开第一个页面
 			if (nowPage != null) {

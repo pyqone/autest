@@ -77,10 +77,6 @@ public class IeBrower extends AbstractBrower {
 	void openBrower() {
 		//构造浏览器
 		driver = new InternetExplorerDriver(ieOption);
-		//添加浏览器信息
-		informationJson.put("浏览器名称", ((InternetExplorerDriver) driver).getCapabilities().getBrowserName());
-		informationJson.put("浏览器版本", ((InternetExplorerDriver) driver).getCapabilities().getVersion());
-		informationJson.put("操作系统版本", System.getProperties().getProperty("os.name"));
 	}
 
 	@Override
