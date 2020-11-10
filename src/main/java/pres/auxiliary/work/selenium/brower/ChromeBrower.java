@@ -2,7 +2,6 @@ package pres.auxiliary.work.selenium.brower;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -45,18 +44,25 @@ public class ChromeBrower extends AbstractBrower {
 	/**
 	 * 用于存储需要对浏览器进行配置的参数
 	 */
-	HashSet<ChromeOptionType> chromeConfigSet = new HashSet<ChromeOptionType>();
+//	HashSet<ChromeOptionType> chromeConfigSet = new HashSet<ChromeOptionType>();
+	/**
+	 * 用于存储谷歌浏览器个性化配置
+	 */
+	HashMap<String, Object> chromePrefsMap = new HashMap<String, Object>(16);
+	/**
+	 * 用于存储谷歌浏览器对手机的配置
+	 */
+	HashMap<String, Object> mobileEmulationMap = new HashMap<String, Object>(16);
+	/**
+	 * 用于指向当前配置中是否已打开控制当前浏览器模式
+	 */
+	boolean isContralOpenBrower = false;
+			
 	/**
 	 * 用于对谷歌浏览器的配置
 	 */
 	ChromeOptions chromeOption = new ChromeOptions();
 	
-	/**
-	 * 存储谷歌可执行文件路径
-	 */
-	File binaryFile;
-	
-
 	/**
 	 * 指定驱动文件路径并添加一个待测站点
 	 * 
@@ -96,7 +102,22 @@ public class ChromeBrower extends AbstractBrower {
 	 */
 	public void addConfig(ChromeOptionType chromeOptionType, Object value) {
 		chromeOptionType.setValue(value);
-		chromeConfigSet.add(chromeOptionType);
+		addConfig(chromeOptionType);
+	}
+	
+	/**
+	 * 用于向浏览器中添加谷歌浏览器允许设置的个性化配置。如若设置启动的浏览器不弹出窗口，则可以
+	 * 按照以下配置：<br>
+	 * key = profile.managed_default_content_settings.popups<br>
+	 * value = 2
+	 * 
+	 * @param key 配置在浏览器对应的键值
+	 * @param value 其配置对应的传参
+	 */
+	public void addPersonalityConfig(String key, Object value) {
+		chromePrefsMap.put(key, value);
+		chromeOption.setExperimentalOption("prefs", chromePrefsMap);
+		getConfigJsonArray().add(key);
 	}
 	
 	/**
@@ -105,7 +126,7 @@ public class ChromeBrower extends AbstractBrower {
 	 * @param chromeOptionType 浏览器配置枚举（{@link ChromeOptionType}枚举类）
 	 */
 	public void addConfig(ChromeOptionType chromeOptionType) {
-		chromeConfigSet.add(chromeOptionType);
+		browerConfig(chromeOptionType);
 	}
 	
 	/**
@@ -120,42 +141,31 @@ public class ChromeBrower extends AbstractBrower {
 	 * @param path 浏览器执行路径
 	 */
 	public void setBinary(File path) {
-		this.binaryFile = path;
+		chromeOption.setBinary(path);
 		driver = null;
 	}
 
 	/**
-	 * 用于移除相应的浏览器配置
-	 * 
-	 * @param chromeOptionType 需要移除的浏览器配置
+	 * 清空所有的配置，调用该方法后等同于重新构造{@link ChromeOptions}类对象
 	 */
-	public void removeConfig(ChromeOptionType chromeOptionType) {
-		chromeConfigSet.remove(chromeOptionType);
+	public void clearConfig() {
+		chromePrefsMap.clear();
+		mobileEmulationMap.clear();
+		chromeOption = new ChromeOptions();
 	}
 	
 	/**
-	 * 清空所有的配置
+	 * 用于返回谷歌浏览器的配置，可通过此方法，获取到{@link ChromeOptions}对象后，在
+	 * 外部对浏览器进行配置
+	 * @return 谷歌浏览器的配置
 	 */
-	public void clearConfig() {
-		chromeConfigSet.clear();
+	public ChromeOptions getConfig() {
+		return chromeOption;
 	}
 
 	@Override
 	void openBrower() {
-		//判断是否存在浏览器启动路径
-		if (binaryFile != null) {
-			chromeOption.setBinary(binaryFile);
-		}
-		//判断是否存在配置
-		if (chromeConfigSet.size() != 0) {
-			browerConfig();
-		}
 		driver = new ChromeDriver(chromeOption);
-		
-		// 添加操作信息
-		informationJson.put("浏览器名称", ((ChromeDriver) driver).getCapabilities().getBrowserName());
-		informationJson.put("浏览器版本", ((ChromeDriver) driver).getCapabilities().getVersion());
-		informationJson.put("操作系统版本", System.getProperties().getProperty("os.name"));
 	}
 	
 	@Override
@@ -165,61 +175,69 @@ public class ChromeBrower extends AbstractBrower {
 
 	/**
 	 * 用于将配置添加至浏览器中
+	 * @param configType
 	 */
-	void browerConfig() {
-		// 用于存储浏览器的配置信息
-		JSONArray configJsonArray = new JSONArray();
-		
-		//若配置中存在控制已打开的浏览器，则直接添加相应的配置，并结束方法，否则会报错
-		if (chromeConfigSet.contains(ChromeOptionType.CONTRAL_OPEN_BROWER)) {
-			chromeOption.setExperimentalOption(ChromeOptionType.CONTRAL_OPEN_BROWER.getKey(), String.valueOf(ChromeOptionType.CONTRAL_OPEN_BROWER.getValue()));
+	void browerConfig(ChromeOptionType configType) {
+		//若已打开控制启动的浏览器配置，则所有配置将不再生效
+		if (isContralOpenBrower) {
 			return;
 		}
 				
-		// 用于存储谷歌浏览器个性化配置
-		HashMap<String, Object> chromePrefs = new HashMap<String, Object>(16);
-		// 用于存储谷歌浏览器对手机的配置
-		HashMap<String, Object> mobileEmulation = new HashMap<String, Object>(16);
-
+		JSONArray configJsonArray = getConfigJsonArray();
+		
+		//若当前配置为控制已开启的浏览器，则清空之前的配置，以避免调用报错
+		if (configType == ChromeOptionType.CONTRAL_OPEN_BROWER) {
+			clearConfig();
+			chromeOption.setExperimentalOption(ChromeOptionType.CONTRAL_OPEN_BROWER.getKey(), String.valueOf(ChromeOptionType.CONTRAL_OPEN_BROWER.getValue()));
+			isContralOpenBrower = true;
+		}
+		
 		// 遍历所有的chromeConfigSet，对浏览器进行相应的设置
-		for (ChromeOptionType configType : chromeConfigSet) {
-			// 根据设置的类型来指定使用哪种方法
-			// 0表示使用addArguments（启动配置项）配置
-			// 1表示setExperimentalOption（个性化配置）需要存储至map的配置
-			// 2表示setExperimentalOption（个性化配置）不需要存储至map的配置
-			// 3表示使用addArguments（启动配置项）配置，但需要拼接参数
-			switch (configType.getOptionType()) {
-			case 0:
-				chromeOption.addArguments(configType.getKey());
-				//添加信息
-				configJsonArray.add(configType.getName());
-				break;
-			case 1:
-				chromePrefs.put(configType.getKey(), configType.getValue());
-				configJsonArray.add(configType.getName());
-				break;
-			case 2:
-				chromeOption.setExperimentalOption(configType.getKey(), String.valueOf(configType.getValue()));
-				configJsonArray.add(configType.getName() + (configType.getValue() == null ? "" : String.valueOf(configType.getValue())));
-				break;
-			case 3:
-				// 拼接内容
-				chromeOption.addArguments(configType.getKey() + String.valueOf(configType.getValue()));
-				configJsonArray.add(configType.getName() + (configType.getValue() == null ? "" : String.valueOf(configType.getValue())));
-				break;
-			default:
-				throw new IllegalArgumentException("错误的类型: " + configType.getOptionType());
-			}
+		// 根据设置的类型来指定使用哪种方法
+		// 0表示使用addArguments（启动配置项）配置
+		// 1表示setExperimentalOption（个性化配置）需要存储至map的配置
+		// 2表示setExperimentalOption（个性化配置）不需要存储至map的配置
+		// 3表示使用addArguments（启动配置项）配置，但需要拼接参数
+		switch (configType.getOptionType()) {
+		case 0:
+			chromeOption.addArguments(configType.getKey());
+			//添加信息
+			configJsonArray.add(configType.getName());
+			break;
+		case 1:
+			chromePrefsMap.put(configType.getKey(), configType.getValue());
+			chromeOption.setExperimentalOption("prefs", chromePrefsMap);
+			configJsonArray.add(configType.getName());
+			break;
+		case 2:
+			chromeOption.setExperimentalOption(configType.getKey(), String.valueOf(configType.getValue()));
+			configJsonArray.add(configType.getName() + (configType.getValue() == null ? "" : String.valueOf(configType.getValue())));
+			break;
+		case 3:
+			// 拼接内容
+			chromeOption.addArguments(configType.getKey() + String.valueOf(configType.getValue()));
+			configJsonArray.add(configType.getName() + (configType.getValue() == null ? "" : String.valueOf(configType.getValue())));
+			break;
+		default:
+			throw new IllegalArgumentException("错误的类型: " + configType.getOptionType());
 		}
 
 		// 添加配置
-		chromeOption.setExperimentalOption("prefs", chromePrefs);
-		chromeOption.setExperimentalOption("mobileEmulation", mobileEmulation);
-
-		// 添加配置信息
-		informationJson.put("浏览器配置", configJsonArray);
+//		chromeOption.setExperimentalOption("mobileEmulation", mobileEmulationMap);
 
 		return;
+	}
+	
+	/**
+	 * 用于返回配置信息集合
+	 * @return 配置信息集合
+	 */
+	JSONArray getConfigJsonArray() {
+		// 添加配置信息
+		if (!informationJson.containsKey("浏览器配置")) {
+			informationJson.put("浏览器配置", new JSONArray());
+		}
+		return informationJson.getJSONArray("浏览器配置");
 	}
 
 	/**
@@ -238,7 +256,7 @@ public class ChromeBrower extends AbstractBrower {
 	 * 
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	public enum ChromeOptionType {

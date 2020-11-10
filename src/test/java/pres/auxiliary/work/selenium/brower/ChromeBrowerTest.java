@@ -26,7 +26,7 @@ public class ChromeBrowerTest {
 	/**
 	 * 指向driver文件
 	 */
-	private final File driverFile = new File("Resource/BrowersDriver/Chrom/78.0394.70/chromedriver.exe");
+	private final File driverFile = new File("Resource/BrowersDriver/Chrom/86.0.4240.22/chromedriver.exe");
 	
 	/**
 	 * 指向浏览器对象
@@ -39,6 +39,7 @@ public class ChromeBrowerTest {
 	@AfterClass(alwaysRun = true)
 	public void quit() {
 		System.out.println(cb.getAllInformation());
+		System.out.printf("输入任意字符继续：");
 		Scanner sc = new Scanner(System.in);
 		sc.next();
 		cb.closeBrower();
@@ -82,7 +83,7 @@ public class ChromeBrowerTest {
 		cb.addConfig(ChromeOptionType.DONOT_LOAD_JS);
 		//不允许弹窗
 		cb.addConfig(ChromeOptionType.DONOT_POPUPS);
-		//全屏启动
+		//无头浏览器启动
 		cb.addConfig(ChromeOptionType.HEADLESS);
 		
 		cb.getDriver();
@@ -139,7 +140,6 @@ public class ChromeBrowerTest {
 	public void sendKey() {
 		cb = new ChromeBrower(new File("Resource/BrowersDriver/Chrom/83.0.4103.39/chromedriver.exe"));
 		
-		//1027*768的分辨率启动
 		cb.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
 		cb.getDriver().findElement(By.id("kw")).sendKeys(Keys.CONTROL, "vfffsdfg");
 		show(Keys.CONTROL, "vfffsdfg");
