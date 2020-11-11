@@ -6,6 +6,8 @@ import java.util.Scanner;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.work.selenium.page.Page;
+
 /**
  * <p><b>文件名：</b>IeBrowerTest.java</p>
  * <p><b>用途：</b>用于对{@link IeBrower}类进行测试</p>

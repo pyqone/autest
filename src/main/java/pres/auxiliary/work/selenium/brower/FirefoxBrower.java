@@ -6,6 +6,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import pres.auxiliary.work.selenium.page.Page;
+
 public class FirefoxBrower extends AbstractBrower {
 	/**
 	 * 用于存储与火狐浏览器相关的配置

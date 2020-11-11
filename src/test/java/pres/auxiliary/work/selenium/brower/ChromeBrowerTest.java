@@ -11,6 +11,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
+import pres.auxiliary.work.selenium.page.Page;
 
 /**
  * <p><b>文件名：</b>TestChromeBrower.java</p>

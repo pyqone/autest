@@ -15,6 +15,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import pres.auxiliary.work.selenium.page.Page;
+
 /**
  * <p><b>文件名：</b>AbstractBrower.java</p>
  * <p><b>用途：</b>该类定义启动浏览器时必要的方法，开启浏览器的方法由子类继承编写</p>

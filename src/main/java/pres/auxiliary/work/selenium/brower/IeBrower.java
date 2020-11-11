@@ -5,6 +5,8 @@ import java.io.File;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 
+import pres.auxiliary.work.selenium.page.Page;
+
 /**
  * <p><b>文件名：</b>IeBrower.java</p>
  * <p><b>用途：</b>用于启动IE浏览器，并加载相应的待测页面。</p>

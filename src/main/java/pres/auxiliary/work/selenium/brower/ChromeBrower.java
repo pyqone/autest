@@ -9,6 +9,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import com.alibaba.fastjson.JSONArray;
 
+import pres.auxiliary.work.selenium.page.Page;
+
 /**
  * <p><b>文件名：</b>ChromeBrower.java</p>
  * <p><b>用途：</b>用于启动谷歌浏览器，并加载相应的待测页面，支持对浏览器进行部分个性化的配置，

@@ -1,10 +1,12 @@
-package pres.auxiliary.work.selenium.brower;
+package pres.auxiliary.work.selenium.page;
 
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebDriver;
 
 import com.alibaba.fastjson.JSONObject;
+
+import pres.auxiliary.work.selenium.brower.AbstractBrower;
 
 /**
  * <p><b>文件名：</b>Page.java</p>
@@ -13,7 +15,7 @@ import com.alibaba.fastjson.JSONObject;
  * <p><b>修改时间：</b>2020年10月12日下午8:02:45</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 8
+ * @since JDK .8
  *
  */
 public class Page {

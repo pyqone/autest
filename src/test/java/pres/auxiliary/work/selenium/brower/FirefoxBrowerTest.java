@@ -6,6 +6,8 @@ import java.util.Scanner;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.work.selenium.page.Page;
+
 public class FirefoxBrowerTest {
 	/**
 	 * 指向driver文件
