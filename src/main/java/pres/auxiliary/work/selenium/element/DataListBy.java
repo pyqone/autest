@@ -8,6 +8,7 @@ import pres.auxiliary.work.selenium.brower.AbstractBrower;
 /**
  * <p><b>文件名：</b>DataListBy.java</p>
  * <p><b>用途：</b>
+ * 提供在辅助化测试中，通过一个元素定位方式，获取一列数据（多条数据）的方法，并提供各种方式的元素返回方式
  * </p>
  * <p><b>编码时间：</b>2020年10月14日下午6:45:51</p>
  * <p><b>修改时间：</b>2020年10月14日下午6:45:51</p>

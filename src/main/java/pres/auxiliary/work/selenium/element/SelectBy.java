@@ -8,6 +8,48 @@ import org.openqa.selenium.support.ui.Select;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 
+/**
+ * <p><b>文件名：</b>SelectBy.java</p>
+ * <p><b>用途：</b>
+ * 提供在辅助化测试中，通过一个元素定位方式，获取下拉选项型元素（控件）的方法。通过元素的定位方式，自动
+ * 识别下拉选项元素的类型（标准下拉选项<sup>1</sup>与非标准下拉选项<sup>2</sup>），并根据其类型获取到下拉
+ * 选项的元素。
+ * </p>
+ * <p>
+ * 注解：
+ * <ol>
+ * 	<li>标准下拉选项：由&lt;select&gt;与&lt;option&gt;标签组成的下拉选项，例如：
+ * 	<pre>
+ * 		&lt;select&nbsp;name='select'&gt;
+ * 			&lt;option&gt;男&lt;/option&gt;
+ * 			&lt;option&gt;女&lt;/option&gt;
+ * 		&lt;/select&gt;
+ * 	</pre>
+ * 	</li>
+ * 	<li>非标准下拉选项：由其他标签组成的一组元素，例如：
+ * 	<pre>
+ * 		&lt;div&nbsp;name='select'&gt;
+ * 			&lt;div&nbsp;name='option'&gt;男&lt;/div&gt;
+ * 			&lt;div&nbsp;name='option'&gt;女&lt;/div&gt;
+ * 		&lt;/div&gt;
+ * 	</pre>
+ * 	</li>
+ * </ol>
+ * </p>
+ * <p>
+ * <b>注意：</b>若下拉选项为标准下拉选项，其元素定位方式只需要定位到select标签即可，若为非标准下拉选项，则需要
+ * 将元素定位到能获取到所有下拉选项的元素上，以上述html代码为例，使用xpath对以上两个控件定位，则分别为：<br>
+ * <ul>
+ * 	<li>获取标准下拉选项：//select[@name='select']，通过该xpath在页面查找元素时，只能找到一个元素</li>
+ * 	<li>获取非标准下拉选项：//div[@name='select']/div[@name='option']，通过该xpath在页面查找元素时，能找到两个元素</li>
+ * </ul>
+ * </p>
+ * <p><b>编码时间：</b>2020年11月11日上午8:12:58</p>
+ * <p><b>修改时间：</b>2020年11月11日上午8:12:58</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ *
+ */
 public class SelectBy extends MultiBy<SelectBy> {
 	/**
 	 * 定义标准下拉选项的tagname
