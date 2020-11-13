@@ -4,6 +4,17 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * <p><b>文件名：</b>MapCase.java</p>
+ * <p><b>用途：</b>
+ * 提供生成与地图相关测试用例的方法
+ * </p>
+ * <p><b>编码时间：</b>2020年04月05日下午10:03:54</p>
+ * <p><b>修改时间：</b>2020年04月05日下午10:03:54</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ *
+ */
 public class MapCase extends Case {
 	/**
 	 * 通过测试用例模板库的xml配置文件来构造MapCase对象
@@ -127,14 +138,14 @@ public class MapCase extends Case {
 	 * @param graphs 图形类型
 	 * @return 类本身
 	 */
-	public Case mapGraphSignCase(String signName, boolean isMultiple, GraphType...graphs) {
+	public Case mapGraphSignCase(String signName, boolean isMultiple, GraphType...graphTypes) {
 		//清空字段的内容
 		clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "mapGraphSignCase";
 		
 		//转换输入限制为集合类型
-		List<GraphType> graphRules = Arrays.asList(graphs);
+		List<GraphType> graphRules = Arrays.asList(graphTypes);
 		if (graphRules.size() != 0) {
 			String graphRulesText = "";
 			for (GraphType graphRule : graphRules) {

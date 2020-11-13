@@ -170,7 +170,7 @@
 			<rank id='1' value="1" />
 		</ranks>
 		<preconditions>
-			<precondition id='1' value="已在*{操作类型}*账号界面" />
+			<precondition id='1' value="已在*{操作类型}*界面" />
 			<precondition id='2' value="除密码外，其他信息均正确填写" />
 		</preconditions>
 		<steps>
@@ -189,7 +189,7 @@
 		</excepts>
 	</case>
 
-	<case name="addCodeRegisterOrForgetCase">
+	<case name="captchaOprateCase">
 		<titles>
 			<title id='1' value="通过不同的验证码进行*{操作类型}*操作" />
 		</titles>
