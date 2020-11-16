@@ -9,6 +9,16 @@
 
   <name>Autest</name>
   <url>http://maven.apache.org</url>
+  
+  <build>
+  	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>3.0.0</version>
+		</plugin>
+	</plugins>
+  </build>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -159,6 +169,5 @@
 			<version>7.3.0</version>
 			<scope>test</scope>
 		</dependency>-->
-        
 	</dependencies>
 </project>
