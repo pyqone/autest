@@ -2,13 +2,13 @@
 <cases project="Video">
 	<case name="addPlayVideoCase">
 		<titles>
-			<title value="播放/暂停*{视频类型}*" />
+			<title id='1' value="播放/暂停*{视频类型}*" />
 		</titles>
 		<keys> 
-			<key value="播放/暂停" />
+			<key id='1' value="播放/暂停" />
 		</keys> 
 		<ranks>
-			<rank value="1" />
+			<rank id='1' value="1" />
 		</ranks>
 		<preconditions>
 		</preconditions>
@@ -32,13 +32,13 @@
 	
 	<case name="addVideoScreenshotCase">
 		<titles>
-			<title value="对*{视频类型}*进行截图" />
+			<title id='1' value="对*{视频类型}*进行截图" />
 		</titles>
 		<keys> 
-			<key value="*{视频类型}*,截图" />
+			<key id='1' value="*{视频类型}*,截图" />
 		</keys>
 		<ranks>
-			<rank value="2" />
+			<rank id='1' value="2" />
 		</ranks>
 		<preconditions>
 		</preconditions>
@@ -58,13 +58,13 @@
 	
 	<case name="addVideoAdvanceCase">
 		<titles>
-			<title value="快进/快退*{视频类型}*" />
+			<title id='1' value="快进/快退*{视频类型}*" />
 		</titles>
 		<keys> 
-			<key value="*{视频类型}*,快进,快退" />
+			<key id='1' value="*{视频类型}*,快进,快退" />
 		</keys>
 		<ranks>
-			<rank value="2" />
+			<rank id='1' value="2" />
 		</ranks>
 		<preconditions>
 		</preconditions>
@@ -96,13 +96,13 @@
 	
 	<case name="addVideoSpeedCase">
 		<titles>
-			<title value="快放/慢放*{视频类型}*" />
+			<title id='1' value="快放/慢放*{视频类型}*" />
 		</titles>
 		<keys> 
-			<key value="*{视频类型}*,快放,慢放" />
+			<key id='1' value="*{视频类型}*,快放,慢放" />
 		</keys>
 		<ranks>
-			<rank value="2" />
+			<rank id='1' value="2" />
 		</ranks>
 		<preconditions>
 		</preconditions>
@@ -122,13 +122,13 @@
 	
 	<case name="addVideoProgressBarCase">
 		<titles>
-			<title value="拖动进度条" />
+			<title id='1' value="拖动进度条" />
 		</titles>
 		<keys> 
-			<key value="进度条" />
+			<key id='1' value="进度条" />
 		</keys>
 		<ranks>
-			<rank value="2" />
+			<rank id='1' value="2" />
 		</ranks>
 		<preconditions>
 		</preconditions>
@@ -149,13 +149,13 @@
 	
 	<case name="addFullScreenPlayCase">
 		<titles>
-			<title value="全屏播放*{视频类型}*" />
+			<title id='1' value="全屏播放*{视频类型}*" />
 		</titles>
 		<keys> 
-			<key value="全屏*{视频类型}*" />
+			<key id='1' value="全屏*{视频类型}*" />
 		</keys>
 		<ranks>
-			<rank value="2" />
+			<rank id='1' value="2" />
 		</ranks>
 		<preconditions>
 		</preconditions>

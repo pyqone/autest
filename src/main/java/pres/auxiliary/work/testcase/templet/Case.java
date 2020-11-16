@@ -20,10 +20,23 @@ import pres.auxiliary.work.testcase.file.IncorrectFileException;
  * <p><b>修改时间：</b>2020年3月4日 07:39:23</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public abstract class Case {
+	/**
+	 * 用于指向用例标签中的name属性
+	 */
+	public static final String ATTRIBUTE_NAME = "name";
+	/**
+	 * 用于指向用例标签中的value属性
+	 */
+	public static final String ATTRIBUTE_VALUE = "value";
+	/**
+	 * 用于指向用例标签中的id属性
+	 */
+	public static final String ATTRIBUTE_ID = "id";
+	
 	/**
 	 * 用于标记获取标签下所有的文本
 	 */
@@ -41,7 +54,7 @@ public abstract class Case {
 	/**
 	 * 用于存储传入到正则表达式中的开始标记
 	 */
-	final String START_SIGN_REGIX = "\\*\\{";
+	protected final String START_SIGN_REGIX = "\\*\\{";
 	
 	/**
 	 * 用于指向测试用例xml文件的Document对象
@@ -137,18 +150,11 @@ public abstract class Case {
 	 * @return 标签中存储的文本，并进行处理
 	 */
 	protected String getLabelText(String caseName, String labelName, String id) {
-		//定位case标签的名称属性名
-		String caseLabelNameAttribute = "name";
-		//定位标签中能指向调用用例的属性（id）
-		String labelIdAttribute = "id";
-		//定位相应标签中存储用例内容的属性
-		String labelValueAttribute = "value";
-		
 		//拼接xpath，规则"//case[@name='caseName']//标签名称[@id='id']"
 		String xpath = "//" + LabelType.CASE.getName() + 
-				"[@" + caseLabelNameAttribute + "='" + 
+				"[@" + ATTRIBUTE_NAME + "='" + 
 				caseName + "']//" + labelName + 
-				"[@" + labelIdAttribute + "='" + id +"']";
+				"[@" + ATTRIBUTE_ID + "='" + id +"']";
 		
 		//获取相应的文本内容
 		Element textElement = (Element)(configXml.selectSingleNode(xpath));
@@ -156,31 +162,26 @@ public abstract class Case {
 		
 		//判断集合是否存在元素，若不存在元素，则抛出异常
 		if (textElement == null) {
-			throw new LabelNotFoundException("不存在的标签：<" + labelName + " " + labelIdAttribute + "='" + id +"'...>");
+			throw new LabelNotFoundException("用例集“" + caseName + "”中不存在id为“" + id + "”的“" + labelName + "”标签");
 		}
 		
 		//返回处理替换的单词后相应的文本
-		return replaceText(textElement.attributeValue(labelValueAttribute));
+		return replaceText(textElement.attributeValue(ATTRIBUTE_VALUE));
 		
 	}
 	
 	/**
 	 * 用于获取用例xml中对应用例的标签内所有的文本，并返回替换词语后的文本
 	 * @param caseName 用例名称
-	 * @param label 标签枚举
+	 * @param labelType 标签枚举
 	 * @return 标签中存储的文本，并进行处理
 	 */
 	@SuppressWarnings("unchecked")
-	protected ArrayList<String> getAllLabelText(String caseName, LabelType label) {
-		//定位case标签的名称属性名
-		String caseLabelNameAttribute = "name";
-		//定位相应标签中存储用例内容的属性
-		String labelValueAttribute = "value";
-		
+	protected ArrayList<String> getAllLabelText(String caseName, LabelType labelType) {
 		//拼接xpath，规则"//case[@name='caseName']//标签名称[@id='id']"
 		String xpath = "//" + LabelType.CASE.getName() + 
-				"[@" + caseLabelNameAttribute + "='" + 
-				caseName + "']//" + label.getName();
+				"[@" + ATTRIBUTE_NAME + "='" + 
+				caseName + "']//" + labelType.getName();
 
 		//获取所有的节点
 		List<Element> textElements = configXml.selectNodes(xpath);
@@ -188,7 +189,7 @@ public abstract class Case {
 		ArrayList<String> texts = new ArrayList<String>();
 		//存储节点值
 		for (int i = 0; i < textElements.size(); i++) {
-			texts.add(replaceText(textElements.get(i).attributeValue(labelValueAttribute)));
+			texts.add(replaceText(textElements.get(i).attributeValue(ATTRIBUTE_VALUE)));
 		}
 		
 		return texts;
@@ -199,14 +200,11 @@ public abstract class Case {
 	 */
 	@SuppressWarnings("unchecked")
 	private void saveWord() {
-		//定义能获取到文本的属性，以便于后续的调整
-		String textAttribute = "value";
-				
 		//获取xml中包含value的元素，并将其中包含需要替换的词语存储至wordMap
-		List<Element> textElement = configXml.selectNodes("//*[@" + textAttribute + "]");
+		List<Element> textElement = configXml.selectNodes("//*[@" + ATTRIBUTE_VALUE + "]");
 		textElement.stream().
 		//获取元素的value属性，将其转换为文本对象	
-		map(e -> e.attributeValue(textAttribute)).
+		map(e -> e.attributeValue(ATTRIBUTE_VALUE)).
 		//筛选包含*{的文本
 		filter(e -> e.indexOf(START_SIGN) > -1).forEach(e -> {
 			//对文本按照*{切割，并筛选包含}*的文本
@@ -235,11 +233,11 @@ public abstract class Case {
 	
 	/**
 	 * 用于添加一行文本
-	 * @param label 标签名称（枚举）
+	 * @param labelType 标签名称（枚举）
 	 * @param text 相应内容
 	 */
-	protected void addFieldText(LabelType label, String text) {
-		fieldTextMap.get(label.getName()).add(text);
+	protected void addFieldText(LabelType labelType, String text) {
+		fieldTextMap.get(labelType.getName()).add(text);
 	}
 	
 	/**
