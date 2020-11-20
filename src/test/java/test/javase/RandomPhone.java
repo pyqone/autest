@@ -1,7 +1,7 @@
 package test.javase;
 
-import pres.auxiliary.tool.randomstring.RandomString;
-import pres.auxiliary.tool.randomstring.StringMode;
+import pres.auxiliary.tool.string.RandomString;
+import pres.auxiliary.tool.string.StringMode;
 
 public class RandomPhone {
 	public static void main(String[] args) {

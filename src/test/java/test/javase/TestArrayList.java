@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
-import pres.auxiliary.tool.randomstring.RandomString;
-import pres.auxiliary.tool.randomstring.StringMode;
+import pres.auxiliary.tool.string.RandomString;
+import pres.auxiliary.tool.string.StringMode;
 
 public class TestArrayList {
 

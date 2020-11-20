@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.randomstring;
+package pres.auxiliary.tool.string;
 
 /**
  * 该枚举用于表示电话号码的类型

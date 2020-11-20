@@ -2,8 +2,8 @@ package test.javase;
 
 import java.io.IOException;
 
-import pres.auxiliary.tool.randomstring.RandomString;
-import pres.auxiliary.tool.randomstring.StringMode;
+import pres.auxiliary.tool.string.RandomString;
+import pres.auxiliary.tool.string.StringMode;
 import pres.auxiliary.work.old.testcase.templet.ZentaoTemplet;
 
 public class TestCase2 {
