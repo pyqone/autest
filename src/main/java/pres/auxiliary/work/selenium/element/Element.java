@@ -86,6 +86,8 @@ public class Element {
 //		}catch (TimeoutException e) {
 //		}
 		abstractBy.elementList = abstractBy.recognitionElement(elementData);
+		//切换当前读取的元素信息
+		abstractBy.elementData = elementData;
 	}
 
 	@Override
