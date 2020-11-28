@@ -1,9 +1,10 @@
 package pres.auxiliary.work.selenium.event.extend;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
-import java.util.stream.IntStream;
 
 import org.openqa.selenium.Keys;
 
@@ -44,7 +45,8 @@ public class DataTableEvent extends AbstractEvent {
 	/**
 	 * 用于存储当前的列表元素
 	 */
-	protected ArrayList<DataListBy> tableList = new ArrayList<>();
+//	protected ArrayList<DataListBy> tableList = new ArrayList<>();
+	protected LinkedHashMap<String, List<Element>> tableMap = new LinkedHashMap<>(16);
 	
 	/**
 	 * 用于存储当前列表的长度
@@ -66,6 +68,7 @@ public class DataTableEvent extends AbstractEvent {
 		
 		clickEvent = new ClickEvent(brower);
 		textEvent = new TextEvent(brower);
+		assertEvent = new AssertEvent(brower);
 	}
 	
 	/**
@@ -78,19 +81,28 @@ public class DataTableEvent extends AbstractEvent {
 	}
 
 	/**
-	 * 用于添加一列元素，调用该方法时将对存储的
+	 * 用于添加一列元素，若启用严格校验（即通过{@link #setExamine(boolean)}方法设置为true），
+	 * 则调用该方法时将对存储的数据个数进行校验，若传入的列元素个数与当前存储的列表元素个数
+	 * 不一致时，则抛出{@link InvalidDataListException}异常
+	 * 
+	 * <p>
+	 * 	<b>注意：</b>传入的{@link DataListBy}类对象中元素的名称请勿与其他元素名称一致，否则会
+	 * 	覆盖原有的元素列
+	 * </p>
+	 * 
 	 * @param dataListBy 元素列查找对象
+	 * @throws InvalidDataListException 启用严格校验且元素个数与存储列表元素个数不一致时抛出的异常
 	 */
 	public void add(DataListBy dataListBy) {
 		//判断当前是否存储元素，若未存储元素，则不进行元素个数判断
-		if (!tableList.isEmpty()) {
+		if (!tableMap.isEmpty()) {
 			//判断传入的列的元素个数是否与当前存储的元素个数一致，若不一致，则进行个数判定校验
 			int nowSize = dataListBy.size();
-			if (nowSize != size()) {
+			if (nowSize != listSize()) {
 				//若当前需要严格校验列表元素个数，则抛出异常
 				if (isExamine) {
 					throw new InvalidDataListException("当前传入的元素列个数与存储的元素列个数不一致！"
-							+ "（当前元素列个数：" + size() + "，传入的元素列元素个数：" + nowSize + "）");
+							+ "（当前元素列个数：" + listSize() + "，传入的元素列元素个数：" + nowSize + "）");
 				} else {
 					//若无需校验元素个数，则判断传入的元素个数与存储的元素列个数，存储较小的数字
 					listSize = listSize < nowSize ? listSize : nowSize;
@@ -101,7 +113,7 @@ public class DataTableEvent extends AbstractEvent {
 			listSize = dataListBy.size();
 		}
 		
-		tableList.add(dataListBy);
+		tableMap.put(dataListBy.getElement(1).getElementData().getName(), dataListBy.getAllElement());
 	}
 	
 	/**
@@ -110,31 +122,43 @@ public class DataTableEvent extends AbstractEvent {
 	 * 
 	 * @return 元素列的元素个数
 	 */
-	public int size() {
+	public int listSize() {
 		return listSize;
+	}
+	
+	public int listSize(String name) {
+		return tableMap.get(name).size();
+	}
+	
+	/**
+	 * 用于返回元素表中的列数
+	 * @return
+	 */
+	public int rowSize() {
+		return tableMap.size();
 	}
 
 	/**
 	 * 用于点击一次上一页按钮，并返回点击成功结果
-	 * @param upPageButton 上一页按钮元素
+	 * @param pageTurningButton 翻页按钮元素
 	 * @return 点击结果
 	 */
-	public boolean upPage(Element upPageButton) {
+	public boolean pageTurning(Element pageTurningButton) {
 		boolean result = operateSuchAssertData(() -> {
 			//判断按钮是否可以点击
-			if (!upPageButton.getWebElement().isEnabled()) {
+			if (!pageTurningButton.getWebElement().isEnabled()) {
 				return false;
 			}
 			
 			try {
-				clickEvent.click(upPageButton);
+				clickEvent.click(pageTurningButton);
 				return true;
 			} catch (Exception e) {
 				return false;
 			}
 		});
 		
-		logText = "点击“" + upPageButton.getElementData().getName() + "”元素，返回列表上一页，其翻页"
+		logText = "点击“" + pageTurningButton.getElementData().getName() + "”元素，返回列表上一页，其翻页"
 				+ (result ? "" : "不") + "成功";
 		resultText = String.valueOf(result);
 		
@@ -143,23 +167,23 @@ public class DataTableEvent extends AbstractEvent {
 	
 	/**
 	 * 用于点击多次上一页按钮，并返回实际点击次数（实际点击次数）
-	 * @param upPageButton 上一页按钮元素
+	 * @param pageTurningButton 上一页按钮元素
 	 * @param count 点击次数
 	 * @return 实际点击次数
 	 */
-	public int upPage(Element upPageButton, int count) {
+	public int pageTurning(Element pageTurningButton, int count) {
 		int nowCount = 0;
 		//根据设置的点击次数循环点击上一页
 		while (nowCount < count) {
 			//若点击成功，则nowCount自增，若点击失败，则退出循环
-			if (upPage(upPageButton)) {
+			if (pageTurning(pageTurningButton)) {
 				nowCount++;
 			} else {
 				break;
 			}
 		}
 		
-		logText = "连续点击“" + upPageButton.getElementData().getName() + "”元素，使列表返回至上"
+		logText = "连续点击“" + pageTurningButton.getElementData().getName() + "”元素，使列表返回至上"
 				+ count + "页，其实际翻页数为：" + nowCount;
 		resultText = String.valueOf(nowCount);
 		
@@ -169,22 +193,22 @@ public class DataTableEvent extends AbstractEvent {
 	
 	/**
 	 * 用于持续点击上一页按钮，直到按钮不可点击为止，并返回实际点击次数（实际点击次数）
-	 * @param upPageButton 上一页按钮元素
+	 * @param pageTurningButton 上一页按钮元素
 	 * @return 实际点击次数
 	 */
-	public int continueUpPage(Element upPageButton) {
+	public int continuePageTurning(Element pageTurningButton) {
 		int nowCount = 0;
 		//根据设置的点击次数循环点击上一页
 		while (true) {
 			//若点击成功，则nowCount自增，若点击失败，则退出循环
-			if (upPage(upPageButton)) {
+			if (pageTurning(pageTurningButton)) {
 				nowCount++;
 			} else {
 				break;
 			}
 		}
 		
-		logText = "持续点击“" + upPageButton.getElementData().getName() + "”元素，使列表返回至首页"
+		logText = "持续点击“" + pageTurningButton.getElementData().getName() + "”元素，使列表返回至首页"
 				+ "，其实际翻页数为：" + nowCount;
 		resultText = String.valueOf(nowCount);
 		
@@ -250,7 +274,7 @@ public class DataTableEvent extends AbstractEvent {
 	 * </p>
 	 * <p>
 	 * <b>注意：</b>下标将按照元素列长度进行计算，若下标的绝对值大于元素列长度，且下标为正数，则
-	 * 获取最后一行元素；反之，则获取第一行元素。元素列个数可参考{@link #size()}方法
+	 * 获取最后一行元素；反之，则获取第一行元素。元素列个数可参考{@link #listSize()}方法
 	 * </p>
 	 * 
 	 * @param rowIndex 需要获取的行下标
@@ -259,8 +283,8 @@ public class DataTableEvent extends AbstractEvent {
 	public ArrayList<Element> getRowElement(int rowIndex) {
 		//根据下标，获取元素，并进行存储
 		ArrayList<Element> elementList = new ArrayList<>();
-		IntStream.range(0, tableList.size()).forEach(index -> {
-			elementList.add(tableList.get(index).getElement(rowIndex));
+		tableMap.forEach((key, value) -> {
+			elementList.add(value.get(toElementIndex(listSize(key), rowIndex)));
 		});
 		
 		return elementList;
@@ -335,7 +359,7 @@ public class DataTableEvent extends AbstractEvent {
 	private boolean operateSuchAssertData(BooleanSupplier action) {
 		//若元素列表非空，则获取第一行元素，用于进行断言
 		ArrayList<Element> oldElementList = new ArrayList<>();
-		if (!tableList.isEmpty()) {
+		if (!tableMap.isEmpty()) {
 			//获取第一行元素
 			oldElementList = getRowElement(1);
 		}
@@ -344,16 +368,41 @@ public class DataTableEvent extends AbstractEvent {
 		if (action.getAsBoolean()) {
 			//获取操作后的第一行元素
 			ArrayList<Element> newElementList = new ArrayList<>();
-			if (!tableList.isEmpty()) {
+			if (!tableMap.isEmpty()) {
 				//获取第一行元素
 				newElementList = getRowElement(1);
+				//断言元素，并返回结果
+				return assertDataChange(oldElementList, newElementList);
+			} else {
+				return true;
 			}
-			
-			//断言元素，并返回结果
-			return assertDataChange(oldElementList, newElementList);
 		} else {
 			return false;
 		}
+	}
+	
+	public enum DataTableKeywordType {
+		/**
+		 * 上一页按钮
+		 */
+		UP_PAGE_BUTTON, 
+		/**
+		 * 下一页按钮
+		 */
+		DOWN_PAGE_BUTTON, 
+		/**
+		 * 首页按钮
+		 */
+		FIRST_PAGE_BUTTON,
+		/**
+		 * 尾页按钮
+		 */
+		LAST_PAGE_BUTTON, 
+		/**
+		 * 跳页按钮
+		 */
+		JUMP_PAGE_BUTTON,
+		;
 	}
 	
 	/**
