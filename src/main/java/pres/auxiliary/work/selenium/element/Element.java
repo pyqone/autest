@@ -64,7 +64,13 @@ public class Element {
 			againFindElement();
 		}
 		
-		return abstractBy.elementList.get(index);
+		//若当前进行过重新获取元素，并且获取后其元素个数有变化，则当下标不存在时抛出异常
+		try {
+			return abstractBy.elementList.get(index);
+		} catch (IndexOutOfBoundsException e) {
+			throw new NoSuchElementException("重新获取元素后不存在下标为“" + index + "”的元素，当前元素集合个数：" + abstractBy.elementList.size());
+		}
+		
 	}
 	
 	/**
@@ -78,16 +84,13 @@ public class Element {
 	/**
 	 * 重新根据元素信息，在页面查找元素
 	 */
-	public void againFindElement() {
-		//重新构造elementList
-//		abstractBy.elementList.clear();
-//		try {
-//			abstractBy.elementList.addAll(abstractBy.recognitionElement(elementData));
-//		}catch (TimeoutException e) {
-//		}
+	public int againFindElement() {
+		//重新拉取元素
 		abstractBy.elementList = abstractBy.recognitionElement(elementData);
 		//切换当前读取的元素信息
 		abstractBy.elementData = elementData;
+		
+		return abstractBy.elementList.size();
 	}
 
 	@Override
