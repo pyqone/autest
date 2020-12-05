@@ -359,11 +359,8 @@ public final class DataTableEvent extends AbstractEvent {
 		//根据下标，获取元素，并进行存储
 		ArrayList<Element> elementList = new ArrayList<>();
 		tableMap.forEach((key, value) -> {
-			//重新获取元素
-			Element element = value.get(toElementIndex(listSize(key), rowIndex));
-			element.againFindElement();
 			//存储元素
-			elementList.add(element);
+			elementList.add(value.get(toElementIndex(listSize(key), rowIndex)));
 		});
 		
 		return elementList;
@@ -411,13 +408,16 @@ public final class DataTableEvent extends AbstractEvent {
 			//获取第一行元素，并将其转换为文本后存储
 			getRowElement(1).stream().map(textEvent :: getText).forEach(oldTextList :: add);
 		}
+		//获取当前集合的长度
+		int oldListSize = listSize();
+		
 		
 		//执行操作，并获取操作的返回结果；若返回值为true，则需要进行元素断言操作
 		if (action.getAsBoolean()) {
 			//若当前未获取原元素的内容，则不进行列表断言
 			if (oldTextList.size() != 0) {
 				//断言元素，并返回结果
-				return assertDataChange(oldTextList);
+				return assertDataChange(oldTextList, oldListSize);
 			} else {
 				return true;
 			}
@@ -432,9 +432,17 @@ public final class DataTableEvent extends AbstractEvent {
 	 * @param oldElement 原始数据第一个元素的{@link WebElement}对象
 	 * @return 元素是否存在改变
 	 */
-	protected boolean assertDataChange(ArrayList<String> oldTextList) {
+	protected boolean assertDataChange(ArrayList<String> oldTextList, int oldListSize) {
+		//重新获取集合元素
+		againFindDataList();
+		
 		//获取操作后的第一行元素
 		ArrayList<Element> newElementList = getRowElement(1);
+		
+		//若集合的长度发生改变，则表示集合存在变化
+		if (oldListSize != listSize) {
+			return true;
+		}
 		
 		//为避免不进行翻页时，列表也会进行一次刷新，则获取信息，对每个文本数据进行比对
 		for (int index = 0; index < oldTextList.size(); index++) {
@@ -446,14 +454,21 @@ public final class DataTableEvent extends AbstractEvent {
 		return false;
 	}
 	
+	/**
+	 * 用于重新获取元素信息
+	 */
 	private void againFindDataList() {
 		//用于判断当前数列元素的个数
 		AtomicInteger nowListSize = new AtomicInteger(-1);
 		tableMap.forEach((key, value) -> {
+			//获取原集合个数
+			int oldSize = value.size();
+			
 			//对列表第一个元素进行重新获取
 			Element element = value.get(0);
 			//重新获取当前元素，并存储当前列表长度
 			int elementListSize = element.againFindElement();
+			
 			//判断当前size是否为初始化的状态，若为初始化的状态，则直接存储重新获取后的集合元素个数
 			if (nowListSize.get() == -1) {
 				nowListSize.set(elementListSize);	
@@ -473,7 +488,14 @@ public final class DataTableEvent extends AbstractEvent {
 			}
 			
 			//判断当前元素个数与重新获取前元素个数是否一致，不一致，则需要对数组进行处理
-			
+			int nowSize = nowListSize.get();
+			if (nowSize != oldSize) {
+				//根据元素返回的元素查找对象，强转为DataListBy后，再重新获取所有元素
+				value = ((DataListBy) (element.getBy())).getAllElement();
+				
+				//根据是否进行严格检查，来对listSize进行赋值，若无需严格检查，则取两者之间最小者
+				listSize = isExamine ? nowSize : Math.min(nowSize, listSize);
+			}
 		});
 	}
 	
