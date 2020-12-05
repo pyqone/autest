@@ -1,12 +1,15 @@
 package pres.auxiliary.work.selenium.event.extend;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 import pres.auxiliary.work.selenium.element.DataListBy;
@@ -15,6 +18,7 @@ import pres.auxiliary.work.selenium.event.AbstractEvent;
 import pres.auxiliary.work.selenium.event.AssertEvent;
 import pres.auxiliary.work.selenium.event.ClickEvent;
 import pres.auxiliary.work.selenium.event.TextEvent;
+import pres.auxiliary.work.selenium.event.WaitEvent;
 
 /**
  * <p><b>文件名：</b>OperateDataTable.java</p>
@@ -28,7 +32,7 @@ import pres.auxiliary.work.selenium.event.TextEvent;
  * @since JDK 1.8
  *
  */
-public class DataTableEvent extends AbstractEvent {
+public final class DataTableEvent extends AbstractEvent {
 	/**
 	 * 用于进行点击事件
 	 */
@@ -41,12 +45,24 @@ public class DataTableEvent extends AbstractEvent {
 	 * 用于进行断言事件
 	 */
 	private AssertEvent assertEvent;
+	/**
+	 * 用于进行等待事件
+	 */
+	private WaitEvent waitEvent;
 	
 	/**
-	 * 用于存储当前的列表元素
+	 * 用于存储当前的列表的一列元素
 	 */
 //	protected ArrayList<DataListBy> tableList = new ArrayList<>();
 	protected LinkedHashMap<String, List<Element>> tableMap = new LinkedHashMap<>(16);
+	/**
+	 * 用于存储列表相应的操作元素映射
+	 */
+	private HashMap<DataTableKeywordType, Element> controlMap = new HashMap<>(16);
+	/**
+	 * 指向列表加载等待控件
+	 */
+	private Element waitElement;
 	
 	/**
 	 * 用于存储当前列表的长度
@@ -69,6 +85,7 @@ public class DataTableEvent extends AbstractEvent {
 		clickEvent = new ClickEvent(brower);
 		textEvent = new TextEvent(brower);
 		assertEvent = new AssertEvent(brower);
+		waitEvent = new WaitEvent(brower);
 	}
 	
 	/**
@@ -78,6 +95,14 @@ public class DataTableEvent extends AbstractEvent {
 	 */
 	public void setExamine(boolean isExamine) {
 		this.isExamine = isExamine;
+	}
+	
+	/**
+	 * 用于设置列表加载等待元素，通过该元素，将应用与列表操作后，等待该控件消失后再进行断言的操作
+	 * @param waitElement 列表加载等待控件
+	 */
+	public void setWaitElement(Element waitElement) {
+		this.waitElement = waitElement;
 	}
 
 	/**
@@ -93,7 +118,7 @@ public class DataTableEvent extends AbstractEvent {
 	 * @param dataListBy 元素列查找对象
 	 * @throws InvalidDataListException 启用严格校验且元素个数与存储列表元素个数不一致时抛出的异常
 	 */
-	public void add(DataListBy dataListBy) {
+	public void addList(DataListBy dataListBy) {
 		//判断当前是否存储元素，若未存储元素，则不进行元素个数判断
 		if (!tableMap.isEmpty()) {
 			//判断传入的列的元素个数是否与当前存储的元素个数一致，若不一致，则进行个数判定校验
@@ -113,7 +138,16 @@ public class DataTableEvent extends AbstractEvent {
 			listSize = dataListBy.size();
 		}
 		
-		tableMap.put(dataListBy.getElement(1).getElementData().getName(), dataListBy.getAllElement());
+		tableMap.put(dataListBy.getElementData().getName(), dataListBy.getAllElement());
+	}
+	
+	/**
+	 * 用于添加列表控件的枚举，在调用部分列表操作方法时会使用在此处添加的映射
+	 * @param dataTableKeywordType 列表可映射的控件枚举{@link DataTableKeywordType}
+	 * @param by 控件相应的元素对象{@link Element}
+	 */
+	public void putControl(DataTableKeywordType dataTableKeywordType, Element elemenet) {
+		controlMap.put(dataTableKeywordType, elemenet);
 	}
 	
 	/**
@@ -139,82 +173,84 @@ public class DataTableEvent extends AbstractEvent {
 	}
 
 	/**
-	 * 用于点击一次上一页按钮，并返回点击成功结果
-	 * @param pageTurningButton 翻页按钮元素
-	 * @return 点击结果
-	 */
-	public boolean pageTurning(Element pageTurningButton) {
-		boolean result = operateSuchAssertData(() -> {
-			//判断按钮是否可以点击
-			if (!pageTurningButton.getWebElement().isEnabled()) {
-				return false;
-			}
-			
-			try {
-				clickEvent.click(pageTurningButton);
-				return true;
-			} catch (Exception e) {
-				return false;
-			}
-		});
-		
-		logText = "点击“" + pageTurningButton.getElementData().getName() + "”元素，返回列表上一页，其翻页"
-				+ (result ? "" : "不") + "成功";
-		resultText = String.valueOf(result);
-		
-		return result;
-	}
-	
-	/**
-	 * 用于点击多次上一页按钮，并返回实际点击次数（实际点击次数）
-	 * @param pageTurningButton 上一页按钮元素
+	 * 用于点击多次上一页按钮，并返回实际点击次数（实际点击次数）。若设置的翻页次数小于0
+	 * ，则持续翻页至无法翻页为止
 	 * @param count 点击次数
 	 * @return 实际点击次数
 	 */
-	public int pageTurning(Element pageTurningButton, int count) {
-		int nowCount = 0;
-		//根据设置的点击次数循环点击上一页
-		while (nowCount < count) {
-			//若点击成功，则nowCount自增，若点击失败，则退出循环
-			if (pageTurning(pageTurningButton)) {
-				nowCount++;
-			} else {
-				break;
-			}
-		}
-		
-		logText = "连续点击“" + pageTurningButton.getElementData().getName() + "”元素，使列表返回至上"
-				+ count + "页，其实际翻页数为：" + nowCount;
-		resultText = String.valueOf(nowCount);
-		
-		//返回实际点击次数
-		return nowCount;
+	public int previousPage(int count) {
+		return pageTurning(DataTableKeywordType.PREVIOUS_PAGE_BUTTON, count);
 	}
 	
 	/**
-	 * 用于持续点击上一页按钮，直到按钮不可点击为止，并返回实际点击次数（实际点击次数）
-	 * @param pageTurningButton 上一页按钮元素
+	 * 用于点击多次下一页按钮，并返回实际点击次数（实际点击次数）。若设置的翻页次数小于0
+	 * ，则持续翻页至无法翻页为止
+	 * @param count 点击次数
 	 * @return 实际点击次数
 	 */
-	public int continuePageTurning(Element pageTurningButton) {
-		int nowCount = 0;
-		//根据设置的点击次数循环点击上一页
-		while (true) {
-			//若点击成功，则nowCount自增，若点击失败，则退出循环
-			if (pageTurning(pageTurningButton)) {
-				nowCount++;
-			} else {
-				break;
-			}
+	public int nextPage(int count) {
+		return pageTurning(DataTableKeywordType.NEXT_PAGE_BUTTON, count);
+	}
+	
+	/**
+	 * 用于对列表进行翻页操作
+	 * @param dataTableKeywordType 翻页按钮类型
+	 * @param count 指定的翻页次数
+	 * @return 实际翻页次数
+	 */
+	private int pageTurning(DataTableKeywordType dataTableKeywordType, int count) {
+		//判断当前按钮是否存在映射
+		if (!controlMap.containsKey(dataTableKeywordType)) {
+			throw new ControlException(dataTableKeywordType.getName(), dataTableKeywordType.toString());
 		}
 		
-		logText = "持续点击“" + pageTurningButton.getElementData().getName() + "”元素，使列表返回至首页"
-				+ "，其实际翻页数为：" + nowCount;
+		//根据设置的点击次数循环点击翻页按钮
+		int nowCount = 0;
+		while(true) {
+			//判断翻页数，若当前翻页数大于指定翻页数时，则结束循环
+			//若指定的翻页数小于0，则持续翻页，直到翻页失败为止
+			if (nowCount >= count && count >= 0) {
+				break;
+			}
+			
+			Element controlElement = controlMap.get(dataTableKeywordType);
+			
+			boolean result =  assertData(() -> {
+				//判断按钮是否可以点击
+				if (!controlElement.getWebElement().isEnabled()) {
+					return false;
+				}
+				
+				try {
+					clickEvent.click(controlElement);
+					//等待控件消失
+					if (waitElement != null) {
+						waitEvent.disappear(waitElement);
+					}
+					return true;
+				} catch (Exception e) {
+					return false;
+				}
+			});
+			
+			//若点击成功，则nowCount自增，若点击失败，则退出循环
+			if (!result) {
+				break;
+			}
+			
+			nowCount++;
+		}
+		
+		logText = "点击“"
+				+ controlMap.get(DataTableKeywordType.PREVIOUS_PAGE_BUTTON).getElementData().getName()
+				+ "”元素，使列表返回至"
+				+ (dataTableKeywordType == DataTableKeywordType.PREVIOUS_PAGE_BUTTON ? "上" : "下")
+				+ "页，其实际翻页数为：" + nowCount;
 		resultText = String.valueOf(nowCount);
 		
 		//返回实际点击次数
 		return nowCount;
-	}
+	}	
 	
 	/**
 	 * 用于对列表进行点击跳页按钮后的跳页操作。若当前存储过元素列表，则对元素列表进行断言，
@@ -224,18 +260,38 @@ public class DataTableEvent extends AbstractEvent {
 	 * @param jumpPageButton 跳页按钮
 	 * @param pageCountText 页码文本
 	 */
-	public boolean jumpPage(Element pageTextbox, Element jumpPageButton, String pageCount) {
-		boolean result = operateSuchAssertData(() -> {
+	public boolean jumpPage(String pageCount) {
+		if (!controlMap.containsKey(DataTableKeywordType.PAGE_INPUT_TEXTBOX)) {
+			throw new ControlException(DataTableKeywordType.PAGE_INPUT_TEXTBOX.getName() 
+				, DataTableKeywordType.PAGE_INPUT_TEXTBOX.toString());
+		}
+		
+		boolean result = assertData(() -> {
 			//输入页码
-			textEvent.input(pageTextbox, pageCount);
-			//点击跳页
-			clickEvent.click(jumpPageButton);
+			textEvent.input(controlMap.get(DataTableKeywordType.PAGE_INPUT_TEXTBOX), pageCount);
+			//判断是否存在跳页按钮的映射，若不存在，则使用回车进行跳页
+			if (controlMap.containsKey(DataTableKeywordType.JUMP_PAGE_BUTTON)) {
+				//点击跳页
+				clickEvent.click(controlMap.get(DataTableKeywordType.JUMP_PAGE_BUTTON));
+			} else {
+				textEvent.keyToSend(controlMap.get(DataTableKeywordType.PAGE_INPUT_TEXTBOX), Keys.ENTER);
+			}
+			
+			//清空输入框
+			textEvent.clear(controlMap.get(DataTableKeywordType.PAGE_INPUT_TEXTBOX));
+			
+			//等待控件消失
+			if (waitElement != null) {
+				waitEvent.disappear(waitElement);
+			}
 			
 			return true;
 		});
 		
-		logText = "在“" + pageTextbox.getElementData().getName() + "”元素中输入" + pageCount 
-				+ "，点击“ + jumpPageButton.getElementData().getName() + ”按钮，跳到列表相应的页码，其翻页"
+		logText = "在“" 
+				+ controlMap.get(DataTableKeywordType.PAGE_INPUT_TEXTBOX).getElementData().getName() 
+				+ "”元素中输入" + pageCount 
+				+ "，使列表跳转到相应的页码，其翻页"
 				+ (result ? "" : "不") + "成功";
 		resultText = String.valueOf(result);
 		
@@ -243,25 +299,44 @@ public class DataTableEvent extends AbstractEvent {
 	}
 	
 	/**
-	 * 用于对列表按下回车后的跳页操作。若当前存储过元素列表，则对元素列表进行断言，
-	 * 即取存储的列表的第一行元素，若操作前后，该行元素不变，则判定为跳页失败
+	 * 通过条件，点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮，对列表进行搜索。方法中需要接收一个
+	 * 返回值为boolean类型的操作，若操作的返回值为false时，则不会点击按钮，可参考以下写法：
+	 * <pre><code>
+	 * DataTableEvent test = new DataTableEvent(brower);
+	 * test.searchList(() -> {
+	 * 	te.input(cb.getElement("账号搜索文本框"), "13000000000");
+	 * 	return true;
+	 * });
+	 * </code></pre>
 	 * 
-	 * @param pageTextbox 跳页文本框元素
-	 * @param pageCountText 页码文本
+	 * @param action 返回值为boolean类型的操作
+	 * @return 列表是否有变化
 	 */
-	public boolean jumpPage(Element pageTextbox, String pageCount) {
-		boolean result = operateSuchAssertData(() -> {
-			//输入页码
-			textEvent.input(pageTextbox, pageCount);
-			//点击跳页
-			textEvent.keyToSend(pageTextbox, Keys.ENTER);
-			
-			return true;
-		});
+	public boolean searchList(BooleanSupplier action) {
+		//判断控件是否存在
+		if (!controlMap.containsKey(DataTableKeywordType.SEARCH_BUTTON)) {
+			throw new ControlException(DataTableKeywordType.SEARCH_BUTTON.getName() 
+					, DataTableKeywordType.SEARCH_BUTTON.toString());
+		}
 		
-		logText = "在“" + pageTextbox.getElementData().getName() + "”元素中输入" + pageCount 
-				+ "，按下回车，跳到列表相应的页码，其翻页"
-				+ (result ? "" : "不") + "成功";
+		boolean result = false;
+		//若操作成功，则点击搜索按钮
+		if (action.getAsBoolean()) {
+			clickEvent.click(controlMap.get(DataTableKeywordType.SEARCH_BUTTON));
+			
+			//等待控件消失
+			if (waitElement != null) {
+				waitEvent.disappear(waitElement);
+			}
+			
+			//TODO 走列表文本断言
+			result = true;
+		} else {
+			result = false;
+		}
+		
+		logText = "通过搜索条件，点击“" + controlMap.get(DataTableKeywordType.SEARCH_BUTTON).getElementData().getName()
+				+ "”元素，对列表进行搜索";
 		resultText = String.valueOf(result);
 		
 		return result;
@@ -284,41 +359,14 @@ public class DataTableEvent extends AbstractEvent {
 		//根据下标，获取元素，并进行存储
 		ArrayList<Element> elementList = new ArrayList<>();
 		tableMap.forEach((key, value) -> {
-			elementList.add(value.get(toElementIndex(listSize(key), rowIndex)));
+			//重新获取元素
+			Element element = value.get(toElementIndex(listSize(key), rowIndex));
+			element.againFindElement();
+			//存储元素
+			elementList.add(element);
 		});
 		
 		return elementList;
-	}
-	
-	/**
-	 * 断言数据是否有改变，若数据改变，则返回true；反之，返回false
-	 * @param oldElementList 原始数据元素列表
-	 * @param newElementList 新数据元素列表
-	 * @return 元素是否存在改变
-	 */
-	protected boolean assertDataChange(ArrayList<Element> oldElementList, ArrayList<Element> newElementList) {
-		//获取两数组的长度
-		int oldSize = oldElementList.size();
-		int newSize = newElementList.size();
-		
-		//若两数组长度不一致，说明元素有改变，则返回true
-		if (oldSize != newSize) {
-			return true;
-		}
-		
-		//若列表第一个元素与新列表第一个元素相同，说明列表并未改变，则返回false
-		if (!oldElementList.get(0).equals(newElementList.get(0))) {
-			return false;
-		}
-		
-		//为避免不进行翻页时，列表也会进行一次刷新，则获取信息，对每个文本数据进行比对
-		for (int index = 0; index < oldSize; index++) {
-			if (assertEvent.assertNotEqualsElementText(oldElementList.get(index), newElementList.get(index))) {
-				return true;
-			}
-		}
-		
-		return false;
 	}
 	
 	/**
@@ -356,23 +404,20 @@ public class DataTableEvent extends AbstractEvent {
 	 * @param action 需要执行的内容
 	 * @return 是否翻页成功
 	 */
-	private boolean operateSuchAssertData(BooleanSupplier action) {
+	protected boolean assertData(BooleanSupplier action) {
 		//若元素列表非空，则获取第一行元素，用于进行断言
-		ArrayList<Element> oldElementList = new ArrayList<>();
+		ArrayList<String> oldTextList = new ArrayList<>();
 		if (!tableMap.isEmpty()) {
-			//获取第一行元素
-			oldElementList = getRowElement(1);
+			//获取第一行元素，并将其转换为文本后存储
+			getRowElement(1).stream().map(textEvent :: getText).forEach(oldTextList :: add);
 		}
 		
 		//执行操作，并获取操作的返回结果；若返回值为true，则需要进行元素断言操作
 		if (action.getAsBoolean()) {
-			//获取操作后的第一行元素
-			ArrayList<Element> newElementList = new ArrayList<>();
-			if (!tableMap.isEmpty()) {
-				//获取第一行元素
-				newElementList = getRowElement(1);
+			//若当前未获取原元素的内容，则不进行列表断言
+			if (oldTextList.size() != 0) {
 				//断言元素，并返回结果
-				return assertDataChange(oldElementList, newElementList);
+				return assertDataChange(oldTextList);
 			} else {
 				return true;
 			}
@@ -381,28 +426,120 @@ public class DataTableEvent extends AbstractEvent {
 		}
 	}
 	
+	/**
+	 * 断言数据是否有改变，若数据改变，则返回true；反之，返回false
+	 * @param oldTextList 原始数据文本集合
+	 * @param oldElement 原始数据第一个元素的{@link WebElement}对象
+	 * @return 元素是否存在改变
+	 */
+	protected boolean assertDataChange(ArrayList<String> oldTextList) {
+		//获取操作后的第一行元素
+		ArrayList<Element> newElementList = getRowElement(1);
+		
+		//为避免不进行翻页时，列表也会进行一次刷新，则获取信息，对每个文本数据进行比对
+		for (int index = 0; index < oldTextList.size(); index++) {
+			if (assertEvent.assertNotEqualsText(newElementList.get(index), oldTextList.get(index))) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private void againFindDataList() {
+		//用于判断当前数列元素的个数
+		AtomicInteger nowListSize = new AtomicInteger(-1);
+		tableMap.forEach((key, value) -> {
+			//对列表第一个元素进行重新获取
+			Element element = value.get(0);
+			//重新获取当前元素，并存储当前列表长度
+			int elementListSize = element.againFindElement();
+			//判断当前size是否为初始化的状态，若为初始化的状态，则直接存储重新获取后的集合元素个数
+			if (nowListSize.get() == -1) {
+				nowListSize.set(elementListSize);	
+			} else {
+				//若当前size已被初始化，则进行重获后的元素个数判断
+				if (nowListSize.get() != elementListSize) {
+					//若当前需要严格校验列表元素个数，则抛出异常
+					if (isExamine) {
+						throw new InvalidDataListException("“" + key + "”元素列的元素个数与其他元素列的元素个数不一致！"
+								+ "（ “" + key + "”元素列元素列个数：" + elementListSize + "，"
+								+ "其他元素列的元素个数：" + nowListSize.get() + "）");
+					} else {
+						//若无需校验元素个数，则判断传入的元素个数与存储的元素列个数，存储较小的数字
+						nowListSize.set(nowListSize.get() > elementListSize ? elementListSize : nowListSize.get());
+					}
+				}
+			}
+			
+			//判断当前元素个数与重新获取前元素个数是否一致，不一致，则需要对数组进行处理
+			
+		});
+	}
+	
+	/**
+	 * <p><b>文件名：</b>DataTableEvent.java</p>
+	 * <p><b>用途：</b>
+	 * 枚举列表中可操作的控件，如上一页、下一页按钮等
+	 * </p>
+	 * <p><b>编码时间：</b>2020年11月30日上午8:03:59</p>
+	 * <p><b>修改时间：</b>2020年11月30日上午8:03:59</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 1.8
+	 *
+	 */
 	public enum DataTableKeywordType {
 		/**
 		 * 上一页按钮
 		 */
-		UP_PAGE_BUTTON, 
+		PREVIOUS_PAGE_BUTTON("上一页按钮"), 
 		/**
 		 * 下一页按钮
 		 */
-		DOWN_PAGE_BUTTON, 
+		NEXT_PAGE_BUTTON("下一页按钮"), 
 		/**
 		 * 首页按钮
 		 */
-		FIRST_PAGE_BUTTON,
+		FIRST_PAGE_BUTTON("首页按钮"), 
 		/**
 		 * 尾页按钮
 		 */
-		LAST_PAGE_BUTTON, 
+		LAST_PAGE_BUTTON("尾页按钮"), 
 		/**
 		 * 跳页按钮
 		 */
-		JUMP_PAGE_BUTTON,
+		JUMP_PAGE_BUTTON("跳页按钮"), 
+		/**
+		 * 页码输入文本框（用于跳页的输入）
+		 */
+		PAGE_INPUT_TEXTBOX("页码输入文本框"), 
+		/**
+		 * 搜索按钮
+		 */
+		SEARCH_BUTTON("搜索按钮")
 		;
+		
+		/**
+		 * 存储枚举名称
+		 */
+		String name;
+
+		/**
+		 * 初始化枚举名称
+		 * @param name
+		 */
+		private DataTableKeywordType(String name) {
+			this.name = name;
+		}
+
+		/**
+		 * 返回枚举指向的控件名称
+		 * @return 控件名称
+		 */
+		public String getName() {
+			return name;
+		}
 	}
 	
 	/**

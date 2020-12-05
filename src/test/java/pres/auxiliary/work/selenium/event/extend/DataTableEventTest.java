@@ -11,8 +11,8 @@ import pres.auxiliary.work.selenium.brower.ChromeBrower;
 import pres.auxiliary.work.selenium.brower.ChromeBrower.ChromeOptionType;
 import pres.auxiliary.work.selenium.element.CommonBy;
 import pres.auxiliary.work.selenium.element.DataListBy;
-import pres.auxiliary.work.selenium.element.Element;
 import pres.auxiliary.work.selenium.event.TextEvent;
+import pres.auxiliary.work.selenium.event.extend.DataTableEvent.DataTableKeywordType;
 import pres.auxiliary.work.selenium.location.ByType;
 import pres.auxiliary.work.selenium.location.NoFileLocation;
 
@@ -20,6 +20,9 @@ import pres.auxiliary.work.selenium.location.NoFileLocation;
  * <p><b>文件名：</b>DataTableEventTest.java</p>
  * <p><b>用途：</b>
  * 对{@link DataTableEvent}类进行单元测试
+ * </p>
+ * <p>
+ * 	<b>环境：</b>华建通运营端，企业用户管理界面
  * </p>
  * <p><b>编码时间：</b>2020年11月25日上午8:15:29</p>
  * <p><b>修改时间：</b>2020年11月25日上午8:15:29</p>
@@ -101,14 +104,25 @@ public class DataTableEventTest {
 		nl.putElementLocation("是否实人认证列", ByType.XPATH, "//tbody/tr/td[5]");
 		nl.putElementLocation("所属企业列", ByType.XPATH, "//tbody/tr/td[6]");
 		nl.putElementLocation("创建时间列", ByType.XPATH, "//tbody/tr/td[8]");
+		nl.putElementLocation("跳页输入框", ByType.XPATH, "//*[text()='跳至']/input");
+		nl.putElementLocation("加载等待", ByType.XPATH, "//div[@class=\"loader\"]");
+		nl.putElementLocation("账号搜索文本框", ByType.XPATH, "//label[text()='账号']/../following-sibling :: div//input");
+		nl.putElementLocation("搜索", ByType.XPATH, "//*[text()='搜 索']/..");
 		
-		test.add(dlb.find("序号列"));
-		test.add(dlb.find("账号列"));
-		test.add(dlb.find("姓名列"));
-		test.add(dlb.find("绑定手机号列"));
-		test.add(dlb.find("是否实人认证列"));
-		test.add(dlb.find("所属企业列"));
-		test.add(dlb.find("创建时间列"));
+		test.addList(dlb.find("序号列"));
+		test.addList(dlb.find("账号列"));
+		test.addList(dlb.find("姓名列"));
+		test.addList(dlb.find("绑定手机号列"));
+		test.addList(dlb.find("是否实人认证列"));
+		test.addList(dlb.find("所属企业列"));
+		test.addList(dlb.find("创建时间列"));
+		
+		test.putControl(DataTableKeywordType.PREVIOUS_PAGE_BUTTON, cb.getElement("上一页"));
+		test.putControl(DataTableKeywordType.NEXT_PAGE_BUTTON, cb.getElement("下一页"));
+		test.putControl(DataTableKeywordType.PAGE_INPUT_TEXTBOX, cb.getElement("跳页输入框"));
+		test.putControl(DataTableKeywordType.SEARCH_BUTTON, cb.getElement("搜索"));
+		
+		test.setWaitElement(cb.getElement("加载等待"));
 	}
 	
 	/**
@@ -122,13 +136,46 @@ public class DataTableEventTest {
 	
 	//---------------------单元测试区---------------------------
 	/**
-	 * 用于测试{@link DataTableEvent#pageTurning(Element)}方法<br>
+	 * 用于测试{@link DataTableEvent#previousPage(int)}方法<br>
 	 * 预期：<br>
 	 * 
 	 */
 	@Test 
 	public void pageTurningTest() {
-		System.out.println(test.pageTurning(cb.getElement("上一页")));
+		System.out.println(test.previousPage(10));
+	}
+	
+	/**
+	 * 用于测试{@link DataTableEvent#nextPage(int)}方法<br>
+	 * 预期：<br>
+	 * 
+	 */
+	@Test 
+	public void nextPageTest() {
+		System.out.println(test.nextPage(10));
+	}
+	
+	/**
+	 * 用于测试{@link DataTableEvent#jumpPage(String)}方法<br>
+	 * 预期：<br>
+	 * 
+	 */
+	@Test 
+	public void jumpPageTest() {
+		System.out.println(test.jumpPage("3"));
+	}
+	
+	/**
+	 * 用于测试{@link DataTableEvent#searchList(java.util.function.BooleanSupplier)}方法<br>
+	 * 预期：<br>
+	 * 
+	 */
+	@Test 
+	public void searchListTest() {
+		System.out.println(test.searchList(() -> {
+			te.input(cb.getElement("账号搜索文本框"), "13197719008");
+			return true;
+		}));
 	}
 	
 	/**
