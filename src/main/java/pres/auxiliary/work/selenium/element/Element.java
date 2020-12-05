@@ -41,8 +41,6 @@ public class Element {
 		this.abstractBy = abstractBy;
 	}
 
-
-
 	/**
 	 * 用于返回当前存储的{@link WebElement}对象，若该对象为空，则抛出元素查找超时异常
 	 * @return {@link WebElement}对象
@@ -70,7 +68,6 @@ public class Element {
 		} catch (IndexOutOfBoundsException e) {
 			throw new NoSuchElementException("重新获取元素后不存在下标为“" + index + "”的元素，当前元素集合个数：" + abstractBy.elementList.size());
 		}
-		
 	}
 	
 	/**
@@ -79,6 +76,14 @@ public class Element {
 	 */
 	public ElementData getElementData() {
 		return elementData;
+	}
+	
+	/**
+	 * 返回当前元素的搜索方式类对象
+	 * @return 元素的搜索方式类对象
+	 */
+	public AbstractBy getBy() {
+		return abstractBy;
 	}
 	
 	/**
