@@ -189,5 +189,25 @@ public class DataTableEventTest {
 			.map(element -> te.getText(element))
 			.forEach(System.out :: println);
 	}
+	
+	/**
+	 * 用于测试{@link DataTableEvent#getRowText(int)}方法<br>
+	 * 预期：<br>
+	 * 
+	 */
+	@Test 
+	public void getRowTextTest() {
+		test.getRowText(2).forEach(System.out :: println);
+	}
+	
+	/**
+	 * 用于测试{@link DataTableEvent#getListText(String)}方法<br>
+	 * 预期：<br>
+	 * 
+	 */
+	@Test 
+	public void getListTextTest() {
+		test.getListText("账号列").forEach(System.out :: println);
+	}
 	//---------------------单元测试区---------------------------
 }
