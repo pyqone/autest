@@ -41,8 +41,6 @@ public class Element {
 		this.abstractBy = abstractBy;
 	}
 
-
-
 	/**
 	 * 用于返回当前存储的{@link WebElement}对象，若该对象为空，则抛出元素查找超时异常
 	 * @return {@link WebElement}对象
@@ -64,7 +62,12 @@ public class Element {
 			againFindElement();
 		}
 		
-		return abstractBy.elementList.get(index);
+		//若当前进行过重新获取元素，并且获取后其元素个数有变化，则当下标不存在时抛出异常
+		try {
+			return abstractBy.elementList.get(index);
+		} catch (IndexOutOfBoundsException e) {
+			throw new NoSuchElementException("重新获取元素后不存在下标为“" + index + "”的元素，当前元素集合个数：" + abstractBy.elementList.size());
+		}
 	}
 	
 	/**
@@ -76,16 +79,23 @@ public class Element {
 	}
 	
 	/**
+	 * 返回当前元素的搜索方式类对象
+	 * @return 元素的搜索方式类对象
+	 */
+	public AbstractBy getBy() {
+		return abstractBy;
+	}
+	
+	/**
 	 * 重新根据元素信息，在页面查找元素
 	 */
-	public void againFindElement() {
-		//重新构造elementList
-//		abstractBy.elementList.clear();
-//		try {
-//			abstractBy.elementList.addAll(abstractBy.recognitionElement(elementData));
-//		}catch (TimeoutException e) {
-//		}
+	public int againFindElement() {
+		//重新拉取元素
 		abstractBy.elementList = abstractBy.recognitionElement(elementData);
+		//切换当前读取的元素信息
+		abstractBy.elementData = elementData;
+		
+		return abstractBy.elementList.size();
 	}
 
 	@Override

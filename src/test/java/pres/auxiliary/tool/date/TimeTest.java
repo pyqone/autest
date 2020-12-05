@@ -10,8 +10,8 @@ import java.util.Date;
 
 import org.testng.annotations.Test;
 
-import pres.auxiliary.tool.randomstring.RandomString;
-import pres.auxiliary.tool.randomstring.StringMode;
+import pres.auxiliary.tool.string.RandomString;
+import pres.auxiliary.tool.string.StringMode;
 
 public class TimeTest {
 	Time time = new Time();

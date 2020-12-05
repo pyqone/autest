@@ -1,6 +1,6 @@
 package test.javase;
 
-import pres.auxiliary.tool.randomstring.RandomString;
+import pres.auxiliary.tool.string.RandomString;
 
 public class TestRandomString {
 	public static void main(String[] args) {

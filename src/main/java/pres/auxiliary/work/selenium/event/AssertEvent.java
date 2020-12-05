@@ -100,12 +100,6 @@ public class AssertEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public boolean assertTextContainKey(Element element, boolean isJudgeAllKey, String... keys) {
-		//判断是否传入关键词
-//		boolean result = true;
-//		if (keys != null && keys.length != 0) {
-//			result = judgetText(textEvent.getText(element), isJudgeAllKey, false, keys);	
-//		}
-		
 		boolean result = assertTextContainKey(element, (e) -> textEvent.getText(e), 
 				isJudgeAllKey, keys);
 		
@@ -327,10 +321,47 @@ public class AssertEvent extends AbstractEvent {
 		//判断是否传入关键词
 		text = text == null ? "" : text;
 		
-//		boolean result = judgetText(textEvent.getText(element), true, true, text);	
 		boolean result = assertTextNotContainKey(element, true, text);
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素的文本内容不为“" + text + "”";
+		resultText = String.valueOf(result);
+		
+		return result;
+	}
+	
+	/**
+	 * 断言两个元素内文本一致
+	 * @param referencedElement 参考元素
+	 * @param comparativeElement 比较元素
+	 * @return 断言结果
+	 * 
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
+	 */
+	public boolean assertEqualsElementText(Element referencedElement, Element comparativeElement) {
+		boolean result = assertTextContainKey(referencedElement, true, textEvent.getText(comparativeElement));
+	
+		logText = "断言“" + referencedElement.getElementData().getName() + "”元素的文本内容与“" 
+					+ comparativeElement + "”元素的文本内容一致";
+		resultText = String.valueOf(result);
+		
+		return result;
+	}
+	
+	/**
+	 * 断言两个元素内文本不一致
+	 * @param referencedElement 参考元素
+	 * @param comparativeElement 比较元素
+	 * @return 断言结果
+	 * 
+	 * @throws TimeoutException 元素无法操作时抛出的异常 
+	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
+	 */
+	public boolean assertNotEqualsElementText(Element referencedElement, Element comparativeElement) {
+		boolean result = assertTextNotContainKey(referencedElement, true, textEvent.getText(comparativeElement));
+	
+		logText = "断言“" + referencedElement.getElementData().getName() + "”元素的文本内容与“" 
+					+ comparativeElement + "”元素的文本内容不一致";
 		resultText = String.valueOf(result);
 		
 		return result;
@@ -365,11 +396,29 @@ public class AssertEvent extends AbstractEvent {
 	}
 	
 	/**
+	 * 断言两元素中的数字内容，按照{@link CompareNumberType}指定的比较类型进行比较。若断言的
+	 * 元素文本内容存在非数字字符时，则直接断言失败
+	 * @param referencedElement 参考元素
+	 * @param compareNumberType 比较方式{@link CompareNumberType}枚举类
+	 * @param comparativeElement 比较元素
+	 * @return 断言结果
+	 */
+	public boolean assertElementsNumber(Element referencedElement, CompareNumberType compareNumberType, Element comparativeElement) {
+		logText = "断言“" + referencedElement.getElementData().getName() + "”元素数字内容" 
+					+ compareNumberType.getLogText() 
+					+ "“" + comparativeElement.getElementData().getName() + "”元素数字内容";
+		boolean result = assertNumber(referencedElement, compareNumberType, Double.valueOf(textEvent.getText(comparativeElement)));
+		
+		resultText = String.valueOf(result);
+		return result;
+	}
+	
+	/**
 	 * 断言元素中的数字内容与指定的数字按照{@link CompareNumberType}指定的比较类型进行比较。若断言的
 	 * 元素文本内容为非数字字符时，则直接断言失败
 	 * 
 	 * @param element {@link Element}对象
-	 * @param compareNumberType {@link CompareNumberType}枚举类
+	 * @param compareNumberType 比较方式{@link CompareNumberType}枚举类
 	 * @param compareNumber 预期数字
 	 * @return 断言结果
 	 */

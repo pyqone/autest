@@ -2,7 +2,7 @@ package test.javase;
 
 import java.util.ArrayList;
 
-import pres.auxiliary.tool.randomstring.RandomString;
+import pres.auxiliary.tool.string.RandomString;
 
 /**
  * FileName: SweepPlan.java

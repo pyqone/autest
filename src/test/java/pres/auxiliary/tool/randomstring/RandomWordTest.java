@@ -4,6 +4,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import pres.auxiliary.tool.string.MobleNumberType;
+import pres.auxiliary.tool.string.RandomWord;
+
 /**
  * <p><b>文件名：</b>RandomWordTest.java</p>
  * <p><b>用途：</b>

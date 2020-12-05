@@ -1,9 +1,9 @@
 package test.javase;
 
-import pres.auxiliary.tool.randomstring.CarLicecenType;
-import pres.auxiliary.tool.randomstring.PresetString;
-import pres.auxiliary.tool.randomstring.RandomString;
-import pres.auxiliary.tool.randomstring.StringMode;
+import pres.auxiliary.tool.string.CarLicecenType;
+import pres.auxiliary.tool.string.PresetString;
+import pres.auxiliary.tool.string.RandomString;
+import pres.auxiliary.tool.string.StringMode;
 
 public class TestPresetStr {
 	public static void main(String[] args) {

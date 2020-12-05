@@ -120,6 +120,14 @@ public abstract class AbstractBy {
 	}
 	
 	/**
+	 * 返回当前进行搜索的元素信息类（{@link ElementData}）对象
+	 * @return 元素信息类对象
+	 */
+	public ElementData getElementData() {
+		return elementData;
+	}
+
+	/**
 	 * 该方法用于将窗体切回顶层，当本身是在最顶层时，则该方法将使用无效
 	 */
 	public void switchRootFrame() {

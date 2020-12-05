@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import pres.auxiliary.tool.controller.ReadFile;
-
 /**
  * <p><b>文件名：</b>DisposeFile.java</p>
  * <p><b>用途：</b>用于满足日常中对文本文件的处理</p>

@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.randomstring;
+package pres.auxiliary.tool.string;
 
 /**
  * 该枚举定义了部分车牌的样式

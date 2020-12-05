@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
@@ -60,13 +59,5 @@ public class ExcelConfigXmlTool {
 		XMLWriter writer = new XMLWriter(new FileWriter(saveFile), format);
 		writer.write(document);
 		writer.close();
-	}
-	
-	private void root() {
-		document.setRootElement(document.addElement("templet"));
-	}
-	
-	private void sheet(String name, String freeze) {
-		Element root = document.getRootElement();
 	}
 }

@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.randomstring;
+package pres.auxiliary.tool.string;
 
 public class IllegalStringLengthException extends RuntimeException {
 

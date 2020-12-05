@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.randomstring;
+package pres.auxiliary.tool.string;
 
 /**
  * 该枚举规定了产生随机字符串时所需要的模型
