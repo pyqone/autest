@@ -102,32 +102,6 @@ public class TimeTest {
 	}
 	
 	/**
-	 * 测试{@link Time#getFormatTime(String)}
-	 */
-	@Test
-	public void getFormatTimeTest_String() {
-		time.setNowTime();
-		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("----------------------------");
-		time.setTime("2019/12/04 03:03:20");
-		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("----------------------------");
-		time.setTime(new Date());
-		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("----------------------------");
-		time.setTime(1576037076297L);
-		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println(time.getFormatTime("2019/12/04 03:03:20"));
-		System.out.println("----------------------------");
-		time.setTime("2019/12/04");
-		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("----------------------------");
-		time.setTime("03:03:20");
-		System.out.println(time.getFormatTime("yyyy-MM-dd HH:mm:ss"));
-		System.out.println("----------------------------");
-	}
-	
-	/**
 	 * 测试{@link Time#addTime(String)}
 	 */
 	@Test
