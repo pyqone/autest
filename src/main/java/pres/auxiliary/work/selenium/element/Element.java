@@ -57,6 +57,10 @@ public class Element {
 			throw new NoSuchElementException("指定的元素下标值不存在，当前元素集合个数：" + abstractBy.elementList.size());
 		}
 		
+		if (index >= abstractBy.elementList.size()) {
+			throw new NoSuchElementException(String.format("重置元素后，指定的元素下标值（%d）不存在，当前元素集合个数：%d", index, abstractBy.elementList.size()));
+		}
+		
 		//判断当前类中存储的元素数据类对象是否与abstractBy中存储的数据类对象一致，若不一致，则重新获取元素
 		if (!this.elementData.getName().equals(abstractBy.elementData.getName())) {
 			againFindElement();
