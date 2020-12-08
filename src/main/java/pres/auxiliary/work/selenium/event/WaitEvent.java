@@ -68,7 +68,7 @@ public class WaitEvent extends AbstractEvent{
 			//调用isDisplayed()方法，判断元素是否存在
 			try {
 				return !element.getWebElement().isDisplayed();
-			} catch (NoSuchElementException e) {
+			} catch (NoSuchElementException | TimeoutException e) {
 				//若在调用获取页面元素时抛出NoSuchElementException异常，则说明元素本身不存在，则直接返回true
 				return true;
 			} catch (StaleElementReferenceException e) {

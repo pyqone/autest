@@ -1,6 +1,9 @@
 package pres.auxiliary.work.selenium.element;
 
+import java.util.ArrayList;
+
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -94,10 +97,15 @@ public class Element {
 	 * 重新根据元素信息，在页面查找元素
 	 */
 	public int againFindElement() {
-		//重新拉取元素
-		abstractBy.elementList = abstractBy.recognitionElement(elementData);
 		//切换当前读取的元素信息
 		abstractBy.elementData = elementData;
+				
+		//重新拉取元素数据在页面上对应的一组元素，若无法查到元素，则记录elementList为null
+		try {
+			abstractBy.elementList = abstractBy.recognitionElement(elementData);
+		} catch (TimeoutException e) {
+			abstractBy.elementList = new ArrayList<>();
+		}
 		
 		return abstractBy.elementList.size();
 	}
