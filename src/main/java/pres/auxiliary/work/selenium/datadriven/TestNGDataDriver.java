@@ -171,7 +171,6 @@ public class TestNGDataDriver {
 			//将List<String>转换为List<Object>
 			List<Object> objectList = new ArrayList<>();
 			objectList.addAll(data.getColumn(columnIndex, isFirstTitle ? 1 : 0, data.getCoulumnSize(columnIndex)));
-			System.out.println(objectList);
 			//存储数据
 			addData(titleList.get(columnIndex + titleIndex), objectList);
 		}
