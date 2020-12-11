@@ -13,6 +13,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- 编译编码 -->
+		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
 	</properties>
 
 	<dependencies>
@@ -159,12 +161,17 @@
 
 	<build>
 		<plugins>
+			<!-- 生成javadoc -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.0.0</version>
 				<configuration>
 					<aggregate>true</aggregate>
+					<!-- 生成文件路径 -->
+					<!--<reportOutputDirectory>./javadocs</reportOutputDirectory>
+					<destDir>easy-delivery</destDir>  -->
+					<doclint>none</doclint>
 				</configuration>
 				<executions>
 					<execution>
