@@ -95,7 +95,7 @@ public final class DataTableEvent extends AbstractEvent {
 	}
 
 	/**
-	 * 用于设置是否对传入的元素列表的个数进行严格校验，即在调用{@link #add(DataListBy)}方法时，
+	 * 用于设置是否对传入的元素列表的个数进行严格校验，即在调用{@link #addList(DataListBy)}方法时，
 	 * 若元素个数与初次传入的个数不符且需要严格校验，则抛出异常；反之，则直接进行存储
 	 * 
 	 * @param isExamine 是否严格校验元素个数

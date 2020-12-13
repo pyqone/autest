@@ -17,7 +17,7 @@ import pres.auxiliary.work.selenium.element.Element;
 public interface EventAction {
 	/**
 	 * 事件增强的方法，可通过形参回调事件的操作步骤以及传入到事件中的{@link Element}类对象
-	 * @param name {@link EventInformation}类对象
+	 * @param elemenetInformation {@link EventInformation}类对象
 	 */
 	void action(EventInformation elemenetInformation);
 }

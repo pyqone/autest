@@ -238,7 +238,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * test#ing#<br>
 	 * 添加数据时，其亦可对存在数据有效性的数据进行转换，在传值时，只需要传入相应的字段值即可，例如：<br>
 	 * 当字段存在两个数据有效性：“测试1”和“测试2”时，则，可传入addContent(..., "1")（注意，下标从1开始），
-	 * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容。具体说明可以参见{@link Field#getDataValidation(String)}
+	 * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容，具体说明可以参见{@link Field#getDataValidation(int)}。
 	 * 
 	 * @param field   字段id
 	 * @param contents 相应字段的内容
@@ -282,7 +282,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * test#ing#<br>
 	 * 添加数据时，其亦可对存在数据有效性的数据进行转换，在传值时，只需要传入相应的字段值即可，例如：<br>
 	 * 当字段存在两个数据有效性：“测试1”和“测试2”时，则，可传入insertContent(..., "1")（注意，下标从1开始），
-	 * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容。具体说明可以参见{@link Field#getDataValidation(String)}
+	 * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容。具体说明可以参见{@link Field#getDataValidation(int)}
 	 * 
 	 * @param field   字段id
 	 * @param index 需要插入的段落

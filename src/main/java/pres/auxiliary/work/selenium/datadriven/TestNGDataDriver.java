@@ -17,14 +17,14 @@ import pres.auxiliary.tool.date.Time;
  * <p><b>用途：</b>
  * 根据文件中的数据内容返回适配TestNG的数据驱动，以便于在编写自动化脚本中使用。源数据文件支持
  * xls/xlsx/csv/txt/doc/docx，支持自定义特殊关键词，其自定义的关键词用“${关键词}”
- * 进行标记，系统根据在{@link #addFunction(String, DataFunction)}中定义的处理方式对数据进行处理。
+ * 进行标记，系统根据在{@link #addFunction(DataDriverFunction)}中定义的处理方式对数据进行处理。
  * 具体的用法可以参考：
  * </p>
  * <p>
  * 在类中可按照以下方法定义：
  * <pre><code>
- * dataDriver.addFunction("test", text -> "HelloWorld");
- * dataDriver.addFunction("select(\\d+)", text -> {
+ * dataDriver.addFunction("test", text -&gt; "HelloWorld");
+ * dataDriver.addFunction("select(\\d+)", text -&gt; {
  *	switch(Integer.value(text)) {
  * 		case 1:
  * 			return "function1"
