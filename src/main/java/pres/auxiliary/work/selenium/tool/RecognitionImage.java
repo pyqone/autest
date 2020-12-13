@@ -32,7 +32,7 @@ public class RecognitionImage {
 	/**
 	 * 设置语言包文件夹的路径，注意，此处是只需要存储语言包存放的文件夹。不需要定位到某一个语言包上，但文件夹的最后一层必须以“tessdata”来命名
 	 * 
-	 * @param tessdataPath 语言包存放的文件夹路径
+	 * @param tessdataFolder 语言包存放的文件夹路径
 	 */
 	public static void setTessdataPath(File tessdataFolder) {
 		String judge_FileName = "tessdata";

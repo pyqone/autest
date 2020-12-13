@@ -68,7 +68,6 @@ public abstract class AbstractBy {
 	/**
 	 * 通过元素信息类对象（{@link ElementData}）构造对象
 	 * @param brower {@link AbstractBrower}类对象
-	 * @param elementData {@link ElementData}类对象
 	 */
 	public AbstractBy(AbstractBrower brower) {
 		this.brower = brower;
@@ -107,8 +106,8 @@ public abstract class AbstractBy {
 	}
 
 	/**
-	 * 用于设置指向存储元素定位方式的xml文件对象，并根据传参，判断窗体是否需要回到顶层
-	 * @param xmlFile 存储元素定位方式的xml文件对象
+	 * 用于设置元素定位方式文件读取类对象，并根据传参，判断窗体是否需要回到顶层
+	 * @param read 元素定位方式文件读取类对象
 	 * @param isBreakRootFrame 是否需要将窗体切回到顶层
 	 */
 	public void setReadMode(AbstractLocation read, boolean isBreakRootFrame) {
@@ -165,7 +164,7 @@ public abstract class AbstractBy {
 	/**
 	 * 该方法用于根据iframe_id来切换窗体
 	 * 
-	 * @param name 窗体的名称
+	 * @param iframeElementData 窗体的信息
 	 */
 	public void switchFrame(ElementData iframeElementData) {
 		brower.getDriver().switchTo().frame(recognitionElement(iframeElementData).get(0));

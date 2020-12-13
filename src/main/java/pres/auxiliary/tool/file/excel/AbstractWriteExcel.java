@@ -133,7 +133,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * 只存在一个sheet标签时，则直接获取其对应sheet下所有column标签的id属性；若存在
 	 * 多个sheet标签时，则读取第一个sheet标签，如需切换sheet标签，则可调用{@link #switchSheet(String)} 方法。
 	 * 
-	 * @param configFile 测试文件模板xml配置文件类对象
+	 * @param configDocument 测试文件模板xml配置文件{@link Document}类对象
 	 * @param tempFile   测试用例文件类对象
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
@@ -166,17 +166,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 */
 	@SuppressWarnings("unchecked")
 	public T switchSheet(String sheetName) {
-		// 每次切换sheet时，要重新获取一次sheet下的字段id。
-		// 切换sheet后需要清空预设字段中的内容
-		// 重新获取id，包括清空fieldMap
-//		getColumnId(sheetName);
-		// 清空常值map
-//		constValueMap.clear();
-		// 清空标记map
-//		fieldMarkMap.clear();
-		// 清空预设字段枚举值
-//		Arrays.stream(FieldType.values()).forEach(e -> e.setValue(""));
-
 		// 将相应的sheet标签的name属性存储至sheetName中
 		this.nowSheetName = sheetName;
 		if (!writeSheetNameList.contains(sheetName)) {
@@ -1520,14 +1509,13 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 
 		/**
 		 * 用于构造Field
-		 * 
-		 * @param id         字段id
-		 * @param align      单元格对齐方式
-		 * @param index      字段在单元格中的位置
-		 * @param rowText    换行段落数
-		 * @param datas      字段是否存在数据有效性
+		 * @param id 字段在配置文件中的id
+		 * @param name 字段在配置文件中的name
+		 * @param align 字段在配置文件中的水平对齐方式
+		 * @param index 字段在单元格中的位置
+		 * @param rowText 换行段落数
+		 * @param datas 字段是否存在数据有效性
 		 * @param numberSign 字段是否需要编号
-		 * @param link 超链接内容
 		 */
 		public Field(String id, String name, String align, int index, String rowText, ArrayList<String> datas, boolean numberSign) {
 			this.id = id;
@@ -1550,7 +1538,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * 根据字段单元格的对齐方式，来创建XSSFCellStyle对象，如样式
 		 * 属性值不是center、right和left中的一项，则设置样式为左对齐（left）
 		 * 
-		 * @param xw XSSFWorkbook对象
 		 * @return XSSFCellStyle对象
 		 */
 		public XSSFCellStyle getCellStyle() {
@@ -1587,7 +1574,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * 	<li>当转换的数值大于0小于数据有效性集合内容的最大数值时，则获取对应的数据</li>
 		 * </ol>
 		 * <b>注意：</b>数据有效性的为与优先级接轨，故下标将从1开始，即传入1时表示获取第1个元素，而不是第2个
-		 * @param indexText 下标字符串
+		 * @param index 下标
 		 * @return 数据有效性中对应的数据，无法转换则返回传入的字符串
 		 */
 		public String getDataValidation(int index) {

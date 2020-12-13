@@ -13,7 +13,7 @@ import org.dom4j.DocumentException;
  * <p><b>修改时间：</b>2020年4月5日 下午2:22:20</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 8
  */
 public abstract class CommonTestCaseWrite<T extends CommonTestCaseWrite<T>> extends AbstractTestCaseWrite<CommonTestCaseWrite<T>> {
 	/**
@@ -58,7 +58,7 @@ public abstract class CommonTestCaseWrite<T extends CommonTestCaseWrite<T>> exte
 	
 	/**
 	 * 用于写入预期信息
-	 * @param stpes 预期
+	 * @param excepts 预期
 	 * @return 类本身
 	 */
 	@SuppressWarnings("unchecked")

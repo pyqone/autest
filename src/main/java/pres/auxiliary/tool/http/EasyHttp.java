@@ -85,7 +85,7 @@ public class EasyHttp implements Cloneable {
 	
 	/**
 	 * 指定接口请求url，当未指定协议时，将默认以http为请求协议
-	 * @param host 请求url
+	 * @param url 请求url
 	 * @return 类本身
 	 */
 	public EasyHttp url(String url) {
@@ -158,7 +158,7 @@ public class EasyHttp implements Cloneable {
 	
 	/**
 	 * 用于设置接口路径
-	 * @param host 接口路径
+	 * @param address 接口路径
 	 * @return 类本身
 	 */
 	public EasyHttp address(String address) {

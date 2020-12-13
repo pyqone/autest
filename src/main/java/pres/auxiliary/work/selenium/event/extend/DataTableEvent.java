@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
 
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 import pres.auxiliary.work.selenium.element.DataListBy;
@@ -154,7 +153,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 用于添加列表控件的枚举，在调用部分列表操作方法时会使用在此处添加的映射
 	 * 
 	 * @param dataTableKeywordType 列表可映射的控件枚举{@link DataTableKeywordType}
-	 * @param by                   控件相应的元素对象{@link Element}
+	 * @param elemenet             控件相应的元素对象{@link Element}
 	 */
 	public void putControl(DataTableKeywordType dataTableKeywordType, Element elemenet) {
 		controlMap.put(dataTableKeywordType, elemenet);
@@ -270,9 +269,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 用于对列表进行点击跳页按钮后的跳页操作。若当前存储过元素列表，则对元素列表进行断言，
 	 * 即取存储的列表的第一行元素，若操作前后，该行元素不变，则判定为跳页失败
 	 * 
-	 * @param pageTextbox    跳页文本框元素
-	 * @param jumpPageButton 跳页按钮
-	 * @param pageCountText  页码文本
+	 * @param pageCount  页码数
 	 */
 	public boolean jumpPage(String pageCount) {
 		if (!controlMap.containsKey(DataTableKeywordType.PAGE_INPUT_TEXTBOX)) {
@@ -313,15 +310,13 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 通过条件，点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮，对列表进行搜索。方法中需要接收一个
 	 * 返回值为boolean类型的操作，若操作的返回值为false时，则不会点击按钮，可参考以下写法：
 	 * 
-	 * <pre>
-	 * <code>
+	 * <code><pre>
 	 * DataTableEvent test = new DataTableEvent(brower);
-	 * test.searchList(() -> {
+	 * test.searchList(() -&gt; {
 	 * 	te.input(cb.getElement("账号搜索文本框"), "13000000000");
 	 * 	return true;
 	 * });
-	 * </code>
-	 * </pre>
+	 * </pre></code>
 	 * 
 	 * @param action 返回值为boolean类型的操作
 	 * @return 列表是否有变化
@@ -492,7 +487,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 断言数据是否有改变，若数据改变，则返回true；反之，返回false
 	 * 
 	 * @param oldTextList 原始数据文本集合
-	 * @param oldElement  原始数据第一个元素的{@link WebElement}对象
+	 * @param oldListSize  原始数据个数
 	 * @return 元素是否存在改变
 	 */
 	protected boolean assertDataChange(ArrayList<String> oldTextList, int oldListSize) {

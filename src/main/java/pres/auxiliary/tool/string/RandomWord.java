@@ -4,6 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * <p><b>文件名：</b>RandomWord.java</p>
+ * <p><b>用途：</b>提供对指定的一组词语，随机进行返回的方法</p>
+ * <p><b>编码时间：</b>2020年12月13日 下午4:30:59</p>
+ * <p><b>修改时间：</b>2020年12月13日 下午4:30:59</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 1.8
+ */
 public class RandomWord {
 	/**
 	 * 用于存储需要随机返回的词语
@@ -29,7 +38,7 @@ public class RandomWord {
 	
 	/**
 	 * 用于向无需条件亦可直接返回的词语组中添加词语
-	 * @param wordLst 词语集合
+	 * @param wordList 词语集合
 	 */
 	public void addRetuenWord(ArrayList<String> wordList) {
 		returnWordList.addAll(wordList);
@@ -45,7 +54,7 @@ public class RandomWord {
 	
 	/**
 	 * 用于向符合条件后返回的词语组中添加词语
-	 * @param wordLst 词语集合
+	 * @param wordList 词语集合
 	 */
 	public void addConditionWord(ArrayList<String> wordList) {
 		conditionWordList.addAll(wordList);
