@@ -61,8 +61,8 @@ public class EventInformation {
 	}
 	
 	/**
-	 * 用于返回传入到方法中{@link Element_Old}类对象集合
-	 * @return {@link Element_Old}类对象集合
+	 * 用于返回传入到方法中{@link Element}类对象集合
+	 * @return {@link Element}类对象集合
 	 */
 	public ArrayList<Element> getElement() {
 		return elementList;

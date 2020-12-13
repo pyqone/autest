@@ -135,7 +135,7 @@ public class MapCase extends Case {
 	 * 用于生成在地图绘制图案相关的测试用例
 	 * @param signName 标记名称
 	 * @param isMultiple 是否可以绘制多个
-	 * @param graphs 图形类型
+	 * @param graphTypes 图形类型
 	 * @return 类本身
 	 */
 	public Case mapGraphSignCase(String signName, boolean isMultiple, GraphType...graphTypes) {

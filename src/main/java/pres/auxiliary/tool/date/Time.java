@@ -150,7 +150,6 @@ public class Time {
 	 * 注意，传入已格式化的时间时，其不会改变当前存储的时间
 	 * 
 	 * @param pattern 指定的格式或已格式化的时间
-	 * @return 格式化后的时间
 	 */
 	public void setTimeFormat(String pattern) {
 		if (pattern.matches(REGEX_DATE)) {

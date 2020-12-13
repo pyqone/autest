@@ -40,10 +40,10 @@ public class Screenshot {
 	 * 注意，传入的文件路径可为相对路径，也可为绝对路径，若路径不符合windows下文件夹名称的名称规则，
 	 * 则抛出IncorrectDirectoryException异常
 	 * 
-	 * @param savePath
-	 *            指定的截图保存路径
 	 * @param driver
 	 *            WebDriver对象
+	 * @param savePathFolder
+	 *            指定的截图保存路径
 	 * @throws IncorrectDirectoryException
 	 *             传入路径不合法时抛出的异常
 	 */
@@ -111,7 +111,6 @@ public class Screenshot {
 	 *             WebDriver为空时抛出的异常
 	 * @throws UndefinedDirectoryException
 	 *             截图保存路径或截图名称为指定时抛出的异常
-	 * @see #creatImage()
 	 */
 	public synchronized File creatImage(String imageName) throws WebDriverException, IOException {
 		// 调用无参方法

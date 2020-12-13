@@ -13,7 +13,7 @@ import java.util.List;
  * <p><b>修改时间：</b>2020年3月5日上午8:30:12</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 8
  */
 public class InformationCase extends Case {
 	/**
@@ -373,7 +373,6 @@ public class InformationCase extends Case {
 	 * @param decimals 小数位数
 	 * @param minNum 最小数字限制
 	 * @param maxNum 最大数字限制
-	 * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
 	 * @return 类本身
 	 * @throws CaseContentException 当限制参数传入有误时抛出
 	 */
@@ -394,7 +393,6 @@ public class InformationCase extends Case {
 	 * @param decimals 小数位数
 	 * @param minNum 最小数字限制
 	 * @param maxNum 最大数字限制
-	 * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
 	 * @return 类本身
 	 * @throws CaseContentException 当限制参数传入有误时抛出
 	 */
@@ -416,7 +414,6 @@ public class InformationCase extends Case {
 	 * @param decimals 小数位数
 	 * @param minNum 最小数字限制
 	 * @param maxNum 最大数字限制
-	 * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
 	 * @return 类本身
 	 * @throws CaseContentException 当限制参数传入有误时抛出
 	 */
@@ -1329,7 +1326,6 @@ public class InformationCase extends Case {
 	/**
 	 * 用于生成取消保存新增信息相关的测试用例
 	 * @param cencelButtonName 取消按钮名称
-	 * @param operationName 操作名称，
 	 * @return 类本身
 	 */
 	public Case cencelSaveAddDataCase(String cencelButtonName) {
@@ -1369,7 +1365,6 @@ public class InformationCase extends Case {
 	/**
 	 * 用于生成取消保存编辑信息相关的测试用例
 	 * @param cencelButtonName 取消按钮名称
-	 * @param operationName 操作名称，
 	 * @return 类本身
 	 */
 	public Case cencelSaveEditDataCase(String cencelButtonName) {

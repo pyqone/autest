@@ -17,14 +17,14 @@ import pres.auxiliary.tool.date.Time;
  * <p><b>用途：</b>
  * 根据文件中的数据内容返回适配TestNG的数据驱动，以便于在编写自动化脚本中使用。源数据文件支持
  * xls/xlsx/csv/txt/doc/docx，支持自定义特殊关键词，其自定义的关键词用“${关键词}”
- * 进行标记，系统根据在{@link #addFunction(String, DataFunction)}中定义的处理方式对数据进行处理。
+ * 进行标记，系统根据在{@link #addFunction(DataDriverFunction)}中定义的处理方式对数据进行处理。
  * 具体的用法可以参考：
  * </p>
  * <p>
  * 在类中可按照以下方法定义：
- * <pre>{@code
- * dataDriver.addFunction("test", text -> "HelloWorld");
- *dataDriver.addFunction("select(\\d+)", text -> {
+ * <pre><code>
+ * dataDriver.addFunction("test", text -&gt; "HelloWorld");
+ * dataDriver.addFunction("select(\\d+)", text -&gt; {
  *	switch(Integer.value(text)) {
  * 		case 1:
  * 			return "function1"
@@ -33,8 +33,8 @@ import pres.auxiliary.tool.date.Time;
  * 			return "function2"
  * 			break;
  * 	}
- *});
- * </pre>
+ * });
+ * </code></pre>
  * 从数据驱动中读取到的数据有${test}、${select(1)}，则按照字符串的形式输出后分别得到“HelloWorld”、“function1”。
  * </p>
  * <p>
@@ -107,7 +107,6 @@ public class TestNGDataDriver {
 	 * 用于添加自定义的公式，支持传入正则表达式，当数据驱动中的数据满足传入的正则时，则会
 	 * 将其按照在公式中定义的处理方式对数据进行处理，生成对应的数据。注意，公式的返回值和
 	 * 传参均为{@link String}类型
-	 * @param regex 正则表达式
 	 * @param function 数据处理方法
 	 */
 	public void addFunction(DataDriverFunction function) {
@@ -171,7 +170,6 @@ public class TestNGDataDriver {
 			//将List<String>转换为List<Object>
 			List<Object> objectList = new ArrayList<>();
 			objectList.addAll(data.getColumn(columnIndex, isFirstTitle ? 1 : 0, data.getCoulumnSize(columnIndex)));
-			System.out.println(objectList);
 			//存储数据
 			addData(titleList.get(columnIndex + titleIndex), objectList);
 		}
@@ -466,7 +464,7 @@ public class TestNGDataDriver {
 		
 		/**
 		 * 用于根据列名称，以{@link Object}的形式对数据进行返回
-		 * @param listName 列表名称
+		 * @param index 列表下标
 		 * @return {@link Object}类型的数据
 		 */
 		public Object getObject(int index) {
