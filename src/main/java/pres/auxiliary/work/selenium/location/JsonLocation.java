@@ -89,7 +89,7 @@ public class JsonLocation extends AbstractLocation {
 	
 	/**
 	 * 通过json文本对类进行构造
-	 * @param json json文本
+	 * @param jsonText json文本
 	 */
 	public JsonLocation(String jsonText) {
 		analysisJson(jsonText);

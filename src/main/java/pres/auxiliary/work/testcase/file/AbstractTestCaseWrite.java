@@ -66,7 +66,7 @@ public abstract class AbstractTestCaseWrite<T extends AbstractTestCaseWrite<T>> 
 	 * 的字段进行关联，通过该方法设置关联字段后，可将生成的测试用例写入到测试用例文件中
 	 * 
 	 * @param field     测试用例文件字段
-	 * @param caseLabel 测试用例生成方法的字段
+	 * @param labelType 测试用例生成方法的字段
 	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
 	 */
 	public void relevanceCase(String field, String labelType) {

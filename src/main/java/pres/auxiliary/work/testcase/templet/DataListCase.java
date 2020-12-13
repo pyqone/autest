@@ -199,7 +199,6 @@ public class DataListCase extends Case {
 	/**
 	 * 用于添加通过选择时间的方式对列表进行搜索的测试用例
 	 * @param condition 搜索条件（控件）名称
-	 * @param isTimeSlot 是否为时间段
 	 * @return 类本身
 	 */
 	public Case dateSearchCase(String condition) {
@@ -236,8 +235,8 @@ public class DataListCase extends Case {
 	
 	/**
 	 * 用于添加通过选择时间段的方式对列表进行搜索的测试用例
-	 * @param condition 搜索条件（控件）名称
-	 * @param isTimeSlot 是否为时间段
+	 * @param startTimeName 开始时间
+	 * @param endTimeName 结束时间
 	 * @return 类本身
 	 */
 	public Case timeQuantumSearchCase(String startTimeName, String endTimeName) {
