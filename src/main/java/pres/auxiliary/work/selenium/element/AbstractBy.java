@@ -257,6 +257,11 @@ public abstract class AbstractBy {
 	 * @return {@link WebElement}类对象{@link List}集合
 	 */
 	protected List<WebElement> recognitionElement(ElementData elementData) {
+		//判断是否需要自动切换窗体，若需要，则对元素窗体进行切换
+		if (isAutoSwitchIframe) {
+			autoSwitchFrame(elementData.getIframeNameList());
+		}
+				
 		//获取元素的定位类型及定位内容
 		ArrayList<ByType> elementByTypeList = elementData.getByTypeList();
 		ArrayList<String> elementValueList = elementData.getValueList();

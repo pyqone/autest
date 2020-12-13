@@ -143,6 +143,7 @@ public class BasicTestCaseWriteTest {
 	 */
 	@Test
 	public void markFieldTest() {
+		@SuppressWarnings("rawtypes")
 		FieldMark cm = wtc.end().fieldComment("步骤", "步骤标记").fieldComment("预期", "预期标记");
 		cm.fieldComment("目的", "目的标记");
 	}
@@ -152,6 +153,7 @@ public class BasicTestCaseWriteTest {
 	 */
 	@Test
 	public void fieldBackgroundTest() {
+		@SuppressWarnings("rawtypes")
 		FieldMark cm = wtc.end().changeFieldBackground("步骤", MarkColorsType.BLUE).changeFieldBackground("预期",
 				MarkColorsType.RED);
 		cm.changeFieldBackground("目的", MarkColorsType.GREEN);

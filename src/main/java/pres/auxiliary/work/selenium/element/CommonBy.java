@@ -40,11 +40,6 @@ public class CommonBy extends AbstractBy {
 		elementData = new ElementData(elementName, read);
 		elementData.addLinkWord(linkKeys);
 		
-		//判断是否需要自动切换窗体，若需要，则对元素窗体进行切换
-		if (isAutoSwitchIframe) {
-			autoSwitchFrame(elementData.getIframeNameList());
-		}
-		
 		//获取元素数据在页面上对应的一组元素，若无法查到元素，则记录elementList为null
 		try {
 			elementList = recognitionElement(elementData);
