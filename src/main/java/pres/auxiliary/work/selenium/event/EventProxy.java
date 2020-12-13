@@ -34,8 +34,8 @@ import pres.auxiliary.work.selenium.element.Element;
  * 假设存在元素xpah:元素1“//*[text()='登录']”、元素2“//*[@name='account']”、元素3“//*[@name='password']”，
  * 在点击元素1前，需要先在元素2和元素3中分别输入“admin”、“123456”，并且在此前定义了{@link ChromeBrower}浏览器对象，变量名为
  * chrome，此时，可以将代码写作<br>
- * <pre>
- * EventProxy<ClickEvent> clickEventProxy = new EventProxy(new ClickEvent(chrome.getDriver()));
+ * <code><pre>
+ * EventProxy &lt;ClickEvent&gt; clickEventProxy = new EventProxy(new ClickEvent(chrome.getDriver()));
  * 
  * clickProxy.addAcion(ActionType.ELEMENT_BEFORE, ".*登录.*", (info) -> {
  * 			TextEvent text = inputProxy.getProxyInstance();
@@ -43,7 +43,7 @@ import pres.auxiliary.work.selenium.element.Element;
  * 			text.input(by.getElement("//*[@name='password']"), "1111111");
  * 		});
  * clickEventProxy.getProxyInstance().click(new CommnBy(chrome).getElement("//*[text()='登录']"));
- * </pre>
+ * </pre></code>
  * </p>
  * <p><b>编码时间：</b>2020年7月12日 下午1:35:22</p>
  * <p><b>修改时间：</b>2020年10月20日下午7:54:15</p>

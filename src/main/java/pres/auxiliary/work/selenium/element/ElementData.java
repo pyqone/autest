@@ -52,7 +52,7 @@ public class ElementData {
 	/**
 	 * 根据元素名称，在配置文件中查找元素，将元素的信息进行存储
 	 * @param name 元素名称
-	 * @param AbstractLocation 配置文件类对象
+	 * @param read 配置文件类对象
 	 */
 	public ElementData(String name, ReadLocation read) {
 		//存储元素名称

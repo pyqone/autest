@@ -56,7 +56,7 @@ public class RandomString {
 	/**
 	 * 通过自定义的字符串对字符串池进行初始化
 	 * 
-	 * @param modes
+	 * @param mode
 	 *            需要加入字符串池中的模型（为StringMode枚举对象）
 	 */
 	public RandomString(String mode) {
@@ -150,7 +150,7 @@ public class RandomString {
 	 * 
 	 * @param isRepeat
 	 *            字符串池中的元素是否可重复
-	 * @param mode
+	 * @param modes
 	 *            需要加入到字符串池中的模型
 	 *            
 	 * @return 返回类本身，以便于链式操作
@@ -312,15 +312,16 @@ public class RandomString {
 
 	/**
 	 * 该类用于在随机字符串生成范围中删除由用户指定位置（字符串的位置是从0开始）的字符串<br/>
-	 * 例如：<br/>
-	 * &nbsp&nbsp&nbsp&nbsp StringSeed.append("0123456789");<br/>
-	 * &nbsp&nbsp&nbsp&nbsp remove(2);<br/>
-	 * &nbsp&nbsp&nbsp&nbsp System.out.println(StringSeed.toString());<br/>
+	 * 例如：
+	 * <pre><code>
+	 * StringSeed.append("0123456789");
+	 * remove(2);
+	 * System.out.println(StringSeed.toString());
+	 * </code></pre>
 	 * 输出结果为：<br/>
 	 * 013456789
 	 * 
-	 * @param pos
-	 *            表示用户指定位置
+	 * @param pos 表示用户指定位置
 	 * @return 返回的字符串，若输入的位置不正确，则返回null
 	 * @see #remove(String)
 	 * @see #remove(int, int)

@@ -86,7 +86,7 @@ public class SelectBy extends MultiBy<SelectBy> {
 	 * 元素或查找的元素不存在时，调用该方法仅设置属性值。设置的属性名称不区分大小写
 	 * </p>
 	 * 
-	 * @param arributeName 属性名称
+	 * @param attributeName 属性名称
 	 */
 	public void setReadArributeName(String attributeName) {
 		this.attributeName = attributeName;

@@ -47,7 +47,7 @@ public class WriteExcel extends AbstractWriteExcel<WriteExcel> {
 	 * 只存在一个sheet标签时，则直接获取其对应sheet下所有column标签的id属性；若存在
 	 * 多个sheet标签时，则读取第一个sheet标签，如需切换sheet标签，则可调用{@link #switchSheet(String)} 方法。
 	 * 
-	 * @param configFile 测试文件模板xml配置文件类对象
+	 * @param configDocument 测试文件模板xml配置文件{@link Document}类对象
 	 * @param caseFile   测试用例文件类对象
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */

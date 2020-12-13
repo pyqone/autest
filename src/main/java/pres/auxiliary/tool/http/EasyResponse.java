@@ -174,8 +174,8 @@ public class EasyResponse {
 	}
 	
 	/**
-	 * 用于以{@link Document}类的形式返回响应数据，若响应数据不是html或xml格式时，则返回null
-	 * @return {@link Document}类形式的响应数据
+	 * 用于以{@link org.dom4j.Document}类的形式返回响应数据，若响应数据不是html或xml格式时，则返回null
+	 * @return {@link org.dom4j.Document}类形式的响应数据
 	 */
 	public org.dom4j.Document getXmlDocument() {
 		return responseXmlDom;

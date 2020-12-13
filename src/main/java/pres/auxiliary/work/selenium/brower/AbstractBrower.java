@@ -59,7 +59,7 @@ public abstract class AbstractBrower {
 	/**
 	 * 指定驱动文件所在路径
 	 * 
-	 * @param driberFile 驱动文件对象
+	 * @param driverFile 驱动文件对象
 	 */
 	public AbstractBrower(File driverFile) {
 		this.driverFile = driverFile;
@@ -71,7 +71,7 @@ public abstract class AbstractBrower {
 	/**
 	 * 指定驱动文件路径并添加一个待测站点
 	 * 
-	 * @param driberFile 驱动文件对象
+	 * @param driverFile 驱动文件对象
 	 * @param url        待测站点
 	 * @param pageName   待测站点名称，用于切换页面
 	 */

@@ -14,7 +14,7 @@ import org.dom4j.io.SAXReader;
 import pres.auxiliary.work.testcase.file.IncorrectFileException;
 
 /**
- * <p><b>文件名：</b>AbstractCase.java</p>
+ * <p><b>文件名：</b>Case.java</p>
  * <p><b>用途：</b>定义测试用例模板类能返回的基本字段，提供其相应的get与set方法，但该方法不允许包外调用</p>
  * <p><b>编码时间：</b>2020年3月3日下午8:07:23</p>
  * <p><b>修改时间：</b>2020年3月4日 07:39:23</p>
@@ -93,7 +93,7 @@ public abstract class Case {
 	/**
 	 * 用于设置需要替换的词语
 	 * @param word 测试用例xml库中需要替换的词语
-	 * @param value 被替换的词语
+	 * @param text 被替换的词语
 	 */
 	public void setReplaceWord(String word, String text) {
 		//判断该词语是否存在于textMap中，若不存在，则抛出异常
@@ -242,7 +242,7 @@ public abstract class Case {
 	
 	/**
 	 * 用于添加多行文本
-	 * @param label 标签名称
+	 * @param labelName 标签名称
 	 * @param texts 相应内容
 	 */
 	protected void addFieldText(String labelName, List<String> texts) {
@@ -251,7 +251,7 @@ public abstract class Case {
 	
 	/**
 	 * 用于添加一行文本
-	 * @param label 标签名称
+	 * @param labelName 标签名称
 	 * @param text 相应内容
 	 */
 	protected void addFieldText(String labelName, String text) {
