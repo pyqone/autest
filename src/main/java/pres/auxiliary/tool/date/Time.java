@@ -138,7 +138,7 @@ public class Time {
 	/**
 	 * 设置返回时间的格式，该方法可传入时间格式，亦可向该方法中传入时间格式的模板，
 	 * 通过识别模板得到日期的格式，但作为模板的日期也必须满足时间格式。例如：<br>
-	 * <pre>{@code
+	 * <pre><code>
 	 * Time time = new Time(1575387800000L);
 	 * 
 	 * time.setTimeFormat("yyyy年MM月dd日 HH:mm:ss");
@@ -146,7 +146,7 @@ public class Time {
 	 * 
 	 * time.setTimeFormat("2019/12/04 03:03:20");
 	 * getFormatTime();//输出：2019/12/03 23:43:20
-	 * }</pre>
+	 * </code></pre>
 	 * 注意，传入已格式化的时间时，其不会改变当前存储的时间
 	 * 
 	 * @param pattern 指定的格式或已格式化的时间
