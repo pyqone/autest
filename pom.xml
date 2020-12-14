@@ -140,9 +140,6 @@
 				<version>3.0.0</version>
 				<configuration>
 					<aggregate>true</aggregate>
-					<!-- 生成文件路径 -->
-					<reportOutputDirectory>./javadocs</reportOutputDirectory>
-					<destDir>easy-delivery</destDir>
 					<doclint>none</doclint>
 				</configuration>
 				<executions>
