@@ -247,7 +247,7 @@ public class MapCase extends Case {
 	 * <p><b>用途：</b>用于枚举地图相应的图形标记</p>
 	 * <p><b>编码时间：</b>2020年3月28日下午6:54:53</p>
 	 * <p><b>修改时间：</b>2020年3月28日下午6:54:53</p>
-	 * @author 
+	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 12
 	 *

@@ -7,7 +7,7 @@ package pres.auxiliary.work.selenium.element;
  * </p>
  * <p><b>编码时间：</b>2020年5月22日上午7:57:32</p>
  * <p><b>修改时间：</b>2020年5月22日上午7:57:32</p>
- * @author 
+ * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 12
  *

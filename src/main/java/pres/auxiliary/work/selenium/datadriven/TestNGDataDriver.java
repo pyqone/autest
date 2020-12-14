@@ -343,7 +343,6 @@ public class TestNGDataDriver {
 		 * 用于根据列名称，以double的形式对数据进行返回
 		 * @param listName 列表名称
 		 * @return double类型的数据
-		 * @throw NumberFormatException 数据无法转时抛出的异常
 		 */
 		public double getDouble(String listName) {
 			return Double.valueOf(getString(listName));
@@ -353,7 +352,6 @@ public class TestNGDataDriver {
 		 * 用于根据列编号，以double的形式对数据进行返回
 		 * @param index 列下标
 		 * @return double类型的数据
-		 * @throw NumberFormatException 数据无法转时抛出的异常
 		 */
 		public double getDouble(int index) {
 			return Double.valueOf(getString(index));
@@ -363,7 +361,6 @@ public class TestNGDataDriver {
 		 * 用于根据列名称，以int的形式对数据进行返回
 		 * @param listName 列表名称
 		 * @return int类型的数据
-		 * @throw NumberFormatException 数据无法转换时抛出的异常
 		 */
 		public int getInt(String listName) {
 			return Integer.valueOf(getString(listName));
@@ -373,7 +370,6 @@ public class TestNGDataDriver {
 		 * 用于根据列编号，以int的形式对数据进行返回
 		 * @param index 列下标
 		 * @return int类型的数据
-		 * @throw NumberFormatException 数据无法转时抛出的异常
 		 */
 		public int getInt(int index) {
 			return Integer.valueOf(getString(index));
@@ -383,7 +379,6 @@ public class TestNGDataDriver {
 		 * 用于根据列名称，以long的形式对数据进行返回
 		 * @param listName 列表名称
 		 * @return long类型的数据
-		 * @throw NumberFormatException 数据无法转换时抛出的异常
 		 */
 		public long getLong(String listName) {
 			return Long.valueOf(getString(listName));
@@ -393,7 +388,6 @@ public class TestNGDataDriver {
 		 * 用于根据列编号，以long的形式对数据进行返回
 		 * @param index 列下标
 		 * @return long类型的数据
-		 * @throw NumberFormatException 数据无法转时抛出的异常
 		 */
 		public long getLong(int index) {
 			return Long.valueOf(getString(index));

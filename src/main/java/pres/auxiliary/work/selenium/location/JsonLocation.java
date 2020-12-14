@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -213,7 +214,7 @@ public class JsonLocation extends AbstractLocation {
 	 */
 	public void analysisJson(String text) {
 		//将文件解析成JSONObject类对象
-		JSONObject json = JSONObject.parseObject(text);
+		JSONObject json = JSON.parseObject(text);
 		
 		//获取元素json，若不存在元素json，则抛出异常
 		if (json.containsKey(KEY_ELEMENT)) {

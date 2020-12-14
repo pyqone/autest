@@ -127,7 +127,7 @@ public class ElementData {
 
 	/**
 	 * 返回元素父层窗体名称列表
-	 * @return
+	 * @return 父层窗体名称列表
 	 */
 	public ArrayList<String> getIframeNameList() {
 		return iframeNameList;

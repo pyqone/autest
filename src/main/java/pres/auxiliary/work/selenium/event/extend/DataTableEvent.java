@@ -180,7 +180,7 @@ public final class DataTableEvent extends AbstractEvent {
 	/**
 	 * 用于返回元素表中的列数
 	 * 
-	 * @return
+	 * @return 元素表中的列数
 	 */
 	public int rowSize() {
 		return tableMap.size();
