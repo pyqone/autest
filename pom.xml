@@ -3,13 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>pres.appnium.test</groupId>
-	<artifactId>Autest</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>pres.pyq</groupId>
+	<artifactId>autest</artifactId>
+	<version>2.0.0-debug</version>
 	<packaging>jar</packaging>
-
-	<name>Autest</name>
-	<url>http://maven.apache.org</url>
+	<url>https://gitee.com/pyqone/autest</url>
+	<name>autest</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,18 +17,21 @@
 	</properties>
 
 	<dependencies>
+		<!-- selenium工具 -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
 			<version>3.141.0</version>
 		</dependency>
 
+		<!-- csv读取工具 -->
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>4.1</version>
 		</dependency>
 
+		<!-- office读取工具POI -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
@@ -45,64 +47,36 @@
 			<artifactId>poi-scratchpad</artifactId>
 			<version>3.17</version>
 		</dependency>
-
+	
+		<!-- xml解析工具 -->
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>jaxen</groupId>
 			<artifactId>jaxen</artifactId>
 			<version>1.1-beta-6</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>3.17</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.19</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
-			<version>1.6.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.hynnet</groupId>
-			<artifactId>jacob</artifactId>
-			<version>1.14.3</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.7</version>
 		</dependency>
+		
+		<!-- 图片识别工具 -->
 		<dependency>
 			<groupId>net.sourceforge.tess4j</groupId>
 			<artifactId>tess4j</artifactId>
 			<version>4.5.1</version>
 		</dependency>
 
+		<!-- json工具 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>1.2.61</version>
-		</dependency>
-
-		<dependency>
-			<groupId>cn.hutool</groupId>
-			<artifactId>hutool-all</artifactId>
-			<version>5.0.2</version>
 		</dependency>
 
 		<!-- 数据库连接依赖包 -->
@@ -148,15 +122,13 @@
 			<version>1.9.5</version>
 		</dependency>
 
-		<!-- lombok注解生成get/set方法依赖 -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
-			<scope>provided</scope>
+		<!-- TestNG依赖 -->
+		<dependency> 
+			<groupId>org.testng</groupId> 
+			<artifactId>testng</artifactId> 
+			<version>7.3.0</version> 
+			<scope>test</scope> 
 		</dependency>
-		<!-- <dependency> <groupId>org.testng</groupId> <artifactId>testng</artifactId> 
-			<version>7.3.0</version> <scope>test</scope> </dependency> -->
 	</dependencies>
 
 	<build>
@@ -170,7 +142,7 @@
 					<aggregate>true</aggregate>
 					<!-- 生成文件路径 -->
 					<reportOutputDirectory>./javadocs</reportOutputDirectory>
-					<!--<destDir>easy-delivery</destDir> -->
+					<destDir>easy-delivery</destDir>
 					<doclint>none</doclint>
 				</configuration>
 				<executions>
@@ -194,6 +166,20 @@
 						<phase>package</phase>
 						<goals>
 							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 打包插件，jar包包含依赖包 -->
+			<plugin>
+			 	<groupId>org.apache.maven.plugins</groupId>
+			 	<artifactId>maven-shade-plugin</artifactId>
+			 	<version>2.4.1</version>
+			 	<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
 						</goals>
 					</execution>
 				</executions>
