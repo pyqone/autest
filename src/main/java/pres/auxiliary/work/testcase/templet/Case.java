@@ -105,6 +105,14 @@ public abstract class Case {
 	}
 	
 	/**
+	 * 返回字段内容
+	 * @return 字段内容
+	 */
+	public HashMap<String, ArrayList<String>> getFieldTextMap() {
+		return fieldTextMap;
+	}
+	
+	/**
 	 * 用于替换文本中需要替换的单词，返回替换后的文本
 	 * @param text 需要替换的文本
 	 * @return 替换后的文本
@@ -274,14 +282,6 @@ public abstract class Case {
 		fieldTextMap.forEach((key, value) -> {
 			fieldTextMap.get(key).clear();
 		});
-	}
-	
-	/**
-	 * 返回字段内容Map，测试使用
-	 * @return
-	 */
-	public HashMap<String, ArrayList<String>> getFieldTextMap() {
-		return fieldTextMap;
 	}
 	
 	/**	

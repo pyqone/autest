@@ -137,24 +137,24 @@ public enum RegionType {
 	}
 	
 	/**
-	 * 用于返回其名称
-	 * @return
+	 * 用于返回地区名称
+	 * @return 地区名称
 	 */
 	public String getName() {
 		return name;
 	}
 	
 	/**
-	 * 用于返回地区的缩写
-	 * @return
+	 * 用于返回地区缩写
+	 * @return 地区缩写
 	 */
 	public String getAbbreviation() {
 		return abbreviation;
 	}
 
 	/**
-	 * 用于返回其号码
-	 * @return
+	 * 用于返回地区编码
+	 * @return 地区编码
 	 */
 	public String getNumber() {
 		return number;

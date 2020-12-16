@@ -1,7 +1,6 @@
 package pres.auxiliary.work.testcase.templet;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * <p><b>文件名：</b>DataListCase.java</p>
@@ -414,8 +413,7 @@ public class DataListCase extends Case {
 	
 	/**
 	 * 该方法用于生成切换列表单页数据显示量的用例
-	 * @return
-	 * @throws IOException
+	 * @return 类本身
 	 */
 	public Case switchListShowDataCase() {
 		//清空字段的内容

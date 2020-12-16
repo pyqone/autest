@@ -7,6 +7,7 @@ import java.io.FileReader;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -50,7 +51,7 @@ public class JsonLocationTest {
 		}
 		
 //		System.out.println(jsonText.toString());
-		JSONObject json = JSONObject.parseObject(jsonText.toString());
+		JSONObject json = JSON.parseObject(jsonText.toString());
 		System.out.println(json.toJSONString());
 		
 //		System.out.println(new JSONObject().isEmpty());

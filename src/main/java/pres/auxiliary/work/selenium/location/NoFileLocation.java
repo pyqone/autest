@@ -2,6 +2,7 @@ package pres.auxiliary.work.selenium.location;
 
 import java.util.ArrayList;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -42,7 +43,7 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 		nowLocationJson.put(JsonLocation.KEY_TEMPLETE, new JSONObject());
 		nowLocationJson.put(JsonLocation.KEY_ELEMENT, new JSONObject());
 		//复制当前元素json信息
-		newLocationJson = JSONObject.parseObject(nowLocationJson.toJSONString());
+		newLocationJson = JSON.parseObject(nowLocationJson.toJSONString());
 		
 		jsonLocation = new JsonLocation(nowLocationJson.toJSONString());
 	}
@@ -186,7 +187,7 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	private JsonLocation getJsonLocation() {
 		if (!isJsonChange()) {
 			jsonLocation.analysisJson(newLocationJson.toJSONString());
-			nowLocationJson = JSONObject.parseObject(newLocationJson.toJSONString());
+			nowLocationJson = JSON.parseObject(newLocationJson.toJSONString());
 		}
 		
 		return jsonLocation;

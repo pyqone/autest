@@ -53,7 +53,7 @@ public enum SplitType {
 
 	/**
 	 * 用于返回分隔文本的符号
-	 * @return
+	 * @return 分隔文本的符号
 	 */
 	public String getSplitSign() {
 		return splitSign;

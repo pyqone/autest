@@ -17,14 +17,14 @@ import pres.auxiliary.tool.date.Time;
  * <p><b>用途：</b>
  * 根据文件中的数据内容返回适配TestNG的数据驱动，以便于在编写自动化脚本中使用。源数据文件支持
  * xls/xlsx/csv/txt/doc/docx，支持自定义特殊关键词，其自定义的关键词用“${关键词}”
- * 进行标记，系统根据在{@link #addFunction(String, DataFunction)}中定义的处理方式对数据进行处理。
+ * 进行标记，系统根据在{@link #addFunction(DataDriverFunction)}中定义的处理方式对数据进行处理。
  * 具体的用法可以参考：
  * </p>
  * <p>
  * 在类中可按照以下方法定义：
  * <pre><code>
- * dataDriver.addFunction("test", text -> "HelloWorld");
- * dataDriver.addFunction("select(\\d+)", text -> {
+ * dataDriver.addFunction("test", text -&gt; "HelloWorld");
+ * dataDriver.addFunction("select(\\d+)", text -&gt; {
  *	switch(Integer.value(text)) {
  * 		case 1:
  * 			return "function1"
@@ -343,7 +343,6 @@ public class TestNGDataDriver {
 		 * 用于根据列名称，以double的形式对数据进行返回
 		 * @param listName 列表名称
 		 * @return double类型的数据
-		 * @throw NumberFormatException 数据无法转时抛出的异常
 		 */
 		public double getDouble(String listName) {
 			return Double.valueOf(getString(listName));
@@ -353,7 +352,6 @@ public class TestNGDataDriver {
 		 * 用于根据列编号，以double的形式对数据进行返回
 		 * @param index 列下标
 		 * @return double类型的数据
-		 * @throw NumberFormatException 数据无法转时抛出的异常
 		 */
 		public double getDouble(int index) {
 			return Double.valueOf(getString(index));
@@ -363,7 +361,6 @@ public class TestNGDataDriver {
 		 * 用于根据列名称，以int的形式对数据进行返回
 		 * @param listName 列表名称
 		 * @return int类型的数据
-		 * @throw NumberFormatException 数据无法转换时抛出的异常
 		 */
 		public int getInt(String listName) {
 			return Integer.valueOf(getString(listName));
@@ -373,7 +370,6 @@ public class TestNGDataDriver {
 		 * 用于根据列编号，以int的形式对数据进行返回
 		 * @param index 列下标
 		 * @return int类型的数据
-		 * @throw NumberFormatException 数据无法转时抛出的异常
 		 */
 		public int getInt(int index) {
 			return Integer.valueOf(getString(index));
@@ -383,7 +379,6 @@ public class TestNGDataDriver {
 		 * 用于根据列名称，以long的形式对数据进行返回
 		 * @param listName 列表名称
 		 * @return long类型的数据
-		 * @throw NumberFormatException 数据无法转换时抛出的异常
 		 */
 		public long getLong(String listName) {
 			return Long.valueOf(getString(listName));
@@ -393,7 +388,6 @@ public class TestNGDataDriver {
 		 * 用于根据列编号，以long的形式对数据进行返回
 		 * @param index 列下标
 		 * @return long类型的数据
-		 * @throw NumberFormatException 数据无法转时抛出的异常
 		 */
 		public long getLong(int index) {
 			return Long.valueOf(getString(index));

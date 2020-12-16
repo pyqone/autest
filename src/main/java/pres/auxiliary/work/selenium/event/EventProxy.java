@@ -37,7 +37,7 @@ import pres.auxiliary.work.selenium.element.Element;
  * <code><pre>
  * EventProxy &lt;ClickEvent&gt; clickEventProxy = new EventProxy(new ClickEvent(chrome.getDriver()));
  * 
- * clickProxy.addAcion(ActionType.ELEMENT_BEFORE, ".*登录.*", (info) -> {
+ * clickProxy.addAcion(ActionType.ELEMENT_BEFORE, ".*登录.*", (info) -&gt; {
  * 			TextEvent text = inputProxy.getProxyInstance();
  * 			text.input(by.getElement("//*[@name='account']"), "admin");
  * 			text.input(by.getElement("//*[@name='password']"), "1111111");
