@@ -169,6 +169,14 @@ public class SqlAction {
 	}
 	
 	/**
+	 * 获取结果集中所有字段的名称
+	 * @return 字段名称集合
+	 */
+	public ArrayList<String> getColumnNames() {
+		return fieldNameList;
+	}
+	
+	/**
 	 * 用于返回结果集中第一条数据，即第一行第一列的数据。若结果集中无任何数据，则返回空串
 	 * @return 结果集第一条数据
 	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
@@ -176,14 +184,14 @@ public class SqlAction {
 	public String getFirstResult() {
 		//返回字符串，若搜索结果无对应行，则返回空串
 		try {
-			return getResult(1, 1, fieldNameList.get(0)).get(fieldNameList.get(0)).get(0);
+			return getFirstRowResult(1, 1).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			return "";
 		}
 	}
 	
 	/**
-	 * 用于返回结果集第一列指定行的结果
+	 * 用于以字符串集合的形式返回结果集第一列指定行的结果
 	 * <p>
 	 * 方法接收结果集的起始下标与结束下标，并根据该组下标，获取结果，将其转换为
 	 * 字符串的形式进行返回，另外，行下标从1开始遍历，下标传入0或者1都表示获取第1行元素，且下标允许
@@ -206,11 +214,41 @@ public class SqlAction {
 	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
 	 */
 	public ArrayList<String> getFirstRowResult(int startIndex, int endIndex) {
-		return getResult(startIndex, endIndex, fieldNameList.get(0)).get(fieldNameList.get(0));
+		return getRowResult(fieldNameList.get(0), startIndex, endIndex);
 	}
 	
+	/**
+	 * 用于以字符串集合的形式返回结果集指定列及指定行的结果，其下标规则可
+	 * 参考{@link #getFirstRowResult(int, int)}方法
+	 * @param fieldName 字段名称
+	 * @param startIndex 起始下标
+	 * @param endIndex 结束下标
+	 * @return 第一列指定行的元素集合
+	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
+	 * @see #getFirstRowResult(int, int)
+	 */
 	public ArrayList<String> getRowResult(String fieldName, int startIndex, int endIndex) {
 		return getResult(startIndex, endIndex, fieldName).get(fieldName);
+	}
+	
+	/**
+	 * <p>
+	 * 用于以字符串集合的形式返回结果集指定列及指定行的结果，其下标规则可
+	 * 参考{@link #getFirstRowResult(int, int)}方法。
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>字段下标与结果集列下标的起始位置不同，字段下标的第1位，其下标为0，
+	 * 即调用{@code getRowResult(1, 1, 2)}方法时，表示获取第1列，第1行到第2行的数据
+	 * </p>
+	 * @param fieldName 字段名称
+	 * @param startIndex 起始下标
+	 * @param endIndex 结束下标
+	 * @return 第一列指定行的元素集合
+	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
+	 * @see #getFirstRowResult(int, int)
+	 */
+	public ArrayList<String> getRowResult(int fieldIndex, int startIndex, int endIndex) {
+		return getRowResult(fieldNameList.get(fieldIndex), startIndex, endIndex);
 	}
 	
 	/**
