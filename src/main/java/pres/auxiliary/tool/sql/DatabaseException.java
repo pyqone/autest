@@ -16,6 +16,7 @@ public class DatabaseException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public DatabaseException() {
+		super("结果集为空，SQL执行异常");
 	}
 
 	public DatabaseException(String message) {
