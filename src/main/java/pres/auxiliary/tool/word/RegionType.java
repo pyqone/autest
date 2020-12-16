@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.string;
+package pres.auxiliary.tool.word;
 
 public enum RegionType {
 	/**

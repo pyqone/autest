@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.string;
+package pres.auxiliary.tool.word;
 
 import java.util.Random;
 
