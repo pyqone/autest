@@ -1,8 +1,8 @@
 package pres.auxiliary.work.selenium.datadriven;
 
+import pres.auxiliary.tool.data.RandomString;
+import pres.auxiliary.tool.data.StringMode;
 import pres.auxiliary.tool.date.Time;
-import pres.auxiliary.tool.word.RandomString;
-import pres.auxiliary.tool.word.StringMode;
 
 /**
  * <p><b>文件名：</b>Functions.java</p>
