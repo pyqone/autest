@@ -77,7 +77,7 @@ public class SqlAction {
 	 * 
 	 * @param username 用户名
 	 * @param password 密码
-	 * @param host     主机（包括端口，默认为1521）
+	 * @param host     主机（包括端口）
 	 * @param dataBase 数据源
 	 */
 	public SqlAction(DataBaseType dataBaseType, String username, String password, String host, String dataBaseName) {
