@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -182,7 +183,7 @@ public class TableData<T> {
 	 * @return 被移除的列数据集合
 	 * @throws IllegalDataException 列名称不存在或未传入时抛出的异常
 	 */
-	public ArrayList<Optional<T>> remove(String columnName) {
+	public ArrayList<Optional<T>> removeColumn(String columnName) {
 		// 存储待清空的集合
 		ArrayList<Optional<T>> columnDataList = getColumnList(columnName);
 
@@ -192,6 +193,26 @@ public class TableData<T> {
 		refreshLength();
 
 		return columnDataList;
+	}
+	
+	/**
+	 * 用于根据列下标返回列字段的名称，下标从0开始计算，即0表示第1列。
+	 * 若下标小于1或大于当前表中列的个数时，则返回空串
+	 * @param index 列下标
+	 * @return 字段名称
+	 */
+	public String indexToFieldName(int index) {
+		if (index < 0) {
+			return "";
+		}
+		
+		ArrayList<String> fieldNameList = getColumnName();
+		
+		if (index > fieldNameList.size() - 1) {
+			return "";
+		}
+		
+		return fieldNameList.get(index);
 	}
 
 	/**
@@ -269,8 +290,11 @@ public class TableData<T> {
 	 */
 	public LinkedHashMap<String, ArrayList<Optional<T>>> getData(int startRowIndex, int endRowIndex,
 			List<String> columnNameList) {
+		AtomicInteger startRowIndexA = new AtomicInteger(changeIndex(startRowIndex));
+		AtomicInteger endRowIndexA = new AtomicInteger(changeIndex(endRowIndex));
+		
 		// 若最长列数据与最短列数据不一致，且需要严格判断，则抛出异常
-		if (minLength != maxLength && isExamine) {
+		if (minLength != maxLength && isExamine && endRowIndexA.get() > minLength) {
 			throw new IllegalDataException(String.format("数据列长度不一致，最长数据列长度：%d；最短数据列长度：%d", maxLength, minLength));
 		}
 
@@ -278,13 +302,9 @@ public class TableData<T> {
 		LinkedHashMap<String, ArrayList<Optional<T>>> columnDataMap = new LinkedHashMap<>(16);
 		Optional.ofNullable(columnNameList).orElseThrow(() -> new IllegalDataException("未传入数据列")).stream()
 				.filter(tableMap::containsKey).forEach(columnName -> {
-					// 获取转换后的下标，其第一行元素的下标从1开始
-					int startIndex = changeIndex(startRowIndex, getListSize(columnName));
-					int endIndex = changeIndex(endRowIndex, getListSize(columnName));
-
 					ArrayList<Optional<T>> columnDataList = new ArrayList<>();
 					// 遍历列表，存储数据，若当前列无此行元素（即抛出数组越界异常），则存储空值
-					IntStream.range(startIndex, endIndex + 1).forEach(index -> {
+					IntStream.range(startRowIndexA.get(), endRowIndexA.get() + 1).forEach(index -> {
 						try {
 							columnDataList.add(tableMap.get(columnName).get(index - 1));
 						} catch (IndexOutOfBoundsException e) {
@@ -297,7 +317,7 @@ public class TableData<T> {
 
 		return columnDataMap;
 	}
-
+	
 	/**
 	 * 刷新表中最长与最短列的元素个数，用于清空或删除表时的计算
 	 */
@@ -320,14 +340,14 @@ public class TableData<T> {
 	 * @param length 数据总数
 	 * @return 转换后的下标
 	 */
-	private int changeIndex(int index, int length) {
+	private int changeIndex(int index) {
 		// 若下标为0，则直接返回1，若下标小于0，则对下标进行处理，若下标大于0，则直接返回下标
 		if (index < 0) {
 			// 若下标的绝对值大于数据总数，则返回1
-			if (Math.abs(index) > length) {
+			if (Math.abs(index) > maxLength) {
 				return 1;
 			} else {
-				return (length + index) + 1;
+				return (maxLength + index) + 1;
 			}
 		} else if (index == 0) {
 			return 1;
