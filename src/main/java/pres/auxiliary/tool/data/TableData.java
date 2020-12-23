@@ -41,11 +41,11 @@ public class TableData<T> {
 	/**
 	 * 指向列表中最短列数据个数
 	 */
-	protected int minLength = Integer.MAX_VALUE;
+	protected int shortColumnSize = Integer.MAX_VALUE;
 	/**
 	 * 指向列表中最长列数据个数
 	 */
-	protected int maxLength = -1;
+	protected int longColumnSize = -1;
 
 	/**
 	 * 定义添加列时是否严格检查的开关
@@ -64,7 +64,7 @@ public class TableData<T> {
 	 * @param tableMap 列表数据
 	 */
 	public TableData(Map<String, ArrayList<T>> tableMap) {
-		tableMap.forEach(this::add);
+		tableMap.forEach(this::addColumn);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class TableData<T> {
 	 * @return 类本身
 	 * @throws IllegalDataException 传入元素集合为null时抛出的异常
 	 */
-	public TableData<T> add(String columnName, List<T> columnDataList) {
+	public TableData<T> addColumn(String columnName, List<T> columnDataList) {
 		// 判断列表名称是否正确传入
 		columnName = Optional.ofNullable(columnName).filter(text -> !text.isEmpty())
 				.orElseThrow(() -> new IllegalDataException("必须指定列名称"));
@@ -106,15 +106,79 @@ public class TableData<T> {
 	}
 
 	/**
-	 * 用于根据列表名称，存储一组元素数据，多次调用该方法时，将在相应列后继续添加数据
+	 * 用于向表中添加一列列名，若列名重复，则不进行添加
 	 * 
-	 * @param columnName  列表名称
-	 * @param columnDatas 数据集合
+	 * @param columnNameList 列名集合
 	 * @return 类本身
+	 * @throws IllegalDataException 未添加类名称时抛出的异常
 	 */
-	@SuppressWarnings("unchecked")
-	public TableData<T> add(String columnName, T... columnDatas) {
-		return add(columnName, Optional.ofNullable(columnDatas).map(Arrays::asList).orElse(new ArrayList<T>()));
+	public TableData<T> addTitle(List<String> columnNameList) {
+		Optional.ofNullable(columnNameList).filter(list -> !list.isEmpty())
+				.orElseThrow(() -> new IllegalDataException("必须指定列名称"))
+				// 筛选名称不为空，且不在tableMap中的内容进行添加
+				.stream().filter(title -> !title.isEmpty())
+				.filter(title -> !tableMap.containsKey(title))
+				.forEach(title -> {
+					tableMap.put(title, new ArrayList<Optional<T>>());
+					// 若存在添加的列，则设置表中最短列的长度为0
+					shortColumnSize = 0;
+				});
+
+		return this;
+	}
+
+	/**
+	 * 用于向表中添加一个列名，若列名重复，则不进行添加
+	 * 
+	 * @param columnName 列名名称
+	 * @return 类本身
+	 * @throws IllegalDataException 未添加类名称时抛出的异常
+	 */
+	public TableData<T> addTitle(String columnName) {
+		return addTitle(Arrays.asList(
+				Optional.ofNullable(columnName).filter(titleText -> !tableMap.containsKey(titleText)).orElse("")));
+	}
+
+	/**
+	 * 按照行存储元素，若元素个数少于当前表中存储的元素个数时，则使用{@link Optional#empty()}代替；若元素
+	 * 个数超出当前表中存储的元素个数时，则抛出异常
+	 * 
+	 * @param rowDataList 行数据集合
+	 * @return 类本身
+	 * @throws IllegalDataException 未存储列名时或添加的元素超出列数量时抛出的异常
+	 */
+	public TableData<T> addRow(List<T> rowDataList) {
+		// 判断是否存储数据
+		if (tableMap.isEmpty()) {
+			throw new IllegalDataException("未存储列名，无法按行添加元素");
+		}
+
+		
+		List<T> rowList = Optional.ofNullable(rowDataList).filter(list -> !list.isEmpty()).orElse(new ArrayList<T>());
+		//判断需要存储的元素个数是否为空，为空则结束方法
+		if (rowList.size() != 0) {
+			// 判断传入的行元素个数是否超出当前表中存储的列数，超出，则抛出异常
+			if (rowList.size() > tableMap.size()) {
+				throw new IllegalDataException(
+						String.format("指定的行元素超出标题个数。当前传入数据个数：%d，表中列个数：%d", rowDataList.size(), tableMap.size()));
+			}
+	
+			// 按照列添加数据，补全的列，按照空元素进行存储
+			AtomicInteger index = new AtomicInteger(0);
+			tableMap.forEach((key, value) -> {
+				try {
+					value.add(Optional.ofNullable(rowList.get(index.getAndAdd(1))));
+				} catch (IndexOutOfBoundsException e) {
+					value.add(Optional.empty());
+				}
+			});
+			
+			//由于每列数据均会增加，故最短与最长列的数据量均加上1
+			shortColumnSize++;
+			longColumnSize++;
+		}
+
+		return this;
 	}
 
 	/**
@@ -132,8 +196,8 @@ public class TableData<T> {
 	 * 
 	 * @return 数据个数
 	 */
-	public int getLongListSize() {
-		return maxLength;
+	public int getLongColumnSize() {
+		return longColumnSize;
 	}
 
 	/**
@@ -141,8 +205,8 @@ public class TableData<T> {
 	 * 
 	 * @return 数据个数
 	 */
-	public int getShortListSize() {
-		return minLength;
+	public int getShortColumnSize() {
+		return shortColumnSize;
 	}
 
 	/**
@@ -170,8 +234,8 @@ public class TableData<T> {
 
 		// 清空列指向的集合
 		tableMap.get(columnName).clear();
-		// 刷新列表最长/最短列数据个数
-		refreshLength();
+		// 成功清空列数据后必然导致某列元素为空
+		shortColumnSize = 0;
 
 		return columnDataList;
 	}
@@ -194,24 +258,24 @@ public class TableData<T> {
 
 		return columnDataList;
 	}
-	
+
 	/**
-	 * 用于根据列下标返回列字段的名称，下标从0开始计算，即0表示第1列。
-	 * 若下标小于1或大于当前表中列的个数时，则返回空串
+	 * 用于根据列下标返回列字段的名称，下标从0开始计算，即0表示第1列。 若下标小于1或大于当前表中列的个数时，则返回空串
+	 * 
 	 * @param index 列下标
 	 * @return 字段名称
 	 */
-	public String indexToFieldName(int index) {
+	public String getFieldName(int index) {
 		if (index < 0) {
 			return "";
 		}
-		
+
 		ArrayList<String> fieldNameList = getColumnName();
-		
+
 		if (index > fieldNameList.size() - 1) {
 			return "";
 		}
-		
+
 		return fieldNameList.get(index);
 	}
 
@@ -292,10 +356,10 @@ public class TableData<T> {
 			List<String> columnNameList) {
 		AtomicInteger startRowIndexA = new AtomicInteger(changeIndex(startRowIndex));
 		AtomicInteger endRowIndexA = new AtomicInteger(changeIndex(endRowIndex));
-		
+
 		// 若最长列数据与最短列数据不一致，且需要严格判断，则抛出异常
-		if (minLength != maxLength && isExamine && endRowIndexA.get() > minLength) {
-			throw new IllegalDataException(String.format("数据列长度不一致，最长数据列长度：%d；最短数据列长度：%d", maxLength, minLength));
+		if (shortColumnSize != longColumnSize && isExamine && endRowIndexA.get() > shortColumnSize) {
+			throw new IllegalDataException(String.format("数据列长度不一致，最长数据列长度：%d；最短数据列长度：%d", longColumnSize, shortColumnSize));
 		}
 
 		// 存储获取的集合
@@ -317,19 +381,19 @@ public class TableData<T> {
 
 		return columnDataMap;
 	}
-	
+
 	/**
 	 * 刷新表中最长与最短列的元素个数，用于清空或删除表时的计算
 	 */
 	private void refreshLength() {
-		minLength = Integer.MAX_VALUE;
-		maxLength = -1;
+		shortColumnSize = Integer.MAX_VALUE;
+		longColumnSize = -1;
 
 		// 遍历所有列，查询每一列数据个数
 		for (String name : tableMap.keySet()) {
 			int length = tableMap.get(name).size();
-			minLength = Math.min(length, minLength);
-			maxLength = Math.max(length, maxLength);
+			shortColumnSize = Math.min(length, shortColumnSize);
+			longColumnSize = Math.max(length, longColumnSize);
 		}
 	}
 
@@ -344,10 +408,10 @@ public class TableData<T> {
 		// 若下标为0，则直接返回1，若下标小于0，则对下标进行处理，若下标大于0，则直接返回下标
 		if (index < 0) {
 			// 若下标的绝对值大于数据总数，则返回1
-			if (Math.abs(index) > maxLength) {
+			if (Math.abs(index) > longColumnSize) {
 				return 1;
 			} else {
-				return (maxLength + index) + 1;
+				return (longColumnSize + index) + 1;
 			}
 		} else if (index == 0) {
 			return 1;
