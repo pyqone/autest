@@ -149,8 +149,12 @@
 
 	<!-- SCM信息 -> git在gitee上托管 -->
 	<scm>
-		<url>https://gitee.com/pyqone/autest/tree/master</url>
+		<tag>master</tag>
+		<connection>scm:git:https://gitee.com/pyqone/autest.git</connection>
+		<developerConnection>scm:git:https://gitee.com/pyqone/autest.git</developerConnection>
+		<url>https://gitee.com/pyqone/autest.git</url>
 	</scm>
+
 	<!-- 开发者信息 -->
 	<developers>
 		<developer>
@@ -212,13 +216,39 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>oss-pyq-release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<distributionManagement>
 		<snapshotRepository>
-			<id>ossrh</id>
+			<id>oss-pyq-release</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
+			<id>oss-pyq-release</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
