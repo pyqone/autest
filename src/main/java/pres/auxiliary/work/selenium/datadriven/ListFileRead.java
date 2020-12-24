@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -26,6 +27,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import com.opencsv.CSVReader;
 
+import pres.auxiliary.tool.data.TableData;
 import pres.auxiliary.tool.date.Time;
 import pres.auxiliary.tool.file.UnsupportedFileException;
 
@@ -39,7 +41,7 @@ import pres.auxiliary.tool.file.UnsupportedFileException;
  * <p><b>修改时间：</b>2020年3月29日 下午2:36:46</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  */
 public class ListFileRead {
 	/**
@@ -47,16 +49,13 @@ public class ListFileRead {
 	 * 外层ArrayList：存在多列的情况，存储每一列<br>
 	 * 内层ArrayList：存储每一列的所有词语
 	 */
-	private ArrayList<ArrayList<String>> wordList = new ArrayList<ArrayList<String>>();
+//	private ArrayList<ArrayList<String>> wordList = new ArrayList<ArrayList<String>>();
+	private TableData<String> wordTable = new TableData<>();
 	
 	/**
-	 * 存储当前获取到的内容组成的表格最大行数
+	 * 标记首行是否为标题行
 	 */
-	private int maxRowNum = 0;
-	/**
-	 * 存储当前获取到的内容组成的表格最大列数
-	 */
-	private int maxColumnNum = 0;
+	private boolean isFirstTitle = true;
 	
 	/**
 	 * 根据传入文件格式，将文件的内容进行转换。若读取的是Excel文件，则通过该方法构造时
@@ -64,7 +63,7 @@ public class ListFileRead {
 	 * @param file 待读取的文件对象
 	 * @throws IOException 文件状态或路径不正确时抛出的异常
 	 */
-	public ListFileRead(File file) throws IOException {
+	public ListFileRead(File file, boolean isFirstTitle) throws IOException {
 		this(file, "");
 	}
 	
@@ -116,167 +115,32 @@ public class ListFileRead {
 	 * @param columnIndex 列下标
 	 * @return 相应一列的数据
 	 */
-	public List<String> getColumn(int columnIndex) {
-		columnIndex = columnIndex >= maxColumnNum ? maxColumnNum : columnIndex;
-		columnIndex = columnIndex < 0 ? 0 : columnIndex;
-		
-		return wordList.get(columnIndex);
+	public List<Optional<String>> getColumn(int columnIndex) {
+		return wordTable.getColumnList(wordTable.getFieldName(columnIndex));
 	}
 	
 	/**
-	 * 用于返回一列数据中某几行元素，若传入的下标大于最大列数，则返回最后一列数据；若传值小于0，则返回第一行数据。
-	 * 同样，若传入的行标于列表最大行标时，返回最后一行数据；若行标小于0，则返回第一行数据。<br>
-	 * 注意，返回的数据不包括endRowIndex行，但允许两个参数相同
+	 * 用于返回一列数据中某几行元素。
+	 * <p>
+	 * 其行下标从1开始计算，传入0与1时，均表示获取第一行。允许传入负数，表示从后向前计算行号。
+	 * 其获取的行元素包括传入的结束行当起始行下标与结束行下标一致时，则表示获取当前的行元素；
+	 * 列下标从0开始计算，不允许传入负数，例如：
+	 * <ul>
+	 * 	<li>调用{@code getColumn(0, 0, 3)}表示获取第1列的第1行到第3行元素</li>
+	 * 	<li>调用{@code getColumn(1, 1, 1)}表示获取第2列的第1行元素</li>
+	 * 	<li>调用{@code getColumn(2, 1, -2)}表示获取第3列的第1行到倒数第2行元素</li>
+	 * </ul>
+	 * </p>
 	 * @param columnIndex 列下标
 	 * @param startRowIndex 开始行下标
 	 * @param endRowIndex 结束行下标
 	 * @return 相应的数据
 	 */
-	public List<String> getColumn(int columnIndex, int startRowIndex, int endRowIndex) {
-		columnIndex = columnIndex >= maxColumnNum ? maxColumnNum - 1 : columnIndex;
-		columnIndex = columnIndex < 0 ? 0 : columnIndex;
-		
-		//若传值大于最大maxRowNum时，则直接赋予maxRowNum
-		startRowIndex = (startRowIndex >= maxRowNum) ? maxRowNum : startRowIndex;
-		startRowIndex = startRowIndex < 0 ? 0 : startRowIndex;
-		endRowIndex = (endRowIndex >= maxRowNum) ? maxRowNum : endRowIndex;
-		endRowIndex = endRowIndex < 0 ? 0 : endRowIndex;
-		
-		//若两个传值相同，则endRowIndex+1
-		endRowIndex = (endRowIndex == startRowIndex) ? (endRowIndex + 1) : endRowIndex;
-		
-		//存储获取的内容
-		ArrayList<String> texts = new ArrayList<>(); 
-		
-		int minRowIndex = startRowIndex < endRowIndex ? startRowIndex : endRowIndex;
-		int maxRowIndex = startRowIndex < endRowIndex ? endRowIndex :  startRowIndex;
-		//获取数据
-		for (int rowIndex = minRowIndex; rowIndex < maxRowIndex; rowIndex++) {
-			texts.add(wordList.get(columnIndex).get(rowIndex));
-		}
-		
-		return texts;
+	public List<Optional<String>> getColumn(int columnIndex, int startRowIndex, int endRowIndex) {
+		String fieldName = wordTable.getFieldName(columnIndex);
+		return wordTable.getData(startRowIndex, endRowIndex, fieldName).get(fieldName);
 	}
 	
-	/**
-	 * 用于返回从文件中读取的整个列表
-	 * @return 整个列表数据
-	 */
-	public ArrayList<ArrayList<String>> getTable() {
-		return wordList;
-	}
-	
-	/**
-	 * 用于根据参数，返回从文件中读取的制定区域列表。当传入的参数大于最大行或列数时，则返回最后
-	 * 一行列或行；若传入的参数小于0，则返回第一列或行
-	 * @param startColumnIndex 开始列下标
-	 * @param endColumnIndex 结束列下标
-	 * @param startRowIndex 开始行下标
-	 * @param endRowIndex 结束行下标
-	 * @return 相应列表的数据
-	 */
-	public ArrayList<ArrayList<String>> getTable(int startColumnIndex, int endColumnIndex, int startRowIndex, int endRowIndex) {
-		ArrayList<ArrayList<String>> newWordList = new ArrayList<>();
-		
-		//若传值大于最大maxColumnNum时，则直接赋予maxColumnNum，小于0，则直接赋予0
-		startColumnIndex = startColumnIndex >= maxColumnNum ? maxColumnNum - 1 : startColumnIndex;
-		startColumnIndex = startColumnIndex < 0 ? 0 : startColumnIndex;
-		endColumnIndex = endColumnIndex >= maxColumnNum ? maxColumnNum - 1 : endColumnIndex;
-		endColumnIndex = endColumnIndex < 0 ? 0 : endColumnIndex;
-		
-		//若传值大于最大maxRowNum时，则直接赋予maxRowNum，小于0，则直接赋予0
-		startRowIndex = (startRowIndex >= maxRowNum) ? maxRowNum : startRowIndex;
-		startRowIndex = startRowIndex < 0 ? 0 : startRowIndex;
-		endRowIndex = (endRowIndex >= maxRowNum) ? maxRowNum : endRowIndex;
-		endRowIndex = endRowIndex < 0 ? 0 : endRowIndex;
-		
-		//若两个传值相同，则endXXXIndex+1
-		endColumnIndex = (endColumnIndex == startColumnIndex) ? (endColumnIndex + 1) : endColumnIndex;
-		endRowIndex = (endRowIndex == startRowIndex) ? (endRowIndex + 1) : endRowIndex;
-		
-		//取值
-		int minColumnIndex = startColumnIndex < endColumnIndex ? startColumnIndex : endColumnIndex;
-		int maxColumnIndex = startColumnIndex < endColumnIndex ? endColumnIndex :  startColumnIndex;
-		int minRowIndex = startRowIndex < endRowIndex ? startRowIndex : endRowIndex;
-		int maxRowIndex = startRowIndex < endRowIndex ? endRowIndex :  startRowIndex;
-		//获取数据
-		for (int columnIndex = minColumnIndex; columnIndex < maxColumnIndex; columnIndex++) {
-			ArrayList<String> columnTextList = new ArrayList<>();
-			for (int rowIndex = minRowIndex; rowIndex < maxRowIndex; rowIndex++) {
-				columnTextList.add(wordList.get(columnIndex).get(rowIndex));
-			}
-			newWordList.add(columnTextList);
-		}
-		
-		return newWordList;
-	}
-	
-	/**
-	 * 用于将存储的行列内容转置（行作为列，列作为行），为保证转置后能再次转换回原始行列，若列表本身
-	 * 数量不对应时，则转置中将无数据的位置添加为空串
-	 */
-	public void tableTransposition() {
-		//若行列长度为0，则不进行存储
-		if (maxColumnNum ==0 || maxRowNum == 0) {
-			return;
-		}
-		
-		//存储转置后的文本
-		ArrayList<ArrayList<String>> newWordList = new ArrayList<ArrayList<String>>();
-		
-		//读取wordList的一列，将该列内容作为newWordList的一行
-		for (int row = 0; row < maxRowNum; row++) {
-			ArrayList<String> columnText = new ArrayList<String>();
-			//根据行读取每一个元素
-			for (int column = 0; column < maxColumnNum; column++) {
-				try {
-					columnText.add(wordList.get(column).get(row));
-				} catch (IndexOutOfBoundsException e) {
-					//若该列的该行并无元素，则存储空串
-					columnText.add("");
-				}
-			}
-			//存储该列内容
-			newWordList.add(columnText);
-		}
-		
-		//将wordList替换成newWordList
-		wordList = newWordList;
-		
-		//交换最大行列
-		int temp = maxColumnNum;
-		maxColumnNum = maxRowNum;
-		maxRowNum = temp;
-	}
-	
-	/**
-	 * 该方法用于返回最大行数
-	 * @return 最大行数
-	 */
-	public int getMaxRowNumber() {
-		return maxRowNum;
-	}
-	
-	/**
-	 * 该方法用于返回最大列数
-	 * @return 最大列数
-	 */
-	public int getMaxColumnNumber() {
-		return maxColumnNum;
-	}
-	
-	/**
-	 * 返回制定列的元素个数
-	 * @param columnIndex 列下标
-	 * @return 相应列的长度
-	 */
-	public int getCoulumnSize(int columnIndex) {
-		columnIndex = columnIndex >= maxColumnNum ? maxColumnNum : columnIndex;
-		columnIndex = columnIndex < 0 ? 0 : columnIndex;
-		
-		return wordList.get(columnIndex).size();
-	}
-
 	/**
 	 * 该方法用于读取并处理csv格式文件
 	 * 
@@ -286,8 +150,6 @@ public class ListFileRead {
 	private void readCsv(File file) throws IOException {
 		// 定义CSV文件对象
 		CSVReader csv = new CSVReader(new FileReader(file));
-		//存储获取到的内容中一行最大的长度
-		AtomicInteger maxSizeNum = new AtomicInteger(-1);
 		
 		//读取文件内容，由于该方法的读取是按照行进行读取，故需要对读取的行列进行一个转换
 		csv.forEach(texts -> {
@@ -295,14 +157,7 @@ public class ListFileRead {
 			List<String> text = Arrays.asList(texts);
 			//存储该行内容
 			wordList.add(new ArrayList<>(text));
-			
-			//判断当前内容的元素个数，若大于之前存储的内容，则将该行的元素个数最为最大值存储
-			maxSizeNum.set(maxSizeNum.get() > text.size() ? maxSizeNum.get() : text.size());
 		});
-		
-		//更新最大行列数
-		maxRowNum = maxSizeNum.get();
-		maxColumnNum = wordList.size();
 		
 		//由于文本以行作为单位，不符合当前的返回规则，故将其进行转置处理
 		tableTransposition();
