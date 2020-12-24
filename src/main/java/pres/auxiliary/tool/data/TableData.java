@@ -120,8 +120,8 @@ public class TableData<T> {
 				.filter(title -> !tableMap.containsKey(title))
 				.forEach(title -> {
 					tableMap.put(title, new ArrayList<Optional<T>>());
-					// 若存在添加的列，则设置表中最短列的长度为0
-					shortColumnSize = 0;
+					// 刷新列长度
+					refreshLength();
 				});
 
 		return this;
@@ -234,8 +234,8 @@ public class TableData<T> {
 
 		// 清空列指向的集合
 		tableMap.get(columnName).clear();
-		// 成功清空列数据后必然导致某列元素为空
-		shortColumnSize = 0;
+		// 刷新列长度
+		refreshLength();
 
 		return columnDataList;
 	}

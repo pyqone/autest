@@ -20,7 +20,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import pres.auxiliary.work.selenium.datadriven.ListFileRead;
+import pres.auxiliary.work.selenium.datadriven.TableFileReadUtil;
 import pres.auxiliary.work.testcase.file.IncorrectFileException;
 import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
 
@@ -375,7 +375,7 @@ public class CreateExcelFile {
 			//读取数据有效性文件内容
 			File dataFile = new File(textElement.attributeValue("path"));
 			String sheet = textElement.attributeValue("regex");
-			ListFileRead lfr = new ListFileRead(dataFile, sheet);
+			TableFileReadUtil lfr = new TableFileReadUtil(dataFile, sheet);
 			
 			//获取需要读取的列信息，若未指定列信息，则默认读取第一列
 			int columnIndex = textElement.attributeValue("column") == null ? 0 : Integer.valueOf(textElement.attributeValue("column"));

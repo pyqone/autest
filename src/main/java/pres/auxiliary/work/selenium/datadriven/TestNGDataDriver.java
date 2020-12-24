@@ -128,7 +128,7 @@ public class TestNGDataDriver {
 	 */
 	public void addDataDriver(File dataFile, String pattern, boolean isFirstTitle) throws IOException {
 		//读取文件内的数据
-		ListFileRead data = new ListFileRead(dataFile, pattern);
+		TableFileReadUtil data = new TableFileReadUtil(dataFile, pattern);
 		//获取当前标题行的总数
 		int titleIndex = titleList.size();
 		
