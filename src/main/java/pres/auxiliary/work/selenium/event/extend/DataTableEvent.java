@@ -2,14 +2,15 @@ package pres.auxiliary.work.selenium.event.extend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 
 import org.openqa.selenium.Keys;
 
+import pres.auxiliary.tool.data.ListUtil;
+import pres.auxiliary.tool.data.TableData;
 import pres.auxiliary.work.selenium.brower.AbstractBrower;
 import pres.auxiliary.work.selenium.element.DataListBy;
 import pres.auxiliary.work.selenium.element.Element;
@@ -57,10 +58,11 @@ public final class DataTableEvent extends AbstractEvent {
 	private WaitEvent waitEvent;
 
 	/**
-	 * 用于存储当前的列表的一列元素
+	 * 用于存储当前的列表的元素
 	 */
 //	protected ArrayList<DataListBy> tableList = new ArrayList<>();
-	protected LinkedHashMap<String, List<Element>> tableMap = new LinkedHashMap<>(16);
+//	protected LinkedHashMap<String, List<Element>> tableMap = new LinkedHashMap<>(16);
+	protected TableData<Element> elementTable = new TableData<>();
 	/**
 	 * 用于存储列表相应的操作元素映射
 	 */
@@ -74,11 +76,6 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 用于存储当前列表的长度
 	 */
 	protected int listSize = -1;
-
-	/**
-	 * 标记是否进行元素个数长度校验
-	 */
-	protected boolean isExamine = true;
 
 	/**
 	 * 构造对象
@@ -101,7 +98,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * @param isExamine 是否严格校验元素个数
 	 */
 	public void setExamine(boolean isExamine) {
-		this.isExamine = isExamine;
+		elementTable.setExamine(isExamine);
 	}
 
 	/**
@@ -114,39 +111,20 @@ public final class DataTableEvent extends AbstractEvent {
 	}
 
 	/**
-	 * 用于添加一列元素，若启用严格校验（即通过{@link #setExamine(boolean)}方法设置为true），
-	 * 则调用该方法时将对存储的数据个数进行校验，若传入的列元素个数与当前存储的列表元素个数
-	 * 不一致时，则抛出{@link InvalidDataListException}异常。
-	 * 
+	 * 用于添加一列元素
 	 * <p>
 	 * <b>注意：</b>传入的{@link DataListBy}类对象中元素的名称请勿与其他元素名称一致，否则会覆盖原有的元素列。
 	 * 其元素名称将作为列表名称，可通过该名称获取当前列
 	 * </p>
 	 * 
 	 * @param dataListBy 元素列查找对象
-	 * @throws InvalidDataListException 启用严格校验且元素个数与存储列表元素个数不一致时抛出的异常
 	 */
 	public void addList(DataListBy dataListBy) {
-		// 判断当前是否存储元素，若未存储元素，则不进行元素个数判断
-		if (!tableMap.isEmpty()) {
-			// 判断传入的列的元素个数是否与当前存储的元素个数一致，若不一致，则进行个数判定校验
-			int nowSize = dataListBy.size();
-			if (nowSize != listSize()) {
-				// 若当前需要严格校验列表元素个数，则抛出异常
-				if (isExamine) {
-					throw new InvalidDataListException(
-							"当前传入的元素列个数与存储的元素列个数不一致！" + "（当前元素列个数：" + listSize() + "，传入的元素列元素个数：" + nowSize + "）");
-				} else {
-					// 若无需校验元素个数，则判断传入的元素个数与存储的元素列个数，存储较小的数字
-					listSize = listSize < nowSize ? listSize : nowSize;
-				}
-			}
-
-		} else {
-			listSize = dataListBy.size();
-		}
-
-		tableMap.put(dataListBy.getElementData().getName(), dataListBy.getAllElement());
+		elementTable.addColumn(dataListBy.getElementData().getName(), new ArrayList<>(Optional.ofNullable(dataListBy)
+				// 将By对象转换为元素集合
+				.map(by -> by.getAllElement())
+				// 若当前为空对象，则返回一个空元素集合
+				.orElse(new ArrayList<Element>())));
 	}
 
 	/**
@@ -157,33 +135,6 @@ public final class DataTableEvent extends AbstractEvent {
 	 */
 	public void putControl(DataTableKeywordType dataTableKeywordType, Element elemenet) {
 		controlMap.put(dataTableKeywordType, elemenet);
-	}
-
-	/**
-	 * 返回元素列中元素的个数，若设置了严格判断，则该数值为所有列的元素个数；反之，则该 数值表示列表集合中，最短元素列的元素个数
-	 * 
-	 * @return 元素列的元素个数
-	 */
-	public int listSize() {
-		return listSize;
-	}
-
-	/**
-	 * 获取列表名称指向列的元素个数
-	 * @param name 列表名称
-	 * @return 指向的列表元素个数
-	 */
-	public int listSize(String name) {
-		return tableMap.get(name).size();
-	}
-
-	/**
-	 * 用于返回元素表中的列数
-	 * 
-	 * @return 元素表中的列数
-	 */
-	public int rowSize() {
-		return tableMap.size();
 	}
 
 	/**
@@ -269,7 +220,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 用于对列表进行点击跳页按钮后的跳页操作。若当前存储过元素列表，则对元素列表进行断言，
 	 * 即取存储的列表的第一行元素，若操作前后，该行元素不变，则判定为跳页失败
 	 * 
-	 * @param pageCount  页码数
+	 * @param pageCount 页码数
 	 */
 	public boolean jumpPage(String pageCount) {
 		if (!controlMap.containsKey(DataTableKeywordType.PAGE_INPUT_TEXTBOX)) {
@@ -353,104 +304,72 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * <p>
-	 * 获取指定的一行元素，下标允许传入负数，表示从后向前遍历，具体遍历逻辑可参考{@link DataListBy#getElement(int)}方法。
+	 * 获取指定的一行元素，下标允许传入负数，表示从后向前遍历
 	 * </p>
 	 * <p>
-	 * <b>注意：</b>下标将按照元素列长度进行计算，若下标的绝对值大于元素列长度，且下标为正数，则
-	 * 获取最后一行元素；反之，则获取第一行元素。元素列个数可参考{@link #listSize()}方法
+	 * <b>注意：</b>下标从1开始计算，即传入1时表示获取第1行数据；若传入0，则以表中最长列的元素个数为基准，
+	 * 返回一个随机的数字
 	 * </p>
 	 * 
 	 * @param rowIndex 需要获取的行下标
 	 * @return 指定行的元素集合
+	 * @throws ControlException 元素集合为空时抛出的异常
 	 */
-	public ArrayList<Element> getRowElement(int rowIndex) {
-		// 根据下标，获取元素，并进行存储
-		ArrayList<Element> elementList = new ArrayList<>();
-		tableMap.forEach((key, value) -> {
-			// 存储元素
-			elementList.add(value.get(toElementIndex(listSize(key), rowIndex)));
-		});
+	public List<Optional<Element>> getRowElement(int rowIndex) {
+		//转换下标，若下标为0，则取随机数，若不为0，则使用原下标
+		rowIndex = (rowIndex == 0 ? new Random().nextInt(elementTable.getLongColumnSize()) + 1 : rowIndex);
+		return Optional.ofNullable(elementTable.getData(rowIndex, rowIndex, elementTable.getColumnName()))
+				//将带标题的元素表转换为无标题元素表
+				.map(ListUtil::toNoTitleTable)
+				//将表转置，使第一列存储获取的行元素
+				.map(table -> ListUtil.rowDataToList(table, 0))
+				//判断当前元素集合是否为空
+				.filter(table -> !table.isEmpty())
+				//若当前为空集合，则抛出异常
+				.orElseThrow(() -> new ControlException("当前行元素为空，无法获取"));
 
-		return elementList;
-	}
-
-	/**
-	 * 获取指定行的文本，其行号可传入负数，具体规则可参考{@link DataListBy#getElement(int)}方法
-	 * @param rowIndex 指定的行号
-	 * @return 该行元素的文本
-	 */
-	public ArrayList<String> getRowText(int rowIndex) {
-		//重新获取列表元素
-		againFindDataList();
-		
-		ArrayList<String> rowTextList = new ArrayList<>();
-		// 遍历元素，将其转换为文本后进行存储
-		getRowElement(rowIndex).stream().map(textEvent::getText).forEach(rowTextList :: add);
-		
-		//添加日志
-		resultText = rowTextList.toString();
-		logText = "获取列表第" + rowIndex + "行元素内容的文本，其获取到的文本内容为：" + resultText;
-		
-		return rowTextList;
 	}
 	
 	/**
+	 * 获取指定行的文本，其行号可传入负数，具体规则可参考{@link DataListBy#getElement(int)}方法
+	 * 
+	 * @param rowIndex 指定的行号
+	 * @return 该行元素的文本
+	 */
+	public ArrayList<Optional<String>> getRowText(int rowIndex) {
+		// 重新获取列表元素
+		againFindDataList();
+
+		ArrayList<Optional<String>> rowTextList = new ArrayList<>(
+				ListUtil.changeList(getRowElement(rowIndex), textEvent::getText));
+
+		// 添加日志
+		resultText = rowTextList.toString();
+		logText = "获取列表第" + rowIndex + "行元素内容的文本，其获取到的文本内容为：" + resultText;
+
+		return rowTextList;
+	}
+
+	/**
 	 * 获取指定列的文本，若该列元素异常时，则抛出异常
+	 * 
 	 * @param listName 列表名称
 	 * @return 指定列的文本内容
 	 * @throws ControlException 该列不存在或该列元素为空时抛出的异常
 	 */
-	public ArrayList<String> getListText(String listName) {
-		//重新获取列表元素
+	public  ArrayList<Optional<String>> getListText(String listName) {
+		// 重新获取列表元素
 		againFindDataList();
-		
-		//判断列元素是否存在，若不存在，则抛出异常
-		if (!tableMap.containsKey(listName)) {
-			throw new ControlException("“" + listName + "”指向的列元素不存在");
-		}
-		//判断当前列是否包含元素
-		if (listSize(listName) == 0) {
-			throw new ControlException("“" + listName + "”指向的列无元素");
-		}
-		
-		ArrayList<String> listTextList = new ArrayList<>();
-		// 遍历元素，将其转换为文本后进行存储
-		tableMap.get(listName).stream().map(textEvent::getText).forEach(listTextList :: add);
-		
-		//添加日志
+
+		ArrayList<Optional<String>> listTextList = new ArrayList<>(
+				ListUtil.changeList(elementTable.getColumnList(listName), textEvent::getText));
+
+
+		// 添加日志
 		resultText = listTextList.toString();
 		logText = "获取列表的" + listName + "列元素内容的文本，其获取到的文本内容为：" + resultText;
-		
-		return listTextList;
-	}
-	
-	/**
-	 * 由于方法允许传入负数和特殊数字0为下标，并且下标的序号由1开始， 故可通过该方法对下标的含义进行转义，得到java能识别的下标
-	 * 
-	 * @param length 元素的个数
-	 * @param index  传入的下标
-	 * @return 可识别的下标
-	 */
-	protected int toElementIndex(int length, int index) {
-		// 判断元素下标是否超出范围，由于可以传入负数，故需要使用绝对值
-		if (Math.abs(index) > length) {
-			if (index > 0) {
-				return length;
-			} else {
-				return 0;
-			}
-		}
 
-		// 判断index的值，若大于0，则从前向后遍历，若小于0，则从后往前遍历，若等于0，则随机输入
-		if (index > 0) {
-			// 选择元素，正数的选项值从1开始，故需要减小1
-			return index - 1;
-		} else if (index < 0) {
-			// 选择元素，由于index为负数，则长度加上选项值即可得到需要选择的选项
-			return length + index;
-		} else {
-			return new Random().nextInt(length);
-		}
+		return listTextList;
 	}
 
 	/**
@@ -461,13 +380,13 @@ public final class DataTableEvent extends AbstractEvent {
 	 */
 	protected boolean assertData(BooleanSupplier action) {
 		// 若元素列表非空，则获取第一行元素，用于进行断言
-		ArrayList<String> oldTextList = new ArrayList<>();
-		if (!tableMap.isEmpty()) {
+		ArrayList<Optional<String>> oldTextList = new ArrayList<>();
+		if (elementTable.getLongColumnSize() > 0) {
 			// 获取第一行元素，并将其转换为文本后存储
-			getRowElement(1).stream().map(textEvent::getText).forEach(oldTextList::add);
+			oldTextList = getRowText(1);
 		}
 		// 获取当前集合的长度
-		int oldListSize = listSize();
+		int oldListSize = elementTable.getShortColumnSize();
 
 		// 执行操作，并获取操作的返回结果；若返回值为true，则需要进行元素断言操作
 		if (action.getAsBoolean()) {
@@ -487,15 +406,15 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 断言数据是否有改变，若数据改变，则返回true；反之，返回false
 	 * 
 	 * @param oldTextList 原始数据文本集合
-	 * @param oldListSize  原始数据个数
+	 * @param oldListSize 原始数据个数
 	 * @return 元素是否存在改变
 	 */
-	protected boolean assertDataChange(ArrayList<String> oldTextList, int oldListSize) {
+	protected boolean assertDataChange(ArrayList<Optional<String>> oldTextList, int oldListSize) {
 		// 重新获取集合元素
 		againFindDataList();
 
 		// 获取操作后的第一行元素
-		ArrayList<Element> newElementList = getRowElement(1);
+		List<Optional<Element>> newElementList = getRowElement(1);
 
 		// 若集合的长度发生改变，则表示集合存在变化
 		if (oldListSize != listSize) {
@@ -504,7 +423,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 		// 为避免不进行翻页时，列表也会进行一次刷新，则获取信息，对每个文本数据进行比对
 		for (int index = 0; index < oldTextList.size(); index++) {
-			if (assertEvent.assertNotEqualsText(newElementList.get(index), oldTextList.get(index))) {
+			if (assertEvent.assertNotEqualsText(newElementList.get(index).orElse(null), oldTextList.get(index).orElse(""))) {
 				return true;
 			}
 		}
@@ -516,42 +435,27 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 用于重新获取元素信息
 	 */
 	private void againFindDataList() {
-		// 用于判断当前数列元素的个数
-		AtomicInteger nowListSize = new AtomicInteger(-1);
-		tableMap.forEach((key, value) -> {
-			// 获取原集合个数
-			int oldSize = value.size();
-
-			// 对列表第一个元素进行重新获取
-			Element element = value.get(0);
-			// 重新获取当前元素，并存储当前列表长度
-			int elementListSize = element.againFindElement();
-
-			// 判断当前size是否为初始化的状态，若为初始化的状态，则直接存储重新获取后的集合元素个数
-			if (nowListSize.get() == -1) {
-				nowListSize.set(elementListSize);
-			} else {
-				// 若当前size已被初始化，则进行重获后的元素个数判断
-				if (nowListSize.get() != elementListSize) {
-					// 若当前需要严格校验列表元素个数，则抛出异常
-					if (isExamine) {
-						throw new InvalidDataListException("“" + key + "”元素列的元素个数与其他元素列的元素个数不一致！" + "（ “" + key
-								+ "”元素列元素列个数：" + elementListSize + "，" + "其他元素列的元素个数：" + nowListSize.get() + "）");
-					} else {
-						// 若无需校验元素个数，则判断传入的元素个数与存储的元素列个数，存储较小的数字
-						nowListSize.set(nowListSize.get() > elementListSize ? elementListSize : nowListSize.get());
-					}
-				}
-			}
-
-			// 判断当前元素个数与重新获取前元素个数是否一致，不一致，则需要对数组进行处理
-			int nowSize = nowListSize.get();
-			if (nowSize != oldSize) {
-				// 根据元素返回的元素查找对象，强转为DataListBy后，再重新获取所有元素
-				value = ((DataListBy) (element.getBy())).getAllElement();
-
-				// 根据是否进行严格检查，来对listSize进行赋值，若无需严格检查，则取两者之间最小者
-				listSize = isExamine ? nowSize : Math.min(nowSize, listSize);
+		/*
+		ArrayList<AbstractBy> byList = new ArrayList<>(
+				ListUtil.rowDataToList(ListUtil.toNoTitleTable(elementTable.getFirstRowData()), 0)
+					.stream()
+					.map(data -> data.map(element -> element.getBy()).orElseThrow(() -> new ControlException("列表数据存在空元素")))
+					.collect(Collectors.toList())
+				);
+		
+		//清空表数据
+		elementTable.getColumnName().forEach(elementTable::removeColumn);
+		//重新插入数据
+		byList.forEach(by -> addList((DataListBy)by));
+		*/
+		ListUtil.rowDataToList(ListUtil.toNoTitleTable(elementTable.getFirstRowData()), 0).forEach(data -> {
+			if (data.isPresent()) {
+				Element element = data.get();
+				element.againFindElement();
+				
+				String columnName = element.getElementData().getName();
+				elementTable.clearColumn(columnName);
+				addList((DataListBy) element.getBy());
 			}
 		});
 	}

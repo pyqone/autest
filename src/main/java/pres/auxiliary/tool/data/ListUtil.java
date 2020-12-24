@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -26,7 +27,7 @@ import java.util.function.Function;
  * @since JDK 1.8
  *
  */
-public class TableUtil {
+public class ListUtil {
 	/**
 	 * 用于将带标题型的列表数据（Map型表数据）转换为无标题型的列表数据（List型表数据）
 	 * 
@@ -48,10 +49,11 @@ public class TableUtil {
 	 * 
 	 * @param tableList 原列表数据
 	 * @return 转置后的列表数据
+	 * @throws IllegalDataException 数据列为空时抛出的异常
 	 */
 	public static <T> List<List<Optional<T>>> transposition(List<List<Optional<T>>> tableList) {
 		tableList = Optional.ofNullable(tableList).filter(table -> !table.isEmpty())
-				.orElseThrow(() -> new IllegalDataException("未指定列表"));
+				.orElseThrow(() -> new IllegalDataException("数据列为空"));
 
 		// 获取当前列表的最长列的数据个数
 		AtomicInteger maxRowA = new AtomicInteger(-1);
@@ -83,6 +85,18 @@ public class TableUtil {
 	}
 	
 	/**
+	 * 用于以列的形式返回表中的指定行数据
+	 * @param <T> 数据列的数据类型
+	 * @param tableList 数据表
+	 * @param rowIndex 指定的行
+	 * @return 以列形式返回该行数据
+	 * @throws IllegalDataException 数据列为空时抛出的异常
+	 */
+	public static <T> List<Optional<T>> rowDataToList(List<List<Optional<T>>> tableList, int rowIndex) {
+		return transposition(tableList).get(rowIndex);
+	}
+	
+	/**
 	 * 用于对列表中的数据类型进行转换，返回新数据类型的列表
 	 * @param <T> 原数据类型
 	 * @param <U> 新数据类型
@@ -91,17 +105,18 @@ public class TableUtil {
 	 * @return 转换后的数据类型列表
 	 */
 	public static <T, U> List<List<Optional<U>>> changeTable(List<List<Optional<T>>> tableList, Function<T, U> mapper) {
-		List<List<Optional<U>>> newTableList = new ArrayList<>();
-		
-		tableList.forEach(columnList -> {
-			List<Optional<U>> newColumnList = new ArrayList<>();
-			columnList.forEach(data -> {
-				newColumnList.add(data.map(mapper));
-			});
-			
-			newTableList.add(newColumnList);
-		});
-		
-		return newTableList;
+		return tableList.stream().map(list -> ListUtil.changeList(list, mapper)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * 用于对单列数据集合的数据类型进行转换，返回新数据类型的集合
+	 * @param <T> 原数据类型
+	 * @param <U> 新数据类型
+	 * @param list 原数据类型集合
+	 * @param mapper 数据转换方式
+	 * @return 转换后的数据类型列表
+	 */
+	public static <T, U> List<Optional<U>> changeList(List<Optional<T>> list, Function<T, U> mapper) {
+		return list.stream().map(data -> data.map(mapper)).collect(Collectors.toList());
 	}
 }

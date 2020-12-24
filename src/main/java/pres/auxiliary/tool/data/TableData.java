@@ -278,7 +278,7 @@ public class TableData<T> {
 
 		return fieldNameList.get(index);
 	}
-
+	
 	/**
 	 * 用于返回指定列的所有数据
 	 * 
@@ -293,6 +293,22 @@ public class TableData<T> {
 		columnDataList.addAll(tableMap.get(columnName));
 
 		return columnDataList;
+	}
+	
+	/**
+	 * 用于返回第一列的所有数据
+	 * @return 第一列的所有数据
+	 */
+	public ArrayList<Optional<T>> getFirstColumn() {
+		return getColumnList(getFieldName(0));
+	}
+	
+	/**
+	 * 用于获取第一列第一条数据
+	 * @return 第一列第一条数据
+	 */
+	public Optional<T> getFirstData() {
+		return getFirstColumn().get(0);
 	}
 
 	/**
@@ -358,7 +374,7 @@ public class TableData<T> {
 		AtomicInteger endRowIndexA = new AtomicInteger(changeIndex(endRowIndex));
 
 		// 若最长列数据与最短列数据不一致，且需要严格判断，则抛出异常
-		if (shortColumnSize != longColumnSize && isExamine && endRowIndexA.get() > shortColumnSize) {
+		if (shortColumnSize != longColumnSize && isExamine) {
 			throw new IllegalDataException(String.format("数据列长度不一致，最长数据列长度：%d；最短数据列长度：%d", longColumnSize, shortColumnSize));
 		}
 
@@ -380,6 +396,14 @@ public class TableData<T> {
 				});
 
 		return columnDataMap;
+	}
+	
+	/**
+	 * 用于获取表中第一行的所有数据
+	 * @return 第一行的所有数据
+	 */
+	public LinkedHashMap<String, ArrayList<Optional<T>>> getFirstRowData() {
+		return getData(1, 1, getColumnName());
 	}
 
 	/**
