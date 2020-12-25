@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.word;
+package pres.auxiliary.tool.data;
 
 /**
  * 该枚举用于表示电话号码的类型

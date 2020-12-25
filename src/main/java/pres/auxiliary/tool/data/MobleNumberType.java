@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.word;
+package pres.auxiliary.tool.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;

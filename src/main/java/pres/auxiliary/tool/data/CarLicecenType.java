@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.word;
+package pres.auxiliary.tool.data;
 
 /**
  * 该枚举定义了部分车牌的样式

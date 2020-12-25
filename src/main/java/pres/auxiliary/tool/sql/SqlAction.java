@@ -7,8 +7,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import pres.auxiliary.tool.data.TableData;
 
 /**
  * <p>
@@ -77,7 +79,7 @@ public class SqlAction {
 	 * 
 	 * @param username 用户名
 	 * @param password 密码
-	 * @param host     主机（包括端口，默认为1521）
+	 * @param host     主机（包括端口）
 	 * @param dataBase 数据源
 	 */
 	public SqlAction(DataBaseType dataBaseType, String username, String password, String host, String dataBaseName) {
@@ -233,7 +235,12 @@ public class SqlAction {
 	 * @see #getFirstRowResult(int, int)
 	 */
 	public ArrayList<String> getRowResult(String fieldName, int startIndex, int endIndex) {
-		return getResult(startIndex, endIndex, fieldName).get(fieldName);
+		ArrayList<String> resultList = new ArrayList<>(getResult(startIndex, endIndex, fieldName)
+				.getColumnList(fieldName).stream()
+				.map(data -> data.orElse(""))
+				.collect(Collectors.toList())
+				);
+		return resultList;
 	}
 
 	/**
@@ -268,15 +275,15 @@ public class SqlAction {
 	 * @return 字段组对应的结果文本集合
 	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
 	 */
-	private HashMap<String, ArrayList<String>> getResult(int startIndex, int endIndex, String... fieldNames) {
+	private TableData<String> getResult(int startIndex, int endIndex, String... fieldNames) {
 		// 转换下标
 		int length = getResultSize();
 		startIndex = changeIndex(startIndex, length);
 		endIndex = changeIndex(endIndex, length);
 
-		// 初始化Map
-		HashMap<String, ArrayList<String>> fieldResultMap = new HashMap<>(16);
-		Arrays.stream(fieldNames).forEach(fieldName -> fieldResultMap.put(fieldName, new ArrayList<String>()));
+		// 添加标题，若未传入标题，则设置为空数组
+		TableData<String> fieldResultTable = new TableData<>();
+		fieldResultTable.addTitle(Arrays.asList(Optional.ofNullable(fieldNames).orElse(new String[] {})));
 
 		// 判断是否存在结果集，不存在则抛出异常
 		ResultSet result = this.result.orElseThrow(DatabaseException::new);
@@ -293,15 +300,17 @@ public class SqlAction {
 				int index = startIndex;
 				do {
 					// 获取相应字段的内容，若字段为null，则存储为空串
+					ArrayList<String> columnDataList = new ArrayList<>();
 					Arrays.stream(fieldNames).forEach(fieldName -> {
 						try {
-							fieldResultMap.get(fieldName)
-									.add(Optional.ofNullable(result.getString(fieldName)).orElse(""));
+							columnDataList.add(Optional.ofNullable(result.getString(fieldName)).orElse(""));
 						} catch (SQLException e) {
 							// 若执行异常，则抛出异常
 							throw new DatabaseException(String.format("“%s”字段内容无法获取", fieldName), e);
 						}
 					});
+
+					fieldResultTable.addRow(columnDataList);
 				} while ((index++) < endIndex && result.next());
 			}
 
@@ -312,7 +321,7 @@ public class SqlAction {
 			throw new DatabaseException("数据库异常，结果无法返回", e);
 		}
 
-		return fieldResultMap;
+		return fieldResultTable;
 	}
 
 	/**

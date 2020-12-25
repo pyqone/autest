@@ -1,4 +1,4 @@
-package pres.auxiliary.tool.word;
+package pres.auxiliary.tool.data;
 
 import java.util.Random;
 
@@ -392,10 +392,10 @@ public class RandomString {
 	 * @return 生成的6个字符长度的字符串
 	 * @see #toString(int)
 	 * @see #toString(int, int)
-	 * @throws IllegalStringLengthException 产生字符串不允许重复，且字符串产生范围长度小于6位，处理方式为抛出异常时抛出
+	 * @throws IllegalDataException 产生字符串不允许重复，且字符串产生范围长度小于6位，处理方式为抛出异常时抛出
 	 */
 	@Override
-	public String toString() throws IllegalStringLengthException {
+	public String toString() throws IllegalDataException {
 		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
 		if (stringSeed.length() == 0) {
 			return "";
@@ -414,9 +414,9 @@ public class RandomString {
 	 * @return 返回生成的随机字符串
 	 * @see #toString()
 	 * @see #toString(int)
-	 * @throws IllegalStringLengthException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
+	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
 	 */
-	public String toString(int stringLengthMin, int stringLengthMax) throws IllegalStringLengthException {
+	public String toString(int stringLengthMin, int stringLengthMax) throws IllegalDataException {
 		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
 		if (stringSeed.length() == 0) {
 			return "";
@@ -433,7 +433,7 @@ public class RandomString {
 		}
 		
 		if ( isRepeat() && stringLengthMax > stringSeed.length() && dispose == DISPOSE_THROW_EXCEPTION ) {
-			throw new IllegalStringLengthException("最大生成长度大于字符串产生范围的长度");
+			throw new IllegalDataException("最大生成长度大于字符串产生范围的长度");
 		}
 
 		return generateString(new Random().nextInt((stringLengthMax - stringLengthMin + 1)) + stringLengthMin); // 返回生成的字符串
@@ -447,9 +447,9 @@ public class RandomString {
 	 * @return 返回生成的随机字符串
 	 * @see #toString()
 	 * @see #toString(int, int)
-	 * @throws IllegalStringLengthException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
+	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
 	 */
-	public String toString(int stringLength) throws IllegalStringLengthException {
+	public String toString(int stringLength) throws IllegalDataException {
 		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
 		if (stringSeed.length() == 0) {
 			return "";
@@ -494,12 +494,12 @@ public class RandomString {
 	 * @see #toString()
 	 * @see #toString(int)
 	 * @see #toString(int, int)
-	 * @throws IllegalStringLengthException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
+	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
 	 */
-	private String generateString(int stringLength) throws IllegalStringLengthException {
+	private String generateString(int stringLength) throws IllegalDataException {
 		// 判断字符串字符是否允许重复，不允许重复时其处理方式是否为抛异常，为抛异常时，其stringLength是否大于字符串产生范围的长度，若是，则直接抛出异常
 		if (!isRepeat() && dispose == DISPOSE_THROW_EXCEPTION && stringLength > stringSeed.length()) {
-			throw new IllegalStringLengthException("需要生成的随机字符串长度大于字符串产生范围的最大长度");
+			throw new IllegalDataException("需要生成的随机字符串长度大于字符串产生范围的最大长度");
 		}
 
 		String RandomString = ""; // 定义一个字符串变量，用于存储选择的字符串
