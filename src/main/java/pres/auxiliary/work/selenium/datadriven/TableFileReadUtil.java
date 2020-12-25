@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -34,25 +33,23 @@ import pres.auxiliary.tool.date.Time;
 import pres.auxiliary.tool.file.UnsupportedFileException;
 
 /**
- * <p>
- * <b>文件名：</b>FileRead.java
+ * <p><b>文件名：</b>TableFileReadUtil.java</p>
+ * <p><b>用途：</b>
+ * 将存储在文件中的词语，以字符串的形式读取，并将值存储至{@link TableData}类中，可调用类中的方法，对
+ * 读取的词语进行返回。文件支持表格文件（xls/xlsx/csv格式）和文本文件（doc/docx/txt格式）。
  * </p>
  * <p>
- * <b>用途：</b>用于读取文本内容，并将其转换为行列的形式对内容进行返回，
- * 支持表格文件（xls/xlsx/csv格式）和文本文件（doc/docx/txt格式）。默认在读取文件时，
- * 以列为单位读取并输出，若特殊需要，可调用表格转置方法，将内容的行列转置后再输出
+ * <b>注意：文件内，首行（首段）的内容为定制列表的标准，若其后的内容获取到的词语个数超出第一行获取到的
+ * 词语个数，则将抛出{@link IllegalDataException}异常。
+ * </b>
  * </p>
- * <p>
- * <b>编码时间：</b>2020年3月29日 下午2:36:46
- * </p>
- * <p>
- * <b>修改时间：</b>2020年3月29日 下午2:36:46
- * </p>
- * 
+ * <p><b>编码时间：</b>2020年3月29日 下午2:36:46</p>
+ * <p><b>修改时间：</b>2020年12月25日下午6:40:07</p>
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- * @since POI 4.1.2
+ * @since POI 3.17
+ *
  */
 public class TableFileReadUtil {
 	/**
@@ -63,6 +60,26 @@ public class TableFileReadUtil {
 	 * 指向xlsx文件后缀名
 	 */
 	private static final String FILE_SUFFIX_XLSX = "xlsx";
+	/**
+	 * 指向xls文件后缀名
+	 */
+	private static final String FILE_SUFFIX_XLS = "xls";
+	/**
+	 * 指向docx文件后缀名
+	 */
+	private static final String FILE_SUFFIX_DOCX = "docx";
+	/**
+	 * 指向doc文件后缀名
+	 */
+	private static final String FILE_SUFFIX_DOC = "doc";
+	/**
+	 * 指向csv文件后缀名
+	 */
+	private static final String FILE_SUFFIX_CSV = "csv";
+	/**
+	 * 指向txt文件后缀名
+	 */
+	private static final String FILE_SUFFIX_TXT = "txt";
 
 	/**
 	 * 根据传入文件格式，将文件的内容进行转换。该构造方法主要在用于读取Excel文件和文本文件上：
@@ -76,7 +93,7 @@ public class TableFileReadUtil {
 	 * @param pattern sheet名称或切分文本的规则
 	 * @throws IOException 文件状态或路径不正确时抛出的异常
 	 */
-	public static TableData<String> readFile(File file, String pattern) {
+	public static TableData<String> readFile(File file, String pattern, boolean isFirstTitle) {
 		// 若pattern为null，则赋为空
 		if (pattern == null) {
 			pattern = "";
@@ -86,23 +103,17 @@ public class TableFileReadUtil {
 		String fileName = file.getName();
 		// 存储文件名的后缀，并根据后缀来判断采用哪一种读取方式
 		switch (fileName.substring(fileName.lastIndexOf(".") + 1)) {
-		case "doc":
-		case "docx":
-			readWord(file, pattern);
-			break;
-
-		case "xls":
-		case "xlsx":
-			readExcel(file, pattern);
-			break;
-
-		case "txt":
-			readTxt(file, pattern);
-			break;
-
-		case "csv":
-			readCsv(file);
-			break;
+		case FILE_SUFFIX_DOC:
+			return readOldWord(file, pattern, isFirstTitle);
+		case FILE_SUFFIX_DOCX:
+			return readNewWord(file, pattern, isFirstTitle);
+		case FILE_SUFFIX_XLS:
+		case FILE_SUFFIX_XLSX:
+			return readExcel(file, pattern, isFirstTitle);
+		case FILE_SUFFIX_TXT:
+			return readTxt(file, pattern, isFirstTitle);
+		case FILE_SUFFIX_CSV:
+			return readCsv(file, isFirstTitle);
 		default:
 			throw new UnsupportedFileException("无法解析“" + fileName + "”文件格式");
 		}
@@ -150,9 +161,11 @@ public class TableFileReadUtil {
 	/**
 	 * 该方法用于读取并处理txt格式的文件，可通过切分规则对文本每一行的内容进行切分
 	 * 
-	 * @param file  文件
-	 * @param regex 切分规则
-	 * @throws IOException 文件格式或路径不正确时抛出
+	 * @param file         文件
+	 * @param regex        切分规则
+	 * @param isFirstTitle 首行是否为标题行
+	 * @return 数据表类对象
+	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
 	 */
 	public static TableData<String> readTxt(File file, String regex, boolean isFirstTitle) {
 		TableData<String> wordTable = new TableData<>();
@@ -191,9 +204,11 @@ public class TableFileReadUtil {
 	/**
 	 * 该方法用于读取并处理excel文件，根据传入的sheet名称来读取不同的sheet
 	 * 
-	 * @param file      待读取的文件
-	 * @param sheetName 需要读取的sheet名称
-	 * @throws IOException 文件格式或路径不正确时抛出
+	 * @param file         待读取的文件
+	 * @param sheetName    需要读取的sheet名称
+	 * @param isFirstTitle 首行是否为标题行
+	 * @return 数据表类对象
+	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
 	 */
 	public static TableData<String> readExcel(File file, String sheetName, boolean isFirstTitle) {
 		TableData<String> wordTable = new TableData<>();
@@ -214,69 +229,58 @@ public class TableFileReadUtil {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
 
-		Workbook excel = excelOptional.orElseThrow(() -> new UnsupportedFileException("Excel文件读取类未构造"));
-		// 读取excel中的内容，若未存储读取的sheet名称，则读取第一个sheet
-		Optional<Sheet> sheetOptional = Optional.ofNullable(
-				Optional.ofNullable(sheetName).orElse("").isEmpty() ? excel.getSheetAt(0) : excel.getSheet(sheetName));
-		// 判断获取的sheet是否为null，为Null则同样获取第一个sheet
-		Sheet sheet = sheetOptional.orElse(excel.getSheetAt(0));
+		try (Workbook excel = excelOptional.orElseThrow(() -> new UnsupportedFileException("Excel文件读取类未构造"))) {
+			// 读取excel中的内容，若未存储读取的sheet名称，则读取第一个sheet
+			Optional<Sheet> sheetOptional = Optional
+					.ofNullable(Optional.ofNullable(sheetName).orElse("").isEmpty() ? excel.getSheetAt(0)
+							: excel.getSheet(sheetName));
+			// 判断获取的sheet是否为null，为Null则同样获取第一个sheet
+			Sheet sheet = sheetOptional.orElseThrow(() -> new UnsupportedFileException(String.format("“%s”工作表不存在", sheetName)));
 
-		// 获取第一行内容
-		Row row = Optional.ofNullable(sheet.getRow(0)).orElseThrow(
-				() -> new UnsupportedFileException(String.format("“%s”中无首行内容，无法读取", sheet.getSheetName())));
-		//存储第一行指向的列个数，以此为总列数的参考标准
-		int cellLength = row.getLastCellNum();
-		
-		// 判断首行是否为标题行，若为标题行，则读取标题并进行存储；若不是，则存储默认的标题，并存储初始读取行的下标
-		int startIndex = 0;
-		if (isFirstTitle) {
-			// 存储第一行数据
-			wordTable.addTitle(readExcelLineData(row));
-			// 设置行起始读取下标为第2行
-			startIndex = 1;
-		} else {
-			// 存储第一行数据
-			wordTable.addTitle(createDefaultColumnName(cellLength));
-			// 设置行起始读取下标为第2行
-			startIndex = 0;
-		}
-		
-		IntStream.range(startIndex, sheet.getLastRowNum() + 1);
-		// 遍历所有单元格，将单元格内容存储至wordList中
-		maxColumnNum = sheet.getLastRowNum() + 1;
-		for (int rowNum = 0; rowNum < maxColumnNum; rowNum++) {
-			// 获取指向的行
-			Row row = sheet.getRow(rowNum);
-			ArrayList<String> texts = new ArrayList<>();
-			for (int cellNum = 0; cellNum < row.getLastCellNum(); cellNum++) {
-				// 存储单元格的内容，若单元格为null，则存储空串
-				try {
-					texts.add(getCellContent(row.getCell(cellNum)));
-				} catch (NullPointerException e) {
-					texts.add("");
-				}
+			// 获取第一行内容
+			Optional<Row> row = Optional.ofNullable(sheet.getRow(0));
+			// 存储第一行指向的列个数，以此为总列数的参考标准
+			int cellLength = row
+					.orElseThrow(
+							() -> new UnsupportedFileException(String.format("“%s”中无首行内容，无法读取", sheet.getSheetName())))
+					.getLastCellNum();
 
-				// 对比当前行单元格的最大个数，若大于当前存储的，则存储为当前的最大值
-				maxRowNum = (maxRowNum > row.getLastCellNum()) ? maxRowNum : row.getLastCellNum();
+			// 判断首行是否为标题行，若为标题行，则读取标题并进行存储；若不是，则存储默认的标题，并存储初始读取行的下标
+			int startIndex = 0;
+			if (isFirstTitle) {
+				// 存储第一行数据
+				wordTable.addTitle(readExcelLineData(row));
+				// 设置行起始读取下标为第2行
+				startIndex = 1;
+			} else {
+				// 存储第一行数据
+				wordTable.addTitle(createDefaultColumnName(cellLength));
+				// 设置行起始读取下标为第1行
+				startIndex = 0;
 			}
-			wordList.add(texts);
+
+			IntStream.range(startIndex, sheet.getLastRowNum() + 1)
+					// 转换下标为行对象
+					.mapToObj(index -> Optional.ofNullable(sheet.getRow(index)))
+					// 读取行中的单元格内容，将其转换为字符串集合
+					.map(TableFileReadUtil::readExcelLineData).forEach(wordTable::addRow);
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
 
-		// 转置，使列表返回符合规则
-		tableTransposition();
-
-		excel.close();
+		return wordTable;
 	}
 
 	/**
 	 * 用于读取Excel中的一行数据，并以集合形式进行返回
 	 * 
-	 * @param row 行对象
+	 * @param rowOption 行封装类对象
 	 * @return 数据集合
 	 */
-	private static List<String> readExcelLineData(Row row) {
+	private static List<String> readExcelLineData(Optional<Row> rowOption) {
 		List<String> dataList = new ArrayList<>();
-		row.cellIterator().forEachRemaining(cell -> dataList.add(Optional.ofNullable(getCellContent(cell)).orElse("")));
+		rowOption.ifPresent(row -> row.cellIterator()
+				.forEachRemaining(cell -> dataList.add(Optional.ofNullable(getCellContent(cell)).orElse(""))));
 
 		return dataList;
 	}
@@ -317,89 +321,130 @@ public class TableFileReadUtil {
 	}
 
 	/**
-	 * 该方法用于读取并处理word文件，可通过切分规则对文本每一行的内容进行切分
+	 * 该方法用于读取并处理旧版(后缀为“.doc”)word文件，可通过切分规则对文本每一行的内容进行切分
 	 * 
-	 * @param file  文件
-	 * @param regex 切分规则
-	 * @throws IOException 文件格式或路径不正确时抛出
+	 * @param file         文件
+	 * @param sheetName    切分规则
+	 * @param isFirstTitle 首行是否为标题行
+	 * @return 数据表类对象
+	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
 	 */
-	private void readWord(File file, String regex) throws IOException {
-		String docx = "docx";
+	public static TableData<String> readOldWord(File file, String regex, boolean isFirstTitle) {
+		TableData<String> wordTable = new TableData<>();
 
-		// 读取文件流
-		FileInputStream fip = new FileInputStream(file);
-		// 由于读取doc与docx的类不继承自同一个类，所以无法直接写在一起，只能通过判断语句隔开
-		if (file.getName().indexOf(docx) > -1) {
-			XWPFDocument wordFile = new XWPFDocument(fip);
-			// 07版本相较麻烦，需要分段读取
-			for (XWPFParagraph pa : wordFile.getParagraphs()) {
-				// 存储文本内容
-				ArrayList<String> texts = new ArrayList<>();
-
-				try {
-					// 若传入的regex为空，则不进行切分
-					if (!regex.isEmpty()) {
-						// 对获取的文本按照传入的规则进行切分
-						String[] words = pa.getText().split(regex);
-						// 存储切分后的词语
-						texts.addAll(Arrays.asList(words));
-					} else {
-						texts.add(pa.getText());
-					}
-				} catch (Exception e) {
-					// 若抛出异常，则直接存储一整行
-					texts.add(pa.getText());
-				}
-
-				// 查找每一个texts的长度，若该长度大于maxRowNum存储的长度，则替换maxRowNum
-				maxRowNum = (maxRowNum > texts.size()) ? maxRowNum : texts.size();
-				wordList.add(texts);
-			}
-			// 关闭文件
-			wordFile.close();
-		} else {
-			HWPFDocument wordFile = new HWPFDocument(fip);
-			Range wordFileRange = wordFile.getRange();
-
-			// 根据段落读取相应的文本
-			for (int paragraphIndex = 0; paragraphIndex < wordFileRange.numParagraphs(); paragraphIndex++) {
-				// 获取段落
-				Paragraph pa = wordFileRange.getParagraph(paragraphIndex);
-
-				// 存储文本内容
-				ArrayList<String> texts = new ArrayList<>();
-
-				try {
-					// 若传入的regex为空，则不进行切分
-					if (!regex.isEmpty()) {
-						// 对获取的文本按照传入的规则进行切分
-						String[] words = pa.text().split(regex);
-						// 存储切分后的词语
-						texts.addAll(Arrays.asList(words));
-					} else {
-						texts.add(pa.text());
-					}
-				} catch (Exception e) {
-					// 若抛出异常，则直接存储一整行
-					texts.add(pa.text());
-				}
-
-				// 查找每一个texts的长度，若该长度大于maxRowNum存储的长度，则替换maxRowNum
-				maxRowNum = (maxRowNum > texts.size()) ? maxRowNum : texts.size();
-				wordList.add(texts);
-			}
-
-			// 存储替换后的文本
-			wordFile.close();
+		// 读取word
+		Optional<HWPFDocument> wordOptional = Optional.empty();
+		try (FileInputStream fip = new FileInputStream(
+				Optional.ofNullable(file).orElseThrow(() -> new UnsupportedFileException("未传入文件对象")))) {
+			wordOptional = Optional.ofNullable(new HWPFDocument(fip));
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
 
-		// 记录最大列数
-		maxColumnNum = wordList.size();
+		try (HWPFDocument word = wordOptional.orElseThrow(() -> new UnsupportedFileException("Word文件读取类未构造"))) {
+			// 获取word中的所有内容
+			Range wordFileRange = word.getRange();
 
-		// 为满足输出要求，则对文本进行转置
-		tableTransposition();
+			// 判断首行是否为标题行，若为标题行，则读取标题并进行存储；若不是，则存储默认的标题，并存储初始读取行的下标
+			int startIndex = 0;
+			// 获取段落
+			List<String> firstRowTextList = Arrays
+					.asList(Optional.ofNullable(wordFileRange.getParagraph(0).text()).filter(text -> !text.isEmpty())
+							.orElseThrow(() -> new UnsupportedFileException("首段文本为空，无法进行拉取")).split(regex));
+			if (isFirstTitle) {
+				// 存储第一行数据
+				wordTable.addTitle(firstRowTextList);
+				// 设置行起始读取下标为第2行
+				startIndex = 1;
+			} else {
+				// 存储第一行数据
+				wordTable.addTitle(createDefaultColumnName(firstRowTextList.size()));
+				// 设置行起始读取下标为第1行
+				startIndex = 0;
+			}
 
-		fip.close();
+			// 生成段落下标，遍历word文档中的所有段落
+			IntStream.range(startIndex, wordFileRange.numParagraphs())
+					// 将下标转换为段落类对象
+					.mapToObj(wordFileRange::getParagraph)
+					// 读取段落的内容，对内容进行封装
+					.map(pa -> Optional.ofNullable(pa.text()))
+					//去除换行符，并过滤掉空行
+					.map(textOptional -> textOptional.map(text -> text.replaceAll("\\r", "")).filter(text -> !text.isEmpty()))
+					// 过滤掉无内容的段落
+					.filter(text -> text.isPresent())
+					// 切分字符串并转换为词语集合
+					.map(textOptional -> Arrays.asList(textOptional.orElse("").split(regex)))
+					// 按行存储至列表对象中
+					.forEach(wordTable::addRow);
+
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
+		}
+
+		return wordTable;
+	}
+
+	/**
+	 * 该方法用于读取并处理新版(后缀为“.docx”)word文件，可通过切分规则对文本每一行的内容进行切分
+	 * 
+	 * @param file         文件
+	 * @param sheetName    切分规则
+	 * @param isFirstTitle 首行是否为标题行
+	 * @return 数据表类对象
+	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
+	 */
+	public static TableData<String> readNewWord(File file, String regex, boolean isFirstTitle) {
+		TableData<String> wordTable = new TableData<>();
+
+		// 读取word
+		Optional<XWPFDocument> wordOptional = Optional.empty();
+		try (FileInputStream fip = new FileInputStream(
+				Optional.ofNullable(file).orElseThrow(() -> new UnsupportedFileException("未传入文件对象")))) {
+			wordOptional = Optional.ofNullable(new XWPFDocument(fip));
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
+		}
+
+		try (XWPFDocument word = wordOptional.orElseThrow(() -> new UnsupportedFileException("Word文件读取类未构造"))) {
+			// 获取文本中所有的段落，若文档中无内容，则抛出异常
+			List<XWPFParagraph> paragraphList = Optional.ofNullable(word.getParagraphs())
+					.filter(list -> list.size() != 0).orElseThrow(() -> new UnsupportedFileException("Word文件中无内容"));
+
+			// 获取段落
+			List<String> firstRowTextList = Arrays
+					.asList(Optional.ofNullable(paragraphList.get(0).getText()).filter(text -> !text.isEmpty())
+							.orElseThrow(() -> new UnsupportedFileException("首段文本为空，无法进行拉取")).split(regex));
+			// 判断首行是否为标题行，若为标题行，则读取标题并进行存储；若不是，则存储默认的标题，并存储初始读取行的下标
+			int startIndex = 0;	
+			if (isFirstTitle) {
+				// 存储第一行数据
+				wordTable.addTitle(firstRowTextList);
+				//paragraphList.remove(0);//直接移除会抛出异常
+				// 设置行起始读取下标为第2行
+				startIndex = 1;
+			} else {
+				// 存储生成的标题数据
+				wordTable.addTitle(createDefaultColumnName(firstRowTextList.size()));
+				// 设置行起始读取下标为第1行
+				startIndex = 0;
+			}
+
+			// 生成段落下标，遍历word文档中的所有段落
+			IntStream.range(startIndex, paragraphList.size()).mapToObj(index -> paragraphList.get(index))
+					.map(pa -> Optional.ofNullable(pa.getText()))
+					// 过滤掉无内容的段落
+					.filter(text -> text.isPresent())
+					// 切分字符串并转换为词语集合
+					.map(textOptional -> Arrays.asList(textOptional.orElse("").split(regex)))
+					// 按行存储至列表对象中
+					.forEach(wordTable::addRow);
+			;
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
+		}
+
+		return wordTable;
 	}
 
 	/**
