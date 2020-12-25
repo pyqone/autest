@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -53,12 +52,17 @@ import pres.auxiliary.tool.file.UnsupportedFileException;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
+ * @since POI 4.1.2
  */
 public class TableFileReadUtil {
 	/**
 	 * 默认的列名称
 	 */
 	private static final String DEFAULT_COLUMN_NAME = "列表";
+	/**
+	 * 指向xlsx文件后缀名
+	 */
+	private static final String FILE_SUFFIX_XLSX = "xlsx";
 
 	/**
 	 * 根据传入文件格式，将文件的内容进行转换。该构造方法主要在用于读取Excel文件和文本文件上：
@@ -155,29 +159,28 @@ public class TableFileReadUtil {
 
 		try (BufferedReader br = new BufferedReader(
 				new FileReader(Optional.ofNullable(file).orElseThrow(() -> new UnsupportedFileException("未传入文件对象"))))) {
-			//指向当前表中是否存在标题
+			// 指向当前表中是否存在标题
 			AtomicBoolean hasTitle = new AtomicBoolean(false);
-			//按行遍历文件内容
+			// 按行遍历文件内容
 			br.lines()
-				//将文本按照内容进行切分，转换为字符串数组
-				.map(text -> text.split(regex))
-				//将数组转换为字符串集合
-				.map(Arrays::asList)
-				.forEach(dataList -> {
-					//需要对第一行数据进行处理，若该行数据为标题行，则将其存储为标题，若为普通数据行，则添加基础标题
-					if (!hasTitle.get()) {
-						if (isFirstTitle) {
-							wordTable.addTitle(dataList);
+					// 将文本按照内容进行切分，转换为字符串数组
+					.map(text -> text.split(regex))
+					// 将数组转换为字符串集合
+					.map(Arrays::asList).forEach(dataList -> {
+						// 需要对第一行数据进行处理，若该行数据为标题行，则将其存储为标题，若为普通数据行，则添加基础标题
+						if (!hasTitle.get()) {
+							if (isFirstTitle) {
+								wordTable.addTitle(dataList);
+							} else {
+								wordTable.addTitle(createDefaultColumnName(dataList.size()));
+								wordTable.addRow(dataList);
+							}
+							// 设置标题存在
+							hasTitle.set(true);
 						} else {
-							wordTable.addTitle(createDefaultColumnName(dataList.size()));
 							wordTable.addRow(dataList);
 						}
-						//设置标题存在
-						hasTitle.set(true);
-					} else {
-						wordTable.addRow(dataList);
-					}
-				});
+					});
 		} catch (IOException e) {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
@@ -192,31 +195,53 @@ public class TableFileReadUtil {
 	 * @param sheetName 需要读取的sheet名称
 	 * @throws IOException 文件格式或路径不正确时抛出
 	 */
-	private void readExcel(File file, String sheetName) throws IOException {
-		String xlsx = "xlsx";
-
-		// 读取文件流
-		FileInputStream fip = new FileInputStream(file);
+	public static TableData<String> readExcel(File file, String sheetName, boolean isFirstTitle) {
+		TableData<String> wordTable = new TableData<>();
 
 		// 用于读取excel
-		Workbook excel = null;
-
-		// 根据文件名的后缀，对其判断文件的格式，并按照相应的格式构造对象
-		if (file.getName().indexOf(xlsx) > -1) {
-			// 通过XSSFWorkbook对表格文件进行操作
-			excel = new XSSFWorkbook(fip);
-		} else {
-			// 通过XSSFWorkbook对表格文件进行操作
-			excel = new HSSFWorkbook(fip);
+		Optional<Workbook> excelOptional = Optional.empty();
+		try (FileInputStream fip = new FileInputStream(
+				Optional.ofNullable(file).orElseThrow(() -> new UnsupportedFileException("未传入文件对象")))) {
+			// 根据文件名的后缀，对其判断文件的格式，并按照相应的格式构造对象
+			if (file.getName().indexOf(FILE_SUFFIX_XLSX) > -1) {
+				// 通过XSSFWorkbook对表格文件进行操作
+				excelOptional = Optional.ofNullable(new XSSFWorkbook(fip));
+			} else {
+				// 通过XSSFWorkbook对表格文件进行操作
+				excelOptional = Optional.ofNullable(new HSSFWorkbook(fip));
+			}
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
 
-		// 关闭流
-		fip.close();
-
+		Workbook excel = excelOptional.orElseThrow(() -> new UnsupportedFileException("Excel文件读取类未构造"));
 		// 读取excel中的内容，若未存储读取的sheet名称，则读取第一个sheet
-		Sheet sheet = sheetName.isEmpty() ? excel.getSheetAt(0) : excel.getSheet(sheetName);
+		Optional<Sheet> sheetOptional = Optional.ofNullable(
+				Optional.ofNullable(sheetName).orElse("").isEmpty() ? excel.getSheetAt(0) : excel.getSheet(sheetName));
 		// 判断获取的sheet是否为null，为Null则同样获取第一个sheet
-		sheet = (sheet == null) ? excel.getSheetAt(0) : sheet;
+		Sheet sheet = sheetOptional.orElse(excel.getSheetAt(0));
+
+		// 获取第一行内容
+		Row row = Optional.ofNullable(sheet.getRow(0)).orElseThrow(
+				() -> new UnsupportedFileException(String.format("“%s”中无首行内容，无法读取", sheet.getSheetName())));
+		//存储第一行指向的列个数，以此为总列数的参考标准
+		int cellLength = row.getLastCellNum();
+		
+		// 判断首行是否为标题行，若为标题行，则读取标题并进行存储；若不是，则存储默认的标题，并存储初始读取行的下标
+		int startIndex = 0;
+		if (isFirstTitle) {
+			// 存储第一行数据
+			wordTable.addTitle(readExcelLineData(row));
+			// 设置行起始读取下标为第2行
+			startIndex = 1;
+		} else {
+			// 存储第一行数据
+			wordTable.addTitle(createDefaultColumnName(cellLength));
+			// 设置行起始读取下标为第2行
+			startIndex = 0;
+		}
+		
+		IntStream.range(startIndex, sheet.getLastRowNum() + 1);
 		// 遍历所有单元格，将单元格内容存储至wordList中
 		maxColumnNum = sheet.getLastRowNum() + 1;
 		for (int rowNum = 0; rowNum < maxColumnNum; rowNum++) {
@@ -241,6 +266,54 @@ public class TableFileReadUtil {
 		tableTransposition();
 
 		excel.close();
+	}
+
+	/**
+	 * 用于读取Excel中的一行数据，并以集合形式进行返回
+	 * 
+	 * @param row 行对象
+	 * @return 数据集合
+	 */
+	private static List<String> readExcelLineData(Row row) {
+		List<String> dataList = new ArrayList<>();
+		row.cellIterator().forEachRemaining(cell -> dataList.add(Optional.ofNullable(getCellContent(cell)).orElse("")));
+
+		return dataList;
+	}
+
+	/**
+	 * 根据单元格的类型，对其内容进行输出
+	 * 
+	 * @param cell 单元格类对象
+	 * @return 单元格中的文本
+	 */
+	private static String getCellContent(Cell cell) {
+		// 判断单元格中的内容的格式
+		if (CellType.NUMERIC == cell.getCellTypeEnum()) {
+			// 数值类型
+			// 判断单元格内的数据是否为日期
+			if (DateUtil.isCellDateFormatted(cell)) {
+				// 将单元格内容转换为Date后，在time中进行存储
+				Time time = new Time(cell.getDateCellValue());
+				// 根据存储的时间格式，对时间进行转换，输出格式化后的时间
+				return time.getFormatTime();
+			} else {
+				// 若非日期格式，则强转为字符串格式，之后输出
+				cell.setCellType(CellType.STRING);
+				return cell.getStringCellValue();
+			}
+		} else if (CellType.FORMULA == cell.getCellTypeEnum()) {
+			// 公式类型
+			// 公式得到的值可能是一个字符串，也可能是一个数字，此时则需要进行区分（转换错误会抛出异常）
+			try {
+				return cell.getRichStringCellValue().getString();
+			} catch (IllegalStateException e) {
+				return String.valueOf(cell.getNumericCellValue());
+			}
+		} else {
+			// 其他类型，按照字符串进行读取
+			return cell.getStringCellValue();
+		}
 	}
 
 	/**
@@ -330,42 +403,8 @@ public class TableFileReadUtil {
 	}
 
 	/**
-	 * 根据单元格的类型，对其内容进行输出
-	 * 
-	 * @param cell 单元格类对象
-	 * @return 单元格中的文本
-	 */
-	private String getCellContent(Cell cell) {
-		// 判断单元格中的内容的格式
-		if (CellType.NUMERIC == cell.getCellTypeEnum()) {
-			// 数值类型
-			// 判断单元格内的数据是否为日期
-			if (DateUtil.isCellDateFormatted(cell)) {
-				// 将单元格内容转换为Date后，在time中进行存储
-				Time time = new Time(cell.getDateCellValue());
-				// 根据存储的时间格式，对时间进行转换，输出格式化后的时间
-				return time.getFormatTime();
-			} else {
-				// 若非日期格式，则强转为字符串格式，之后输出
-				cell.setCellType(CellType.STRING);
-				return cell.getStringCellValue();
-			}
-		} else if (CellType.FORMULA == cell.getCellTypeEnum()) {
-			// 公式类型
-			// 公式得到的值可能是一个字符串，也可能是一个数字，此时则需要进行区分（转换错误会抛出异常）
-			try {
-				return cell.getRichStringCellValue().getString();
-			} catch (IllegalStateException e) {
-				return String.valueOf(cell.getNumericCellValue());
-			}
-		} else {
-			// 其他类型，按照字符串进行读取
-			return cell.getStringCellValue();
-		}
-	}
-	
-	/**
 	 * 用于生成默认的列名
+	 * 
 	 * @param length 数据列个数
 	 * @return 相应的默认列名
 	 */
