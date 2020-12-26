@@ -1,4 +1,4 @@
-package pres.auxiliary.work.selenium.datadriven;
+package pres.auxiliary.tool.file;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,7 +30,6 @@ import com.opencsv.CSVReader;
 
 import pres.auxiliary.tool.data.TableData;
 import pres.auxiliary.tool.date.Time;
-import pres.auxiliary.tool.file.UnsupportedFileException;
 
 /**
  * <p><b>文件名：</b>TableFileReadUtil.java</p>

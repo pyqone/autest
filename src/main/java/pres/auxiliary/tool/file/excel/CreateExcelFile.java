@@ -20,7 +20,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import pres.auxiliary.work.selenium.datadriven.TableFileReadUtil;
+import pres.auxiliary.tool.file.TableFileReadUtil;
 import pres.auxiliary.work.testcase.file.IncorrectFileException;
 import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
 

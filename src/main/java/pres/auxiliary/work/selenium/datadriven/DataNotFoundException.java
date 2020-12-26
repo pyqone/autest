@@ -1,6 +1,6 @@
 package pres.auxiliary.work.selenium.datadriven;
 
-public class DataNotFoundException extends Exception {
+public class DataNotFoundException extends RuntimeException {
 
 	public DataNotFoundException() {
 		super();
