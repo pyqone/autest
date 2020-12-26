@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import pres.auxiliary.work.selenium.element.DataListBy;
 
@@ -37,7 +39,7 @@ public class TableData<T> {
 	/**
 	 * 存储列表元素数据
 	 */
-	protected LinkedHashMap<String, ArrayList<Optional<T>>> tableMap = new LinkedHashMap<>(16);
+	protected LinkedHashMap<String, List<Optional<T>>> tableMap = new LinkedHashMap<>(16);
 	/**
 	 * 指向列表中最短列数据个数
 	 */
@@ -63,18 +65,27 @@ public class TableData<T> {
 	 * 
 	 * @param tableMap 列表数据
 	 */
-	public TableData(Map<String, ArrayList<T>> tableMap) {
+	public TableData(Map<String, ? extends List<T>> tableMap) {
 		tableMap.forEach(this::addColumn);
 	}
 
 	/**
-	 * 用于设置是否对传入的元素列表的个数进行严格校验，即在调用{@link #addList(DataListBy)}方法时，
-	 * 若元素个数与初次传入的个数不符且需要严格校验，则抛出异常；反之，则直接进行存储
+	 * 用于设置是否对传入的数据列表的个数进行严格校验，即在调用{@link #addList(DataListBy)}方法时，
+	 * 若数据个数与初次传入的个数不符且需要严格校验，则抛出异常；反之，则直接进行存储
 	 * 
-	 * @param isExamine 是否严格校验元素个数
+	 * @param isExamine 是否严格校验数据个数
 	 */
 	public void setExamine(boolean isExamine) {
 		this.isExamine = isExamine;
+	}
+
+	/**
+	 * 返回当前是否严格校验数据个数
+	 * 
+	 * @return 是否严格校验数据个数
+	 */
+	public boolean isExamine() {
+		return isExamine;
 	}
 
 	/**
@@ -99,7 +110,33 @@ public class TableData<T> {
 				.addAll(Optional.ofNullable(columnDataList).orElseThrow(() -> new IllegalDataException("元素集合不能为null"))
 						.stream().map(Optional::ofNullable).collect(Collectors.toList()));
 
-		// 计算最长/最短列元素个数
+		// 刷新数据个数
+		refreshLength();
+
+		return this;
+	}
+
+	/**
+	 * 用于添加一组列数据
+	 * 
+	 * @param tableMap 数据列组
+	 * @return 类本身
+	 */
+	public TableData<T> addTable(Map<String, ? extends List<T>> tableMap) {
+		tableMap.forEach(this::addColumn);
+
+		return this;
+	}
+
+	/**
+	 * 用于存储其他表类对象的数据
+	 * 
+	 * @param table 表类对象
+	 * @return 类本身
+	 */
+	public TableData<T> addTable(TableData<T> table) {
+		table.columnForEach(tableMap::put);
+		// 刷新数据个数
 		refreshLength();
 
 		return this;
@@ -116,8 +153,7 @@ public class TableData<T> {
 		Optional.ofNullable(columnNameList).filter(list -> !list.isEmpty())
 				.orElseThrow(() -> new IllegalDataException("必须指定列名称"))
 				// 筛选名称不为空，且不在tableMap中的内容进行添加
-				.stream().filter(title -> !title.isEmpty())
-				.filter(title -> !tableMap.containsKey(title))
+				.stream().filter(title -> !title.isEmpty()).filter(title -> !tableMap.containsKey(title))
 				.forEach(title -> {
 					tableMap.put(title, new ArrayList<Optional<T>>());
 					// 刷新列长度
@@ -153,16 +189,15 @@ public class TableData<T> {
 			throw new IllegalDataException("未存储列名，无法按行添加元素");
 		}
 
-		
 		List<T> rowList = Optional.ofNullable(rowDataList).filter(list -> !list.isEmpty()).orElse(new ArrayList<T>());
-		//判断需要存储的元素个数是否为空，为空则结束方法
+		// 判断需要存储的元素个数是否为空，为空则结束方法
 		if (rowList.size() != 0) {
 			// 判断传入的行元素个数是否超出当前表中存储的列数，超出，则抛出异常
 			if (rowList.size() > tableMap.size()) {
 				throw new IllegalDataException(
 						String.format("指定的行元素超出标题个数。当前传入数据个数：%d，表中列个数：%d", rowDataList.size(), tableMap.size()));
 			}
-	
+
 			// 按照列添加数据，补全的列，按照空元素进行存储
 			AtomicInteger index = new AtomicInteger(0);
 			tableMap.forEach((key, value) -> {
@@ -172,8 +207,8 @@ public class TableData<T> {
 					value.add(Optional.empty());
 				}
 			});
-			
-			//由于每列数据均会增加，故最短与最长列的数据量均加上1
+
+			// 由于每列数据均会增加，故最短与最长列的数据量均加上1
 			shortColumnSize++;
 			longColumnSize++;
 		}
@@ -278,7 +313,18 @@ public class TableData<T> {
 
 		return fieldNameList.get(index);
 	}
-	
+
+	/**
+	 * 根据列名称返回列下标，若列名不存在，则返回-1
+	 * 
+	 * @param fieldName 列名
+	 * @return 列下标
+	 */
+	public int getFieldIndex(String fieldName) {
+		return Optional.ofNullable(fieldName).filter(tableMap::containsKey).map(this.getColumnName()::indexOf)
+				.orElse(-1);
+	}
+
 	/**
 	 * 用于返回指定列的所有数据
 	 * 
@@ -294,17 +340,19 @@ public class TableData<T> {
 
 		return columnDataList;
 	}
-	
+
 	/**
 	 * 用于返回第一列的所有数据
+	 * 
 	 * @return 第一列的所有数据
 	 */
 	public ArrayList<Optional<T>> getFirstColumn() {
 		return getColumnList(getFieldName(0));
 	}
-	
+
 	/**
 	 * 用于获取第一列第一条数据
+	 * 
 	 * @return 第一列第一条数据
 	 */
 	public Optional<T> getFirstData() {
@@ -375,7 +423,8 @@ public class TableData<T> {
 
 		// 若最长列数据与最短列数据不一致，且需要严格判断，则抛出异常
 		if (shortColumnSize != longColumnSize && isExamine) {
-			throw new IllegalDataException(String.format("数据列长度不一致，最长数据列长度：%d；最短数据列长度：%d", longColumnSize, shortColumnSize));
+			throw new IllegalDataException(
+					String.format("数据列长度不一致，最长数据列长度：%d；最短数据列长度：%d", longColumnSize, shortColumnSize));
 		}
 
 		// 存储获取的集合
@@ -397,13 +446,72 @@ public class TableData<T> {
 
 		return columnDataMap;
 	}
-	
+
 	/**
 	 * 用于获取表中第一行的所有数据
+	 * 
 	 * @return 第一行的所有数据
 	 */
-	public LinkedHashMap<String, ArrayList<Optional<T>>> getFirstRowData() {
-		return getData(1, 1, getColumnName());
+	public List<Optional<T>> getFirstRowData() {
+		return getRowData(1, 1).get(0);
+	}
+
+	/**
+	 * 用于根据行下标，获取一行数据。其下标传入规则可参考{@link #getData(int, int, List)}
+	 * 
+	 * @param index 行下标
+	 * @return 对应行下标的数据集合
+	 * @throws IllegalDataException 需要严格检查且存在列数据不同时抛出的异常
+	 */
+	public List<List<Optional<T>>> getRowData(int startIndex, int endIndex) {
+		return ListUtil.transposition(ListUtil.toNoTitleTable(getData(startIndex, endIndex, getColumnName())));
+	}
+
+	/**
+	 * 用于根据指定的行下标，以流的形式，按行返回数据。
+	 * <p>
+	 * 在流中，每个元素为一行数据集合，以{@link List}的形式进行存储。下标允许传入负数，其
+	 * 规则可参考{@link #getData(int, int, List)}
+	 * </p>
+	 * 
+	 * @param stratIndex 起始下标
+	 * @param endIndex   结束下标
+	 * @return 流的形式返回行数据
+	 * @throws IllegalDataException 需要严格检查且存在列数据不同时抛出的异常
+	 */
+	public Stream<List<Optional<T>>> rowStream(int startIndex, int endIndex) {
+		return getRowData(startIndex, endIndex).stream();
+	}
+
+	/**
+	 * 用于根据表中最大行的行数，以流的形式返回表中的所有行数据。
+	 * <p>
+	 * <b>注意：</b>调用该方法时，无论是否严格检查元素列个数，其均能返回所有行的数据，
+	 * 并且不会改变在{@link #setExamine(boolean)}中指定的值。若列的长度不等，则按行
+	 * 返回时，不存在的的列数据按{@link Optional#empty()}进行返回
+	 * </p>
+	 * 
+	 * @return 流的形式返回行数据
+	 */
+	public Stream<List<Optional<T>>> rowStream() {
+		// 获取当前的严格检查开关，并设置开关为关闭
+		boolean nowSwitch = isExamine;
+		isExamine = false;
+
+		// 获取流，再设置开关为之前的状态
+		Stream<List<Optional<T>>> stream = rowStream(1, -1);
+		isExamine = nowSwitch;
+
+		return stream;
+	}
+
+	/**
+	 * 用于以列的形式进行ForEach循环，其key为列名称，value为列中的所有数据
+	 * 
+	 * @param action 数据处理方式
+	 */
+	public void columnForEach(BiConsumer<String, List<Optional<T>>> action) {
+		tableMap.forEach(action);
 	}
 
 	/**
