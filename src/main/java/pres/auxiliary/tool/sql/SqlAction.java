@@ -52,7 +52,6 @@ import pres.auxiliary.tool.data.TableData;
  * @version Ver1.0
  * @since JDK 1.8
  *
- * @param <T> 子类本身
  */
 public class SqlAction {
 	/**
@@ -80,7 +79,7 @@ public class SqlAction {
 	 * @param username 用户名
 	 * @param password 密码
 	 * @param host     主机（包括端口）
-	 * @param dataBase 数据源
+	 * @param dataBaseName 数据源
 	 */
 	public SqlAction(DataBaseType dataBaseType, String username, String password, String host, String dataBaseName) {
 		try {
@@ -96,11 +95,9 @@ public class SqlAction {
 	}
 
 	/**
-	 * 运行指定的SQL语句，支持多条SQL执行，每条SQL语句间需要使用分号进行分隔。注意，
-	 * 执行多条语句时，若其中一条语句无法执行，则抛出异常，并结束所有语句的执行，且不会保存结果集。
+	 * 运行指定的SQL语句。
 	 * 
 	 * @param sqlText SQL语句
-	 * @param isClear 是否清空原结果集
 	 * @return 类本身
 	 * @throws DatabaseException 当SQL语句为空或执行有误时，抛出的异常
 	 */
@@ -252,7 +249,7 @@ public class SqlAction {
 	 * 即调用{@code getRowResult(1, 1, 2)}方法时，表示获取第1列，第1行到第2行的数据
 	 * </p>
 	 * 
-	 * @param fieldName  字段名称
+	 * @param fieldIndex  列下标
 	 * @param startIndex 起始下标
 	 * @param endIndex   结束下标
 	 * @return 第一列指定行的元素集合

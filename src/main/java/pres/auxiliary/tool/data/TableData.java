@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import pres.auxiliary.work.selenium.element.DataListBy;
-
 /**
  * <p>
  * <b>文件名：</b>TableData.java
@@ -70,7 +68,7 @@ public class TableData<T> {
 	}
 
 	/**
-	 * 用于设置是否对传入的数据列表的个数进行严格校验，即在调用{@link #addList(DataListBy)}方法时，
+	 * 用于设置是否对传入的数据列表的个数进行严格校验，即在调用{@link #getData(int, int, List)}等获取数据的方法时，
 	 * 若数据个数与初次传入的个数不符且需要严格校验，则抛出异常；反之，则直接进行存储
 	 * 
 	 * @param isExamine 是否严格校验数据个数
@@ -428,7 +426,7 @@ public class TableData<T> {
 	 * 
 	 * @param startRowIndex 起始下标
 	 * @param endRowIndex   结束下标
-	 * @param columnNames   列名称组，可传入多个值
+	 * @param columnNameList   列名称集合
 	 * @return 按照字段顺序获取的列数据
 	 * @throws IllegalDataException 需要严格检查且存在列数据不同时抛出的异常
 	 */
@@ -473,9 +471,10 @@ public class TableData<T> {
 	}
 
 	/**
-	 * 用于根据行下标，获取一行数据。其下标传入规则可参考{@link #getData(int, int, List)}
+	 * 用于根据行下标，获取多行数据。其下标传入规则可参考{@link #getData(int, int, List)}
 	 * 
-	 * @param index 行下标
+	 * @param startIndex 起始行下标
+	 * @param endIndex 结束行下标
 	 * @return 对应行下标的数据集合
 	 * @throws IllegalDataException 需要严格检查且存在列数据不同时抛出的异常
 	 */
@@ -490,7 +489,7 @@ public class TableData<T> {
 	 * 规则可参考{@link #getData(int, int, List)}
 	 * </p>
 	 * 
-	 * @param stratIndex 起始下标
+	 * @param startIndex 起始下标
 	 * @param endIndex   结束下标
 	 * @return 流的形式返回行数据
 	 * @throws IllegalDataException 需要严格检查且存在列数据不同时抛出的异常

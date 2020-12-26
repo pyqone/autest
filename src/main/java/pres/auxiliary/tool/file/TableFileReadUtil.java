@@ -28,6 +28,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import com.opencsv.CSVReader;
 
+import pres.auxiliary.tool.data.IllegalDataException;
 import pres.auxiliary.tool.data.TableData;
 import pres.auxiliary.tool.date.Time;
 
@@ -81,12 +82,12 @@ public class TableFileReadUtil {
 	private static final String FILE_SUFFIX_TXT = "txt";
 
 	/**
-	 * 根据传入文件格式，将文件的内容进行转换。该构造方法主要在用于读取Excel文件和文本文件上：
+	 * 根据传入文件格式，将文件的内容进行转换。其转换规则如下：
 	 * <ol>
 	 * <li>当读取的文件为Excel文件（xls/xlsx格式）时，其传入的regex表示需要读取的sheet名称</li>
 	 * <li>当读取的文件为文本文件（doc/docx/txt格式）时，其传入的regex表示对每一行文本的切分规则，以得到一个列表</li>
+	 * <li>当读取的文件为CSV文件（csv格式）时，其传入的regex无意义</li>
 	 * </ol>
-	 * 除上述两种文件类型外，其他的文件调用该构造方法时，则等同于调用{@link #ListFileRead(File, String)}
 	 * 
 	 * @param file    待读取的文件对象
 	 * @param pattern sheet名称或切分文本的规则
@@ -323,7 +324,7 @@ public class TableFileReadUtil {
 	 * 该方法用于读取并处理旧版(后缀为“.doc”)word文件，可通过切分规则对文本每一行的内容进行切分
 	 * 
 	 * @param file         文件
-	 * @param sheetName    切分规则
+	 * @param regex    切分规则
 	 * @param isFirstTitle 首行是否为标题行
 	 * @return 数据表类对象
 	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
@@ -388,7 +389,7 @@ public class TableFileReadUtil {
 	 * 该方法用于读取并处理新版(后缀为“.docx”)word文件，可通过切分规则对文本每一行的内容进行切分
 	 * 
 	 * @param file         文件
-	 * @param sheetName    切分规则
+	 * @param regex    切分规则
 	 * @param isFirstTitle 首行是否为标题行
 	 * @return 数据表类对象
 	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
