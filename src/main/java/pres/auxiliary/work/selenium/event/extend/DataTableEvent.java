@@ -435,20 +435,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 用于重新获取元素信息
 	 */
 	private void againFindDataList() {
-		/*
-		ArrayList<AbstractBy> byList = new ArrayList<>(
-				ListUtil.rowDataToList(ListUtil.toNoTitleTable(elementTable.getFirstRowData()), 0)
-					.stream()
-					.map(data -> data.map(element -> element.getBy()).orElseThrow(() -> new ControlException("列表数据存在空元素")))
-					.collect(Collectors.toList())
-				);
-		
-		//清空表数据
-		elementTable.getColumnName().forEach(elementTable::removeColumn);
-		//重新插入数据
-		byList.forEach(by -> addList((DataListBy)by));
-		*/
-		ListUtil.rowDataToList(ListUtil.toNoTitleTable(elementTable.getFirstRowData()), 0).forEach(data -> {
+		elementTable.getFirstRowData().forEach(data -> {
 			if (data.isPresent()) {
 				Element element = data.get();
 				element.againFindElement();

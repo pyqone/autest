@@ -9,7 +9,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
  * <p><b>修改时间：</b>2020年2月25日上午8:31:14</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public enum MarkColorsType {

@@ -70,7 +70,7 @@ public class RecognitionImage {
 		try {
 			imageio = ImageIO.read(imageFile);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new IncorrectDirectoryException("文件有误，无法读取");
 		}
 		
 		if ( judge_Language.equals(language) ) {
@@ -99,7 +99,7 @@ public class RecognitionImage {
 			// 读取图片，并设置需要读取的位置
 			result = instance.doOCR(imageFile, new Rectangle(x, y, width, height));
 		} catch (TesseractException e) {
-			e.printStackTrace();
+			throw new IncorrectDirectoryException("文件有误，无法读取");
 		}
 
 		return result;

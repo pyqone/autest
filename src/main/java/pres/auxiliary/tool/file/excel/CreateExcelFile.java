@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -20,7 +22,9 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import pres.auxiliary.work.selenium.datadriven.TableFileReadUtil;
+import pres.auxiliary.tool.data.TableData;
+import pres.auxiliary.tool.file.TableFileReadUtil;
+import pres.auxiliary.tool.file.UnsupportedFileException;
 import pres.auxiliary.work.testcase.file.IncorrectFileException;
 import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
 
@@ -372,31 +376,35 @@ public class CreateExcelFile {
 	private ArrayList<String> getFileDataValidity(Element textElement) {
 		ArrayList<String> dataList = new ArrayList<>();
 		try {
-			//读取数据有效性文件内容
-			File dataFile = new File(textElement.attributeValue("path"));
-			String sheet = textElement.attributeValue("regex");
-			TableFileReadUtil lfr = new TableFileReadUtil(dataFile, sheet);
+			// 读取数据有效性文件内容
+			File dataFile = new File(Optional.ofNullable(textElement.attributeValue("path"))
+					.orElseThrow(() -> new NoSuchTypeException("未指定数据有效性文件路径（path属性）")));
+			String sheet = Optional.ofNullable(textElement.attributeValue("regex"))
+					.orElseThrow(() -> new NoSuchTypeException("未指定数据有效性文件读取规则（regex属性）"));
+			// 读取文件数据
+			TableData<String> dataTable = TableFileReadUtil.readExcel(dataFile, sheet, false);
+
+			// 获取需要读取的列信息，若未指定列信息，则默认读取第一列
+			String columnName = dataTable.getFieldName(Optional.ofNullable(textElement.attributeValue("column")).map(Integer::valueOf).filter(dataTable::isFieldIndex).orElse(0));
+			// 读取起始行信息，若未指定起始行信息，则默认读取第一行
+			int startRowIndex = Optional.ofNullable(textElement.attributeValue("start_row")).map(Integer::valueOf)
+					.orElse(1);
+			// 读取结束行信息，若未指定起始行信息，则默认读取最后一行
+			int endRowIndex = Optional.ofNullable(textElement.attributeValue("end_row")).map(Integer::valueOf)
+					.orElse(-1);
 			
-			//获取需要读取的列信息，若未指定列信息，则默认读取第一列
-			int columnIndex = textElement.attributeValue("column") == null ? 0 : Integer.valueOf(textElement.attributeValue("column"));
-			//读取起始行信息，若未指定起始行信息，则默认读取第一行
-			int startRowIndex = textElement.attributeValue("start_row") == null ? 0 : Integer.valueOf(textElement.attributeValue("start_row"));
-			//读取结束行信息，若未指定起始行信息，则默认读取最后一行
-			int endRowIndex = textElement.attributeValue("end_row") == null ? lfr.getCoulumnSize(columnIndex) : Integer.valueOf(textElement.attributeValue("end_row"));
-			//获取数据信息
-			dataList.addAll(lfr.getColumn(columnIndex, startRowIndex, endRowIndex));
+			// 获取数据信息
+			dataList.addAll(dataTable.getData(startRowIndex, endRowIndex, columnName).get(columnName).stream()
+					//将封装类转换为字符串类，空封装类则转译为空串
+					.map(data -> data.orElse(""))
+					//过滤掉空串
+					.filter(text -> !text.isEmpty())
+					//重组元素
+					.collect(Collectors.toList()));
 		} catch (Exception e) {
-			//若抛出任何异常，则说明xml配置不正确，故不进行操作
+			throw new UnsupportedFileException("配置文件异常，无法读取数据", e);
 		}
-		
-		//去除空行
-		for (int i = 0; i < dataList.size(); i++) {
-			if ("".equals(dataList.get(i))) {
-				dataList.remove(i);
-				i--;
-			}
-		}
-		
+
 		return dataList;
 	}
 }
