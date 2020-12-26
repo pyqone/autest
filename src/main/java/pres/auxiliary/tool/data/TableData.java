@@ -295,25 +295,19 @@ public class TableData<T> {
 	}
 
 	/**
-	 * 用于根据列下标返回列字段的名称，下标从0开始计算，即0表示第1列。 若下标小于1或大于当前表中列的个数时，则返回空串
+	 * 用于根据列下标返回列字段的名称，下标从0开始计算，即0表示第1列。 若下标不存在，则返回空串
 	 * 
 	 * @param index 列下标
 	 * @return 字段名称
 	 */
 	public String getFieldName(int index) {
-		if (index < 0) {
+		if (isFieldIndex(index)) {
 			return "";
 		}
 
-		ArrayList<String> fieldNameList = getColumnName();
-
-		if (index > fieldNameList.size() - 1) {
-			return "";
-		}
-
-		return fieldNameList.get(index);
+		return getColumnName().get(index);
 	}
-
+	
 	/**
 	 * 根据列名称返回列下标，若列名不存在，则返回-1
 	 * 
@@ -324,7 +318,29 @@ public class TableData<T> {
 		return Optional.ofNullable(fieldName).filter(tableMap::containsKey).map(this.getColumnName()::indexOf)
 				.orElse(-1);
 	}
-
+	
+	/**
+	 * 返回传入的列下标是否存在于当前表中，其列下标从0开始计算
+	 * @param index 列下标
+	 * @return 下标是否存在于表中
+	 */
+	public boolean isFieldIndex(int index) {
+		if (index < 0) {
+			return false;
+		} else {
+			return !(index > getColumnName().size() - 1);
+		}
+	}
+	
+	/**
+	 * 返回传入列名称是否存在与当前表中
+	 * @param fieldName 列名称
+	 * @return 列名是否存在
+	 */
+	public boolean isFieldName(String fieldName) {
+		return getColumnName().indexOf(fieldName) > -1;
+	}
+	
 	/**
 	 * 用于返回指定列的所有数据
 	 * 
