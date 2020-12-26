@@ -5,7 +5,7 @@
 
 	<groupId>com.gitee.pyqone</groupId>
 	<artifactId>autest</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<version>2.0.0-RELEASE</version>
 	<packaging>jar</packaging>
 
 	<url>https://gitee.com/pyqone/autest</url>
@@ -234,7 +234,7 @@
 					<version>1.6.7</version>
 					<extensions>true</extensions>
 					<configuration>
-						<serverId>ossrh</serverId>
+						<serverId>oss-pyq-release</serverId>
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>false</autoReleaseAfterClose>
 					</configuration>
