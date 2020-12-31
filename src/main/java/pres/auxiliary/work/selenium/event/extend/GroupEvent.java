@@ -233,7 +233,7 @@ public class GroupEvent {
 	 * 执行相应的事件组，当事件组抛出指定的异常时，则执行相应的事件组。
 	 * 
 	 * @param mustActionEventName      事件组名称
-	 * @param exception                异常类对象
+	 * @param exceptionClass           异常类对象
 	 * @param exceptionActionEventName 产生异常时执行的事件组名称
 	 * @return 产生异常时执行的事件组执行结果
 	 */
@@ -272,10 +272,10 @@ public class GroupEvent {
 			}
 		}
 	}
-	
+
 	/**
-	 * 用于执行事件组，并将事件组的执行结果传入到下一个事件组中作为执行参数，
-	 * 直到执行完毕，返回最后一个事件组处理的结果
+	 * 用于执行事件组，并将事件组的执行结果传入到下一个事件组中作为执行参数， 直到执行完毕，返回最后一个事件组处理的结果
+	 * 
 	 * @param eventNames 一组事件组名称
 	 * @return 最后一个事件组处理结果
 	 */
@@ -284,30 +284,30 @@ public class GroupEvent {
 	}
 
 	/**
-	 * 用于执行事件组，并将事件组的执行结果，经过预设的处理后，传入到下一个事件组中作为执行参数，
-	 * 直到执行完毕，返回最后一个事件组处理的结果
+	 * 用于执行事件组，并将事件组的执行结果，经过预设的处理后，传入到下一个事件组中作为执行参数， 直到执行完毕，返回最后一个事件组处理的结果
 	 * <p>
 	 * <b>注意：</b>设置的处理方式对第一个事件组的方法传参不生效，对最后一个事件组执行结果也不生效（即不处理
 	 * 第一个传入事件组的参数和最后一个事件组返回的结果）
 	 * </p>
-	 * @param function 参数处理方式
+	 * 
+	 * @param mapper     参数处理方式
 	 * @param eventNames 一组事件组名称
 	 * @return 最后一个事件组处理结果
 	 */
 	public Optional<Object> mapAction(Function<Object, Object> mapper, String... eventNames) {
-		//获取并遍历事件组
+		// 获取并遍历事件组
 		List<String> nameList = Arrays
 				.asList(Optional.ofNullable(eventNames).orElseThrow(() -> new ParamException("未指定事件名称组")));
 		Optional<Object> result = Optional.empty();
 		for (int index = 0; index < nameList.size(); index++) {
-			//执行事件组，存储执行结果
+			// 执行事件组，存储执行结果
 			result = action(nameList.get(index));
-			//若当前元素不是最后一个元素，则对结果按照设置进行处理，并写入到下一个要执行的事件组的参数中
+			// 若当前元素不是最后一个元素，则对结果按照设置进行处理，并写入到下一个要执行的事件组的参数中
 			if (index != nameList.size() - 1) {
 				eventMap.get(nameList.get(index + 1)).setParam(result.map(mapper));
 			}
 		}
-		
+
 		return result;
 	}
 
