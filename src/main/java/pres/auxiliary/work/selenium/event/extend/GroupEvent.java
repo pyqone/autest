@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -174,12 +175,7 @@ public class GroupEvent {
 	 * @throws ParamException 原事件组名称未指定或事件组名称不存在时抛出的异常
 	 */
 	public List<Optional<Object>> orderlyAction(String... eventNames) {
-		List<Optional<Object>> resultList = new ArrayList<>();
-		Arrays.stream(Optional.ofNullable(eventNames).filter(names -> names.length != 0)
-				.orElseThrow(() -> new ParamException("未指定事件名称组"))).map(this::getContinueResult)
-				.forEach(resultList::add);
-
-		return resultList;
+		return orderlyAction(obj -> true, eventNames);
 	}
 
 	/**
@@ -192,6 +188,11 @@ public class GroupEvent {
 	 * @see #orderlyAction(String...)
 	 */
 	public List<Optional<Object>> orderlyAction(Predicate<Optional<Object>> predicate, String... eventNames) {
+		// 对名称组进行判断
+		eventNames = Optional.ofNullable(eventNames).filter(names -> names.length != 0)
+				.orElseThrow(() -> new ParamException("未指定事件名称组"));
+
+		// 遍历所有事件组名称，根据条件进行循环，并存储执行结果
 		List<Optional<Object>> resultList = new ArrayList<>();
 		for (String name : eventNames) {
 			// 获取相应的执行结果
@@ -206,13 +207,14 @@ public class GroupEvent {
 
 		return resultList;
 	}
-	
+
 	/**
 	 * 用于循环执行一组事件组，并将每个结果进行判断，若判断不通过，则终止循环，并返回最后一次事件组的执行结果
 	 * <p>
 	 * <b>注意：</b>无论条件如何设置，其事件组都会执行一次
 	 * </p>
-	 * @param predicate 继续执行条件，其参数为上一次事件组执行的一组结果
+	 * 
+	 * @param predicate  继续执行条件，其参数为上一次事件组执行的一组结果
 	 * @param eventNames 执行方法名称组
 	 * @return 最后一次循环方法执行结果集合
 	 * @throws ParamException 原事件组名称未指定或事件组名称不存在时抛出的异常
@@ -223,8 +225,90 @@ public class GroupEvent {
 		do {
 			resultList = orderlyAction(eventNames);
 		} while (predicate.test(resultList));
-		
+
 		return resultList;
+	}
+
+	/**
+	 * 执行相应的事件组，当事件组抛出指定的异常时，则执行相应的事件组。
+	 * 
+	 * @param mustActionEventName      事件组名称
+	 * @param exception                异常类对象
+	 * @param exceptionActionEventName 产生异常时执行的事件组名称
+	 * @return 产生异常时执行的事件组执行结果
+	 */
+	public Optional<Object> exceptionAction(String mustActionEventName, Class<? extends Exception> exceptionClass,
+			String exceptionActionEventName) {
+		HashMap<Class<? extends Exception>, String> exceptionMap = new HashMap<>(16);
+		exceptionMap.put(exceptionClass, exceptionActionEventName);
+
+		return exceptionAction(mustActionEventName, exceptionMap);
+	}
+
+	/**
+	 * 执行相应的事件组，当事件组抛出指定的异常时，则执行相应的事件组。使用该方法，可指定多个异常，并针对 不同的异常执行不同的事件组。
+	 * <p>
+	 * <b>注意:</b>若执行事件组抛出的异常不在所传入的捕捉列表中，则抛出该异常
+	 * </p>
+	 * 
+	 * @param mustActionEventName         事件组名称
+	 * @param exceptionActionEventNameMap 异常类与产生相应异常时执行的事件组名称键值对
+	 * @return 产生异常时执行的事件组执行结果
+	 */
+	public Optional<Object> exceptionAction(String mustActionEventName,
+			HashMap<Class<? extends Exception>, String> exceptionActionEventNameMap) {
+		try {
+			return action(mustActionEventName);
+		} catch (Exception e) {
+			// 获取异常类对应的执行方法，并直接将其进行执行
+			Optional<Optional<Object>> result = Optional.ofNullable(exceptionActionEventNameMap.get(e.getClass()))
+					.map(this::action);
+
+			// 对执行后的结果进行返回，若执行后仍为空对象，则表示该异常不在捕捉范围内，故再次将其抛出
+			if (result.isPresent()) {
+				return result.get();
+			} else {
+				throw e;
+			}
+		}
+	}
+	
+	/**
+	 * 用于执行事件组，并将事件组的执行结果传入到下一个事件组中作为执行参数，
+	 * 直到执行完毕，返回最后一个事件组处理的结果
+	 * @param eventNames 一组事件组名称
+	 * @return 最后一个事件组处理结果
+	 */
+	public Optional<Object> mapAction(String... eventNames) {
+		return mapAction(r -> r, eventNames);
+	}
+
+	/**
+	 * 用于执行事件组，并将事件组的执行结果，经过预设的处理后，传入到下一个事件组中作为执行参数，
+	 * 直到执行完毕，返回最后一个事件组处理的结果
+	 * <p>
+	 * <b>注意：</b>设置的处理方式对第一个事件组的方法传参不生效，对最后一个事件组执行结果也不生效（即不处理
+	 * 第一个传入事件组的参数和最后一个事件组返回的结果）
+	 * </p>
+	 * @param function 参数处理方式
+	 * @param eventNames 一组事件组名称
+	 * @return 最后一个事件组处理结果
+	 */
+	public Optional<Object> mapAction(Function<Object, Object> mapper, String... eventNames) {
+		//获取并遍历事件组
+		List<String> nameList = Arrays
+				.asList(Optional.ofNullable(eventNames).orElseThrow(() -> new ParamException("未指定事件名称组")));
+		Optional<Object> result = Optional.empty();
+		for (int index = 0; index < nameList.size(); index++) {
+			//执行事件组，存储执行结果
+			result = action(nameList.get(index));
+			//若当前元素不是最后一个元素，则对结果按照设置进行处理，并写入到下一个要执行的事件组的参数中
+			if (index != nameList.size() - 1) {
+				eventMap.get(nameList.get(index + 1)).setParam(result.map(mapper));
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -298,6 +382,15 @@ public class GroupEvent {
 		public EvenetAction(GroupEventFunction eventFunction, Optional<Object> arg) {
 			super();
 			this.eventFunction = eventFunction;
+			this.arg = arg;
+		}
+
+		/**
+		 * 用于设置方法的执行参数，若设置该参数为非空时，则调用带参的方法；设置为空对象时，则调用无参方法
+		 * 
+		 * @param arg 方法执行参数
+		 */
+		public void setParam(Optional<Object> arg) {
 			this.arg = arg;
 		}
 
