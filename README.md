@@ -1,13 +1,16 @@
 # autest
-## 简介
-### autest设计初衷
+## 0 简介
 autest为Auxiliary Test的英文缩写意为辅助测试，其中包括日常测试工作中能用到的工具，包括测试用例编写工具，简化Web UI自动化测试工具以及测试报告生成工具和日常工作中使用的小工具等。开发这个项目的目的在于使用简单的代码来简化我们测试日常中较为繁杂的操作，使测试的效率得到一定的提升。
+### 0.1 autest设计初衷
+autest比起说是一个工具，不如说是我在工作中的一个总结，在我看来，测试工作就是一个机械式的工作，既然是机械式的工作就应该用机械来代替，抱着这个想法，于是我就启动了这个项目。工具第一版实际上是我自己为简化Web UI自动化脚本而做的一个对selenium代码简单的封装，但随着工作经验的累积，我在工作中越发地发现测试工作中很多的地方都是重复的工作，但这个重复的工作又不得不去做，并且做这件重复的事情花的时间还不是一般的长，比如编写测试用例、编写测试报告，于是我便下定决心要把这些工具整合到我的代码中。
 
-autest比起说是一个工具，不如说是我在工作中的一个总结，在我看来，测试工作就是一个机械式的工作，既然是机械式的工作就应该用机械来代替，抱着这个想法，于是我就启动了这个项目。但我并不是开发转测试，在大学学习的也是化学工程专业，并未系统地学习过软件工程，所以在编写代码时会有许多与开发规范不符合的地方，关于这点，希望大家能在使用时多多海涵，同时也希望大家能对工具多多批评和指点，我会尽可能地做出改正，使工具更加地完善。
-### 目标
+另一方面，随着自动化测试这个名词逐渐的流行，很多的公司跟风，要求测试部门也要弄一个自动化出来。当时我在一家公司当测试主管，经理也希望我能弄一个自动化。对我而言还好，我对java不算精通，但也是到熟练的地步了，但我的同事就并非都会代码了。面对这一痛点，许多的公司都选择使用软件来代替编码，我也曾用过这样的软件，但对我而言，那就是一种痛苦，一种有力却使不上的憋屈。很多的操作，我通过编码的方式是分分钟能解决的，但搬到软件上，别人没有提供给你方法，你只能干瞪眼。基于这个问题，于是我便不断地探寻一种简单的方法来编写脚本，并不断地培训同事，告诉他们怎么去编写，遇到什么样的事件调什么方法，在这一方面，我还是取得了不错的实践效果的。
+
+但我并不是开发转测试，在大学学习的也是化学工程专业，并未系统地学习过软件工程，所以在编写代码时会有许多与开发规范不符合的地方，关于这点，希望大家能在使用时多多海涵，同时也希望大家能对工具多多批评和指点，我会尽可能地做出改正，使工具更加地完善。
+### 0.2 目标
 autest的目标是使用代码来简化繁杂的测试工作，让测试工作变得轻松，同时，也让不会写代码的测试工程师开始熟悉代码，通过代码编写自动化测试脚本，脱离被自动化测试软件束缚，让自动化测试变得更加自由。
 
-## 工具概要
+## 0.3 工具概要
 |       模块      |    介绍     |
 |---------------------|----------------|
 |auxiliary.tool|包含日常测试工作中可以使用的测试工具，例如表格处理工具、文本处理工具、日期处理工具等|
@@ -15,7 +18,7 @@ autest的目标是使用代码来简化繁杂的测试工作，让测试工作�
 |auxiliary.work.testcase|用于编写测试用例的工具|
 |auxiliary.work.http|用于做接口测试时使用的工具|
 |auxiliary.work.sql|用于对oralc数据库简单查询的工具|
-## 工具介绍
+## 0.4 工具介绍
 目前，整个项目比较成熟的工具是测试用例编写工具和Web UI自动化辅助编码工具，下面我将主要介绍这两个工具的使用。
 ### 1 测试用例编写工具
 该工具是通过预先写好的测试用例文件模板，调用其中添加内容的方法，对测试用例进行编写，之后再生成一个Excel文件，以方便测试用例阅读与上传。当然，看到这许多人就有疑问了，既然最后要生成一个Excel文件，那编写测试用例直接在Excel文档里写就好，何必还要编写代码，然后再生成呢？的确，在office的Excel软件中，其可视化界面确实要比写代码要强很多，但Excel软件也存在上下滚动不方便的缺点，并且，大家也清楚，很多测试用例都可以复用，在编写过程中难免会有大量的复制和替换的工作，对于少量的用例还好，一旦用例较多时，复制用例后，就容易遗漏需要替换文本的用例，或者多复制用例，导致编写出错。为解决这一类的问题，所以我封装了一个测试用例编写工具，将测试用例的编写工作，由Excel向eclipse（不要问我为什么不用IDEA，我是特别不喜欢IDEA）转移，当然，缺点就是可视化差了一些。
@@ -831,7 +834,91 @@ public class MyCase extends Case {
 之后，我们在写入测试用例用例类中，构造该类，并调用其中的方法，即可将模板中的内容写入到测试用例文件中
 
 #### 1.4 测试用例字段标记
+在编写用例后，有时我们需要在文件中对用例做一定的标记，目前，在工具中，允许对生成的excel进行注释标记、背景色标记、文本颜色标记以及超链接标记。所有的标记方法都需要在调用end()方法后，即end()方法返回的FieldMark类。类中所有的标记方法均返回类本身，便于链式调用。<br>
+**注释标记**<br>
+即excel中审阅菜单下的“新建批注”（或“注释”）。该注释允许添加在字段所在的单元格下。其方法为：
+
+```java
+public FieldMark fieldComment(String sheetName, String field, String content)
+```
+
+其中，sheetName表示当前标记所在的sheet名称，该参数需要与field（字段id）参数对应；content表示需要写入到注释中的内容。<br>
+该方法存在一个重载方法：
+
+```java
+public FieldMark fieldComment(String field, String content)
+```
+
+显然，该方法无需指定sheet的名称，表示在当前指向的sheet名称中标记需要标记的字段，即当前最后一次调用切换sheet方法时所指向的sheet名称。对于其他的标记方法中，也存在该重载形式，此后将不再赘述。<br>
+为方便介绍该功能，借用在1.3.1中编写的例子：
+
+```java
+@Test
+public void addCase() {
+	wtc.addCase(ic.addBasicTextboxCase("姓名", false, true, false)).end();
+	wtc.addCase(ic.addIdCardCase("身份证", true, false, false)).end();
+}
+```
+
+假设我们需要对第二段用例上字段id为“步骤”的字段上添加注释，则可将代码改为：
+
+```java
+@Test
+public void addCase() {
+	wtc.addCase(ic.addBasicTextboxCase("姓名", false, true, false)).end();
+	wtc.addCase(ic.addIdCardCase("身份证", true, false, false)).end().fieldComment("步骤", "测试注解");
+}
+```
+
 #### 1.5 测试用例编写类扩展
+测试用例编写类是支持扩展的，使用者可根据所在公司的不同规定，自行扩展相应的模板。其用例编写子类需要继承CommonTestCaseWrite类，其泛型参数写子类名称即可。其配置文件可参考1.1节中所介绍的方式进行编写。在工具中，提供了jira上编写测试用例的方法，其配置文件见项目路径下“<a href='https://gitee.com/pyqone/autest/blob/master/ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/jira%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xml'>ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/jira测试用例导入模板.xml</a>”
 ##### 1.5.1 jira测试用例编写类的使用
+在jira模板中，由于在类中已指定相应的字段，故在编写用例时则无需再次指定相应的字段。以1.2节中的测试用例为例，使用jira模板可以按以下方式编写：
+
+```java
+@Test
+public void addCase() throws DocumentException {
+	JiraTestCaseWrite jira = new JiraTestCaseWrite(configurationFile, templetFile);
+	jira.addTitle("通过不同的姓名创建账号")
+		.addStep("“姓名”文本框不输入任何信息，点击“保存”按钮", 
+				"在“姓名”文本框中只输入空格，点击“保存”按钮", 
+				"在“姓名”文本框中输入HTML代码，点击“保存”按钮")
+		.addExcept("账号创建成功", 
+				"账号创建成功", 
+				"账号创建成功，且HTML代码不会被转义")
+		.addModule("/测试项目/账号管理/创建账号")
+		.addContent(JiraFieldIdType.PRECONDITION.getName(), "已在创建账号界面", "除姓名字段外，其他信息均正确填写")
+		.addContent(JiraFieldIdType.OBJECTIVE.getName(), "验证创建账号界面各个控件输入是否有效")
+		.addContent(JiraFieldIdType.STATUS.getName(), "1")
+		.addContent(JiraFieldIdType.PRIORITY.getName(), "2")
+		.addContent(JiraFieldIdType.COMPONENT.getName(), "")
+		.addContent(JiraFieldIdType.OWNER.getName(), "test")
+		.addContent(JiraFieldIdType.CASE_KEY.getName(), "2")
+		.addContent(JiraFieldIdType.ISSUES.getName(), "TEST-1")
+		.end();
+	
+	jira.addTitle("通过不同的身份证创建账号")
+		.addStepAndExcept("“身份证”文本框不输入任何信息，点击“保存”按钮", "账号创建失败，并给出相应的提示")
+		.addStepAndExcept("在“身份证”文本框中只输入空格，点击“保存”按钮", "账号创建失败，并给出相应的提示")
+		.addStepAndExcept("输入15位的证件信息，点击“保存”按钮", "账号创建成功")
+		.addStepAndExcept("输入18位的证件信息，点击“保存”按钮", "账号创建成功")
+		.addStepAndExcept("输入末尾带“X”或“x”的证件信息，点击“保存”按钮", "账号创建成功")
+		.addStepAndExcept("输入大于18位的数字，点击“保存”按钮", "账号创建失败，并给出相应的提示")
+		.addStepAndExcept("输入小于18位但大于15位的数字，点击“保存”按钮", "账号创建失败，并给出相应的提示")
+		.addStepAndExcept("输入小于15位的数字，点击“保存”按钮", "账号创建失败，并给出相应的提示")
+		.addStepAndExcept("输入不符合证件规则但长度符合规则的数字（如123456789012345678），点击“保存”按钮", "账号创建失败，并给出相应的提示")
+		.addStepAndExcept("输入非数字字符，点击“保存”按钮", "账号创建失败，并给出相应的提示")
+		.addModule("/测试项目/账号管理/创建账号")
+		.addContent(JiraFieldIdType.PRECONDITION.getName(), "已在创建账号界面", "除姓名字段外，其他信息均正确填写")
+		.addContent(JiraFieldIdType.OBJECTIVE.getName(), "验证创建账号界面各个控件输入是否有效")
+		.addContent(JiraFieldIdType.STATUS.getName(), "1")
+		.addContent(JiraFieldIdType.PRIORITY.getName(), "1")
+		.addContent(JiraFieldIdType.COMPONENT.getName(), "")
+		.addContent(JiraFieldIdType.OWNER.getName(), "test")
+		.addContent(JiraFieldIdType.CASE_KEY.getName(), "1")
+		.addContent(JiraFieldIdType.ISSUES.getName(), "TEST-1")
+		.end();
+}
+```
 ##### 1.5.2 自定义测试用例编写类
-##### 1.5.3 测试用例模板类字段枚举（可选）
+自定义的测试用例编写类，只需要继承CommonTestCaseWrite类即可，其中可以添加与测试用例模板类的关联，可参考JiraTestCaseWrite类的写法。
