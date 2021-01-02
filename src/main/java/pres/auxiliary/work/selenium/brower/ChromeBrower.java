@@ -109,10 +109,13 @@ public class ChromeBrower extends AbstractBrower {
 	}
 	
 	/**
-	 * 用于向浏览器中添加谷歌浏览器允许设置的个性化配置。如若设置启动的浏览器不弹出窗口，则可以
-	 * 按照以下配置：<br>
-	 * key = profile.managed_default_content_settings.popups<br>
-	 * value = 2
+	 * 用于向浏览器中添加谷歌浏览器允许设置的个性化配置。
+	 * <p>
+	 * 例如，设置启动的浏览器不弹出窗口，则可以按照以下配置：
+	 * <code><pre>
+	 * chrome.addPersonalityConfig("profile.managed_default_content_settings.popups", 2)
+	 * <pre></code>
+	 * </p>
 	 * 
 	 * @param key 配置在浏览器对应的键值
 	 * @param value 其配置对应的传参

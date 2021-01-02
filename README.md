@@ -926,3 +926,131 @@ public void addCase() throws DocumentException {
 ```
 ##### 1.5.2 自定义测试用例编写类
 自定义的测试用例编写类，只需要继承CommonTestCaseWrite类即可，其中可以添加与测试用例模板类的关联，可参考JiraTestCaseWrite类的写法。
+
+### 2 Web UI自动化脚本工具
+该工具是对selenium代码的一个二次封装，简化了部分代码的编写，使代码调用上更加符合中国人的语法习惯。除此之外，工具还对页面元素的定位方式的管理提供了解决方案，目的在于简化页面元素定位方式的存储，强化对元素定位方式的管理。下面将是工具的具体介绍。
+
+#### 2.1 浏览器
+浏览器的启动是Web UI自动化的基础，在工具中，提供了对谷歌、火狐和IE浏览器的支持，也可自行扩展浏览器，具体的扩展方法将在以下的章节中讲到。目前，封装较为完善的浏览器是谷歌浏览，故以下将以谷歌浏览器为例，介绍浏览器工具的使用，其他的浏览器调用类似。
+
+##### 2.1.1 启动浏览器
+工具提供三种方式对浏览器进行构造：
+```java
+public ChromeBrower(File driverFile, Page page)
+public ChromeBrower(File driverFile, String url, String pageName)
+public ChromeBrower(File driverFile)
+```
+其中，每种构造方式都必须传入浏览器驱动所在的位置，前两种构造方式比较类似，要求传入待测页面的信息，表示在启动浏览器后，预先加载相应的页面；第三种构造方式若未添加页面时，在打开浏览器后将不加载任何的页面。与selenium不同，为方便对浏览器进行配置，在构造浏览器时，其不会直接打开浏览器，在此期间，可自行对浏览器添加配置，当第一次调用getDriver()方法时，浏览器才会真正的启动。若浏览器已打开，在未关闭的情况下，再次调用getDriver()方法时只会返回当前浏览器的WebDriver类对象，不会再次启动浏览器。即：
+```java
+private final File CHROME_DRIVER_FILE = new File("Resource/BrowersDriver/Chrom/86.0.4240.22/chromedriver.exe");
+private ChromeBrower chrome;
+
+@BeforeClass
+public void initBrower() {
+	chrome = new ChromeBrower(CHROME_DRIVER_FILE);//不会启动浏览器
+	chrome.getDriver();//浏览器被启动
+}
+
+@Test
+public void getDriver() {
+	chrome.getDriver();//再次调用时只返回当前启动浏览器的WebDriver类对象
+}
+```
+
+##### 2.1.2 浏览器配置
+目前只有谷歌浏览器支持在类中配置部分浏览器个性化设置，其他的浏览器类的个性化配置方法还未完成，只能通过selenium提供的相应浏览器的Options类进行配置。在谷歌浏览器中，有提供两个方法配置内置的个性化配置以及一个支持键值对配置个性化的方法：
+```java
+public void addConfig(ChromeOptionType chromeOptionType, Object value)
+public void addConfig(ChromeOptionType chromeOptionType)
+
+public void addPersonalityConfig(String key, Object value)
+```
+其ChromeOptionType枚举列举了可支持的个性化配置，包括控制已打开的浏览器、设置浏览器大小、是否加载图片等配置，根据是否需要传参，调用相应的addConfig方法即可。例如，在自动化测试中，我们需要配置浏览器以下的信息：
+1. 配置浏览器下载文件的路径为：D:/download
+2. 配置浏览器不加载图片
+3. 配置浏览器不弹出窗口
+则在启动浏览器前，我们可以添加如下代码：
+```java
+private final File CHROME_DRIVER_FILE = new File("Resource/BrowersDriver/Chrom/86.0.4240.22/chromedriver.exe");
+private ChromeBrower chrome;
+
+@BeforeClass
+public void initBrower() {
+	chrome = new ChromeBrower(CHROME_DRIVER_FILE);
+	//配置浏览器下载文件的路径为：D:/download
+	chrome.addConfig(ChromeOptionType.DOWNLOAD_FILE_PATH, "D:/download");
+	//配置浏览器不加载图片
+	chrome.addConfig(ChromeOptionType.DONOT_LOAD_IMAGE);
+	//配置浏览器不弹出窗口
+	chrome.addPersonalityConfig("profile.managed_default_content_settings.popups", 2);
+}
+
+@Test
+public void openBrower() {
+	chrome.getDriver();
+}
+```
+
+**特别注意：**当配置控制已打开的浏览器时，即使用CONTRAL_OPEN_BROWER配置，其后的所有个性化配置均不生效：
+```java
+//控制在9222端口启动的浏览器
+chrome.addConfig(ChromeOptionType.CONTRAL_OPEN_BROWER, "127.0.0.1:9222");
+//当前配置不会生效
+chrome.addConfig(ChromeOptionType.DOWNLOAD_FILE_PATH, "D:/download");
+```
+
+##### 2.1.3 打开页面
+启动浏览器后，我们则需要加载待测页面，每个待测页面是通过页面类进行控制，关于页面类的介绍，可以参考2.2节。在关于构造浏览器接收中，有提及到传入待测页面的内容，若在构造时，已传入了待测页面的信息，则在打开浏览器后，系统会自动加载相应的页面；若构造时并未传入页面信息，或需要打开新的页面时，则需要调用以下方法：
+```java
+public void openUrl(String url, String pageName, boolean openNewLabel)
+public void openUrl(Page newPage, boolean openNewLabel)
+```
+其中，除页面信息外，其openNewLabel参数表示是否在新的标签中打开页面，若传入true，则会在当前浏览器中打开一个新的标签来加载传入的页面；若传入为false，则表示在当前标签中加载页面。需要注意的是，该方法意义在于打开页面，并不是在启动浏览器前加载页面，故当未打开浏览器，直接调用该方法时，则会抛出IncorrectPageException异常（后期可能会改进）。下面以打开selenium API页面和好123页面为例，在启动浏览器时，默认加载selenium API页面，在启动浏览器后，再加载好123页面：
+```java
+private final File CHROME_DRIVER_FILE = new File("Resource/BrowersDriver/Chrom/86.0.4240.22/chromedriver.exe");
+private final String URL = "https://www.selenium.dev/selenium/docs/api/java/overview-summary.html";
+private ChromeBrower chrome;
+
+@BeforeClass
+public void initBrower() {
+	chrome = new ChromeBrower(CHROME_DRIVER_FILE, URL, "selenium");
+}
+
+@Test
+public void openBrower() {
+	//chrome.openUrl(new Page("https://www.hao123.com/", "好123"), true);//报错
+	chrome.getDriver();
+	chrome.openUrl(new Page("https://www.hao123.com/", "好123"), true);
+}
+```
+
+##### 2.1.4 切换页面
+在浏览器存在多个页面的情况下，工具中提供了四种方法，对窗口进行切换
+```java
+public void switchWindow(String pageName)
+public void switchWindow(Page page)
+public void switchNowPage()
+public boolean switchPopuWindow()
+```
+其中：
+* 前两种切换页面的方法类似，根据存储的页面名称或页面类对页面进行切换；
+* 第三种方法是当用户调用selenium提供的切换方式切换了窗口时，调用该方法可将窗口切回用户最后一次通过浏览器对象切换的窗口；
+* 第四种方法为，当页面弹出弹窗时，由于该弹窗未被记录在打开的页面中，故可调用该方法，切换到其他页面打开的弹窗上，但存在多个弹窗时，只调用一次该方法则不能保证绝对命中到预期的页面上
+
+具体的调用如下：
+```java
+
+```
+
+##### 2.1.5 关闭页面
+##### 2.1.6 关闭浏览器
+##### 2.1.7 浏览器的扩展
+
+#### 2.2 待测页面
+#### 2.3 元素定位方式存储
+#### 2.4 元素查找
+#### 2.5 事件
+##### 2.5.1 基础事件
+##### 2.5.2 扩展事件
+#### 2.6 数据驱动
+#### 2.7 其他工具
