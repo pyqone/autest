@@ -8,7 +8,7 @@ import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import pres.auxiliary.work.selenium.tool.ExcelRecord;
+import pres.auxiliary.selenium.tool.ExcelRecord;
 
 /**
  * <p><b>文件名：</b>ConfigXmlTool.java</p>

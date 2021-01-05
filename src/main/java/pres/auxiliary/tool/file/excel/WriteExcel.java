@@ -5,7 +5,7 @@ import java.io.File;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 
-import pres.auxiliary.work.testcase.file.IncorrectFileException;
+import pres.auxiliary.testcase.file.IncorrectFileException;
 
 /**
  * <p><b>文件名：</b>WriteExcel.java</p>

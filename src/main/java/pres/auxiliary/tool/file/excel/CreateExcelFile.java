@@ -22,11 +22,11 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import pres.auxiliary.testcase.file.IncorrectFileException;
+import pres.auxiliary.testcase.templet.LabelNotFoundException;
 import pres.auxiliary.tool.data.TableData;
 import pres.auxiliary.tool.file.TableFileReadUtil;
 import pres.auxiliary.tool.file.UnsupportedFileException;
-import pres.auxiliary.work.testcase.file.IncorrectFileException;
-import pres.auxiliary.work.testcase.templet.LabelNotFoundException;
 
 /**
  * <p>
