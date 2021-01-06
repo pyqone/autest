@@ -160,6 +160,7 @@ public void addCase() {
 2. 点击“Packages”窗口中的“org.openqa.selenium.chrome”
 3. 点击下方窗口的“ChromeDriver”
 4. 获取类中所有的构造方法（从“Constructor Summary”表格中获取）
+![步骤截图](https://images.gitee.com/uploads/images/2021/0106/195720_fd44ce3a_1776234.png "QQ截图20210106195708.png")
 
 #### 2.2 录制元素
 采用xml文件的形式记录所需要操作的元素，内容为：
