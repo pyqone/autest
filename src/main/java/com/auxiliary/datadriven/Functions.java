@@ -1,4 +1,4 @@
-package com.auxiliary.selenium.datadriven;
+package com.auxiliary.datadriven;
 
 import com.auxiliary.tool.data.RandomString;
 import com.auxiliary.tool.data.StringMode;

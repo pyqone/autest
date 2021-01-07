@@ -1,4 +1,4 @@
-package com.auxiliary.selenium.datadriven;
+package com.auxiliary.datadriven;
 
 public enum SplitType {
 	/**

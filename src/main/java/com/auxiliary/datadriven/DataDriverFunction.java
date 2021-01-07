@@ -1,4 +1,4 @@
-package com.auxiliary.selenium.datadriven;
+package com.auxiliary.datadriven;
 
 /**
  * <p><b>文件名：</b>DataDriverFunction.java</p>

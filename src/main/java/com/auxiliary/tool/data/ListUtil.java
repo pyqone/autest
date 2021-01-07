@@ -142,6 +142,15 @@ public class ListUtil {
 		return newTableMap;
 	}
 
+	/**
+	 * 用于对列表中的数据类型进行转换，返回新数据类型的列表
+	 * 
+	 * @param <T>      原数据类型
+	 * @param <U>      新数据类型
+	 * @param tableData 原数据类型表
+	 * @param mapper   数据转换方式
+	 * @return 转换后的数据类型表
+	 */
 	public static <T, U> TableData<U> changeTable(TableData<T> tableData, Function<T, U> mapper) {
 		TableData<U> newTable = new TableData<>();
 		tableData.columnForEach((key, value) -> newTable.addColumn(key, changeList(value, mapper).stream()

@@ -1,4 +1,4 @@
-package com.auxiliary.selenium.datadriven;
+package com.auxiliary.datadriven;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,14 +62,8 @@ import com.auxiliary.tool.file.TableFileReadUtil;
  */
 public class TestNGDataDriver {
 	/**
-	 * 用于存储数据列的名称
-	 */
-//	private ArrayList<String> titleList = new ArrayList<>();
-	/**
 	 * 用于存储读取到的数据
 	 */
-//	private ArrayList<Data> dataList = new ArrayList<>();
-//	private HashMap<String, List<Object>> dataMap = new HashMap<>(16);
 	private TableData<Object> dataTable;
 
 	/**
@@ -81,11 +75,6 @@ public class TestNGDataDriver {
 	 * 用于对日期格式或特殊字段输入的日期进行转换
 	 */
 	private Time time = new Time();
-
-	/**
-	 * 用于存储最大列的元素个数
-	 */
-//	private int maxColumnSize = -1;
 
 	/**
 	 * 构造类，并将默认的数据驱动函数（{@link Functions}）加载至类中

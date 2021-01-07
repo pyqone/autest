@@ -1,4 +1,4 @@
-package com.auxiliary.selenium.datadriven;
+package com.auxiliary.datadriven;
 
 /**
  * 用于定义可向数据驱动中添加的预设模型
