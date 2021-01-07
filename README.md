@@ -26,11 +26,23 @@ autest的目标是使用代码来简化繁杂的测试工作，让测试工作�
 ### 1 测试用例编写工具
 该工具是通过预先写好的测试用例文件模板，调用其中添加内容的方法，对测试用例进行编写，之后再生成一个Excel文件，以方便测试用例阅读与上传。当然，使用代码的方式编写测试用例，适用于存在大量替换和模板式测试用例的场景。
 
+#### 1.1 创建模板配置文件
 首先，我们需要创建一个测试用例文件模板xml配置文件，文件的创建方法可参考Wiki中[《测试用例文件创建》](https://gitee.com/pyqone/autest/wikis/%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E6%96%87%E4%BB%B6%E5%88%9B%E5%BB%BA?sort_id=3351622)一文，此处直接引用项目路径下的jira文件模板（可参考：[/ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/jira测试用例导入模板.xml](https://gitee.com/pyqone/autest/blob/master/ConfigurationFiles/CaseConfigurationFile/FileTemplet/JiraCaseFileTemplet/jira%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xml)）。
 
+#### 1.2 构造测试用例编写类
 获得文件后，我们便可使用测试用例类来编写测试用例。这里我使用项目中已提供的jira用例编写类（JiraTestCaseWrite类）来进行讲解，详细的用例创建方法可参考Wiki中[《测试用例编写》](https://gitee.com/pyqone/autest/wikis/%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%BC%96%E5%86%99?sort_id=3354705)和[《测试用例编写类扩展》](https://gitee.com/pyqone/autest/wikis/%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%BC%96%E5%86%99%E7%B1%BB%E6%89%A9%E5%B1%95?sort_id=3354709)两篇文章。
 
-假设，我们需要编写姓名、身份证号码和手机号码的测试用例，假定姓名可随意输入，不设限制；身份证为中国公民身份证的校验规则；手机号码为一般11位号码；表单提交需要点击保存按钮；创建的信息为“账号”。则具体的代码为：
+#### 1.3 用例编写需求
+假设，我们需要编写姓名、身份证号码和手机号码的测试用例，限制如下：
+* 定姓名可随意输入，不设限制
+* 身份证为中国公民身份证的校验规则
+* 手机号码为一般11位号码
+* 表单提交需要点击保存按钮
+* 创建的信息为“账号”。
+![用例截图](https://images.gitee.com/uploads/images/2021/0107/143719_65b90c76_1776234.png "用例截图")
+
+#### 1.4 Demo
+根据以上用例编写需求，结合TestNG框架，则具体的代码为：
 ```java
 /**
  * 指向配置文件
@@ -160,38 +172,171 @@ public void addCase() {
 2. 点击“Packages”窗口中的“org.openqa.selenium.chrome”
 3. 点击下方窗口的“ChromeDriver”
 4. 获取类中所有的构造方法（从“Constructor Summary”表格中获取）
-![步骤截图](https://images.gitee.com/uploads/images/2021/0106/195720_fd44ce3a_1776234.png "QQ截图20210106195708.png")
+![步骤截图](https://images.gitee.com/uploads/images/2021/0106/195720_fd44ce3a_1776234.png "步骤截图")
+**注意：** 除初次进入页面点击的“FRAMES”控件外，其他的控件均在一个iframe下。
 
 #### 2.2 录制元素
 采用xml文件的形式记录所需要操作的元素，内容为：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="">
+	<templet>
+		<xpath id='元素'>//*[text()='${text}']</xpath>
+		<xpath id='窗体'>//iframe[@name='${name}']</xpath>
+	</templet>
 
+	<element name='展开窗口'>
+		<xpath text='Frames' temp_id='元素' />
+	</element>
+
+	<iframe name='packageListFrame'>
+		<xpath temp_id='窗体' />
+
+		<element name='包名'>
+			<xpath text='org.openqa.selenium.chrome' temp_id='元素' />
+		</element>
+	</iframe>
+
+	<iframe name='packageFrame'>
+		<xpath temp_id='窗体' />
+
+		<element name='类名'>
+			<xpath text='ChromeDriver' temp_id='元素' />
+		</element>
+	</iframe>
+
+	<iframe name='classFrame'>
+		<xpath temp_id='窗体' />
+
+		<element name='构造方法列表'>
+			<xpath>//tr//th[@class='colConstructorName']/code</xpath>
+		</element>
+	</iframe>
+</project>
+```
 
 #### 2.3 启动浏览器并加载页面
 要进行页面的自动化，首先需要启动浏览器并加载待测页面。以谷歌浏览器为例，谷歌浏览器驱动定义在项目路径根目录下，启动浏览器，并加载Selenium API页面的代码可写为：
 ```java
-@Test
-public void openBrower() {
-	//指向谷歌驱动位置
-	File driverFile = new File("chromedriver.exe");
-	//待测页面名称
-	String pageName = "selenium";
-	//待测站点
-	String url = "https://seleniumhq.github.io/selenium/docs/api/java/index.html";
-	//构造浏览器对象
-	ChromeBrower chrome = new ChromeBrower(driverFile, url, pageName);
-	//设置浏览器全屏
-	chrome.addConfig(ChromeOptionType.SET_WINDOW_MAX_SIZE);
-	//启动浏览器（可返回WebDriver对象）
-	chrome.getDriver();
-	//关闭浏览器
-	chrome.closeBrower();
-}
+//指向谷歌驱动位置
+File driverFile = new File("chromedriver.exe");
+//待测页面名称
+String pageName = "selenium";
+//待测站点
+String url = "https://seleniumhq.github.io/selenium/docs/api/java/index.html";
+//构造浏览器对象
+ChromeBrower chrome = new ChromeBrower(driverFile, url, pageName);
+//设置浏览器全屏
+chrome.addConfig(ChromeOptionType.SET_WINDOW_MAX_SIZE);
+//启动浏览器（可返回WebDriver对象）
+chrome.getDriver();
+//关闭浏览器
+chrome.closeBrower();
 ```
 
 #### 2.4 操作元素
+获取到浏览器对象后，首先构造元素查找类对象，再设置需要读取的元素定位方式存储文件（这里我将xml文件放在项目路径下）：
+```java
+//用于查找普通元素
+FindCommonElement common = new FindCommonElement(chrome);
+//用于查找列表型元素
+FindDataListElement data = new FindDataListElement(chrome);
 
-#### 2.5 完整代码
+//定义查找元素时读取的元素定位方式存储文件
+File LOCATION_FILE = new File ("api页面元素.xml");
+common.setReadMode(new XmlLocation(LOCATION_FILE), true);
+```
+**注意：** 为简化元素查找类切换xml的过程，我将指向的定位文件设置为了静态，即以上代码中，只需要对common对象进行切换，data对象共享common对象切换的元素定位方式存储文件，此处在多线程和频繁切换时可能会出现问题。
+
+获得元素查找对象后，再构造事件类对象，这里使用到点击事件类以及列表事件类，代码如下：
+```java
+//指向点击事件
+ClickEvent click = new ClickEvent(chrome);
+//指向扩展事件中的列表型事件
+DataTableEvent table = new DataTableEvent(chrome);
+```
+最后便可操作元素：
+```java
+//点击元素
+click.click(common.getElement("展开窗口"));
+click.click(common.getElement("包名"));
+click.click(common.getElement("类名"));
+//获取构造方法
+table.addList(data.find("构造方法列表"));
+//获取列表的所有元素文本，并进行输出
+table.getListText("构造方法列表").stream().map(text -> text.orElse("空值")).forEach(System.out::println);
+```
+
+#### 2.5 Demo
 根据以上的说明，将代码放入TestNG框架中，完整的代码为：
 ```java
+/**
+ * 指向谷歌驱动位置
+ */
+private final File DRIVER_FILE = new File("chromedriver.exe");
+/**
+ * 待测站点
+ */
+private final String URL = "https://seleniumhq.github.io/selenium/docs/api/java/index.html";
+/**
+ * 待测页面名称
+ */
+private final String PAGE_NAME = "selenium";
+/**
+ * 指向元素定位方式存储文件
+ */
+private final File LOCATION_FILE = new File ("src/main/java/pres/auxiliary/selenium/brower/api页面元素.xml");
 
+/**
+ * 指向浏览器
+ */
+private ChromeBrower chrome;
+
+/**
+ * 初始化浏览器
+ */
+@BeforeClass
+public void initBrower() {
+	//构造浏览器对象
+	chrome = new ChromeBrower(DRIVER_FILE, URL, PAGE_NAME);
+	//设置浏览器全屏
+	chrome.addConfig(ChromeOptionType.SET_WINDOW_MAX_SIZE);
+}
+
+/**
+ * 关闭浏览器
+ */
+@AfterClass
+public void closeBrower() {
+	//关闭浏览器
+	chrome.closeBrower();
+}
+
+/**
+ * 对元素进行操作
+ */
+@Test
+public void oprateElement() {
+	//用于查找普通元素
+	FindCommonElement common = new FindCommonElement(chrome);
+	//用于查找列表型元素
+	FindDataListElement data = new FindDataListElement(chrome);
+	
+	//指向点击事件
+	ClickEvent click = new ClickEvent(chrome);
+	//指向扩展事件中的列表型事件
+	DataTableEvent table = new DataTableEvent(chrome);
+	
+	//定义查找元素时读取的元素定位方式存储文件
+	common.setReadMode(new XmlLocation(LOCATION_FILE), true);
+	
+	//点击元素
+	click.click(common.getElement("展开窗口"));
+	click.click(common.getElement("包名"));
+	click.click(common.getElement("类名"));
+	//获取构造方法
+	table.addList(data.find("构造方法列表"));
+	//获取列表的所有元素文本，并进行输出
+	table.getListText("构造方法列表").stream().map(text -> text.orElse("空值")).forEach(System.out::println);
+}
 ```
