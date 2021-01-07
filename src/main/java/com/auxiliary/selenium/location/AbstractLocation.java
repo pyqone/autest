@@ -75,6 +75,10 @@ public abstract class AbstractLocation implements ReadLocation {
 			return ByType.NAME;
 		case "tagname":
 			return ByType.TAGNAME;
+		//定义需要忽略的标签
+		case "element":
+		case "iframe":
+			return null;
 		default:
 			throw new IllegalArgumentException("不存在的定位方式: " + labelName);
 		}

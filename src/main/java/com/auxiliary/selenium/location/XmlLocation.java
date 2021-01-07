@@ -74,13 +74,22 @@ public class XmlLocation extends AbstractLocation {
 	@Override
 	public ArrayList<ByType> findElementByTypeList(String name) {
 		ArrayList<ByType> byTypeList = new ArrayList<ByType>();
-		//查询元素
-		Element element = getElementLabelElement(name);
+		//查询并存储元素下的子元素
+		@SuppressWarnings("unchecked")
+		ArrayList<Object> lableElementList = new ArrayList<>(getElementLabelElement(name).elements());
 		
-		//遍历元素下所有的定位标签，并将其转换为相应的ByType枚举，存储至byTypeList中
-		for (Object byElement : element.elements()) {
-			byTypeList.add(toByType(((Element)byElement).getName()));
-		}
+		lableElementList.stream()
+				//强转为Element类型
+				.map(lable -> (Element)lable)
+				//获取标签名称
+				.map(lable -> lable.getName())
+				//将名称转换为ByType枚举
+				.map(this::toByType)
+				//过滤掉返回为null的元素
+				.filter(lable -> lable != null)
+				//存储标签
+				.forEach(byTypeList::add);
+				;
 		
 		return byTypeList;
 	}
