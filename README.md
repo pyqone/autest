@@ -34,11 +34,14 @@ autest的目标是使用代码来简化繁杂的测试工作，让测试工作�
 
 #### 1.3 用例编写需求
 假设，我们需要编写姓名、身份证号码和手机号码的测试用例，限制如下：
-* 定姓名可随意输入，不设限制
-* 身份证为中国公民身份证的校验规则
-* 手机号码为一般11位号码
+* 定姓名可随意输入，不设限制，必填，可重复
+* 身份证为中国公民身份证的校验规则，非必填，不可重复
+* 手机号码为一般11位号码，必填，不可重复
 * 表单提交需要点击保存按钮
 * 创建的信息为“账号”。
+
+原型图如下：
+
 ![用例截图](https://images.gitee.com/uploads/images/2021/0107/143719_65b90c76_1776234.png "用例截图")
 
 #### 1.4 Demo
@@ -101,7 +104,7 @@ public void addCase() {
 	.end();
 	
 	jira.addTitle("通过不同的身份证创建账号")
-	.addStepAndExcept("“身份证”文本框不输入任何信息，#保存#", "#失败#")
+	.addStepAndExcept("“身份证”文本框不输入任何信息，#保存#", "#成功#")
 	.addStepAndExcept("在“身份证”文本框中只输入空格，#保存#", "#失败#")
 	.addStepAndExcept("输入15位的证件信息，#保存#", "#成功#")
 	.addStepAndExcept("输入18位的证件信息，#保存#", "#成功#")
@@ -145,8 +148,8 @@ public void openFolder() throws IOException {
 
 @Test
 public void addCase() {
-	jira.addCase(infoCase.addBasicTextboxCase("姓名", true, false, false)).end();
-	jira.addCase(infoCase.addIdCardCase("身份证号码", true, false, false)).end();
+	jira.addCase(infoCase.addBasicTextboxCase("姓名", true, true, false)).end();
+	jira.addCase(infoCase.addIdCardCase("身份证号码", false, false, false)).end();
 	jira.addCase(infoCase.addPhoneCase("手机号码", true, false, false, PhoneType.MOBLE)).end();
 }
 ```
@@ -214,6 +217,7 @@ public void addCase() {
 	</iframe>
 </project>
 ```
+将上述代码写到xml文件中，存储到项目根路径下，命名为“api页面元素.xml”。
 
 #### 2.3 启动浏览器并加载页面
 要进行页面的自动化，首先需要启动浏览器并加载待测页面。以谷歌浏览器为例，谷歌浏览器驱动定义在项目路径根目录下，启动浏览器，并加载Selenium API页面的代码可写为：
@@ -235,7 +239,7 @@ chrome.closeBrower();
 ```
 
 #### 2.4 操作元素
-获取到浏览器对象后，首先构造元素查找类对象，再设置需要读取的元素定位方式存储文件（这里我将xml文件放在项目路径下）：
+获取到浏览器对象后，首先构造元素查找类对象，再设置需要读取的元素定位方式存储文件：
 ```java
 //用于查找普通元素
 FindCommonElement common = new FindCommonElement(chrome);
@@ -285,7 +289,7 @@ private final String PAGE_NAME = "selenium";
 /**
  * 指向元素定位方式存储文件
  */
-private final File LOCATION_FILE = new File ("src/main/java/pres/auxiliary/selenium/brower/api页面元素.xml");
+private final File LOCATION_FILE = new File ("api页面元素.xml");
 
 /**
  * 指向浏览器
@@ -337,6 +341,276 @@ public void oprateElement() {
 	//获取构造方法
 	table.addList(data.find("构造方法列表"));
 	//获取列表的所有元素文本，并进行输出
-	table.getListText("构造方法列表").stream().map(text -> text.orElse("空值")).forEach(System.out::println);
+	table.getListText("构造方法列表").stream()
+	        .map(text -> text.orElse("空值"))
+	        .forEach(System.out::println);
 }
 ```
+
+### 3 数据驱动工具
+数据驱动在自动化测试过程中使用得还是比较广泛的，无论是在UI自动化还是接口自动化，都有数据驱动的身影。由于我写自动化测试脚本使用的是TestNG框架，所以目前我只针对TestNG框架的数据驱动进行了封装。
+
+#### 3.1 数据准备
+数据驱动中的数据可存放在文本文件（doc/docx/txt格式文件）、excel文件（xls/xlsx格式文件）或csv文件（csv格式文件）中，当然，若您不使用默认的读取方式，亦可自行编写读取词语的方法，只需要将读取到的词语转换为[TableData](https://apidoc.gitee.com/pyqone/autest/com/auxiliary/tool/data/TableData.html)类即可。这里我将数据存储至excel文件中，文件命名为“数据驱动.xlsx”，文件放置在项目根路径下，文件内容为：
+
+姓名 | 手机号码 | 更改时间 | 
+---|---|---
+${rs(CH,2, 3)} | 13000000000 | ${time()}
+${rs(CH,2, 3)} | 13000000001 | ${time(-1d)}
+${rs(CH,2, 3)} | 13000000002 | ${time(-2d)}
+其中使用“${}”括起来的内容表示使用公式，该公式可自定义，具体可以参考Wiki中对数据驱动公式的解释。
+
+#### 3.2 构造数据并使用
+定义数据驱动文件后，便可结合TestNG框架，在@DataProvider中对数据驱动进行构造：
+```java
+@DataProvider(name = "data")
+public Object[][] initDataDriver() {
+	//构造对象并指向数据驱动文件
+	TestNGDataDriver dataDriver = new TestNGDataDriver();
+	dataDriver.addDataDriver(DATA_DRIVER_FILE, "数据驱动", true);
+	
+	//加载公式
+	dataDriver.addFunction(Functions.randomString());
+	dataDriver.addFunction(Functions.getNowTime());
+	
+	//返回TestNG框架识别的数据驱动
+	return dataDriver.getDataDriver();
+}
+```
+将数据驱动写入到框架中后，我们在测试方法传参中只需要写入一个参数，便可直接使用数据：
+```java
+@Test(dataProvider = "data")
+public void outPutData(Data data) {
+	System.out.println("第" + count++ + "次执行输出结果：");
+	System.out.println("姓名：" + data.getString("姓名"));
+	System.out.println("手机号码：" + data.getString("手机号码"));
+	System.out.println("更改时间：" + data.getString("更改时间"));
+	System.out.println("===========================");
+}
+```
+在getString()方法中，其传参为我们写入到文件中的列表名称，其姓名和更改时间根据加载的公式转译后，得到随机的中文和按照当前时间计算的日期，故每次运行结果会不一样。在某次运行中得到以下结果：
+```
+第1次执行输出结果：
+姓名：膜柔凉
+手机号码：13000000000
+更改时间：2021-01-08 08:37:25
+===========================
+第2次执行输出结果：
+姓名：衣字冒
+手机号码：13000000001
+更改时间：2021-01-07 08:37:25
+===========================
+第3次执行输出结果：
+姓名：靠己苦
+手机号码：13000000002
+更改时间：2021-01-06 08:37:25
+===========================
+```
+
+#### 3.3 Demo
+根据以上的说明，将代码放入TestNG框架中，完整的代码为：
+```java
+/**
+ * 指向数据驱动文件
+ */
+private final File DATA_DRIVER_FILE = new File("数据驱动文件.xlsx");
+private int count = 1;
+
+/**
+ * 加载数据驱动
+ */
+@DataProvider(name = "data")
+public Object[][] initDataDriver() {
+	//构造对象并指向数据驱动文件
+	TestNGDataDriver dataDriver = new TestNGDataDriver();
+	dataDriver.addDataDriver(DATA_DRIVER_FILE, "数据驱动", true);
+	
+	//加载公式
+	dataDriver.addFunction(Functions.randomString());
+	dataDriver.addFunction(Functions.getNowTime());
+	
+	//返回TestNG框架识别的数据驱动
+	return dataDriver.getDataDriver();
+}
+
+/**
+ * 输出数据驱动
+ * @param data 数据内容
+ */
+@Test(dataProvider = "data")
+public void outPutData(Data data) {
+	System.out.println("第" + count++ + "次执行输出结果：");
+	System.out.println("姓名：" + data.getString("姓名"));
+	System.out.println("手机号码：" + data.getString("手机号码"));
+	System.out.println("更改时间：" + data.getString("更改时间"));
+	System.out.println("===========================");
+}
+```
+
+### 4 接口工具
+由于我对接口测试并不熟悉，所以在接口工具上，目前只是简单地对HttpClient进行了一个二次封装，简化了部分发送请求的代码，封装完后才发现自己封装的在功能上和“OkHttp”差不多。当然，后期我会根据工作中实际使用接口的情况，继续对工具进行封装，使工具更符合测试人员的使用习惯。
+
+在请求接口方面，我将接口地址的传入做了一个简单的拆分，即分成协议、主机、端口、地址和参数等，这样做一来是为了方便整合数据驱动，二来也为了使代码更容易理解，
+
+#### 4.1 接口定义
+由于我未找到一个合适的接口可以测试，这里就假定在我本地定义了一个接口。
+
+##### 4.1.1 接口说明
+项目 | 值
+---|---
+接口地址 | /find/findpreson
+接口标识 | 
+请求方式 | POST
+返回格式 | JSON
+业务描述 | 查询工程下的人员姓名
+
+##### 4.1.2 请求参数
+字段名 | 类型 | 是否为空 | 字段说明 | 备注
+---|---|---|---|---
+projectId | String | N | 工程ID 
+presonId | String | N | 人员ID 
+
+##### 4.1.3 响应参数
+字段名 | 类型 | 是否为空 | 字段说明 | 备注
+---|---|---|---|---
+presonName | String | N | 人员姓名
+
+#### 4.2 Demo
+根据以上定义的接口，假设请求体为：
+```json
+{
+    "projectId":"000001", 
+    "presonId":"100001"
+}
+```
+返回的人员姓名为：张三。结合TestNG框架，则完整的代码为：
+```java
+/**
+ * 用于发送请求
+ */
+EasyHttp http;
+
+@BeforeClass
+public void initData() {
+	http = new EasyHttp();
+}
+
+@Test
+public void sandRequest() throws ClientProtocolException, URISyntaxException, IOException {
+	//定义接口参数
+	http.agreement("http://")
+		.host("127.0.0.1")
+		.port(9000)
+		.address("/find/findpreson")
+		.requestType(RequestType.POST)
+		.putHead(HeadType.CONTENT_TYPE_JSON)
+		.encoding("UTF-8");
+	
+	//定义请求体
+	JSONObject json = new JSONObject();
+	json.put("projectId", "000001");
+	json.put("presonId", "100001");
+	
+	//写入请求体
+	http.body(json.toJSONString());
+	
+	//以格式化的形式输出接口返回值
+	System.out.println(http.response().getFormatResponseText());
+}
+```
+以上代码输出结果为：
+```json
+{
+    "presonName":"张三"
+}
+```
+当然，以上定义接口的代码也可以直接写成：
+```java
+http.url("http://127.0.0.1:9000/find/findpreson")
+			.requestType(RequestType.POST)
+			.putHead(HeadType.CONTENT_TYPE_JSON)
+			.encoding("UTF-8");
+```
+具体用法可参考Wiki对接口工具的介绍。
+
+### 5 数据库工具
+同接口一样，我对数据的操作也涉猎不深，目前数据库工具只对jdbc执行SQL这一块进行了封装，简化了执行SQL的代码以及连接数据库的代码。
+
+#### 5.1 数据库定义
+数据库也不好做演示，就假设在本地存在一个oracle数据库，连接信息如下：
+```
+用户名：test
+密码：Test123456
+主机：127.0.0.1
+端口：1521
+数据库名称：TEST_DB
+```
+假设库中存在一张名叫“TEST_PROJECT2USER”的表，表中有如下内容：
+
+ID | PROJECT_ID | USER_ID | USER_NAME
+---|---|---|---
+1 | 000001 | 100001 | 张三
+2 | 000002 | 100002 | 李四
+3 | 000003 | 100003 | 王五
+4 | 000004 | 100004 | 赵六
+
+#### 5.2 Demo
+查询以上表中的所有信息，则可使用如下SQL：
+```sql
+SELECT * FROM TEST_PROJECT2USER
+```
+结合TestNG框架，则完整的代码如下：
+```java
+/**
+ * 需要执行SQL语句
+ */
+private final String SQL_TEXT = "SELECT * FROM TEST_PROJECT2USER";
+/**
+ * 用于查询数据库
+ */
+SqlAction action;
+
+@BeforeClass
+public void initData() {
+	//连接信息
+	String username = "test";
+	String password = "Test123456";
+	String host = "127.0.0.1:1521";
+	String dataBaseName = "TEST_DB";
+	
+	//定义执行类
+	action = new SqlAction(DataBaseType.ORACLE, username, password, host, dataBaseName);
+}
+
+@Test
+public void action() {
+	//执行并获取所有数据
+	TableData<String> table = action.run(SQL_TEXT)
+			.getResult(1, -1, action.getColumnNames().toArray(new String[] {}));
+	//输出结果到控制台
+	table.rowStream().forEach(System.out::println);
+}
+```
+以上代码输出结果为：
+```
+["1", "000001", "100001", "张三"]
+["2", "000002", "100002", "李四"]
+["3", "000003", "100003", "王五"]
+["4", "000004", "100004", "赵六"]
+```
+在代码中，使用到了表数据类TableData，该类可用于存储同数据类型的表数据，具体用法可在Wiki中进行查找。
+
+### 6 其他工具
+除以上介绍到的主要工具外，在项目中还定义了一些小工具，这些工具比较简单，但也经常使用，故将这一部分的代码也进行了封装，使其与上面介绍的大工具联系更紧密。
+
+这里对这些工具进行简单的介绍，具体的用法可参考Wiki的介绍。
+* 日期加减工具（Time）：可根据日期单位，对设定的时间进行增减操作，并按照指定的格式进行输出。
+* 随机字符串工具（RandomString）：用于根据指定的字符串池，随机从字符串池中抽取字符串，拼接指定长度的随机字符串并返回的工具
+* 常用随机内容返回工具（PresetString）：用于返回常用的，需要随机返回的词语。包括随机姓名、随机手机号码和随机身份证号等。
+* 随机词语返回工具（RandomWord）：类似与随机字符串，根据预设的词语池，从池中随机抽取指定数量词语的工具。
+* 集合处理工具（ListUtil）：用于对List集合类型结合的元素进行简单的处理的工具。包括集合数据处理、Map转List集合、集合转置等
+* 表型数据存储工具（TableData）：为简化表的存储而定义的一个工具，并提供多种返回数据的方式。目前已在涉及到与表相关的工具中，都改为由该工具代替，以便于更好的维护代码。
+* 表类型数据读取工具（TableFileReadUtil）：用于读取表类型的文件数据，支持文本文件（doc/docx/txt格式文件）、excel文件（xls/xlsx格式文件）或csv文件（csv格式文件）的读取。
+
+## 后记
+作为一个没有系统学习过开发的我而言，能力实在有限，代码质量也不高，若您在使用上有什么的建议，或在代码上有什么优化的方法，还请您不吝教授于我，我将万分感谢您的批评。若您也有兴趣维护该项目，可拉取分支进行开发，当然，提交时还望您完整写好注释，以便于使用和生成api文件。若您在工作上使用后有其他的功能需要封装，可与我联系，将需求告知于我，我会抽时间出来开发您需要的功能。我的邮箱是：465615774@qq.com。

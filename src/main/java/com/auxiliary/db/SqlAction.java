@@ -272,7 +272,7 @@ public class SqlAction {
 	 * @return 字段组对应的结果文本集合
 	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
 	 */
-	private TableData<String> getResult(int startIndex, int endIndex, String... fieldNames) {
+	public TableData<String> getResult(int startIndex, int endIndex, String... fieldNames) {
 		// 转换下标
 		int length = getResultSize();
 		startIndex = changeIndex(startIndex, length);

@@ -334,12 +334,12 @@ public class EasyHttp implements Cloneable {
 	 * @param request 请求类对象
 	 * @return 设置请求头的类对象
 	 */
-	public HttpRequestBase setHead(HttpRequestBase request) {
+	public HttpRequestBase setHead(HttpRequestBase requestBase) {
 		//遍历headMap中的内容，将请求头逐个设置
 		headMap.forEach((key, value) -> {
-			request.setHeader(key, value);
+			requestBase.setHeader(key, value);
 		});
 		
-		return request;
+		return requestBase;
 	}
 }
