@@ -373,7 +373,7 @@ public class TableFileReadUtil {
 					// 过滤掉无内容的段落
 					.filter(text -> text.isPresent())
 					// 切分字符串并转换为词语集合
-					.map(textOptional -> Arrays.asList(textOptional.orElse("").split(regex)))
+					.map(textOptional -> Arrays.asList(textOptional.orElse("").split(Optional.ofNullable(regex).orElse(""))))
 					// 按行存储至列表对象中
 					.forEach(wordTable::addRow);
 
