@@ -299,7 +299,7 @@ public class TableData<T> {
 	 * @return 字段名称
 	 */
 	public String getFieldName(int index) {
-		if (isFieldIndex(index)) {
+		if (!isFieldIndex(index)) {
 			return "";
 		}
 
