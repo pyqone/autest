@@ -1,5 +1,8 @@
 package com.auxiliary.datadriven;
 
+import com.auxiliary.tool.data.CarLicecenType;
+import com.auxiliary.tool.data.MobleNumberType;
+import com.auxiliary.tool.data.PresetString;
 import com.auxiliary.tool.data.RandomString;
 import com.auxiliary.tool.data.StringMode;
 import com.auxiliary.tool.date.Time;
@@ -17,8 +20,9 @@ import com.auxiliary.tool.date.Time;
  */
 public class Functions {
 	/**
+	 * 定义生成随机字符串函数
 	 * <p>
-	 * 定义生成随机字符串函数，用法：<br>
+	 * <b>用法：</b>
 	 * ${rs(字符串种子,生成字符串最短长度,生成字符串最大长度)}
 	 * </p>
 	 * <p>
@@ -95,29 +99,31 @@ public class Functions {
 	}
 	
 	/**
+	 * 定义对指定时间处理的函数
 	 * <p>
-	 * 定义对指定时间处理的函数，用法：<br>
-	 * ${time(时间, 增减时间方式)}
+	 * <b>用法：</b>${time(时间, 增减时间方式)}
 	 * </p>
 	 * <p>
 	 * <b>参数解释：</b>
-	 * </p>
-	 * <p>
-	 * <b>时间：</b>指定的时间，可传入年、月、日、时、分、秒，允许只传入“年、月、日”，也允许只传入“时、分、秒”。
+	 * <ul>
+	 * 	<li>时间：指定的时间，可传入年、月、日、时、分、秒，允许只传入“年、月、日”，也允许只传入“时、分、秒”。
 	 * 当只传入“年、月、日”时，表示当前日期的0时0分0秒；当只传入“时、分、秒”时，表示当天日期的时间；当传入
 	 * 完整的时间时，其“年、月、日”与“时、分、秒”之间用空格隔开。<br>
 	 * “年、月、日”之间，允许使用的分隔符有：年（或月或日）、“/”、“\”、“.”和“-”<br>
-	 * “时、分、秒”之间，允许使用的分隔符有：时（或分或秒）、“:”<br>
-	 * <b>增减时间方式：</b>指定对时间进行增减的方式，使用英文单位表示需要操作的内容，包括：
+	 * “时、分、秒”之间，允许使用的分隔符有：时（或分或秒）、“:”</li>
+	 * 	<li>增减时间方式：指定对时间进行增减的方式，使用英文单位表示需要操作的内容，包括：
 	 * y（年）、m（月）、w（周）、d（日）、h（小时）、s（秒）、min（分钟）。不带符号表示增加时间，带“-”符号
-	 * 表示减少时间，允许传入小数，允许使用连续式，每个单位之间没有顺序，允许一个单位传入多个（如“9d-2d-5m8y-3.66min”）
-	 * 
+	 * 表示减少时间，允许传入小数，允许使用连续式，每个单位之间没有顺序，允许一个单位传入多个（如“9d-2d-5m8y-3.66min”）</li>
+	 * </ul>
+	 * </p>
 	 * <p>
-	 * <b>示例：</b><br>
-	 * ${time(2020-06-08 11:20:12, 1d)}——表示生成“2020-06-08 11:20:12”增加1天的时间<br>
-	 * ${time(2020年06月08日 11时20分12秒, -1d2.3y)}——表示生成“2020年06月08日 11时20分12秒”减少一天并增加2.3年的时间<br>
-	 * ${time(2020-06-08,1d)}——表示生成“2020-06-08 00:00:00”增加1天的时间<br>
-	 * ${time(11:20:12, 1h)}——表示生成“当天11:20:12”增加1天的时间<br>
+	 * <b>示例：</b>
+	 * <ul>
+	 * <li>${time(2020-06-08 11:20:12, 1d)}——表示生成“2020-06-08 11:20:12”增加1天的时间</li>
+	 * <li>${time(2020年06月08日 11时20分12秒, -1d2.3y)}——表示生成“2020年06月08日 11时20分12秒”减少一天并增加2.3年的时间</li>
+	 * <li>${time(2020-06-08,1d)}——表示生成“2020-06-08 00:00:00”增加1天的时间</li>
+	 * <li>${time(11:20:12, 1h)}——表示生成“当天11:20:12”增加1天的时间</li>
+	 * </ul>
 	 * </p>
 	 * <p>
 	 * <b>注意：</b>计算小数点的日期时，可能存在精度丢失，计算跨度越大，精度丢失越多
@@ -143,24 +149,26 @@ public class Functions {
 	}
 	
 	/**
+	 * 定义对当前时间处理的函数
 	 * <p>
-	 * 定义对当前时间处理的函数，用法：<br>
-	 * ${time(增减时间方式)}
+	 * <b>用法：</b>${time(增减时间方式)}
 	 * </p>
 	 * <p>
 	 * <b>参数解释：</b>
-	 * </p>
-	 * <p>
-	 * <b>增减时间方式：</b>指定对时间进行增减的方式，使用英文单位表示需要操作的内容，包括：
+	 * <ul>
+	 * <li>增减时间方式：指定对时间进行增减的方式，使用英文单位表示需要操作的内容，包括：
 	 * y（年）、m（月）、w（周）、d（日）、h（小时）、s（秒）、min（分钟）。不带符号表示增加时间，带“-”符号
 	 * 表示减少时间，允许传入小数，允许使用连续式，每个单位之间没有顺序，允许一个单位传入多个（如“9d-2d-5m8y-3.66min”）。
 	 * 该参数允许不传，当不传入该参数时返回为当前时间
-	 * 
+	 * </li>
+	 * </ul>
 	 * <p>
-	 * <b>示例：</b><br>
-	 * ${time(1d)}——表示生成当前时间增加1天的时间<br>
-	 * ${time(-1d2.3y)}——表示生成当前时间减少一天并增加2.3年的时间<br>
-	 * ${time()}——表示生成当前时间<br>
+	 * <b>示例：</b>
+	 * <ul>
+	 * 	<li>${time(1d)}——表示生成当前时间增加1天的时间</li>
+	 * 	<li>${time(-1d2.3y)}——表示生成当前时间减少一天并增加2.3年的时间</li>
+	 * 	<li>${time()}——表示生成当前时间</li>
+	 * </ul>
 	 * </p>
 	 * <p>
 	 * <b>注意：</b>计算小数点的日期时，可能存在精度丢失，计算跨度越大，精度丢失越多
@@ -192,9 +200,9 @@ public class Functions {
 	}
 	
 	/**
+	 * 定义标记当前元素为空元素
 	 * <p>
-	 * 定义标记当前元素为空元素，用法：<br>
-	 * ${ }（花括号内存在一个空格）
+	 * 用法：${ }（花括号内存在一个空格）
 	 * </p>
 	 * @return {@link DataDriverFunction}类对象
 	 */
@@ -203,6 +211,141 @@ public class Functions {
 		String regex = " ";
 		return new DataDriverFunction(regex, text -> {
 			return "";
+		});
+	}
+	
+	/**
+	 * 定义生成随机18位长度的身份证信息函数
+	 * <p>
+	 * 用法：${idcard}或${身份证}
+	 * </p>
+	 * @return {@link DataDriverFunction}类对象
+	 */
+	public static DataDriverFunction randomIdCard() {
+		String regex = "(idcard)|(身份证)";
+		return new DataDriverFunction(regex, text -> PresetString.identityCard());
+	}
+	
+	/**
+	 * 定义生成随机手机号码函数
+	 * <p>
+	 * 用法：${moble.运营商简写或名称}或${手机号码.运营商简写或名称}
+	 * </p>
+	 * <p>
+	 * <b>参数解释：</b>
+	 * <ul>
+	 * <li>运营商简写或名称：表示当前随机哪个运营商的手机号码段，支持中国移动（yd或移动）、
+	 * 中国联通（lt或联通）、中国电信（dx或电信）
+	 * </li>
+	 * </ul>
+	 * <p>
+	 * <b>示例：</b>
+	 * <ul>
+	 * 	<li>${moble}或${mo}或${手机}或${手机号码}——表示生成中国移动号码段的随机手机号码</li>
+	 * 	<li>${moble.联通}或${mo.联通}或${手机.联通}或${手机号码.联通}——表示生成中国联通号码段的随机手机号码</li>
+	 * 	<li>${moble.dx}或${mo.dx}或${手机.dx}或${手机号码.dx}——表示生成中国电信号码段的随机手机号码</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>
+	 * <ul>
+	 * 	<li>“moble”可简写为“mo”，“手机号码”可简写为“手机”</li>
+	 * 	<li>省略运营商简写或名称则默认为生成中国移动随机手机号码</li>
+	 * </ul>
+	 * </p>
+	 * @return {@link DataDriverFunction}类对象
+	 */
+	public static DataDriverFunction randomMoble() {
+		String regex = "((mo(ble)?)|(手机(号码)?))(.(((dx)|(电信))|((yd)|(移动))|((lt)|(联通))))?";
+		return new DataDriverFunction(regex, text -> {
+			int index = text.indexOf(".");
+			//若切分得到的字符串数组只有一个元素，则表示字符串不包含后缀，按照默认的参数进行返回
+			if (index > -1) {
+				return PresetString.mobleNumber(MobleNumberType.CHINA_MOBILE);
+			} else {
+				//若存在后缀，则按照后缀的参数对手机号码进行返回
+				String type = text.toLowerCase().substring(index + 1, text.length());
+				switch(type) {
+				case "dx":
+				case "电信":
+					return PresetString.mobleNumber(MobleNumberType.CHINA_TELECOM);
+				case "lt":
+				case "联通":
+					return PresetString.mobleNumber(MobleNumberType.CHINA_UNICOM);
+				case "yd":
+				case "移动":
+				default:
+					return PresetString.mobleNumber(MobleNumberType.CHINA_MOBILE);
+					
+				}
+			} 
+		});
+	}
+	
+	/**
+	 * 定义生成随机姓名函数
+	 * <p>
+	 * 用法：${name}或${姓名}
+	 * </p>
+	 * @return {@link DataDriverFunction}类对象
+	 */
+	public static DataDriverFunction randomName() {
+		String regex = "(name)|(姓名)";
+		return new DataDriverFunction(regex, text -> PresetString.name());
+	}
+	
+	/**
+	 * 定义生成随机随机车牌号码函数
+	 * <p>
+	 * 用法：${car.车牌简写或名称}或${车牌.车牌简写或名称}
+	 * </p>
+	 * <p>
+	 * <b>参数解释：</b>
+	 * <ul>
+	 * <li>车牌简写或名称：表示当前随机产生哪一类车牌，支持民用车牌（ci或民用）、警车车牌（po或警车）
+	 * 、大使馆车牌（el或使馆）、新能源车牌（en或新能源）
+	 * </li>
+	 * </ul>
+	 * <p>
+	 * <b>示例：</b>
+	 * <ul>
+	 * 	<li>${car}或${车牌}——表示生成民用车牌</li>
+	 * 	<li>${car.po}或${车牌.po}——表示生成警车车牌</li>
+	 * 	<li>${car.新能源}或${车牌.新能源}——表示生成新能源车牌</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>省略车牌简写或名称则默认为生成民用车牌
+	 * </p>
+	 * @return {@link DataDriverFunction}类对象
+	 */
+	public static DataDriverFunction randomCarId() {
+		String regex = "((car)|(车牌))(.(((ci)|(民用))|((po)|(警车))|((el)|(使馆))|((en)|(新能源))))?";
+		return new DataDriverFunction(regex, text -> {
+			int index = text.indexOf(".");
+			//若切分得到的字符串数组只有一个元素，则表示字符串不包含后缀，按照默认的参数进行返回
+			if (index > -1) {
+				return PresetString.mobleNumber(MobleNumberType.CHINA_MOBILE);
+			} else {
+				//若存在后缀，则按照后缀的参数对手机号码进行返回
+				String type = text.toLowerCase().substring(index + 1, text.length());
+				switch(type) {
+				case "en":
+				case "新能源":
+					return PresetString.carLicence(CarLicecenType.ENERGY);
+				case "po":
+				case "警车":
+					return PresetString.carLicence(CarLicecenType.POLICE);
+				case "el":
+				case "使馆":
+					return PresetString.carLicence(CarLicecenType.ELCHEE);
+				case "ci":
+				case "民用":
+				default:
+					return PresetString.carLicence(CarLicecenType.CIVIL);
+					
+				}
+			} 
 		});
 	}
 }
