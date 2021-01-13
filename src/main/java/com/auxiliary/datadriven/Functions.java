@@ -256,13 +256,11 @@ public class Functions {
 	 * @return {@link DataDriverFunction}类对象
 	 */
 	public static DataDriverFunction randomMoble() {
-		String regex = "((mo(ble)?)|(手机(号码)?))(.(((dx)|(电信))|((yd)|(移动))|((lt)|(联通))))?";
+		String regex = "((mo(ble)?)|(手机(号码)?))(\\.(((dx)|(电信))|((yd)|(移动))|((lt)|(联通))))?";
 		return new DataDriverFunction(regex, text -> {
 			int index = text.indexOf(".");
 			//若切分得到的字符串数组只有一个元素，则表示字符串不包含后缀，按照默认的参数进行返回
 			if (index > -1) {
-				return PresetString.mobleNumber(MobleNumberType.CHINA_MOBILE);
-			} else {
 				//若存在后缀，则按照后缀的参数对手机号码进行返回
 				String type = text.toLowerCase().substring(index + 1, text.length());
 				switch(type) {
@@ -276,8 +274,9 @@ public class Functions {
 				case "移动":
 				default:
 					return PresetString.mobleNumber(MobleNumberType.CHINA_MOBILE);
-					
 				}
+			} else {
+				return PresetString.mobleNumber(MobleNumberType.CHINA_MOBILE);
 			} 
 		});
 	}
@@ -320,13 +319,11 @@ public class Functions {
 	 * @return {@link DataDriverFunction}类对象
 	 */
 	public static DataDriverFunction randomCarId() {
-		String regex = "((car)|(车牌))(.(((ci)|(民用))|((po)|(警车))|((el)|(使馆))|((en)|(新能源))))?";
+		String regex = "((car)|(车牌))(\\.(((ci)|(民用))|((po)|(警车))|((el)|(使馆))|((en)|(新能源))))?";
 		return new DataDriverFunction(regex, text -> {
 			int index = text.indexOf(".");
 			//若切分得到的字符串数组只有一个元素，则表示字符串不包含后缀，按照默认的参数进行返回
 			if (index > -1) {
-				return PresetString.mobleNumber(MobleNumberType.CHINA_MOBILE);
-			} else {
 				//若存在后缀，则按照后缀的参数对手机号码进行返回
 				String type = text.toLowerCase().substring(index + 1, text.length());
 				switch(type) {
@@ -345,6 +342,8 @@ public class Functions {
 					return PresetString.carLicence(CarLicecenType.CIVIL);
 					
 				}
+			} else {
+				return PresetString.carLicence(CarLicecenType.CIVIL);
 			} 
 		});
 	}
