@@ -85,6 +85,10 @@ public class TableData<T> {
 	public boolean isExamine() {
 		return isExamine;
 	}
+	
+	public boolean isEmpty() {
+		return longColumnSize < 1;
+	}
 
 	/**
 	 * 用于根据列表名称，存储一列元素数据，多次调用该方法时，将在相应列后继续添加数据
@@ -299,7 +303,7 @@ public class TableData<T> {
 	 * @return 字段名称
 	 */
 	public String getFieldName(int index) {
-		if (isFieldIndex(index)) {
+		if (!isFieldIndex(index)) {
 			return "";
 		}
 
@@ -446,15 +450,19 @@ public class TableData<T> {
 		Optional.ofNullable(columnNameList).orElseThrow(() -> new IllegalDataException("未传入数据列")).stream()
 				.filter(tableMap::containsKey).forEach(columnName -> {
 					ArrayList<Optional<T>> columnDataList = new ArrayList<>();
-					// 遍历列表，存储数据，若当前列无此行元素（即抛出数组越界异常），则存储空值
-					IntStream.range(startRowIndexA.get(), endRowIndexA.get() + 1).forEach(index -> {
-						try {
-							columnDataList.add(tableMap.get(columnName).get(index - 1));
-						} catch (IndexOutOfBoundsException e) {
-							columnDataList.add(Optional.empty());
-						}
+					//若当前表数据不为空，则进行数据处理
+					if (!isEmpty()) {
+						// 遍历列表，存储数据，若当前列无此行元素（即抛出数组越界异常），则存储空值
+						IntStream.range(startRowIndexA.get(), endRowIndexA.get() + 1).forEach(index -> {
+							try {
+								columnDataList.add(tableMap.get(columnName).get(index - 1));
+							} catch (IndexOutOfBoundsException e) {
+								//为保证数据完整，若数组越界则存储空值
+								columnDataList.add(Optional.empty()); 
+							}
 
-					});
+						});
+					}
 					columnDataMap.put(columnName, columnDataList);
 				});
 
