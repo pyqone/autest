@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * <p><b>文件名：</b>RandomObject.java</p>
@@ -23,7 +24,7 @@ public class RandomObject<T> {
 	/**
 	 * 定义默认对象池的名称
 	 */
-	private final String DEFAULT_NAME = "defaultColumn";
+	public static final String DEFAULT_NAME = "defaultColumn";
 	
 	/**
 	 * 存储随机返回的对象
@@ -56,13 +57,14 @@ public class RandomObject<T> {
 	}
 	
 	/**
-	 * 用于返回默认对象池中元素的个数
-	 * @return 默认对象池中对象个数
+	 * 用于返回指定名称对象池中元素的个数
+	 * @param name 对象池名称
+	 * @return 对象池中对象个数
 	 */
-	public int defaultSize() {
+	public int size(String name) {
 		return wordTable.getListSize(DEFAULT_NAME);
 	}
-
+	
 	/**
 	 * 用于向默认对象池中添加对象数据
 	 * @param objs 对象组
@@ -82,11 +84,33 @@ public class RandomObject<T> {
 	}
 	
 	/**
+	 * 用于清除指定对象池的对象
+	 * @param name 对象池名称
+	 */
+	public void clear(String name) {
+		wordTable.clearColumn(name);
+	}
+	
+	/**
+	 * 用于返回指定的对象池数据
+	 * @param name 对象池名称 
+	 * @return 对应的对象池数据
+	 */
+	public List<T> getObjectSeed(String name) {
+		return wordTable.getColumnList(name).stream().map(result -> result.get()).collect(Collectors.toList());
+	}
+	
+	/**
 	 * 用于返回默认对象池中的一个对象的封装类对象。若默认对象池中无数据，则返回{@link Optional#empty()}
 	 * @return  默认池中对象的封装类对象
 	 */
 	public Optional<T> toObject() {
-		return toObject(1).get(0);
+		try {
+			return toObject(1).get(0);
+		} catch (IndexOutOfBoundsException e) {
+			//若抛出数组越界异常，则返回空封装类
+			return Optional.empty();
+		}
 	}
 	
 	/**
