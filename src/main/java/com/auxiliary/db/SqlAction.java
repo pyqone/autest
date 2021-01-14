@@ -36,7 +36,7 @@ import com.auxiliary.tool.data.TableData;
  * if (result.next()) {
  * 	System.out.print(result.getString("ID"));
  * }
- * <pre></code> 其结果输出为：<br>
+ * </pre></code> 其结果输出为：<br>
  * 12345<br>
  * 1<br>
  * 6<br>

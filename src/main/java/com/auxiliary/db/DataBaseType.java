@@ -49,7 +49,7 @@ public enum DataBaseType {
 	 * 用于返回数据库连接的URL，URL为带格式化字符的字符串，可通过以下方法格式化当前数据库连接的URL：
 	 * <code><pre>
 	 * String.format(dataBaseType.getUrl(), host, dataBaseName)
-	 * <pre></code>
+	 * </pre></code>
 	 * @return 数据库连接的URL
 	 */
 	public String getUrl() {
