@@ -113,7 +113,7 @@ public class ChromeBrower extends AbstractBrower {
 	 * 例如，设置启动的浏览器不弹出窗口，则可以按照以下配置：
 	 * <code><pre>
 	 * chrome.addPersonalityConfig("profile.managed_default_content_settings.popups", 2)
-	 * <pre></code>
+	 * </pre></code>
 	 * </p>
 	 * 
 	 * @param key 配置在浏览器对应的键值

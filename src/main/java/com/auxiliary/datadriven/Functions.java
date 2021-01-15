@@ -3,6 +3,7 @@ package com.auxiliary.datadriven;
 import com.auxiliary.tool.data.CarLicecenType;
 import com.auxiliary.tool.data.MobleNumberType;
 import com.auxiliary.tool.data.PresetString;
+import com.auxiliary.tool.data.RandomObject;
 import com.auxiliary.tool.data.RandomString;
 import com.auxiliary.tool.data.StringMode;
 import com.auxiliary.tool.date.Time;
@@ -345,6 +346,49 @@ public class Functions {
 			} else {
 				return PresetString.carLicence(CarLicecenType.CIVIL);
 			} 
+		});
+	}
+	
+	/**
+	 * 定义根据预设词语随机返回函数，该函数需要预先设定切分词语的标识符
+	 * <p>
+	 * 用法：${word(词语(,词语))}
+	 * </p>
+	 * <p>
+	 * <b>参数解释：</b>
+	 * <ul>
+	 * <li>词语：预设的词语范围，用于设定随机返回词语的范围</li>
+	 * </ul>
+	 * <p>
+	 * <p>
+	 * <b>示例：</b>
+	 * <ul>
+	 * <li>${word(in,out,stop)}——表示从词语in、out或者stop中随机返回一个词语</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>括号中至少要存在一个词语，否则不会匹配</li>
+	 * <li>词语间分隔符为英文的逗号，在词语中请勿使用该符号</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @param splitText 分隔符，必须按照正则表达式的形式传入
+	 * @return {@link DataDriverFunction}类对象
+	 */
+	public static DataDriverFunction randomWord() {
+		String regex = "word\\([^,]+(,[^,]+)*\\)";
+		return new DataDriverFunction(regex, text -> {
+			//获取括号中的内容，并按照传入的规则，对内容进行截取
+			String[] words = text.substring(text.indexOf("(") + 1, text.indexOf(")")).split(",");
+			
+			//将词语添加至随机对象中
+			RandomObject<String> word = new RandomObject<>();
+			word.addObject(words);
+			
+			//返回词语，若词语为空，则返回空串
+			return word.toObject().orElse("");
 		});
 	}
 }

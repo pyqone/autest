@@ -66,7 +66,7 @@ public class GroupEvent {
 	 * test.addEvent("测试", 1, 
 	 * 	text -> Optional.ofNullable("当前参数：" + text.map(t -> (Integer) t).orElse(-1)));
 	 * System.out.println(test.actionEvent("测试").orElse("错误"));//输出：当前参数：1
-	 * <pre></code>
+	 * </pre></code>
 	 * </p>
 	 * 
 	 * @param eventName 事件组合名称

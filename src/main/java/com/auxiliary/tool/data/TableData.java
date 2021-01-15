@@ -86,8 +86,21 @@ public class TableData<T> {
 		return isExamine;
 	}
 	
+	/**
+	 * 用于判断当前表中是否包含数据，若表中只有标题，无相应的内容，也视为无数据
+	 * @return 当前表中是否包含数据
+	 */
 	public boolean isEmpty() {
 		return longColumnSize < 1;
+	}
+	
+	/**
+	 * 用于判断当前表中是否存在指定的列名
+	 * @param columnName 列名称
+	 * @return 当前表中是否存在该列
+	 */
+	public boolean containsColumn(String columnName) {
+		return tableMap.containsKey(columnName);
 	}
 
 	/**

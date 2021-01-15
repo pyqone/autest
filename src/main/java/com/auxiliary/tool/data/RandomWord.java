@@ -4,15 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-/**
- * <p><b>文件名：</b>RandomWord.java</p>
- * <p><b>用途：</b>提供对指定的一组词语，随机进行返回的方法</p>
- * <p><b>编码时间：</b>2020年12月13日 下午4:30:59</p>
- * <p><b>修改时间：</b>2020年12月13日 下午4:30:59</p>
- * @author 彭宇琦
- * @version Ver1.0
- * @since JDK 1.8
- */
 public class RandomWord {
 	/**
 	 * 用于存储需要随机返回的词语

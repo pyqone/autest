@@ -2,14 +2,19 @@ package com.auxiliary.tool.data;
 
 import java.util.Random;
 
-/**
- * 该类用于产生随机字符串，用以填入需要的文本框中。通过类中提供的方法，向字符串池中添加模型， 也可以自定义需要添加的字符串，向字符串池中添加模型。<br/>
- * <b><i>NOTE:字符串池即为产生随机字符串的范围</i></b>
- * 
- * @author 彭宇琦
- * @version V1.9
- */
 
+/**
+ * <p><b>文件名：</b>RandomString.java</p>
+ * <p><b>用途：</b>
+ * 提供根据字符串池（产生随机字符串的范围）中添加模型，返回相应的随机字符串的方法
+ * </p>
+ * <p><b>编码时间：</b>2019年2月13日下午19:53:01</p>
+ * <p><b>修改时间：</b>2021年1月13日下午12:53:01</p>
+ * @author 彭宇琦
+ * @version Ver1.9
+ * @since JDK 1.8
+ *
+ */
 public class RandomString {
 	// 用于定义随机字符串产生的范围
 	private StringBuilder stringSeed = new StringBuilder("");
@@ -269,13 +274,16 @@ public class RandomString {
 	}
 
 	/**
-	 * 该类用于在随机字符串生成范围中删除由用户指定范围内（字符串的位置是从0开始）的字符串<br/>
-	 * note：指定的范围中，删除的元素包括起始位置的元素，但不包括结束位置的元素，例如：<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp; StringSeed.append("0123456789");<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp; remove(0, 3);<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp; System.out.println(StringSeed.toString());<br/>
-	 * 输出结果为：<br/>
-	 * 3456789
+	 * 用于在随机字符串生成范围中删除由用户指定范围内（字符串的位置是从0开始）的字符串
+	 * <p>
+	 * <b>注意：</b>指定的范围中，删除的元素包括起始位置的元素，但不包括结束位置的元素，例如：
+	 * <code><pre>
+	 * StringSeed.append("0123456789");
+	 * remove(0, 3);
+	 * System.out.println(StringSeed.toString());
+	 * </pre></code>
+	 * 输出结果为：3456789
+	 * </p>
 	 * 
 	 * @param startPos
 	 *            表示用户指定范围的起始位置（包括该位置的元素）
@@ -395,13 +403,13 @@ public class RandomString {
 	 * @throws IllegalDataException 产生字符串不允许重复，且字符串产生范围长度小于6位，处理方式为抛出异常时抛出
 	 */
 	@Override
-	public String toString() throws IllegalDataException {
+	public String toString() {
 		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
 		if (stringSeed.length() == 0) {
 			return "";
 		}
 
-		return generateString(6);
+		return joinString(6);
 	}
 
 	/**
@@ -416,7 +424,7 @@ public class RandomString {
 	 * @see #toString(int)
 	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
 	 */
-	public String toString(int stringLengthMin, int stringLengthMax) throws IllegalDataException {
+	public String toString(int stringLengthMin, int stringLengthMax) {
 		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
 		if (stringSeed.length() == 0) {
 			return "";
@@ -436,7 +444,7 @@ public class RandomString {
 			throw new IllegalDataException("最大生成长度大于字符串产生范围的长度");
 		}
 
-		return generateString(new Random().nextInt((stringLengthMax - stringLengthMin + 1)) + stringLengthMin); // 返回生成的字符串
+		return joinString(new Random().nextInt((stringLengthMax - stringLengthMin + 1)) + stringLengthMin); // 返回生成的字符串
 	}
 
 	/**
@@ -449,7 +457,7 @@ public class RandomString {
 	 * @see #toString(int, int)
 	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
 	 */
-	public String toString(int stringLength) throws IllegalDataException {
+	public String toString(int stringLength) {
 		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
 		if (stringSeed.length() == 0) {
 			return "";
@@ -460,9 +468,9 @@ public class RandomString {
 			return "";
 		}
 
-		return generateString(stringLength); // 返回生成的字符串
+		return joinString(stringLength); // 返回生成的字符串
 	}
-
+	
 	/**
 	 * 组装字符串生成范围，用以在不允许出现重复的情况下，对StringSeed进行修改， 在调用该方法时，会先将传参中的字符串拆分为单个字符串，分别进行判断，以
 	 * 达到不添加重复字符串的目的
@@ -484,9 +492,9 @@ public class RandomString {
 		}
 
 	}
-
+	
 	/**
-	 * 用于生成随机字符串的核心算法，禁止外界调用
+	 * 用于生成随机字符串的核心算法
 	 * 
 	 * @param stringLength
 	 *            指定生成的随机字符串长度
@@ -496,7 +504,7 @@ public class RandomString {
 	 * @see #toString(int, int)
 	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
 	 */
-	private String generateString(int stringLength) throws IllegalDataException {
+	private String joinString(int stringLength) {
 		// 判断字符串字符是否允许重复，不允许重复时其处理方式是否为抛异常，为抛异常时，其stringLength是否大于字符串产生范围的长度，若是，则直接抛出异常
 		if (!isRepeat() && dispose == DISPOSE_THROW_EXCEPTION && stringLength > stringSeed.length()) {
 			throw new IllegalDataException("需要生成的随机字符串长度大于字符串产生范围的最大长度");
