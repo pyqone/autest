@@ -194,10 +194,7 @@ public class Functions {
 	 * @return 返回处理后的时间
 	 */
 	private static String disposeTime(String timeText, String pattern) {
-		Time time = new Time(timeText);
-		time.addTime(pattern);
-		
-		return time.getFormatTime();
+		return Time.parse(timeText).addTime(pattern).getFormatTime();
 	}
 	
 	/**

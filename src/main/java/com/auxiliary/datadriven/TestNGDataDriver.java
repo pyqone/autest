@@ -70,7 +70,7 @@ public class TestNGDataDriver {
 	/**
 	 * 用于对日期格式或特殊字段输入的日期进行转换
 	 */
-	private Time time = new Time();
+	private Time time = Time.parse();
 
 	/**
 	 * 构造对象，初始化数据
@@ -332,7 +332,7 @@ public class TestNGDataDriver {
 		 * @return {@link Time}类型的数据
 		 */
 		public Time getTime(int index) {
-			return new Time(getString(index));
+			return Time.parse(getString(index));
 		}
 
 		/**
@@ -342,7 +342,7 @@ public class TestNGDataDriver {
 		 * @return {@link Time}类型的数据
 		 */
 		public Time getTime(String listName) {
-			return new Time(getString(listName));
+			return Time.parse(getString(listName));
 		}
 
 		/**

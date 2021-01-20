@@ -1,10 +1,16 @@
 package com.auxiliary.tool.date;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 /**
  * <p>
@@ -17,128 +23,140 @@ import java.util.regex.Pattern;
  * <b>编码时间：</b>2019年12月2日下午5:15:55
  * </p>
  * <p>
- * <b>修改时间：</b>2019年12月2日下午5:15:55
+ * <b>修改时间：</b>2021年1月20日下午12:43:01
  * </p>
  * 
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public class Time {
 	/**
-	 * 用于指向指定的时间
+	 * 定义默认时区
 	 */
-	private Date date;
-
+	public static ZoneId defaultZoneId = ZoneId.systemDefault();
+	
 	/**
-	 * 用于设置的时间，以保证在增加或减少时间后，能还原回初始设置的时间
+	 * 指向初始化时设置的时间
 	 */
-	private Date oldDate;
+	private LocalDateTime initTime;
+	/**
+	 * 指向根据初始化时间计算后得到的时间
+	 */
+	private LocalDateTime calculateTime;
 
 	/**
 	 * 用于存储日期的格式，默认格式为yyyy-MM-dd HH:mm:ss
 	 */
-	private String dateFormat = "yyyy-MM-dd HH:mm:ss";
-	
+	private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 	/**
 	 * 定义日期约束类型的传入格式
 	 */
-	private final String REGEX_DATE = "(\\d{4}[-\\.年\\\\/][01]?\\d[-\\.月\\\\/][0123]?\\d日?"
-			+ "( [012]?\\d[:时][0123456]?\\d分?([:分][0123456]?\\d秒?)?)?)|"
-			+ "([012]?\\d[:时][0123456]?\\d分?([:分][0123456]?\\d秒?))";
+	private final static String REGEX_DATE = "(\\D*((\\d{1,2})|(\\d{4}))\\D+\\d{1,2}\\D+\\d{1,2})((\\D+\\d{1,2}){3})?\\D*";
 
 	/**
-	 * 构造当前时间
+	 * 私有构造
 	 */
-	public Time() {
-		setNowTime();
-	}
-
-	/**
-	 * 通过Date类对象进行构造
-	 * 
-	 * @param date Date类对象
-	 */
-	public Time(Date date) {
-		setTime(date);
-	}
-
-	/**
-	 * 通过时间戳进行构造
-	 * 
-	 * @param ms 时间戳（毫秒值）
-	 */
-	public Time(long ms) {
-		setTime(ms);
-	}
-
-	/**
-	 * 通过格式化过的时间进行构造
-	 * 
-	 * @param formatTime 已格式化的时间
-	 * @throws IncorrectConditionException 时间转换错误时抛出的异常
-	 */
-	public Time(String formatTime) {
-		setTime(formatTime);
-	}
-
-	/**
-	 * 用于Date类对象设置指定的时间
-	 * 
-	 * @param date Date类对象
-	 */
-	public void setTime(Date date) {
-		this.date = date;
-		oldDate = this.date;
-	}
-
-	/**
-	 * 用于根据毫秒数设置指定的时间
-	 * 
-	 * @param ms 时间戳（毫秒值）
-	 */
-	public void setTime(long ms) {
-		date = new Date(ms);
-		oldDate = this.date;
-	}
-
-	/**
-	 * 用于根据已格式化的时间设置指定的时间
-	 * 
-	 * @param formatTime 已格式化的时间
-	 * @throws IncorrectConditionException 时间转换错误时抛出的异常
-	 */
-	public void setTime(String formatTime) {
-		//若formatTime传入为Null或为空串，则设置为当前时间
-		if (formatTime == null || formatTime.isEmpty()) {
-			setNowTime();
-			return;
-		}
-		
-		if (formatTime.matches(REGEX_DATE)) {
-			try {
-				date = new SimpleDateFormat(getDateFormat(formatTime)).parse(formatTime);
-				oldDate = this.date;
-			} catch (ParseException e) {
-			}
-		} else {
-			throw new IncorrectConditionException("时间“" + formatTime + "”不符合格式的规则");
-		}
-	}
-
-	/**
-	 * 用于将时间设置为当前时间
-	 */
-	public void setNowTime() {
-		date = new Date();
-		oldDate = this.date;
+	private Time() {
 	}
 	
 	/**
+	 * 用于根据{@link Date}类对象初始化时间
+	 * 
+	 * @param date Date类对象
+	 */
+	public static Time parse(Date date) {
+		return parse(Optional.ofNullable(date).orElse(new Date()).getTime());
+	}
+
+	/**
+	 * 用于根据毫秒数初始化时间
+	 * 
+	 * @param ms 时间戳（毫秒值）
+	 */
+	public static Time parse(long ms) {
+		Time time = new Time();
+		
+		//转换时间戳
+		Instant longTime = Instant.ofEpochMilli(ms);
+		
+		time.initTime = LocalDateTime.ofInstant(longTime, defaultZoneId);
+		time.calculateTime =  LocalDateTime.ofInstant(longTime, defaultZoneId);
+		
+		return time;
+	}
+
+	/**
+	 * 用于根据已格式化的时间初始化时间
+	 * 
+	 * @param formatTime 已格式化的时间
+	 * @throws IncorrectConditionException 时间转换错误时抛出的异常
+	 */
+	public static Time parse(String formatTime) {
+		// 判断传入的格式化时间是否符合要求，并将其转换为格式化字符串
+		return parse(formatTime, 
+				Optional.ofNullable(formatTime).filter(text -> !text.isEmpty())
+				.filter(text -> text.matches(REGEX_DATE))
+				.map(Time::judgeDateFormatText)
+				.orElseThrow(() -> new IncorrectConditionException("时间“" + formatTime + "”不符合格式的规则"))
+				);
+	}
+	
+	/**
+	 * 用于根据格式化的日期/时间，及相应的时间格式，初始化日期/时间
+	 * <p>
+	 * 该方法允许只传入格式化的日期或者时间，如：
+	 * <code><pre>
+	 * Time time1 = Time.parse("2020-12-12", "yyyy-MM-dd");//初始化为2020年12月12日的0点
+	 * Time time2 = Time.parse("15:15:15", "HH:mm:ss");//初始化为当天的15时15分15秒
+	 * </pre></code>
+	 * </p>
+	 * @param formatTime 格式化的日期/时间
+	 * @param formatText 时间格式
+	 * @return 初始化的类
+	 * @throws DateTimeParseException 日期/时间无法转换时抛出的异常
+	 */
+	public static Time parse(String formatTime, String formatText) {
+		Time time = new Time();
+		
+		//定义相应的时间格式，并用于解析传入的时间
+		dateFormat = DateTimeFormatter.ofPattern(formatText);
+		try {
+			time.initTime = LocalDateTime.parse(formatTime, dateFormat);
+			time.calculateTime = LocalDateTime.parse(formatTime, dateFormat);
+		} catch (DateTimeParseException e) {
+			if (formatText.matches(".*M+.*")) {
+				time.initTime = LocalDate.parse(formatTime, dateFormat).atStartOfDay();
+				time.calculateTime = LocalDate.parse(formatTime, dateFormat).atStartOfDay();
+			} else {
+				time.initTime = LocalTime.parse(formatTime, dateFormat).atDate(LocalDate.now());
+				time.calculateTime = LocalTime.parse(formatTime, dateFormat).atDate(LocalDate.now());
+			}
+		}
+		
+		return time;
+	}
+
+	/**
+	 * 用于将时间初始化为当前时间
+	 */
+	public static Time parse() {
+		Time time = new Time();
+		
+		time.initTime = LocalDateTime.now();
+		time.calculateTime = LocalDateTime.now();
+		
+		return time;
+	}
+
+	/**
 	 * 设置返回时间的格式，该方法可传入时间格式，亦可向该方法中传入时间格式的模板，
 	 * 通过识别模板得到日期的格式，但作为模板的日期也必须满足时间格式。例如：<br>
-	 * <pre><code>
+	 * 
+	 * <pre>
+	 * <code>
 	 * Time time = new Time(1575387800000L);
 	 * 
 	 * time.setTimeFormat("yyyy年MM月dd日 HH:mm:ss");
@@ -146,20 +164,30 @@ public class Time {
 	 * 
 	 * time.setTimeFormat("2019/12/04 03:03:20");
 	 * getFormatTime();//输出：2019/12/03 23:43:20
-	 * </code></pre>
-	 * 注意，传入已格式化的时间时，其不会改变当前存储的时间
+	 * </code>
+	 * </pre>
+	 * 
+	 * <p>
+	 * <b>注意</b>
+	 * <ol>
+	 * <li>传入已格式化的时间时，其不会改变当前存储的时间</li>
+	 * <li>已格式化的时间中，其分隔符不能包含字母，否则转译将出错（在格式化时间的方法中也不允许存在字母）</li>
+	 * </ol>
+	 * </p>
 	 * 
 	 * @param pattern 指定的格式或已格式化的时间
 	 */
-	public void setTimeFormat(String pattern) {
+	public Time setTimeFormat(String pattern) {
+		pattern = Optional.ofNullable(pattern).filter(text -> !text.isEmpty())
+				.orElseThrow(() -> new IncorrectConditionException("未指定时格式"));
+		
 		if (pattern.matches(REGEX_DATE)) {
-			dateFormat = getDateFormat(pattern);
+			dateFormat = DateTimeFormatter.ofPattern(judgeDateFormatText(pattern));
 		} else {
-			try {
-				dateFormat = pattern;
-			} catch (IllegalArgumentException e) {
-			}
+			dateFormat = DateTimeFormatter.ofPattern(pattern);
 		}
+		
+		return this;
 	}
 
 	/**
@@ -168,18 +196,7 @@ public class Time {
 	 * @return Date类对象
 	 */
 	public Date getDate() {
-		return date;
-	}
-	
-	/**
-	 * 用于返回Calendar类对象
-	 * @return Calendar类对象
-	 */
-	public Calendar getCalendar() {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		
-		return c;
+		return Date.from(calculateTime.atZone(defaultZoneId).toInstant());
 	}
 
 	/**
@@ -187,28 +204,48 @@ public class Time {
 	 * 
 	 * @return 时间戳
 	 */
-	public long getTime() {
-		return date.getTime();
+	public long getMilliSecond() {
+		return calculateTime.atZone(defaultZoneId).toInstant().toEpochMilli();
 	}
 
 	/**
 	 * 用于返回设置时间的格式化后的时间，若通过{@link #Time(String)}构造
-	 * 或{@link #setTime(String)}方法创建的时间，则按照原格式进行返回，若 通过其他方法 创建的时间，则按照默认的“yyyy-MM-dd
+	 * 或{@link #initTime(String)}方法创建的时间，则按照原格式进行返回，若通过其他方法 创建的时间，则按照默认的“yyyy-MM-dd
 	 * HH:mm:ss”格式进行返回
 	 * 
 	 * @return 格式化后的时间
 	 */
 	public String getFormatTime() {
-		return new SimpleDateFormat(dateFormat).format(date);
+		return calculateTime.format(dateFormat);
 	}
 
 	/**
 	 * 用于还原最后一次设置的时间
 	 */
-	public void initTime() {
-		date = oldDate;
+	public Time initTime() {
+		calculateTime = initTime;
+		
+		return this;
 	}
 
+	/**
+	 * 用于根据条件计算日期/时间，方法允许传入小数与负数进行计算
+	 * <p>
+	 * <b>注意：</b>在计算年、月时，若传入的数值是小数，在转换毫秒值时，其会按照
+	 * <ul>
+	 * <li>1年 = 365天</li>
+	 * <li>1月 = 30天</li>
+	 * </ul>
+	 * 进行计算，在跨度大的计算中，其会存在精度的丢失
+	 * </p>
+	 * @param num 日期/时间增减的数量
+	 * @param timeUnit 日期计算的单位
+	 */
+	public Time addTime(double num, TimeUnit timeUnit) {
+		calculateTime = calcuLocalTime(Double.valueOf(num), timeUnit, calculateTime);
+		return this;
+	}
+	
 	/**
 	 * <p>
 	 * 用于根据传入的增减时间的规则对时间进行增减，传入需要修改的时间单位，
@@ -217,291 +254,289 @@ public class Time {
 	 * </p>
 	 * <p>
 	 * 注意：
-	 * 	<ol>
-	 * 		<li>单位必须准确，允许传入以下单位：
-	 * 			<ul>
-	 * 				<li>年单位：年、y、Y</li>
-	 * 				<li>月单位：月、m、M</li>
-	 * 				<li>周单位：周、w、W</li>
-	 * 				<li>日单位：日、d、D</li>
-	 * 				<li>小时单位：时、h、H</li>
-	 * 				<li>分钟单位：分、min、MIN</li>
-	 * 				<li>秒单位：秒、s、S</li>
-	 * 			</ul>
-	 * 		</li>
-	 * 		<li>允许传入小数，但年、月传入小数时，按照自然年及自然月计算，即1年365天，不考虑闰年；
-	 * 			1月30天，不考虑大月与二月。例如，传入5.3y2.5h则，5.3年转换为5.3 * 365天计算，
-	 * 			2.5小时将转化为增加2.5 * 60分钟计算。建议不要在年、月中传入小数，否则可能导致计算失真
-	 * 		</li>
-	 * 	</ol>
+	 * <ol>
+	 * <li>单位必须准确，允许传入以下单位：
+	 * <ul>
+	 * <li>年单位：年、y、Y</li>
+	 * <li>月单位：月、m、M</li>
+	 * <li>周单位：周、w、W</li>
+	 * <li>日单位：日、d、D</li>
+	 * <li>小时单位：时、h、H</li>
+	 * <li>分钟单位：分、min、MIN</li>
+	 * <li>秒单位：秒、s、S</li>
+	 * </ul>
+	 * </li>
+	 * <li>允许传入小数，但年、月传入小数时，按照自然年及自然月计算，即1年365天，不考虑闰年；
+	 * 1月30天，不考虑大月与二月。例如，传入5.3y2.5h则，5.3年转换为5.3 * 365天计算， 2.5小时将转化为增加2.5 *
+	 * 60分钟计算。建议不要在年、月中传入小数，否则可能导致计算失真</li>
+	 * </ol>
 	 * </p>
 	 * 
 	 * 
 	 * @param regex 时间规则
 	 * @return 返回修改后的时间戳
 	 */
-	public long addTime(String regex) {
-		//去空格
-		regex = regex.replaceAll(" ", "");
+	public Time addTime(String calculateTimeText) {
+		//将字符串转换为char[]数组
+		char[] chars = Optional.ofNullable(calculateTimeText)
+				.filter(text -> !text.isEmpty())
+				//为保证最后一位能进行计算，在字符串末尾拼接一个“-”符号
+				.map(text -> text + "-")
+				.map(String::toCharArray)
+				.orElseThrow(() -> new IncorrectConditionException("必须指定修改时间的参数"));
 		
-		// 初始化Calendar类，用于修改日期
-		Calendar cTime = Calendar.getInstance();
-		cTime.setTime(date);
+		//记录当前计算的时间
+		LocalDateTime nowTime = calculateTime;
 		
-		//封装传入的修改时间规则，以便于删除已修改的规则
-		StringBuilder time = new StringBuilder(regex);
-		//用于指向规则中单位的位置
-		int index = -1;
-
-		// 判断是否包含分钟，由于分钟比较特殊，可能会与月份重复，故放在第一位判断；
-		//若存在小数点，则按照毫秒进行转换
-		if ((index = time.indexOf("分")) > -1 || (index = time.indexOf("min")) > -1
-				|| (index = time.indexOf("MIN")) > -1) {
-			//存储待判断单位前的字符串
-			String subTime = time.substring(0, index);
-			//存储待判断单位前数值位置
-			int numIndex = getIndex(time.substring(0, index));
-
-			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 60.0);
-			//cTime增加相应日期
-			cTime.add(Calendar.SECOND, addTime);
-
-			//删除已修改的单位以及其数值，由于分钟单位可能为三位，故需要根据具体传入的单位来定义
-			time = time.delete(numIndex,
-					time.substring(index, time.length()).indexOf("分") == 0 ? index + 1 : index + 3);
-		}
-
-		//判断是否包含年份，若存在小数点，则忽略
-		if ((index = time.indexOf("年")) > -1 || (index = time.indexOf("y")) > -1 || (index = time.indexOf("Y")) > -1) {
-			//存储待判断单位前的字符串
-			String subTime = time.substring(0, index);
-			//存储待判断单位前数值位置
-			int numIndex = getIndex(time.substring(0, index));
-
-			//转换数值
-			int addTime = 0;
-			String yearNum = subTime.substring(numIndex);
-			try {
-				//若传入的年份是整数，则直接按照整数转换，并对年份增加相应的数值
-				addTime = Integer.valueOf(yearNum);
-				cTime.add(Calendar.YEAR, addTime);
-			}catch (NumberFormatException e) {
-				//若年份包含小数，则按照小数点进行切分，先对年份的整数部分进行增加
-				String[] num = yearNum.split("\\.");
-				addTime = Integer.valueOf(num[0]);
-				cTime.add(Calendar.YEAR, addTime);
+		/*
+		 * 判断单位思路：
+		 * 1.遍历通过calculateTimeText得到的每一个字符
+		 * 2.判断当前字符是否为数字：
+		 * 	a.若为数字，则判断上一次读取的内容是否为字符：
+		 * 		I.若为字符，则表示上一个单位及计算数值已读取完毕，则先对上一次的数值对日期时间进行一次计算
+		 * 		II.若为数字，则表示当前正在读取计算的数值，则不进行操作
+		 * 	判断结束后，记录isUnit为false，表示当前字符为数字，并拼接到numText中
+		 * 	b.若为非数字，则将isUnit设置为true，并拼接计算单位
+		 * */
+		//遍历所有的字符，区别存储单位与增减的数值
+		StringBuilder numText = new StringBuilder();
+		StringBuilder unitText = new StringBuilder();
+		boolean isUnit = false;
+		for (char ch : chars) {
+			//判断当前字符是否为数字
+			if (Character.isDigit(ch) || ch == '.' || ch == '-') {
+				//判断上一次读取的内容是否为字符
+				if (isUnit) {
+					nowTime = calcuLocalTime(disposeDoubleText(numText.toString()), 
+							Arrays.stream(TimeUnit.values())
+							.filter(unit -> unit.isTimeUnit(unitText.toString()))
+							.findFirst()
+							.orElseThrow(() -> new IncorrectConditionException("无法识别的计算公式：" + numText + unitText))
+							, nowTime);
+					
+					numText.delete(0, numText.length());
+					unitText.delete(0, unitText.length());
+				}
 				
-				//之后对小数部分拼接“0.”，转换为double，之后将其转换成天数
-				int remainder = (int) (Double.valueOf((addTime > 0 ? "0.": "-0.") + num[1]) * 365.0);
-				cTime.add(Calendar.DATE, remainder);
+				numText.append(ch);
+				isUnit = false;
+			} else {
+				isUnit = true;
+				unitText.append(ch);
 			}
-			
-			//删除已修改的单位以及其数值
-			time = time.delete(numIndex, index + 1);
-		}
-
-		//判断是否包含月份，若存在小数点，则忽略
-		if ((index = time.indexOf("月")) > -1 || (index = time.indexOf("m")) > -1 || (index = time.indexOf("M")) > -1) {
-			//存储待判断单位前的字符串
-			String subTime = time.substring(0, index);
-			//存储待判断单位前数值位置
-			int numIndex = getIndex(time.substring(0, index));
-
-			//转换数值
-			int addTime = 0;
-			String monthNum = subTime.substring(numIndex);
-			try {
-				//若传入的年份是整数，则直接按照整数转换，并对年份增加相应的数值
-				addTime = Integer.valueOf(monthNum);
-				cTime.add(Calendar.MONTH, addTime);
-			}catch (NumberFormatException e) {
-				//若年份包含小数，则按照小数点进行切分，先对年份的整数部分进行增加
-				String[] num = monthNum.split("\\.");
-				addTime = Integer.valueOf(num[0]);
-				cTime.add(Calendar.MONTH, addTime);
-				
-				//之后对小数部分拼接“0.”，转换为double，之后将其转换成天数
-				addTime = (int) (Double.valueOf((addTime > 0 ? "0.": "-0.") + num[1]) * 30.0);
-				cTime.add(Calendar.DATE, addTime);
-			}
-
-			//删除已修改的单位以及其数值
-			time = time.delete(numIndex, index + 1);
 		}
 		
-		//判断是否包含月份，若存在小数点，则忽略
-		if ((index = time.indexOf("周")) > -1 || (index = time.indexOf("w")) > -1 || (index = time.indexOf("W")) > -1) {
-			//存储待判断单位前的字符串
-			String subTime = time.substring(0, index);
-			//存储待判断单位前数值位置
-			int numIndex = getIndex(time.substring(0, index));
-
-			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 7.0);
-			//cTime增加相应日期
-			cTime.add(Calendar.DATE, addTime);
-
-			//删除已修改的单位以及其数值
-			time = time.delete(numIndex, index + 1);
-		}
-
-		//判断是否包含天数，若存在小数点，则忽略
-		if ((index = time.indexOf("日")) > -1 || (index = time.indexOf("d")) > -1 || (index = time.indexOf("D")) > -1) {
-			//存储待判断单位前的字符串
-			String subTime = time.substring(0, index);
-			//存储待判断单位前数值位置
-			int numIndex = getIndex(time.substring(0, index));
-
-			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 24.0 * 60.0 * 60.0);
-			//cTime增加相应日期
-			cTime.add(Calendar.SECOND, addTime);
-
-			//删除已修改的单位以及其数值
-			time = time.delete(numIndex, index + 1);
-		}
-
-		//判断是否包含小时，若存在小数点，则按照毫秒进行转换
-		if ((index = time.indexOf("时")) > -1 || (index = time.indexOf("h")) > -1 || (index = time.indexOf("H")) > -1) {
-			//存储待判断单位前的字符串
-			String subTime = time.substring(0, index);
-			//存储待判断单位前数值位置
-			int numIndex = getIndex(time.substring(0, index));
-
-			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 60.0 * 60.0);
-			//cTime增加相应日期
-			cTime.add(Calendar.SECOND, addTime);
-
-			//删除已修改的单位以及其数值
-			time = time.delete(numIndex, index + 1);
-		}
-
-		//判断是否包含秒，若存在小数点，则按照毫秒进行转换
-		if ((index = time.indexOf("秒")) > -1 || (index = time.indexOf("s")) > -1 || (index = time.indexOf("S")) > -1) {
-			//存储待判断单位前的字符串
-			String subTime = time.substring(0, index);
-			//存储待判断单位前数值位置
-			int numIndex = getIndex(time.substring(0, index));
-
-			//转换数值
-			int addTime = (int) (Double.valueOf(subTime.substring(numIndex)) * 1.0);
-			//cTime增加相应日期
-			cTime.add(Calendar.SECOND, addTime);
-
-			//删除已修改的单位以及其数值
-			time = time.delete(numIndex, index + 1);
-		}
-		
-		//将转换后的时间存储至date中
-		date = cTime.getTime();
-		
-		return getTime();
+		calculateTime = nowTime;
+		return this;
 	}
 	
 	/**
-	 * 修改原始存储的时间，返回修改后的时间戳，且不影响原存储的时间，具体修改规则可以参见{@link #addTime(String)}
-	 * @param regex 时间规则
-	 * @return 返回修改后的时间戳
-	 * @see #addTime(String)
+	 * 用于对计算的double数值进行处理，不全小数点前后缺失的内容
+	 * @param doubleText 数值文本
+	 * @return 转换后的double类型
 	 */
-	public long addOldTime(String regex) {
-		//TODO 此处逻辑需要修改
-		long time = addTime(regex);
-		initTime();
+	private Double disposeDoubleText(String doubleText) {
+		int index = doubleText.indexOf(".");
+		if (index == doubleText.length() - 1) {
+			return Double.valueOf(doubleText + "0");
+		} else if (index == 0) {
+			return Double.valueOf("0" + doubleText);
+		} else {
+			return Double.valueOf(doubleText);
+		}
+	}
+	
+	/**
+	 * 用于对传入的时间进行计算，并返回计算结果
+	 * @param num 计算数值
+	 * @param timeUnit 计算单位
+	 * @param time 指定的日期
+	 * @return 计算后得到的日期
+	 */
+	private LocalDateTime calcuLocalTime(Double num, TimeUnit timeUnit, LocalDateTime time) {
+		//为避免出现数字过大导致计算出错的问题，先计算整数部分，再将小数部分转换为时间戳后，计算毫秒值
+		time = time.plus(num.intValue(), timeUnit.getChronoUnit());
+		num = num - num.intValue();
+		time = time.plus((long)(num * timeUnit.getToMillisNum()), ChronoUnit.MILLIS);
+	
 		return time;
 	}
-	
+
 	/**
-	 * 用于判断相应单位前的数字在整个字符串中所存在的位置
-	 * @param text 传入的除当前判断单位前的字符串，例如有规则5H31s，判断秒数，则传入5H31
-	 * @return 返回待判断单位前的数值，如5H31s，判断秒数，则返回2
+	 * 用于识别传入的日期文本，并将日期文本转换为相应的日期格式化字符串
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>日期字符串必须是三位完整的日期（X年X月X日）或时间（X时X分X秒），或者是完整的日期+时间（X年X月X日X时X分X秒）</li>
+	 * <li>日期字符串前后允许添加非数字字符</li>
+	 * <li>无法识别纯数字的日期格式</li>
+	 * </ol>
+	 * </p>
+	 * @param dateText 日期文本
+	 * @return 相应的日期格式化字符串
 	 */
-	private static int getIndex(String text) {
-		// 定义规则
-		String regex = "(\\.\\d+)|(-?\\d+(\\.\\d+)?)";
-
-		// 如果其本身符合正则，则返回0
-		if (text.matches(regex)) {
-			return 0;
+	private static String judgeDateFormatText(String dateText) {
+		//判断格式化日期时间中是否存在字母
+		if (dateText.matches(".*[a-zA-Z]+.*")) {
+			throw new IncorrectConditionException("格式化的日期/时间中存在字母：" + dateText);
 		}
-
-		// 若本身不符合正则，则从后向前对字符串逐个增加，直到找到下一个单位为止，返回其在字符串中相应的位置
-		for (int i = 1; i < text.length(); i++) {
-			int index = text.length() - i;
-			// 若切分到的字符串不再符合正则，即此时已找到下一个单位，则返回其下标+1
-			// 例如，有字符串5H31s，传入到方法中的字符串将为5H31
-			// 逐个累加字符串时，将读取到H31，此时正则返回false，则记录其下标+1，即为3的位置
-			if (!text.substring(index).matches(regex)) {
-				return index + 1;
+		
+		//将传入的日期文本转换为字符数组
+		char[] chars = dateText.toCharArray();
+		
+		/*
+		 * 转换思路：
+		 * 1.遍历通过dateText得到的每一个字符
+		 * 2.判断当前字符是否为数字：
+		 * 	a.若为数字，则记录isSign为false，表示当前字符为数字，并拼接index指向的位数
+		 * 	b.若为非数字，则记录isSign为true,表示当前字符为字符，则需要再次判断上一个字符是
+		 * 	否也是非数字（即isSign是否本身为false）:
+		 * 		I.若上一个字符不为非数字（isSign原为true），则设置index指向的位数加1（即第一次读取到分隔符，
+		 * 		表示上一位的日期以存储完毕）
+		 * 		II.若上一位为非数字（isSign原为false），则不做改动（即该字符仅为分隔符的一部分）
+		 * 	判断结束后，将isSign设置为true，并拼接分隔符
+		 * 3.结束循环后，得到一个待转译的中间字符串
+		 * 
+		 * 举例：传入“2020-12-25 14:12:12”最终会转换为“1111-22-33 44:55:66”
+		 * */
+		int index = 1;
+		boolean isSign = false;
+		StringBuilder formatTextBuilder = new StringBuilder();
+		for (char ch : chars) {
+			if (Character.isDigit(ch)) {
+				isSign = false;
+				formatTextBuilder.append(index);
+			} else {
+				if (!isSign) {
+					index++;
+				}
+				
+				isSign = true;
+				formatTextBuilder.append(ch);
 			}
 		}
 		
-		//若判断失败，则返回-1，理论上不存在该返回
-		return -1;
+		//判断中间字符串最后一位是否为非数字字符，若为非数字字符，表示位数多移动了1位，需要减1后得到真实的位数
+		index -= (formatTextBuilder.substring(formatTextBuilder.length() - 1).matches("\\d") ? 0 : 1);
+		
+		//判断位数，若位数为3，则表示只传入了日期或者时间
+		if (index == 3) {
+			//若第一位包含4个字符，则按日期转换，否则按时间转换
+			if (formatTextBuilder.substring(formatTextBuilder.indexOf("1"), formatTextBuilder.lastIndexOf("1") + 1).length() == 4) {
+				return formatTextBuilder.toString()
+						.replaceAll("1", "y")
+						.replaceAll("2", "M")
+						.replaceAll("3", "d");
+			} else {
+				return formatTextBuilder.toString()
+						.replaceAll("1", "H")
+						.replaceAll("2", "m")
+						.replaceAll("3", "s");
+			}
+		} else if (index == 6) {
+			//若位数为6，表示既传入了日期也传入了时间
+			return formatTextBuilder.toString()
+					.replaceAll("1", "y")
+					.replaceAll("2", "M")
+					.replaceAll("3", "d")
+					.replaceAll("4", "H")
+					.replaceAll("5", "m")
+					.replaceAll("6", "s");
+		} else {
+			throw new IncorrectConditionException("时间“" + dateText + "”不符合格式的规则");
+		}
 	}
-
+	
 	/**
-	 * 识别传入的时间格式
-	 * 
-	 * @param time 时间
-	 * @return 时间格式
+	 * <p><b>文件名：</b>Time.java</p>
+	 * <p><b>用途：</b>
+	 * 指定允许使用的时间单位
+	 * </p>
+	 * <p><b>编码时间：</b>2021年1月20日上午7:54:09</p>
+	 * <p><b>修改时间：</b>2021年1月20日上午7:54:09</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 1.8
+	 *
 	 */
-	private String getDateFormat(String time) {
-		boolean year = false;
-		Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-		if (pattern.matcher(time.substring(0, 4)).matches()) {
-			year = true;
+	public enum TimeUnit {
+		/**
+		 * 指向计算单位“<b>年</b>”，对应的时间单位为：年、y、Y
+		 */
+		YEAR("[年yY]", ChronoUnit.YEARS, (365L * 24L * 60L * 60L * 1000L)), 
+		/**
+		 * 指向计算单位“<b>月</b>”，对应的时间单位为：月、m、M
+		 */
+		MONTH("[月mM]", ChronoUnit.MONTHS, (30L * 24L * 60L * 60L * 1000L)), 
+		/**
+		 * 指向计算单位“<b>周</b>”，对应的时间单位为：周、w、W
+		 */
+		WEEK("[周wW]", ChronoUnit.WEEKS, (7L * 24L * 60L * 60L * 1000L)), 
+		/**
+		 * 指向计算单位“<b>日</b>”，对应的时间单位为：日、d、D
+		 */
+		DAY("[日dD]", ChronoUnit.DAYS, (24L * 60L * 60L * 1000L)), 
+		/**
+		 * 指向计算单位“<b>时</b>”，对应的时间单位为：时、h、H
+		 */
+		HOUR("[时hH]", ChronoUnit.HOURS, (60L * 60L * 1000L)), 
+		/**
+		 * 指向计算单位“<b>分</b>”，对应的时间单位为：分、min（所有字母不区分大小写）
+		 */
+		MINUTE("分|((m|M)(i|I)(n|N))", ChronoUnit.MINUTES, (60L * 1000L)), 
+		/**
+		 * 指向计算单位“<b>秒</b>”，对应的时间单位为：秒、s、S
+		 */
+		SECOND("[秒sS]", ChronoUnit.SECONDS, (1000L)), 
+		;
+		/**
+		 * 指定判断当前单位的正则
+		 */
+		private String unitRegex;
+		/**
+		 * 存储转换为毫秒值所需的乘积
+		 */
+		private long toMillisNum;
+		/**
+		 * 指向当前的单位在{@link ChronoUnit}中的映射
+		 */
+		private ChronoUnit chronoUnit;
+		
+		/**
+		 * 初始化枚举值
+		 * @param unitRegex 单位判断正则
+		 * @param chronoUnit {@link ChronoUnit}的映射
+		 * @param toMillisNum 转换为毫秒值所需的乘积
+		 */
+		private TimeUnit(String unitRegex, ChronoUnit chronoUnit, long toMillisNum) {
+			this.unitRegex = unitRegex;
+			this.toMillisNum = toMillisNum;
+			this.chronoUnit = chronoUnit;
 		}
-		StringBuilder sb = new StringBuilder();
-		int index = 0;
-		if (!year) {
-			if (time.contains("月") || time.contains("-") || time.contains("/")) {
-				if (Character.isDigit(time.charAt(0))) {
-					index = 1;
-				}
-			} else {
-				index = 3;
-			}
+		
+		/**
+		 * 用于返回单位转换为毫秒值所需的乘积
+		 * @return 单位转换为毫秒值所需的乘积
+		 */
+		public long getToMillisNum() {
+			return toMillisNum;
 		}
-		for (int i = 0; i < time.length(); i++) {
-			char chr = time.charAt(i);
-			if (Character.isDigit(chr)) {
-				if (index == 0) {
-					sb.append("y");
-				}
-				if (index == 1) {
-					sb.append("M");
-				}
-				if (index == 2) {
-					sb.append("d");
-				}
-				if (index == 3) {
-					sb.append("H");
-				}
-				if (index == 4) {
-					sb.append("m");
-				}
-				if (index == 5) {
-					sb.append("s");
-				}
-				if (index == 6) {
-					sb.append("S");
-				}
-			} else {
-				if (i > 0) {
-					char lastChar = time.charAt(i - 1);
-					if (Character.isDigit(lastChar)) {
-						index++;
-					}
-				}
-				sb.append(chr);
-			}
+		
+		/**
+		 * 用于返回单位在{@link ChronoUnit}的映射
+		 * @return {@link ChronoUnit}的映射
+		 */
+		public ChronoUnit getChronoUnit() {
+			return chronoUnit;
 		}
-
-		// 存储转换后的格式
-		dateFormat = sb.toString();
-		return sb.toString();
+		
+		/**
+		 * 用于判断传入的单位是否符合当前枚举值
+		 * @param unit 单位
+		 * @return 是否符合当前枚举
+		 */
+		public boolean isTimeUnit(String unit) {
+			return unit.matches(unitRegex);
+		}
 	}
 }
