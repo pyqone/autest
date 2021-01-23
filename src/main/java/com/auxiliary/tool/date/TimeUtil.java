@@ -1,5 +1,6 @@
 package com.auxiliary.tool.date;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -53,7 +54,7 @@ public class TimeUtil {
 	 * @return 随机的时间
 	 */
 	public static Time randomTime(Time startTime, Time endTime, TimeUnit timeUnit) {
-		// 帕努单传入的对象是否为空
+		// 判断传入的对象是否为空
 		if (startTime == null || endTime == null || timeUnit == null) {
 			throw new IncorrectConditionException(String
 					.format("必须指定时间范围与最小变动单位：[startTime:%s, endTime:%s, timeUnit:%s]", startTime, endTime, timeUnit));
@@ -127,4 +128,78 @@ public class TimeUtil {
 	public static Time randomTime(Time time, TimeUnit timeUnit) {
 		return randomTime(Time.parse(), time, timeUnit);
 	}
+	
+	/**
+	 * 用于计算指定时间与待比较时间之间差值，并以{@link Duration}的形式对计算结果进行返回
+	 * @param time 指定时间
+	 * @param compareTime 待比较时间
+	 * @return 两时间的差值
+	 */
+	public static Duration timeDifference(Time time, Time compareTime) {
+		// 判断传入的对象是否为空
+		if (time == null || compareTime == null) {
+			throw new IncorrectConditionException(String
+					.format("必须指定时间范围与最小变动单位：[time:%s, compareTime:%s]", time, compareTime));
+		}
+				
+		return Duration.between(time.getLocalDateTime(), compareTime.getLocalDateTime());
+	}
+	
+	/**
+	 * 用于计算指定时间与待比较时间之间各个单位的差值，并以{@link Map}的形式进行返回
+	 * <p>
+	 * 在返回值中，其键为时间单位，值为该单位的差值
+	 * </p>
+	 * @param time 指定时间
+	 * @param compareTime 待比较时间
+	 * @return 两时间的差值
+	 */
+	/* TODO 暂时搁置 未想到解决借位或精度的解决办法
+	public static Map<TimeUnit, Integer> timeDifferenceToMap(Time time, Time compareTime) {
+		// 判断传入的对象是否为空
+		if (time == null || compareTime == null) {
+			throw new IncorrectConditionException(String
+					.format("必须指定时间范围与最小变动单位：[time:%s, compareTime:%s]", time, compareTime));
+		}
+		
+		//存储转换单位后的数据
+		Map<TimeUnit, Integer> UnitMap = new HashMap<>();
+		TimeUnit unit = TimeUnit.YEAR;
+		//循环，直到毫秒值小于1000时（单位已计算至毫秒）结束
+		while(unit != null) {
+			int value = 0;
+			switch (unit) {
+			case YEAR:
+				value = time.getLocalDateTime().getYear() - compareTime.getLocalDateTime().getYear();
+				unit = TimeUnit.MONTH;
+				break;
+			case MONTH:
+				value = time.getLocalDateTime().getMonthValue() - compareTime.getLocalDateTime().getMonthValue();
+				if (value < 0) {
+					UnitMap.put(TimeUnit.YEAR, UnitMap.get(TimeUnit.YEAR) - 1);
+					value = 12 + value;
+				}
+				unit = TimeUnit.DAY;
+				break;
+			case DAY:
+				unit = TimeUnit.HOUR;
+				break;
+			case HOUR:
+				unit = TimeUnit.MINUTE;
+				break;
+			case MINUTE:
+				unit = TimeUnit.SECOND;
+				break;
+			case SECOND:
+			default:
+				unit = null;
+				break;
+			}
+			
+			UnitMap.put(unit, value);
+		}
+		
+		return UnitMap;
+	}
+	*/
 }

@@ -257,9 +257,10 @@ public class Time implements Comparable<Time> {
 	}
 
 	/**
-	 * 用于返回设置时间的格式化后的时间，若通过{@link #Time(String)}构造
-	 * 或{@link #initTime(String)}方法创建的时间，则按照原格式进行返回，若通过其他方法 创建的时间，则按照默认的“yyyy-MM-dd
-	 * HH:mm:ss”格式进行返回
+	 * 用于以指定的格式返回格式化后的时间。
+	 * <p>
+	 * 若未设置时间格式，则默认按照“yyyy-MM-dd HH:mm:ss”的格式进行返回
+	 * </p>
 	 * 
 	 * @return 格式化后的时间
 	 */
@@ -274,13 +275,28 @@ public class Time implements Comparable<Time> {
 	public LocalDateTime getLocalDateTime() {
 		return LocalDateTime.of(calculateTime.toLocalDate(), calculateTime.toLocalTime());
 	}
+	
+	/**
+	 * 用于以{@link Time}的形式返回初始化时设置的时间
+	 * @return 始化时设置的时间
+	 */
+	public Time getInitTime() {
+		return Time.parse(initTime);
+	}
+	
+	/**
+	 * 用于以{@link Time}的形式将设置后的时间作为初始时间进行返回
+	 * @return 始化时设置的时间
+	 */
+	public Time getCalculateTime() {
+		return Time.parse(calculateTime);
+	}
 
 	/**
 	 * 用于还原初始化时设置的日期/时间
 	 */
 	public Time initTime() {
 		calculateTime = initTime;
-
 		return this;
 	}
 
@@ -304,16 +320,12 @@ public class Time implements Comparable<Time> {
 	}
 
 	/**
+	 * 用于根据传入的增减时间的规则对时间进行增减。
 	 * <p>
-	 * 用于根据传入的增减时间的规则对时间进行增减，传入需要修改的时间单位，
-	 * 根据单位前的数值对单位进行增减。例如：需要对当前设置的时间增加1年3个月又5天并较少2小时30分钟45秒，
+	 * 根据单位前的数值对指定的单位进行增减。例如：需要对当前设置的时间增加1年3个月又5天并较少2小时30分钟45秒，
 	 * 此时可以传入“1年3月5日-2时-30分-45秒”，亦可以传入“1y3m5d-2h-30min-45s”。
-	 * </p>
-	 * <p>
-	 * 注意：
-	 * <ol>
-	 * <li>单位必须准确，允许传入以下单位：
 	 * <ul>
+	 * 可传入的单位有：
 	 * <li>年单位：年、y、Y</li>
 	 * <li>月单位：月、m、M</li>
 	 * <li>周单位：周、w、W</li>
@@ -322,14 +334,8 @@ public class Time implements Comparable<Time> {
 	 * <li>分钟单位：分、min、MIN</li>
 	 * <li>秒单位：秒、s、S</li>
 	 * </ul>
-	 * </li>
-	 * <li>允许传入小数，但年、月传入小数时，按照自然年及自然月计算，即1年365天，不考虑闰年；
-	 * 1月30天，不考虑大月与二月。例如，传入5.3y2.5h则，5.3年转换为5.3 * 365天计算， 2.5小时将转化为增加2.5 *
-	 * 60分钟计算。建议不要在年、月中传入小数，否则可能导致计算失真</li>
-	 * </ol>
+	 * 具体的计算规则与{@link #addTime(double, TimeUnit)}方法一致
 	 * </p>
-	 * 
-	 * 
 	 * @param regex 时间规则
 	 * @return 返回修改后的时间戳
 	 */
@@ -521,5 +527,74 @@ public class Time implements Comparable<Time> {
 		} else if (!calculateTime.equals(other.calculateTime))
 			return false;
 		return true;
+	}
+	
+	/**
+	 * 用于根据最小比较单位，对时间进行比较
+	 * <p>
+	 * 通过指定最小比较单位，从而返回该单位及以上单位的对比结果，例如：
+	 * <ul>
+	 * 假定有如下两个日期：
+	 * <code><pre>
+	 * Time t1 = Time.parse("2020-12-10 17:22:12");
+	 * Time t2 = Time.parse("2020-12-10 20:27:12");
+	 * </pre></code>
+	 * <li>当调用{@code t1.equalsForUnit(t2, TimeUnit.SECOND)}时，则返回结果为false</li>
+	 * <li>当调用{@code t1.equalsForUnit(t2, TimeUnit.DAY)}时，则返回结果为true</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>除{@link TimeUnit#YEAR}、{@link TimeUnit#MONTH}、{@link TimeUnit#DAY}、
+	 * {@link TimeUnit#HOUR}、{@link TimeUnit#MINUTE}、{@link TimeUnit#SECOND}单位外，其他的
+	 * 单位传入进行判断时，会抛出异常
+	 * </p>
+	 * @param compareTime 需要比对的时间
+	 * @param timeUnit 最小判断单位
+	 * @return 对比结果
+	 * @throws IncorrectConditionException 单位传入有误时抛出的异常
+	 */
+	public boolean equalsForUnit(Time compareTime, TimeUnit timeUnit) {
+		if (compareTime == null || timeUnit == null) {
+			return false;
+		}
+		
+		boolean result = equals(compareTime);
+		//若两时间一致，则直接返回true
+		if (result) {
+			return result;
+		}
+		
+		switch (timeUnit) {
+		case SECOND:
+			result = (compareTime.getLocalDateTime().getSecond() == calculateTime.getSecond());
+			if (!result) {
+				return result;
+			}
+		case MINUTE:
+			result = (compareTime.getLocalDateTime().getMinute() == calculateTime.getMinute());
+			if (!result) {
+				return result;
+			}
+		case HOUR:
+			result = (compareTime.getLocalDateTime().getHour() == calculateTime.getHour());
+			if (!result) {
+				return result;
+			}
+		case DAY:
+			result = (compareTime.getLocalDateTime().getDayOfMonth() == calculateTime.getDayOfMonth());
+			if (!result) {
+				return result;
+			}
+		case MONTH:
+			result = (compareTime.getLocalDateTime().getMonth() == calculateTime.getMonth());
+			if (!result) {
+				return result;
+			}
+		case YEAR:
+			result = (compareTime.getLocalDateTime().getYear() == calculateTime.getYear());
+			return result;
+		default:
+			throw new IncorrectConditionException("无法比较的单位：" + timeUnit);
+		}
 	}
 }
