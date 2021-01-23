@@ -307,7 +307,7 @@ public class TableFileReadUtil {
 				// 判断单元格内的数据是否为日期
 				if (DateUtil.isCellDateFormatted(cell)) {
 					// 将单元格内容转换为Date后，在time中进行存储
-					Time time = new Time(cell.getDateCellValue());
+					Time time = Time.parse(cell.getDateCellValue());
 					// 根据存储的时间格式，对时间进行转换，输出格式化后的时间
 					return time.getFormatTime();
 				} else {
