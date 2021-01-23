@@ -31,7 +31,7 @@ import java.util.Optional;
  * @since JDK 1.8
  *
  */
-public class Time {
+public class Time implements Comparable<Time> {
 	/**
 	 * 定义默认时区
 	 */
@@ -379,7 +379,7 @@ public class Time {
 		calculateTime = nowTime;
 		return this;
 	}
-
+	
 	/**
 	 * 用于对计算的double数值进行处理，不全小数点前后缺失的内容
 	 * 
@@ -483,5 +483,43 @@ public class Time {
 		} else {
 			throw new IncorrectConditionException("时间“" + dateText + "”不符合格式的规则");
 		}
+	}
+
+	@Override
+	public int compareTo(Time compateTime) {
+		return Optional.ofNullable(compateTime)
+				.map(Time::getLocalDateTime)
+				.map(calculateTime::compareTo)
+				.orElseThrow(() -> new IncorrectConditionException("需要比较的时间存在异常"));
+	}
+
+	@Override
+	public String toString() {
+		return getFormatTime();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((calculateTime == null) ? 0 : calculateTime.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Time other = (Time) obj;
+		if (calculateTime == null) {
+			if (other.calculateTime != null)
+				return false;
+		} else if (!calculateTime.equals(other.calculateTime))
+			return false;
+		return true;
 	}
 }

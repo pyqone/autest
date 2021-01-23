@@ -18,11 +18,11 @@ public enum TimeUnit {
 	/**
 	 * 指向计算单位“<b>年</b>”，对应的时间单位为：年、y、Y
 	 */
-	YEAR("[年yY]", ChronoUnit.YEARS, (365L * 24L * 60L * 60L * 1000L)), 
+	YEAR("[年yY]", ChronoUnit.YEARS, (long)(365.25 * 1000L * 24L * 60L * 60L)), 
 	/**
 	 * 指向计算单位“<b>月</b>”，对应的时间单位为：月、m、M
 	 */
-	MONTH("[月mM]", ChronoUnit.MONTHS, (30L * 24L * 60L * 60L * 1000L)), 
+	MONTH("[月mM]", ChronoUnit.MONTHS, (long)(30.4375 * 1000L * 24L * 60L * 60L)), 
 	/**
 	 * 指向计算单位“<b>周</b>”，对应的时间单位为：周、w、W
 	 */
@@ -71,6 +71,10 @@ public enum TimeUnit {
 	
 	/**
 	 * 用于返回单位转换为毫秒值所需的乘积
+	 * <p>
+	 * <b>注意：</b>在返回年、月单位的毫秒值乘积时，由于无法精确知道具体经过的闰年数与31天的月份数，故
+	 * 年、月的毫秒值乘积返回取的是平均值，在精确计算时会存在误差
+	 * </p>
 	 * @return 单位转换为毫秒值所需的乘积
 	 */
 	public long getToMillisNum() {
