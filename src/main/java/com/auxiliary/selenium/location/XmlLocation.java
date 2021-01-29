@@ -15,7 +15,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
 
 /**
  * <p>
- * <b>文件名：</b>ReadXml.java
+ * <b>文件名：</b>XmlLocation.java
  * </p>
  * <p>
  * <b>用途：</b>该类用于从指定格式的xml中读取元素信息<br/>
