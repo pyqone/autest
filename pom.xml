@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<url>https://gitee.com/pyqone/autest</url>
-	<description>提供辅助软件测试工作的代码，提高软件测试工作效率</description>
+	<description>简化在测试工作中会使用到的代码，并提供工具类来辅助测试工作，提高测试工作的效率。</description>
 	<name>autest</name>
 
 	<properties>
