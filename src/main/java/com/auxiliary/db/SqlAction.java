@@ -62,7 +62,28 @@ public class SqlAction {
 	/**
 	 * 数据库连接类对象
 	 */
-	protected Optional<Connection> connect = Optional.empty();
+	protected Connection connect;
+	/**
+	 * 指向连接的数据库类型
+	 */
+	protected DataBaseType dataBaseType;
+	/**
+	 * 指向连接的数据库用户名
+	 */
+	protected String username;
+	/**
+	 * 指向连接的数据库密码
+	 */
+	protected String password;
+	/**
+	 * 指向连接的数据主机
+	 */
+	protected String host;
+	/**
+	 * 指向连接的数据名称
+	 */
+	protected String dataBaseName;
+	
 	/**
 	 * 存储SQL执行结果集
 	 */
@@ -82,10 +103,18 @@ public class SqlAction {
 	 * @param dataBaseName 数据源
 	 */
 	public SqlAction(DataBaseType dataBaseType, String username, String password, String host, String dataBaseName) {
+		this.dataBaseType = Optional.ofNullable(dataBaseType).orElseThrow(() -> new DatabaseException("未指定数据库类型"));
+		this.username = Optional.ofNullable(username).orElseThrow(() -> new DatabaseException("未指定数据库登录用户名"));
+		this.password = Optional.ofNullable(password).orElseThrow(() -> new DatabaseException("未指定数据库登录密码"));
+		this.host = Optional.ofNullable(host).orElseThrow(() -> new DatabaseException("未指定数据库登录主机"));
+		this.dataBaseName = Optional.ofNullable(dataBaseName).orElseThrow(() -> new DatabaseException("未指定数据库名称"));
+		
 		try {
 			Class.forName(dataBaseType.getClassName());
 			connect = Optional.ofNullable(DriverManager
-					.getConnection(String.format(dataBaseType.getUrl(), host, dataBaseName), username, password));
+					.getConnection(String.format(dataBaseType.getUrl(), host, dataBaseName), username, password))
+					.orElseThrow(() -> new DatabaseException(String.format(dataBaseType + "数据库连接异常，连接信息：\n用户名：%s\n密码：%s\n连接url：%s", username,
+					password, String.format(dataBaseType.getUrl(), host, dataBaseName))));
 		} catch (SQLException e) {
 			throw new DatabaseException(String.format(dataBaseType + "数据库连接异常，连接信息：\n用户名：%s\n密码：%s\n连接url：%s", username,
 					password, String.format(dataBaseType.getUrl(), host, dataBaseName)), e);
@@ -109,9 +138,13 @@ public class SqlAction {
 			throw new DatabaseException("SQL语句为空");
 		}
 
-		// 若无法获取Connection类对象，则抛出异常
-		Connection connect = this.connect.orElseThrow(() -> new DatabaseException("数据库连接异常"));
-
+		// 添加数据库驱动信息
+		try {
+			Class.forName(dataBaseType.getClassName());
+		} catch (ClassNotFoundException e) {
+			throw new DatabaseException("数据库驱动不存在：" + dataBaseType.getClassName(), e);
+		}
+		// 连接数据库
 		try {
 			// 执行SQL，设置结果集可以滚动
 			result = Optional
@@ -299,6 +332,17 @@ public class SqlAction {
 	 */
 	public TableData<String> getAllResult() {
 		return getAllColumnResult(1, -1);
+	}
+	
+	/**
+	 * 用于关闭数据库的连接
+	 */
+	public void close() {
+		try {
+			connect.close();
+		} catch (SQLException e) {
+			throw new DatabaseException("数据库连接无法关闭", e);
+		}
 	}
 
 	/**

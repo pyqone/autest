@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hwpf.HWPFDocument;
@@ -163,18 +164,19 @@ public class DisposeText {
 		// 返回结果
 		return result;
 	}
-	
+
 	/**
 	 * 该方法用于对文本中单词进行去重，输出不重复单词
+	 * 
 	 * @param testFile 待测文件
 	 * @return 去重后的单词数组
 	 * @throws IOException
 	 */
 	public static String[] wordDelDuplication(File testFile) throws IOException {
-		//读取、切分并存储文本不重复的单词
+		// 读取、切分并存储文本不重复的单词
 		LinkedHashMap<String, Integer> result = saveWord(split(readFile(testFile), LINE));
-		
-		//将不重复的单词转换成字符串数组，并返回该数组
+
+		// 将不重复的单词转换成字符串数组，并返回该数组
 		return result.keySet().toArray(new String[] {});
 	}
 
@@ -195,23 +197,23 @@ public class DisposeText {
 		// 用于存储文件的后缀名，以判断文件的格式
 		String[] fileName = f.getName().split("\\.");
 		String suffix = fileName[fileName.length - 1];
-		
-		try  {
+
+		try {
 			switch (suffix) {
 			case "doc":
 			case "docx":
 				text = readWord(f);
 				break;
-	
+
 			case "xls":
 			case "xlsx":
 				text = readExcel(f);
 				break;
-	
+
 			case "txt":
 				text = readTxt(f);
 				break;
-	
+
 			case "csv":
 				text = readCsv(f);
 				break;
@@ -256,26 +258,30 @@ public class DisposeText {
 	/**
 	 * 该方法用于读取并处理txt文件
 	 * 
-	 * @param f 待读取的文件
+	 * @param file 待读取的文件
 	 * @return 读取的文本
 	 * @throws IOException
 	 */
-	private static String readTxt(File f) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(f));
+	private static String readTxt(File file) {
+		file = Optional.ofNullable(file).filter(File::isFile)
+				.orElseThrow(() -> new UnsupportedFileException("未传入文件路径或文件路径有误"));
 
-		// 用于存储读取到的
-		String text = "";
-		// 定义临时读取文件时得到的字符串
-		String temp = "";
-		// 循环，读取文件中所有的文本
-		// 循环，按行读取文本
-		while ((temp = br.readLine()) != null) {
-			// 拼接字符串
-			text += (temp + LINE);
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			// 用于存储读取到的
+			String text = "";
+			// 定义临时读取文件时得到的字符串
+			String temp = "";
+			// 循环，读取文件中所有的文本
+			// 循环，按行读取文本
+			while ((temp = br.readLine()) != null) {
+				// 拼接字符串
+				text += (temp + LINE);
+			}
+
+			return text;
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件路径有误，无法读取");
 		}
-
-		br.close();
-		return text;
 	}
 
 	/**
@@ -287,7 +293,7 @@ public class DisposeText {
 	 */
 	private static String readExcel(File f) throws IOException {
 		String xlsx = "xlsx";
-		
+
 		// 读取文件流
 		FileInputStream fip = new FileInputStream(f);
 
@@ -313,7 +319,7 @@ public class DisposeText {
 		Sheet sheet = excel.getSheetAt(0);
 		for (int i = 0; i < sheet.getLastRowNum(); i++) {
 			Row row = sheet.getRow(i);
-			//若获取不到行，则说明该行无数据，直接继续循环
+			// 若获取不到行，则说明该行无数据，直接继续循环
 			if (row == null) {
 				continue;
 			}
@@ -321,8 +327,8 @@ public class DisposeText {
 				try {
 					Cell cell = row.getCell(j);
 					text += (cell.toString() + LINE);
-				} catch(NullPointerException e) {
-					//当读取到的列表为空时，则会抛出空指针的异常，此时不对该行进行存储
+				} catch (NullPointerException e) {
+					// 当读取到的列表为空时，则会抛出空指针的异常，此时不对该行进行存储
 				}
 			}
 		}
@@ -340,7 +346,7 @@ public class DisposeText {
 	 */
 	private static String readWord(File f) throws IOException {
 		String docx = "docx";
-		
+
 		// 用于存储读取到的文本
 		String text = "";
 		// 读取文件流
@@ -398,16 +404,17 @@ public class DisposeText {
 		}
 		return c;
 	}
-	
+
 	/**
 	 * 该方法用于存储关键词出现的次数
+	 * 
 	 * @param words 需要写入word中的数据
 	 * @return 返回map
 	 */
 	private static LinkedHashMap<String, Integer> saveWord(Collection<String> words) {
 		LinkedHashMap<String, Integer> result = new LinkedHashMap<>(16);
-		
-		//存储不重复的单词，并存储其在文中出现的次数
+
+		// 存储不重复的单词，并存储其在文中出现的次数
 		words.forEach(element -> {
 			// 判断map是否已经存在该词语，若存在，则将key对应的value加上1
 			if (result.containsKey(element)) {
@@ -416,7 +423,7 @@ public class DisposeText {
 				result.put(element, 1);
 			}
 		});
-		
+
 		return result;
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
@@ -64,16 +65,20 @@ public class RecognitionImage {
 	 * @return 识别结果
 	 */
 	public static String judgeImage(File imageFile, String language) {
-		String judge_Language = "eng";
 		// 通过图片流读取图片，用于获取其图片的长宽，以传入一个完整的图片至方法中
-		BufferedImage imageio = null;
-		try {
-			imageio = ImageIO.read(imageFile);
-		} catch (IOException e) {
-			throw new IncorrectDirectoryException("文件有误，无法读取");
-		}
+		BufferedImage imageio = Optional.ofNullable(imageFile)
+				.map(file -> {
+					try {
+						return ImageIO.read(imageFile);
+					} catch (IOException e) {
+						throw new IncorrectDirectoryException("文件有误，无法读取");
+					}
+				})
+				.orElseThrow(() -> new IncorrectDirectoryException("文件有误，无法读取"));
 		
-		if ( judge_Language.equals(language) ) {
+		//英文实现方式不同，故加以判断
+		String judgeLanguage = "eng";
+		if ( judgeLanguage.equals(language) ) {
 			return judgeImage(imageFile, 0, 0, imageio.getWidth(), imageio.getHeight());
 		} else {
 			return judgeImage(imageFile, language, 0, 0, imageio.getWidth(), imageio.getHeight());
