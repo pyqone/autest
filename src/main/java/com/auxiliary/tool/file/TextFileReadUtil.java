@@ -1,8 +1,20 @@
 package com.auxiliary.tool.file;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.usermodel.Paragraph;
+import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 /**
  * <p><b>文件名：</b>TextFileReadUtil.java</p>
@@ -59,9 +71,9 @@ public class TextFileReadUtil {
 	}
 	
 	/**
-	 * 用于以行元素单位，合并csv文件中所有的元素内容，并以字符串的形式返回。
+	 * 用于以行元素单位，合并csv文件中所有的元素内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
-	 * @return 合并后的文本集合
+	 * @return 合并后的文本
 	 */
 	public static String mergeAllRowDataToCsv(File file) {
 		StringBuilder text = new StringBuilder();
@@ -71,9 +83,9 @@ public class TextFileReadUtil {
 	}
 	
 	/**
-	 * 用于以列元素单位，合并csv文件中所有的元素内容，并以字符串的形式返回。
+	 * 用于以列元素单位，合并csv文件中所有的元素内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
-	 * @return 合并后的文本集合
+	 * @return 合并后的文本
 	 */
 	public static String mergeAllColumnDataToCsv(File file) {
 		StringBuilder text = new StringBuilder();
@@ -121,9 +133,9 @@ public class TextFileReadUtil {
 	}
 	
 	/**
-	 * 用于以行元素单位，合并excel文件中所有的元素内容，并以字符串的形式返回。
+	 * 用于以行元素单位，合并excel文件中所有的元素内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
-	 * @return 合并后的文本集合
+	 * @return 合并后的文本
 	 */
 	public static String mergeAllRowDataToExcel(File file, String sheetName) {
 		StringBuilder text = new StringBuilder();
@@ -133,14 +145,111 @@ public class TextFileReadUtil {
 	}
 	
 	/**
-	 * 用于以列元素单位，合并excel文件中所有的元素内容，并以字符串的形式返回。
+	 * 用于以列元素单位，合并excel文件中所有的元素内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
-	 * @return 合并后的文本集合
+	 * @return 合并后的文本
 	 */
 	public static String mergeAllColumnDataToExcel(File file, String sheetName) {
 		StringBuilder text = new StringBuilder();
 		mergeColumnDataToExcel(file, sheetName).forEach(text::append);
 		
 		return text.toString();
+	}
+	
+	/**
+	 * 用于合并旧版word（2003版本word）文档中每段的内容，并以字符串的形式返回
+	 * @param file 待读取文件对象
+	 * @return 合并后的文本
+	 */
+	public static String megerTextToOldWord (File file) {
+		StringBuilder megerText = new StringBuilder();
+		
+		// 读取word
+		Optional<HWPFDocument> wordOptional = Optional.empty();
+		try (FileInputStream fip = new FileInputStream(
+				Optional.ofNullable(file).orElseThrow(() -> new UnsupportedFileException("未传入文件对象")))) {
+			wordOptional = Optional.ofNullable(new HWPFDocument(fip));
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
+		}
+
+		try (HWPFDocument word = wordOptional.orElseThrow(() -> new UnsupportedFileException("Word文件读取类未构造"))) {
+			// 获取word中的所有内容
+			Range wordFileRange = word.getRange();
+			// 生成段落下标，遍历word文档中的所有段落
+			IntStream.range(0, wordFileRange.numParagraphs())
+					// 将下标转换为段落类对象
+					.mapToObj(wordFileRange::getParagraph)
+					.filter(para -> para != null)
+					// 读取段落的内容，对内容进行封装
+					.map(Paragraph::text)
+					// 去除换行符，并过滤掉空行
+					.map(text -> text.replaceAll("\\r", ""))
+					// 按行存储至列表对象中
+					.forEach(megerText::append);
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
+		}
+		
+		return megerText.toString();
+	}
+	
+	/**
+	 * 用于合并新版word（2007及以上版本word）文档中每段的内容，并以字符串的形式返回
+	 * @param file 待读取文件对象
+	 * @return 合并后的文本
+	 */
+	public static String megerTextToNewWord(File file) {
+		StringBuilder megerText = new StringBuilder();
+
+		// 读取word
+		Optional<XWPFDocument> wordOptional = Optional.empty();
+		try (FileInputStream fip = new FileInputStream(
+				Optional.ofNullable(file).orElseThrow(() -> new UnsupportedFileException("未传入文件对象")))) {
+			wordOptional = Optional.ofNullable(new XWPFDocument(fip));
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
+		}
+
+		try (XWPFDocument word = wordOptional.orElseThrow(() -> new UnsupportedFileException("Word文件读取类未构造"))) {
+			// 获取文本中所有的段落，若文档中无内容，则抛出异常
+			Optional.ofNullable(word.getParagraphs())
+					//判定当前内容是否为空
+					.filter(list -> list.size() != 0)
+					//返回段落集合，若段落集合为空，则抛出异常
+					.orElseThrow(() -> new UnsupportedFileException("Word文件中无内容"))
+					.stream()
+					//过滤掉为null的段落
+					.filter(para -> para != null)
+					//将段落转换为为本
+					.map(XWPFParagraph::getText)
+					//拼接文本
+					.forEach(megerText::append);
+
+			;
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
+		}
+
+		return megerText.toString();
+	}
+	
+	/**
+	 * 用于合并txt格式村文本文档中每段的内容，并以字符串的形式返回
+	 * @param file 待读取文件对象
+	 * @return 合并后的文本
+	 */
+	public static String megerTextToTxt(File file) {
+		StringBuilder megerText = new StringBuilder();
+
+		try (BufferedReader br = new BufferedReader(
+				new FileReader(Optional.ofNullable(file).orElseThrow(() -> new UnsupportedFileException("未传入文件对象"))))) {
+			// 按行遍历文件内容
+			br.lines().forEach(megerText::append);
+		} catch (IOException e) {
+			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
+		}
+
+		return megerText.toString();
 	}
 }
