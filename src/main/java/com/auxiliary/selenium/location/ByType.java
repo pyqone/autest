@@ -16,7 +16,7 @@ package com.auxiliary.selenium.location;
  * 
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public enum ByType {

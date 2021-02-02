@@ -195,7 +195,7 @@ public class MapCase extends Case {
 	 * <p><b>修改时间：</b>2020年3月27日上午7:40:48</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	private enum WordType {
@@ -249,7 +249,7 @@ public class MapCase extends Case {
 	 * <p><b>修改时间：</b>2020年3月28日下午6:54:53</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	public enum GraphType {

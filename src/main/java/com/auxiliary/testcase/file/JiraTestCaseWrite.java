@@ -15,7 +15,7 @@ import com.auxiliary.testcase.templet.LabelType;
  * <p><b>修改时间：</b>2020年4月3日下午4:23:05</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public class JiraTestCaseWrite extends CommonTestCaseWrite<JiraTestCaseWrite> {
@@ -67,7 +67,7 @@ public class JiraTestCaseWrite extends CommonTestCaseWrite<JiraTestCaseWrite> {
 	 * <p><b>修改时间：</b>2020年4月3日下午4:04:30</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	public enum JiraFieldIdType {

@@ -7,7 +7,7 @@ package com.auxiliary.selenium.brower;
  * <p><b>修改时间：</b>2020年4月9日下午6:07:53</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public class IncorrectPageException extends RuntimeException {

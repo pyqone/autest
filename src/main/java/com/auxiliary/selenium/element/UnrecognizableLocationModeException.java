@@ -7,7 +7,7 @@ package com.auxiliary.selenium.element;
  * <p><b>修改时间：</b>2019年9月24日下午3:19:43</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.88
  *
  */
 public class UnrecognizableLocationModeException extends RuntimeException {

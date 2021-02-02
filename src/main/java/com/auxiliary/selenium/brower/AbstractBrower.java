@@ -23,7 +23,7 @@ import com.auxiliary.selenium.page.Page;
  * <p><b>修改时间：</b>2020年4月17日下午8:51:53</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public abstract class AbstractBrower {

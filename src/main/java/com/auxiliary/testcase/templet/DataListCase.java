@@ -9,7 +9,7 @@ import java.io.File;
  * <p><b>修改时间：</b>2020年3月3日下午8:25:33</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public class DataListCase extends Case {
@@ -494,7 +494,7 @@ public class DataListCase extends Case {
 	 * <p><b>修改时间：</b>2020年3月15日下午5:50:28</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	private enum WordType {
