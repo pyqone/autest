@@ -73,25 +73,21 @@ public class TextFileReadUtil {
 	/**
 	 * 用于以行元素单位，合并csv文件中所有的元素内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
+	 * @param isLine 是否插入换行符
 	 * @return 合并后的文本
 	 */
-	public static String mergeAllRowDataToCsv(File file) {
-		StringBuilder text = new StringBuilder();
-		mergeRowDataToCsv(file).forEach(text::append);
-		
-		return text.toString();
+	public static String mergeAllRowDataToCsv(File file, boolean isLine) {
+		return megerText(mergeRowDataToCsv(file), isLine);
 	}
 	
 	/**
 	 * 用于以列元素单位，合并csv文件中所有的元素内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
+	 * @param isLine 是否插入换行符
 	 * @return 合并后的文本
 	 */
-	public static String mergeAllColumnDataToCsv(File file) {
-		StringBuilder text = new StringBuilder();
-		mergeColumnDataToCsv(file).forEach(text::append);
-		
-		return text.toString();
+	public static String mergeAllColumnDataToCsv(File file, boolean isLine) {
+		return megerText(mergeColumnDataToCsv(file), isLine);
 	}
 	
 	/**
@@ -135,34 +131,32 @@ public class TextFileReadUtil {
 	/**
 	 * 用于以行元素单位，合并excel文件中所有的元素内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
+	 * @param sheetName 读取的sheet名称
+	 * @param isLine 是否插入换行符
 	 * @return 合并后的文本
 	 */
-	public static String mergeAllRowDataToExcel(File file, String sheetName) {
-		StringBuilder text = new StringBuilder();
-		mergeRowDataToExcel(file, sheetName).forEach(text::append);
-		
-		return text.toString();
+	public static String mergeAllRowDataToExcel(File file, String sheetName, boolean isLine) {
+		return megerText(mergeRowDataToExcel(file, sheetName), isLine);
 	}
 	
 	/**
 	 * 用于以列元素单位，合并excel文件中所有的元素内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
+	 * @param sheetName 读取的sheet名称
+	 * @param isLine 是否插入换行符
 	 * @return 合并后的文本
 	 */
-	public static String mergeAllColumnDataToExcel(File file, String sheetName) {
-		StringBuilder text = new StringBuilder();
-		mergeColumnDataToExcel(file, sheetName).forEach(text::append);
-		
-		return text.toString();
+	public static String mergeAllColumnDataToExcel(File file, String sheetName, boolean isLine) {
+		return megerText(mergeColumnDataToExcel(file, sheetName), isLine);
 	}
 	
 	/**
-	 * 用于合并旧版word（2003版本word）文档中每段的内容，并以字符串的形式返回
+	 * 用于读取旧版word（2003版本word）文档中每段的内容，并将段落内容以集合的形式返回
 	 * @param file 待读取文件对象
-	 * @return 合并后的文本
+	 * @return 读取的段落集合
 	 */
-	public static String megerTextToOldWord (File file) {
-		StringBuilder megerText = new StringBuilder();
+	public static List<String> oldWordToLineList(File file) {
+		List<String> lineTextList = new ArrayList<>();
 		
 		// 读取word
 		Optional<HWPFDocument> wordOptional = Optional.empty();
@@ -186,22 +180,32 @@ public class TextFileReadUtil {
 					// 去除换行符，并过滤掉空行
 					.map(text -> text.replaceAll("\\r", ""))
 					// 按行存储至列表对象中
-					.forEach(megerText::append);
+					.forEach(lineTextList::add);
 		} catch (IOException e) {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
 		
-		return megerText.toString();
+		return lineTextList;
 	}
 	
 	/**
-	 * 用于合并新版word（2007及以上版本word）文档中每段的内容，并以字符串的形式返回
+	 * 用于合并旧版word（2003版本word）文档中每段的内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
+	 * @param isLine 是否插入换行符
 	 * @return 合并后的文本
 	 */
-	public static String megerTextToNewWord(File file) {
-		StringBuilder megerText = new StringBuilder();
-
+	public static String megerTextToOldWord (File file, boolean isLine) {
+		return megerText(oldWordToLineList(file), isLine);
+	}
+	
+	/**
+	 * 用于读取新版word（2007及以上版本word）文档中每段的内容，并将段落内容以集合的形式返回
+	 * @param file 待读取文件对象
+	 * @return 读取的段落集合
+	 */
+	public static List<String> newWordToLineList(File file) {
+		List<String> lineTextList = new ArrayList<>();
+		
 		// 读取word
 		Optional<XWPFDocument> wordOptional = Optional.empty();
 		try (FileInputStream fip = new FileInputStream(
@@ -224,32 +228,62 @@ public class TextFileReadUtil {
 					//将段落转换为为本
 					.map(XWPFParagraph::getText)
 					//拼接文本
-					.forEach(megerText::append);
-
-			;
+					.forEach(lineTextList::add);
 		} catch (IOException e) {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
-
-		return megerText.toString();
+		
+		return lineTextList;
 	}
 	
 	/**
-	 * 用于合并txt格式村文本文档中每段的内容，并以字符串的形式返回
+	 * 用于合并新版word（2007及以上版本word）文档中每段的内容，并以字符串的形式返回
 	 * @param file 待读取文件对象
+	 * @param isLine 是否插入换行符
 	 * @return 合并后的文本
 	 */
-	public static String megerTextToTxt(File file) {
-		StringBuilder megerText = new StringBuilder();
-
+	public static String megerTextToNewWord(File file, boolean isLine) {
+		return megerText(newWordToLineList(file), isLine);
+	}
+	
+	/**
+	 * 用于读取txt格式纯文本文档中每段的内容，并将段落内容以集合的形式返回
+	 * @param file 待读取文件对象
+	 * @return 读取的段落集合
+	 */
+	public static List<String> txtToLineList(File file) {
+		List<String> lineTextList = new ArrayList<>();
+		
 		try (BufferedReader br = new BufferedReader(
 				new FileReader(Optional.ofNullable(file).orElseThrow(() -> new UnsupportedFileException("未传入文件对象"))))) {
 			// 按行遍历文件内容
-			br.lines().forEach(megerText::append);
+			br.lines().forEach(lineTextList::add);
 		} catch (IOException e) {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
-
+		
+		return lineTextList;
+	}
+	
+	/**
+	 * 用于合并txt格式纯文本文档中每段的内容，并以字符串的形式返回
+	 * @param file 待读取文件对象
+	 * @param isLine 是否插入换行符
+	 * @return 合并后的文本
+	 */
+	public static String megerTextToTxt(File file, boolean isLine) {
+		return megerText(txtToLineList(file), isLine);
+	}
+	
+	/**
+	 * 用于对集合型内容进行合并
+	 * @param textList 内容集合
+	 * @param isLine 是否插入换行符
+	 * @return 拼接后的文本
+	 */
+	private static String megerText(List<String> textList, boolean isLine) {
+		StringBuilder megerText = new StringBuilder();
+		textList.stream().map(str -> str += (isLine ? "\n" : "")).forEach(megerText::append);
 		return megerText.toString();
 	}
 }
