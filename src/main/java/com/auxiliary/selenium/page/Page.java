@@ -14,7 +14,7 @@ import com.auxiliary.selenium.brower.AbstractBrower;
  * <p><b>修改时间：</b>2020年10月12日下午8:02:45</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK .8
+ * @since JDK 1.8
  *
  */
 public class Page {

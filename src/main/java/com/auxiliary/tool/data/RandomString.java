@@ -93,12 +93,12 @@ public class RandomString {
 	 * <p>
 	 * <b>注意：</b>
 	 * <ol>
-	 * <li>若未设置，则按照默认的{@link #DISPOSE_REPEAT}方式进行处理</li>
-	 * <li>处理方式为{@link #DISPOSE_REPEAT}时，在处理后，不影响{@link #setRepeat(boolean)}的设置</li>
+	 * <li>若未设置，则按照默认的{@link RepeatDisposeType#DISPOSE_REPEAT}方式进行处理</li>
+	 * <li>处理方式为{@link RepeatDisposeType#DISPOSE_REPEAT}时，在处理后，不影响{@link #setRepeat(boolean)}的设置</li>
 	 * </ol>
 	 * </p>
 	 * 
-	 * @param dispose 处理方式{@link RepeatDisposeType}枚举
+	 * @param repeatDisposeType 处理方式{@link RepeatDisposeType}枚举
 	 */
 	public void setDispose(RepeatDisposeType repeatDisposeType) {
 		this.dispose = repeatDisposeType;

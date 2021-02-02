@@ -11,7 +11,7 @@ import org.dom4j.DocumentException;
  * <p><b>修改时间：</b>2020年4月5日 下午6:51:54</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  */
 public class BasicTestCaseWrite extends AbstractTestCaseWrite<BasicTestCaseWrite> {
 	/**

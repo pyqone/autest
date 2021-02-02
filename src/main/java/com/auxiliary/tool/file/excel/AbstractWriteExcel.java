@@ -1113,7 +1113,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * 
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	public class FieldMark {
@@ -1467,7 +1467,7 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * 
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	public class Field {

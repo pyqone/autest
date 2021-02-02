@@ -40,8 +40,8 @@ import com.opencsv.CSVReader;
  * 读取的词语进行返回。文件支持表格文件（xls/xlsx/csv格式）和文本文件（doc/docx/txt格式）。
  * </p>
  * <p>
- * <b>注意：文件内，首行（首段）的内容为定制列表的标准，若其后的内容获取到的词语个数超出第一行获取到的
- * 词语个数，则将抛出{@link IllegalDataException}异常。 </b>
+ * <b>注意：</b>文件内，首行（首段）的内容为定制列表的标准，若其后的内容获取到的词语个数超出第一行获取到的
+ * 词语个数，则将抛出{@link IllegalDataException}异常。
  * </p>
  * <p>
  * <b>编码时间：</b>2020年3月29日 下午2:36:46
@@ -85,6 +85,9 @@ public class TableFileReadUtil {
 	 * 指向txt文件后缀名
 	 */
 	private static final String FILE_SUFFIX_TXT = "txt";
+	
+	private TableFileReadUtil() {
+	}
 
 	/**
 	 * 根据传入文件格式，将文件的内容进行转换。其转换规则如下：
@@ -98,6 +101,7 @@ public class TableFileReadUtil {
 	 * @param pattern sheet名称或切分文本的规则
 	 * @throws IOException 文件状态或路径不正确时抛出的异常
 	 */
+	@Deprecated
 	public static TableData<String> readFile(File file, String pattern, boolean isFirstTitle) {
 		// 若pattern为null，则赋为空
 		if (pattern == null) {
@@ -146,7 +150,7 @@ public class TableFileReadUtil {
 			if (isFirstTitle) {
 				columnNameList.addAll(Arrays.asList(wordDataList.get(0)));
 			} else {
-				columnNameList.addAll(createDefaultColumnName(wordDataList.get(0).length));
+				columnNameList.addAll(createDefaultColumnName(wordDataList.size()));
 			}
 			wordTable.addTitle(columnNameList);
 
@@ -467,8 +471,8 @@ public class TableFileReadUtil {
 	 * @return 相应的默认列名
 	 */
 	private static List<String> createDefaultColumnName(int length) {
-		return IntStream.range(1, length)
+		return IntStream.range(0, length)
 				// 转换下标数字为列名称
-				.mapToObj(index -> DEFAULT_COLUMN_NAME + index).collect(Collectors.toList());
+				.mapToObj(index -> DEFAULT_COLUMN_NAME + (index + 1)).collect(Collectors.toList());
 	}
 }

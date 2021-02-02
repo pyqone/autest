@@ -3,6 +3,7 @@ package com.auxiliary.selenium.location;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -15,7 +16,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
 
 /**
  * <p>
- * <b>文件名：</b>ReadXml.java
+ * <b>文件名：</b>XmlLocation.java
  * </p>
  * <p>
  * <b>用途：</b>该类用于从指定格式的xml中读取元素信息<br/>
@@ -126,7 +127,7 @@ public class XmlLocation extends AbstractLocation {
 		Element element = getElementLabelElement(name);
 		//若元素标签为iframe，则无法获取属性，直接赋予窗体类型
 		if (element.getName().equals("iframe")) {
-			return toElementType("4");
+			return ElementType.IFRAME_ELEMENT;
 		} else {
 			//非窗体元素，则获取元素的元素类型属性
 			String elementTypeText = element.attributeValue("element_type");
@@ -160,18 +161,19 @@ public class XmlLocation extends AbstractLocation {
 
 	@Override
 	public long findWaitTime(String name) {
-		//查询元素
-		Element element = getElementLabelElement(name);
-		//获取元素存储等待时间属性值，并转换为long类型
-		try {
-			String text = element.attributeValue("wait");
-			//将属性值进行转换，若属性值不存在，则赋为-1
-			long time = Long.valueOf(text == null ? "-1" : text);
-			//若转换的时间小于0，则返回-1
-			return time < 0 ? -1L : time;
-		} catch (NumberFormatException e) {
-			return -1L;
-		}
+		return Optional.ofNullable(getElementLabelElement(name))
+				.map(ele -> ele.attributeValue("wait"))
+				//获取元素存储等待时间属性值，并转换为long类型
+				.map(text -> {
+					try {
+						 return Long.valueOf(text);
+					} catch (NumberFormatException e) {
+						return -1L;
+					}
+				})
+				//过滤时间小于0
+				.filter(time -> time < 0L)
+				.orElse(-1L);
 	}
 	
 	/**
@@ -181,15 +183,11 @@ public class XmlLocation extends AbstractLocation {
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
 	 */
 	private Element getElementLabelElement(String name) {
-		//定义获取元素的xpath
-		String selectElementXpath = "//*[@name='" + name +"']";
-		//根据xpath获取元素，若无法获取到元素，则抛出异常
-		Element element = (Element) dom.selectSingleNode(selectElementXpath);
-		if (element != null) {
-			return element;
-		} else {
-			throw new UndefinedElementException(name, ExceptionElementType.ELEMENT);
-		}
+		return Optional.ofNullable(name)
+				.map(text -> "//*[@name='" + text + "']")
+				.map(dom::selectSingleNode)
+				.map(ele -> (Element)ele)
+				.orElseThrow(() -> new UndefinedElementException(name, ExceptionElementType.ELEMENT));
 	}
 	
 	/**

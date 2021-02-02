@@ -8,7 +8,7 @@ package com.auxiliary.testcase.file;
  * <p><b>修改时间：</b>2020年2月19日下午10:30:10</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public enum FieldType {

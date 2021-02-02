@@ -1,5 +1,7 @@
 package com.auxiliary.datadriven;
 
+import java.util.Optional;
+
 import com.auxiliary.tool.data.CarLicecenType;
 import com.auxiliary.tool.data.MobleNumberType;
 import com.auxiliary.tool.data.PresetString;
@@ -194,7 +196,19 @@ public class Functions {
 	 * @return 返回处理后的时间
 	 */
 	private static String disposeTime(String timeText, String pattern) {
-		return Time.parse(timeText).addTime(pattern).getFormatTime();
+		timeText = Optional.ofNullable(timeText).orElse("");
+		pattern = Optional.ofNullable(pattern).orElse("");
+		
+		Time time = Time.parse();
+		if (!timeText.isEmpty()) {
+			time = Time.parse(timeText);
+		}
+		
+		if (!pattern.isEmpty()) {
+			time.addTime(pattern);
+		}
+		
+		return time.getFormatTime();
 	}
 	
 	/**
@@ -371,7 +385,6 @@ public class Functions {
 	 * </ol>
 	 * </p>
 	 * 
-	 * @param splitText 分隔符，必须按照正则表达式的形式传入
 	 * @return {@link DataDriverFunction}类对象
 	 */
 	public static DataDriverFunction randomWord() {

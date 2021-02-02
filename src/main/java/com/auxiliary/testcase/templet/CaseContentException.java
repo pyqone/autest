@@ -7,7 +7,7 @@ package com.auxiliary.testcase.templet;
  * <p><b>修改时间：</b>2020年3月15日下午5:36:02</p>
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 12
+ * @since JDK 1.8
  *
  */
 public class CaseContentException extends RuntimeException {
