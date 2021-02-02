@@ -45,11 +45,11 @@ public enum HeadType {
 	/**
 	 * 请求头名称
 	 */
-	String key;
+	String headName;
 	/**
 	 * 请求头值
 	 */
-	String value;
+	String headValue;
 	/**
 	 * 文字编码
 	 */
@@ -57,28 +57,28 @@ public enum HeadType {
 	
 	/**
 	 * 初始化枚举值 
-	 * @param key 请求头名称
-	 * @param value 请求头值
+	 * @param headName 请求头名称
+	 * @param headValue 请求头值
 	 */
-	private HeadType(String key, String value) {
-		this.key = key;
-		this.value = value;
+	private HeadType(String headName, String headValue) {
+		this.headName = headName;
+		this.headValue = headValue;
 	}
 
 	/**
 	 * 返回请求头名称
 	 * @return 请求头名称
 	 */
-	public String getKey() {
-		return key;
+	public String getHeadName() {
+		return headName;
 	}
 
 	/**
 	 * 返回请求头的值
 	 * @return 请求头的值
 	 */
-	public String getValue() {
-		return encoding.isEmpty() ? value : (value + ";" + encoding);
+	public String getHeadValue() {
+		return encoding.isEmpty() ? headValue : (headValue + ";" + encoding);
 	}
 	
 	/**

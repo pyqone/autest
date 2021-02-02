@@ -240,7 +240,7 @@ public class EasyHttp implements Cloneable {
 	 * @return 类本身
 	 */
 	public EasyHttp putHead(HeadType headType) {
-		putHead(headType.getKey(), headType.getValue());
+		putHead(headType.getHeadName(), headType.getHeadValue());
 		return this;
 	}
 	
