@@ -1,41 +1,49 @@
 package com.auxiliary.tool.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 /**
- * 该类用于产生随机字符串，用以填入需要的文本框中。通过类中提供的方法，向字符串池中添加模型， 也可以自定义需要添加的字符串，向字符串池中添加模型。<br/>
- * <b><i>NOTE:字符串池即为产生随机字符串的范围</i></b>
+ * <p>
+ * <b>文件名：</b>RandomString.java
+ * </p>
+ * <p>
+ * <b>用途：</b> 提供根据字符串池（产生随机字符串的范围）中添加模型，返回相应的随机字符串的方法。
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2019年2月13日下午19:53:01
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2021年1月16日下午12:53:01
+ * </p>
  * 
  * @author 彭宇琦
- * @version V1.9
+ * @version Ver1.10
+ * @since JDK 1.8
+ *
  */
-
 public class RandomString {
-	// 用于定义随机字符串产生的范围
+	/**
+	 * 字符串池
+	 */
 	private StringBuilder stringSeed = new StringBuilder("");
-	// 用于控制产生的随机字符串是否允许有重复字符的开关
+	/**
+	 * 控制产生的随机字符串是否允许有重复字符的开关
+	 */
 	private boolean repeat = true;
 
 	/**
-	 * 忽略，只生成一个与随机字符串范围长度相同的随机字符串
+	 * 指定通过{@link #toString()}方法默认输出的字符串长度
 	 */
-	public final int DISPOSE_IGNORE = 0;
-	/**
-	 * 抛出异常，中断生成字符串的操作
-	 */
-	public final int DISPOSE_THROW_EXCEPTION = 1;
-	/**
-	 * 重复，将随机字符串的生成条件改为允许字符串重复
-	 */
-	public final int DISPOSE_REPEAT = 2;
-	
-	// 用于控制生成允许重复字符的随机字符串时，其错误的处理方式，默认为重复
-	private int dispose = DISPOSE_REPEAT;
+	public static int defaultLength = 6;
 
 	/**
-	 * 指向StringMode枚举类，可通过该属性向字符串池中添加模型
+	 * 控制在需要生成的字符串大于字符串池时的处理方式
 	 */
-	public StringMode mode;
+	private RepeatDisposeType dispose = RepeatDisposeType.DISPOSE_REPEAT;
 
 	/**
 	 * 初始化字符串池，使其不包含任何元素
@@ -46,508 +54,481 @@ public class RandomString {
 	/**
 	 * 通过预设模型模型对字符串池进行初始化
 	 * 
-	 * @param modes
-	 *            需要加入字符串池中的模型（为StringMode枚举对象）
+	 * @param stringModes 需要加入字符串池中的模型（为{@link StringMode}枚举对象）
 	 */
-	public RandomString(StringMode... modes) {
-		addMode(modes);
+	public RandomString(StringMode... stringModes) {
+		addMode(stringModes);
 	}
 
 	/**
 	 * 通过自定义的字符串对字符串池进行初始化
 	 * 
-	 * @param mode
-	 *            需要加入字符串池中的模型（为StringMode枚举对象）
+	 * @param mode 需要加入字符串池中的模型
 	 */
 	public RandomString(String mode) {
 		addMode(mode);
 	}
 
 	/**
-	 * 返回是否允许产生的随机字符串字符重复结果
+	 * 设置产生的随机字符串中是否允许存在重复的字符，默认为允许重复。
+	 * <p>
+	 * <b>注意：</b>随机字符串字符的重复是相对于字符串池而言的，若字符串池中本身存在重复的字符，则
+	 * 即便设置了不允许出现字符，在生成的随机字符串中也可能包含重复的字符。若要生成不包含重复字符的
+	 * 字符串，可调用{@link #removeRepetition()}方法，去除字符串池中重复的字符后，再调用返回字符串 的方法。
+	 * </p>
 	 * 
-	 * @return 是否允许随机字符串字符串字符重复
-	 */
-	public boolean isRepeat() {
-		return repeat;
-	}
-
-	/**
-	 * 设置产生的随机字符串中的字符是否允许重复，默认允许重复，当设置不允许重复时，若需要生成随机字符串的
-	 * 长度大于随机字符串生成范围的长度时，需要配合{@link #setDispose(int)}方法联合使用，有三种状态：<br/>
-	 * {@link #DISPOSE_IGNORE}：忽略，只生成一个与随机字符串范围长度相同的随机字符串<br/>
-	 * {@link #DISPOSE_THROW_EXCEPTION}：抛出异常，中断生成字符串的操作<br/>
-	 * {@link #DISPOSE_REPEAT}：重复，生成的随机字符串可带重复的字符<br/>
-	 * 
-	 * @param repeat
-	 *            是否允许重复
+	 * @param repeat 是否允许重复
 	 */
 	public void setRepeat(boolean repeat) {
 		this.repeat = repeat;
 	}
 
 	/**
-	 * 用于返回产生的随机字符串大于字符串生成范围时的处理方式，其值对应如下：<br/>
-	 * 0 = {@link #DISPOSE_IGNORE}<br/>
-	 * 1 = {@link #DISPOSE_THROW_EXCEPTION}<br/>
-	 * 2 = {@link #DISPOSE_REPEAT}<br/>
+	 * 用于设置需要产生的随机字符串长度大于字符串池长度，且设置了不允许出现重复字符时的处理方式。
+	 * <p>
+	 * 若需要产生的随机字符串长度大于字符串池长度，则必定会出现重复的字符。若同时调用
+	 * {@link #setRepeat(boolean)}方法设置不允许存在重复字符时，则需要对字符串的生成进行一定的处理。
+	 * 具体的处理规则，可参照{@link RepeatDisposeType}枚举中的说明
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>若未设置，则按照默认的{@link RepeatDisposeType#DISPOSE_REPEAT}方式进行处理</li>
+	 * <li>处理方式为{@link RepeatDisposeType#DISPOSE_REPEAT}时，在处理后，不影响{@link #setRepeat(boolean)}的设置</li>
+	 * </ol>
+	 * </p>
 	 * 
-	 * @return 处理方式
+	 * @param repeatDisposeType 处理方式{@link RepeatDisposeType}枚举
 	 */
-	public int getDispose() {
-		return dispose;
+	public void setDispose(RepeatDisposeType repeatDisposeType) {
+		this.dispose = repeatDisposeType;
 	}
 
 	/**
-	 * 用于设置产生的随机字符串大于字符串生成范围时的处理方式，有三种操作方式：<br/>
-	 * {@link #DISPOSE_IGNORE}：忽略，只生成一个与随机字符串范围长度相同的随机字符串<br/>
-	 * {@link #DISPOSE_THROW_EXCEPTION}：抛出异常，中断生成字符串的操作<br/>
-	 * {@link #DISPOSE_REPEAT}：重复，将随机字符串的生成条件改为允许字符串重复<br/>
-	 * 注意：<br/>
-	 * 1.若设置不正确则按照重{@link #DISPOSE_REPEAT}方式进行处理<br/>
-	 * 2.处理方式为{@link #DISPOSE_REPEAT}时，会改临时改变变允许重复的控制开关，不会永久生效<br/>
-	 * 3.处理方式为{@link #DISPOSE_REPEAT}时，会生成一串与随机字符串范围长度相同字符串，之后重复的字符在其后增加
+	 * 用于返回字符串池
 	 * 
-	 * @param dispose
-	 *            处理方式，见类中的三种处理方式：{@link #DISPOSE_IGNORE}、{@link #DISPOSE_THROW_EXCEPTION}、{@link #DISPOSE_REPEAT}
-	 */
-	public void setDispose(int dispose) {
-		this.dispose = dispose;
-	}
-
-	/**
-	 * 该方法用于返回字符串池
-	 * 
-	 * @return 用于返回随机字符串生成的范围
+	 * @return 字符串池
 	 */
 	public String getStringSeed() {
 		return stringSeed.toString();
 	}
 
 	/**
-	 * 该方法用于向字符串池中添加模型，通过该方法添加的模型将不检查字符串池中是否存在与之重复的元素
+	 * 用于向字符串池中添加模型，通过该方法添加的模型将不检查字符串池中是否存在与之重复的元素
 	 * 
-	 * @param modes
-	 *            需要加入到字符串池中的模型
+	 * @param stringModes 字符串模型枚举{@link StringMode}
+	 * @return 类本身
 	 */
-	/**
-	 * 该方法用于向字符串池中添加模型，通过该方法添加的模型将不检查字符串池中是否存在与之重复的元素
-	 * 
-	 * @param modes
-	 *            需要加入到字符串池中的模型
-	 * @return 返回类本身，以便于链式操作
-	 */
-	public RandomString addMode(StringMode... modes) {
-		for (StringMode m : modes) {
-			stringSeed.append(m.getSeed());
-		}
-		
-		return this;
+	public RandomString addMode(StringMode... stringModes) {
+		return addMode(true, stringModes);
 	}
 
 	/**
-	 * 该方法用于向字符串池中添加模型，且通过isRepeat进行判断是否允许添加可重复的字符串进入字符串池
+	 * 用于向字符串池中添加模型，且通过isRepeat进行判断是否允许添加可重复的字符串进入字符串池
 	 * 
-	 * @param isRepeat
-	 *            字符串池中的元素是否可重复
-	 * @param modes
-	 *            需要加入到字符串池中的模型
-	 *            
-	 * @return 返回类本身，以便于链式操作
+	 * @param isRepeat    字符串池中的元素是否可重复
+	 * @param stringModes 字符串模型枚举{@link StringMode}
+	 * 
+	 * @return 类本身
 	 */
-	public RandomString addMode(boolean isRepeat, StringMode... modes) {
-		// 判断传入的参数是否允许字符串池中元素重复，若为true，则等同于调用addMode(StringMode... modes)
-		if (!isRepeat) {
-			// 循环，读取所有传入的模型
-			for (StringMode m : modes) {
-				// 判断模型整体是否已经存在，若存在则不进行添加
-				if (stringSeed.indexOf(m.getSeed()) > -1) {
-					continue;
-				}
+	public RandomString addMode(boolean isRepeat, StringMode... stringModes) {
+		StringBuilder joinText = new StringBuilder("");
+		Optional.ofNullable(stringModes)
+				// 过滤掉无元素的数组
+				.filter(arr -> arr.length != 0)
+				// 将数组转换为集合，若数组有误，则返回空集合
+				.map(Arrays::asList).orElse(new ArrayList<>())
+				// 读取集合每一个元素，并返回相应的字符串
+				.stream().map(StringMode::getSeed).forEach(joinText::append);
 
-				packageString(m.getSeed());
-			}
-		} else {
-			addMode(modes);
-		}
-		
-		return this;
+		return addMode(isRepeat, joinText.toString());
 	}
 
 	/**
-	 * 该方法用于向字符串池中添加自定义的字符串，通过该方法添加的字符串将不检查字符串池中是否存在与之重复的元素
+	 * 用于向字符串池中添加自定义的字符串，通过该方法添加的字符串将不检查字符串池中是否存在与之重复的元素
 	 * 
-	 * @param mode
-	 *            需要加入到字符串池中的模型
-	 *            
-	 * @return 返回类本身，以便于链式操作
+	 * @param mode 需要加入到字符串池中的模型
+	 * 
+	 * @return 类本身
 	 */
 	public RandomString addMode(String mode) {
-		stringSeed.append(mode);
-		
-		return this;
+		return addMode(true, mode);
 	}
 
 	/**
-	 * 该方法用于向字符串池中添加自定义的字符串，且通过isRepeat进行判断是否允许添加可重复的字符串进入字符串池
+	 * 用于向字符串池中添加自定义的字符串，且通过isRepeat进行判断是否允许添加可重复的字符串进入字符串池
 	 * 
-	 * @param isRepeat
-	 *            字符串池中的元素是否可重复
-	 * @param mode
-	 *            需要加入到字符串池中的模型
+	 * @param isRepeat 字符串池中的元素是否可重复
+	 * @param mode     需要加入到字符串池中的模型
 	 * 
-	 * @return 返回类本身，以便于链式操作
+	 * @return 类本身
 	 */
 	public RandomString addMode(boolean isRepeat, String mode) {
-		// 判断传入的参数是否允许字符串池中元素重复，若为true，则等同于调用addMode(StringMode... modes)
-		if (!isRepeat) {
-			// 判断模型整体是否已经存在，若存在则不进行添加
-			if (stringSeed.indexOf(mode) > -1) {
-				return this;
-			}
-
-			packageString(mode);
-		} else {
-			addMode(mode);
-		}
-		
+		joinStringSeed(isRepeat, mode);
 		return this;
 	}
 
 	/**
-	 * 该方法用于清空StringSeed中存储的随机字符串生成范围
+	 * 用于清空字符串池的内容
 	 */
 	public void clear() {
-		stringSeed.replace(0, (stringSeed.length()), ""); // 将随机字符串生成范围清空
+		if (stringSeed.length() != 0) {
+			stringSeed.delete(0, stringSeed.length());
+		}
 	}
 
 	/**
-	 * 该方法用于返回StringSeed的长度（随机字符串生成范围的长度）
+	 * 用于返回字符串池的长度
 	 * 
-	 * @return 返回随机字符串生成范围StringSeed的长度
+	 * @return 字符串池的长度
 	 */
 	public int length() {
 		return stringSeed.length();
 	}
 
 	/**
-	 * 该类用于在随机字符串生成范围中删除由用户指定的所有符合条件的字符串
+	 * 用于删除字符串池中指定的字符串
 	 * 
-	 * @param str
-	 *            用户指定需要从随机字符串生成范围中删除的字符串
-	 * @return 返回的字符串，若输入的字符串错误，则返回null
-	 * @see #remove(int)
-	 * @see #remove(int, int)
+	 * @param str 需要删除的字符串
 	 */
-	public String remove(String str) {
+	public void remove(String str) {
 		// 判断StringSeed是否为空，为空则返回false
 		if (stringSeed.length() == 0) {
-			return null;
+			return;
 		}
 
-		// 判断用户指定需要移除的字符串是否为空，如果为空，则返回false
-		if (str.equals("")) {
-			return null;
-		}
-
-		// 用于存储在StringSeed中查找到包含用户指定指定字符串str的位置
-		int StartPos = stringSeed.indexOf(str);
-
-		// 判断整个StringSeed中是否包含指定的字符串，没有找到，则返回false
-		if (StartPos < 0) // 如果无法找到与Char相匹配的字符串
-		{
-			return null; // 删除失败，返回false
-		}
-
-		// 循环，在StringSeed中移除指定的字符串
-		while (StartPos > 0) {
-			stringSeed.delete(StartPos, StartPos + str.length());// 在StringSeed中移除指定的字符串
-			StartPos = stringSeed.indexOf(str, StartPos);// 重新查找StringSeed是否还包含str
-		}
-
-		return str;// 删除结束，返回true
+		// 对待删除的字符串进行过滤
+		Optional.ofNullable(str).filter(text -> !text.isEmpty())
+				.filter(text -> stringSeed.indexOf(text) > -1)
+				.ifPresent(text -> {
+					int index = -1;
+					// 循环，直到字符串被完全删除为止
+					while ((index = stringSeed.indexOf(text)) > -1) {
+						remove(index, index + text.length());
+					}
+				});
 	}
 
 	/**
-	 * 该类用于在随机字符串生成范围中删除由用户指定范围内（字符串的位置是从0开始）的字符串<br/>
-	 * note：指定的范围中，删除的元素包括起始位置的元素，但不包括结束位置的元素，例如：<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp; StringSeed.append("0123456789");<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp; remove(0, 3);<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp; System.out.println(StringSeed.toString());<br/>
-	 * 输出结果为：<br/>
-	 * 3456789
+	 * 用于删除字符串池中指定范围的字符串。若两个下标相等，则表示删除指定下标的字符串
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>指定的范围中，删除的元素包括起始位置的元素，但不包括结束位置的元素</li>
+	 * <li>在指定的范围不正确时，将有如下的处理方式：
+	 * <ul>
+	 * <li>若起始下标大于结束下标时，则调换下标位置</li>
+	 * <li>若起始下标小于0时：
+	 * <ul>
+	 * <li>结束下标大于0，则设置起始下标为0</li>
+	 * <li>结束下标小于等于0，则返回空串，并不做任何删除</li>
+	 * </ul>
+	 * </li>
+	 * <li>结束下标大于字符串池长度时：
+	 * <ul>
+	 * <li>起始下标小于字符串池长度，则设置结束下标为字符串池长度</li>
+	 * <li>起始下标大于等于字符串池长度，则返回空串，并不做任何删除</li>
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 * </li>
+	 * </ol>
+	 * </p>
+	 * <p>
 	 * 
-	 * @param startPos
-	 *            表示用户指定范围的起始位置（包括该位置的元素）
-	 * @param endPos
-	 *            表示用户指定范围的结束位置（不包括该位置的元素）
+	 * @param startIndex 表示用户指定范围的起始位置（包括该位置的元素）
+	 * @param endIndex   表示用户指定范围的结束位置（不包括该位置的元素）
 	 * @return 返回的字符串，若输入的位置不正确，则返回null
 	 * @see #remove(int)
 	 * @see #remove(String)
 	 */
-	public String remove(int startPos, int endPos) {
+	public String remove(int startIndex, int endIndex) {
 		// 判断StringSeed是否为空，为空则返回false
-		if (stringSeed.length() == 0) {
-			return null;
-		}
-
-		// 判断用户指定开始位置是否大于结束位置，大于则返回false
-		if (startPos > endPos) {
-			int temp = startPos;
-			startPos = endPos;
-			endPos = temp;
-		}
-
-		// 判断用户指定位置是否符合StringSeed的范围，不符合则返回false
-		if (startPos < 0 || endPos > stringSeed.length()) {
-			return null;
-		}
-
-		String s = stringSeed.substring(startPos, endPos);
-		stringSeed.delete(startPos, endPos);// 删除指定位置的字符串
-
-		// 返回被删除的字符串
-		return s;
-	}
-
-	/**
-	 * 该类用于在随机字符串生成范围中删除由用户指定位置（字符串的位置是从0开始）的字符串<br/>
-	 * 例如：
-	 * <pre><code>
-	 * StringSeed.append("0123456789");
-	 * remove(2);
-	 * System.out.println(StringSeed.toString());
-	 * </code></pre>
-	 * 输出结果为：<br/>
-	 * 013456789
-	 * 
-	 * @param pos 表示用户指定位置
-	 * @return 返回的字符串，若输入的位置不正确，则返回null
-	 * @see #remove(String)
-	 * @see #remove(int, int)
-	 */
-	public String remove(int pos) {
-		return remove(pos, pos + 1);// 删除成功，返回true
-	}
-
-	/**
-	 * 该方法用于移除随机字符串生成范围中重复的字符，以达到范围中字符串不会重复的情况
-	 * 
-	 * @return 返回移除字符串的状态，true表示移除成功，false表示移除失败
-	 */
-	public boolean removeRepetition() {
-		// 判断StringSeed是否为空，为空则返回false
-		if (stringSeed.length() == 0) {
-			return false;
-		}
-
-		// 用于保存删除重复元素后的字符串
-		StringBuilder s = new StringBuilder();
-
-		// 循环，拆分并删除字符串重复元素
-		for (int i = 0; i < stringSeed.length(); i++) {
-			// 判断元素是否在s中存在，存在则不添加
-			if (s.indexOf(getStringSeed().substring(i, i + 1)) > -1) {
-				continue;
-			}
-
-			// 不存在的字符串，则添加进s中
-			s.append(getStringSeed().substring(i, i + 1));
-		}
-
-		// 判断新字符串与原字符串是否相同，相同则说明未进行改动，返回false
-		if (s.toString().equals(getStringSeed())) {
-			return false;
-		}
-
-		clear();// 调用clear()，清空StringSeed
-		stringSeed.append(s.toString());// 将s中的元素放入StringSeed中
-		return true;//
-	}
-
-	/**
-	 * 乱序随机字符串产生的范围
-	 */
-	public void shuffle() {
-		// 定义临时存储乱序后的字符串
-		StringBuilder s = new StringBuilder();
-
-		// 循环，使字符串产生范围乱序
-		while (true) {
-			// 判断字符串产生范围剩余量，若其余量为0，则表示随机字符串范围已被清空，则结束循环
-			if (stringSeed.length() == 0) {
-				break;
-			}
-			// 以删除的方式来逐渐清空stringSeed，并将删除的字符拼接到s
-			s.append(remove(new Random().nextInt(stringSeed.length())));
-		}
-
-		// 将生成的乱序范围重新赋予至stringSeed中
-		stringSeed = s;
-	}
-
-	/**
-	 * 以默认方式返回生成的随机字符串，默认长度为6个字符
-	 * 
-	 * @return 生成的6个字符长度的字符串
-	 * @see #toString(int)
-	 * @see #toString(int, int)
-	 * @throws IllegalDataException 产生字符串不允许重复，且字符串产生范围长度小于6位，处理方式为抛出异常时抛出
-	 */
-	@Override
-	public String toString() throws IllegalDataException {
-		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
 		if (stringSeed.length() == 0) {
 			return "";
 		}
 
-		return generateString(6);
+		// 判断最大生成长度与最小生成长度的关系
+		if (startIndex > endIndex) {
+			int temp = startIndex;
+			startIndex = endIndex;
+			endIndex = temp;
+		}
+
+		// 判断最小下标是否小于0
+		if (startIndex < 0) {
+			// 再判断最大下标是否大于0，大于0则将最小下标为1；
+			if (endIndex >= 0) {
+				startIndex = 0;
+			} else {
+				return "";
+			}
+		}
+
+		// 判断最大下标是否大于字符串池长度
+		if (endIndex >= stringSeed.length()) {
+			// 再判断最小下标是否小于字符串池长度
+			if (startIndex < stringSeed.length()) {
+				endIndex = stringSeed.length();
+			} else {
+				return "";
+			}
+		}
+		
+		//判断两个下标是否一致
+		if (startIndex == endIndex) {
+			endIndex += 1;
+		}
+
+		String delectStr = stringSeed.substring(startIndex, endIndex);
+		// 删除指定位置的字符串
+		stringSeed.delete(startIndex, endIndex);
+
+		// 返回被删除的字符串
+		return delectStr;
+	}
+
+	/**
+	 * 用于删除字符串池中指定下标的字符串
+	 * 
+	 * @param index 表示用户指定位置
+	 * @return 返回被删除的字符串
+	 * @see #remove(String)
+	 * @see #remove(int, int)
+	 */
+	public String remove(int index) {
+		return remove(index, index);
+	}
+
+	/**
+	 * 用于移除随机字符串生成范围中重复的字符，以达到范围中字符串不会重复的情况
+	 */
+	public void removeRepetition() {
+		// 判断StringSeed是否为空，为空则返回false
+		if (stringSeed.length() == 0) {
+			return;
+		}
+
+		// 用于保存删除重复元素后的字符串
+		StringBuilder newStringSeed = new StringBuilder();
+		// 读取stringSeed中的内容，过滤掉已存在的字符串
+		stringSeed.chars().mapToObj(ch -> String.valueOf((char) ch))
+				.filter(text -> newStringSeed.indexOf(text) < 0)
+				.forEach(newStringSeed::append);
+
+		// 清空StringSeed
+		clear();
+		// 将去重后的字符串放入stringSeed中
+		stringSeed.append(newStringSeed);
+	}
+
+	/**
+	 * 以默认方式返回生成的随机字符串
+	 * <p>
+	 * 默认长度为6个字符，可通过{@link #defaultLength}属性进行修改
+	 * </p>
+	 * 
+	 * @return 默认长度的随机字符串
+	 * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
+	 *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
+	 */
+	@Override
+	public String toString() {
+		return toString(defaultLength);
 	}
 
 	/**
 	 * 生成随机长度随机字符串，其长度范围由用户指定
 	 * 
-	 * @param stringLengthMin
-	 *            随机长度的最小值
-	 * @param stringLengthMax
-	 *            随机长度的最大值
+	 * @param minLength 随机长度的最小值
+	 * @param maxLength 随机长度的最大值
 	 * @return 返回生成的随机字符串
 	 * @see #toString()
 	 * @see #toString(int)
-	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
+	 * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
+	 *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
 	 */
-	public String toString(int stringLengthMin, int stringLengthMax) throws IllegalDataException {
-		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
-		if (stringSeed.length() == 0) {
-			return "";
+	public String toString(int minLength, int maxLength) {
+		// 判断最大生成长度与最小生成长度的关系
+		if (minLength > maxLength) {
+			int temp = minLength;
+			minLength = maxLength;
+			maxLength = temp;
 		}
-
-		// 判断指定的字符串长度是否小于0，如果是，则返回空字符串
-		if (stringLengthMin < 0) {
-			return "";
-		}
-
-		// 判断指定的字符串长度最小值是否大于最大值，如果是，则返回空字符串
-		if (stringLengthMax - stringLengthMin < 0) {
-			return "";
+		// 判断最少个数是否小于1
+		if (minLength < 1) {
+			// 再判断最多个数是否大于1，大于1则将最少个数设为1；
+			if (maxLength > 1) {
+				minLength = 1;
+			} else {
+				// 若最少最多的数字都小于1，则返回空集合
+				return "";
+			}
 		}
 		
-		if ( isRepeat() && stringLengthMax > stringSeed.length() && dispose == DISPOSE_THROW_EXCEPTION ) {
-			throw new IllegalDataException("最大生成长度大于字符串产生范围的长度");
+		//判断两个数值是否一致
+		if (minLength == maxLength) {
+			return toString(minLength);
+		} else {
+			// 返回生成的字符串
+			return toString(new Random().nextInt((maxLength - minLength + 1)) + minLength);
 		}
-
-		return generateString(new Random().nextInt((stringLengthMax - stringLengthMin + 1)) + stringLengthMin); // 返回生成的字符串
 	}
 
 	/**
 	 * 生成固定长度的随机字符串，其长度由用户指定
 	 * 
-	 * @param stringLength
-	 *            随机字符串的长度
+	 * @param stringLength 随机字符串的长度
 	 * @return 返回生成的随机字符串
 	 * @see #toString()
 	 * @see #toString(int, int)
-	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
+	 * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
+	 *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
 	 */
-	public String toString(int stringLength) throws IllegalDataException {
-		// 判断随机字符串生成范围是否为空，为空则直接返回空字符串
-		if (stringSeed.length() == 0) {
-			return "";
-		}
-
-		// 判断指定的字符串长度是否小于0，如果是，则返回空字符串
-		if (stringLength < 0) {
-			return "";
-		}
-
-		return generateString(stringLength); // 返回生成的字符串
+	public String toString(int stringLength) {
+		return createRandomString(stringLength, stringSeed.toString());
 	}
 
 	/**
-	 * 组装字符串生成范围，用以在不允许出现重复的情况下，对StringSeed进行修改， 在调用该方法时，会先将传参中的字符串拆分为单个字符串，分别进行判断，以
-	 * 达到不添加重复字符串的目的
+	 * 用于简单返回随机字符串。下标规则可参考{@link #toString(int, int)}方法
 	 * 
-	 * @param mode
-	 *            待添加入StringSeed的字符串
-	 * @return 返回字符串添加状态，true为添加成功，false为添加失败
-	 */
-	private void packageString(String mode) {
-		// 循环，将Mode拆分为单个字符串，并分别与StringSeed进行对比，如果某个字符存在，则不添加该字符以保证该字符不会重复添加
-		for (int i = 0; i < mode.length(); i++) {
-			// 判断当前字符是否存在与StringSeed中，如果存在，则继续循环，判断下一个字符
-			if (stringSeed.indexOf(mode.substring(i, i + 1)) > -1) {
-				continue;
-			}
-
-			// 如果不存在拆分的字符，则将字符存入StringSeed中，并将flag定义为true
-			stringSeed.append(mode.substring(i, i + 1));
-		}
-
-	}
-
-	/**
-	 * 用于生成随机字符串的核心算法，禁止外界调用
-	 * 
-	 * @param stringLength
-	 *            指定生成的随机字符串长度
+	 * @param minLength 随机长度的最小值
+	 * @param maxLength 随机长度的最大值
+	 * @param seed      字符串产生范围
 	 * @return 返回生成的随机字符串
-	 * @see #toString()
-	 * @see #toString(int)
-	 * @see #toString(int, int)
-	 * @throws IllegalDataException 产生字符串不允许重复，且传入的参数大于字符串产生范围长度，处理方式为抛出异常时抛出
 	 */
-	private String generateString(int stringLength) throws IllegalDataException {
-		// 判断字符串字符是否允许重复，不允许重复时其处理方式是否为抛异常，为抛异常时，其stringLength是否大于字符串产生范围的长度，若是，则直接抛出异常
-		if (!isRepeat() && dispose == DISPOSE_THROW_EXCEPTION && stringLength > stringSeed.length()) {
-			throw new IllegalDataException("需要生成的随机字符串长度大于字符串产生范围的最大长度");
-		}
+	public static String randomString(int minLength, int maxLength, String seed) {
+		RandomString rs = new RandomString(seed);
+		return rs.toString(minLength, maxLength);
+	}
 
-		String RandomString = ""; // 定义一个字符串变量，用于存储选择的字符串
-		int ChooiseNumber = -1; // 定义一个整形变量，用于随机的生成数字，并用于从StringSeed中选择对应的字符
-		Random RandomNumber = new Random(); // 定义一个Random变量，用于生成随机数字
+	/**
+	 * 用于简单返回随机字符串。下标规则可参考{@link #toString(int, int)}方法
+	 * 
+	 * @param minLength   随机长度的最小值
+	 * @param maxLength   随机长度的最大值
+	 * @param stringModes 字符串产生范围,{@link StringMode}枚举对象
+	 * @return 返回生成的随机字符串
+	 */
+	public static String randomString(int minLength, int maxLength, StringMode... stringModes) {
+		RandomString rs = new RandomString(stringModes);
+		return rs.toString(minLength, maxLength);
+	}
 
-		//定义循环条件
-		int i = 0;
-		
-		//判断是否允许产生的字符串中存在重复的字符
-		if (!isRepeat()) {
-			//定义临时字符串，存储原字符串产生的范围
-			String s = stringSeed.toString();
-			//乱序字符串产生的范围
-			shuffle();
-			
-			//判断传入的字符串生成长度是否小于字符串范围的总长度，小于，则按照字符串乱序后截取的方式获取随机字符串，否则， 则读取处理方式
-			if ( stringLength <= stringSeed.length() ) {
-				//截取字符串
-				RandomString = stringSeed.substring(0, stringLength);
-				
-				//还原字符串产生范围
-				clear();
-				stringSeed.append(s);
-				return RandomString;
-			} else {
-				//将乱序后的范围赋给RandomString
-				RandomString = stringSeed.toString();
-				//还原字符串产生范围
-				clear();
-				stringSeed.append(s);
-				
-				//判断操作方式是否为忽略，若为忽略，则直接返回乱序后的随机字符串
-				if (dispose == DISPOSE_IGNORE) {
-					return RandomString;
-				} else {
-					//若处理方式为重复，则将循环的次数直接加上字符串的长度（等同于循环了N次）
-					i = RandomString.length();
+	/**
+	 * 用于向字符串池中添加字符串模型
+	 * 
+	 * @param mode 字符串模型
+	 */
+	private void joinStringSeed(boolean isRepeat, String mode) {
+		// 过滤掉null与空串后，若存在数据，则根据条件，向字符串池中添加数据
+		Optional.ofNullable(mode).filter(text -> !text.isEmpty()).ifPresent(text -> {
+			// 判断传入的参数是否允许字符串池中元素重复，若为true，则等同于调用addMode(StringMode... modes)
+			if (!isRepeat) {
+				// 判断字符串整串是否都在stringSeed中
+				if (stringSeed.indexOf(text) > -1) {
+					return;
 				}
+
+				// 将字符串拆成单个字符串，分别在stringSeed中进行判断
+				IntStream.range(0, text.length()).mapToObj(text::charAt)
+						// 将char类型转为字符串
+						.map(String::valueOf)
+						// 过滤掉存在于stringSeed中的字符
+						.filter(ch -> stringSeed.indexOf(ch) < 0)
+						.forEach(stringSeed::append);
+				
+			} else {
+				stringSeed.append(text);
 			}
-		}
-		
-		// 循环，在RandomString中放入随机字符，其循环次数决定字符串的长度
-		for (; i < stringLength; i++) {
-			ChooiseNumber = RandomNumber.nextInt(stringSeed.length()); // 从0到StringSeed的总长中随机生成一个数字
-			RandomString = RandomString + stringSeed.charAt(ChooiseNumber); // 将该数字在StringSeed中对应的字符赋给RandomString
+		});
+	}
+
+	/**
+	 * 用于根据字符串池，生成随机字符串
+	 * 
+	 * @param length     生成的字符串长度
+	 * @param stringSeed 字符串池
+	 * @return 生成的随机字符串
+	 * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
+	 *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
+	 */
+	private String createRandomString(int length, String stringSeed) {
+		// 判断需要生成的字符串长度是否小于1位长度
+		if (length < 1) {
+			return "";
 		}
 
-		return RandomString; // 返回生成的字符串
+		// 记录当前是否允许重复
+		boolean isRepeat = repeat;
+
+		// 判断当前字符串长度是否大于字符串池的最大长度
+		if (length > stringSeed.length() && !isRepeat) {
+			// 若传入的长度大于字符串，且不能重复时，则根据不同的设置做出相应的处理
+			switch (dispose) {
+			case DISPOSE_IGNORE:
+				length = stringSeed.length();
+				break;
+			case DISPOSE_THROW_EXCEPTION:
+				throw new IllegalDataException("需要生成的随机字符串长度大于字符串产生范围的最大长度");
+			case DISPOSE_REPEAT:
+			default:
+				isRepeat = true;
+				break;
+			}
+		}
+
+		// 存储生成的随机字符串
+		StringBuilder randomString = new StringBuilder();
+		StringBuilder seed = new StringBuilder(stringSeed);
+		Random random = new Random();
+
+		// 循环，生成随机字符串
+		while (randomString.length() < length) {
+			// 根据字符串池的长度，生成随机数
+			int randomNum = random.nextInt(seed.length());
+			randomString.append(seed.charAt(randomNum));
+
+			// 若当前不允许重复，则删除被获取的字符
+			if (!isRepeat) {
+				seed.deleteCharAt(randomNum);
+			}
+		}
+
+		return randomString.toString();
+	}
+
+	/**
+	 * <p>
+	 * <b>文件名：</b>RandomString.java
+	 * </p>
+	 * <p>
+	 * <b>用途：</b> 定义在设置随机字符串不允许出现重复，但需要生成的字符串长度大于随机字符串池的长度时的处理方式
+	 * </p>
+	 * <p>
+	 * <b>编码时间：</b>2021年1月16日下午2:11:36
+	 * </p>
+	 * <p>
+	 * <b>修改时间：</b>2021年1月16日下午2:11:36
+	 * </p>
+	 * 
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 1.8
+	 *
+	 */
+	public enum RepeatDisposeType {
+		/**
+		 * 忽略，只生成一个与随机字符串范围长度相同的随机字符串
+		 */
+		DISPOSE_IGNORE,
+		/**
+		 * 抛出异常，中断生成字符串的操作
+		 */
+		DISPOSE_THROW_EXCEPTION,
+		/**
+		 * 重复，将随机字符串的生成条件改为允许字符串重复
+		 */
+		DISPOSE_REPEAT;
 	}
 }

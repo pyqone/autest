@@ -42,15 +42,15 @@ public class PresetString {
 	/**
 	 * 该方法用于生成一个指定样式的随机车牌
 	 * 
-	 * @param type
+	 * @param carLicecenType
 	 *            车牌的样式
 	 * @return 生成的车牌号字符串
 	 */
-	public static String carLicence(CarLicecenType type) {
+	public static String carLicence(CarLicecenType carLicecenType) {
 		String s = "";
 
 		// 判断车牌的样式
-		switch (type) {
+		switch (carLicecenType) {
 		case CIVIL: {
 			s += carLicence();
 			break;

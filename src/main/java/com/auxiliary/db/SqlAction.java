@@ -7,8 +7,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.auxiliary.tool.data.TableData;
 
@@ -21,25 +21,6 @@ import com.auxiliary.tool.data.TableData;
  * </p>
  * <p>
  * 类中的所有方法均为重头遍历结果集，与当前在结果集中光标的位置无关，并且遍历后不影响当前光标的位置。
- * 以调用{@link #getFirstResult()}方法为例：
- * </p>
- * <p>
- * 查询的结果集中存在ID字段，并且字段下有如下数据[1, 2, 3, 4, 5, 6, 7]，对该字段循环获取5次： <code><pre>
- * // run为SqlAction类对象
- * ResultSet result = run.{@link #getResult()};
- * for (int index = 0; index < 5 && result.next(), index++) {
- * 	System.out.print(result.getString("ID"));
- * }
- * 
- * System.out.print(run.{@link #getFirstResult()});
- * 
- * if (result.next()) {
- * 	System.out.print(result.getString("ID"));
- * }
- * <pre></code> 其结果输出为：<br>
- * 12345<br>
- * 1<br>
- * 6<br>
  * </p>
  * <p>
  * <b>编码时间：</b>2020年12月7日上午8:12:04
@@ -62,7 +43,28 @@ public class SqlAction {
 	/**
 	 * 数据库连接类对象
 	 */
-	protected Optional<Connection> connect = Optional.empty();
+	protected Connection connect;
+	/**
+	 * 指向连接的数据库类型
+	 */
+	protected DataBaseType dataBaseType;
+	/**
+	 * 指向连接的数据库用户名
+	 */
+	protected String username;
+	/**
+	 * 指向连接的数据库密码
+	 */
+	protected String password;
+	/**
+	 * 指向连接的数据主机
+	 */
+	protected String host;
+	/**
+	 * 指向连接的数据名称
+	 */
+	protected String dataBaseName;
+	
 	/**
 	 * 存储SQL执行结果集
 	 */
@@ -76,16 +78,24 @@ public class SqlAction {
 	/**
 	 * 构造方法，用于指定数据库基本信息
 	 * 
-	 * @param username 用户名
-	 * @param password 密码
-	 * @param host     主机（包括端口）
+	 * @param username     用户名
+	 * @param password     密码
+	 * @param host         主机（包括端口）
 	 * @param dataBaseName 数据源
 	 */
 	public SqlAction(DataBaseType dataBaseType, String username, String password, String host, String dataBaseName) {
+		this.dataBaseType = Optional.ofNullable(dataBaseType).orElseThrow(() -> new DatabaseException("未指定数据库类型"));
+		this.username = Optional.ofNullable(username).orElseThrow(() -> new DatabaseException("未指定数据库登录用户名"));
+		this.password = Optional.ofNullable(password).orElseThrow(() -> new DatabaseException("未指定数据库登录密码"));
+		this.host = Optional.ofNullable(host).orElseThrow(() -> new DatabaseException("未指定数据库登录主机"));
+		this.dataBaseName = Optional.ofNullable(dataBaseName).orElseThrow(() -> new DatabaseException("未指定数据库名称"));
+		
 		try {
 			Class.forName(dataBaseType.getClassName());
 			connect = Optional.ofNullable(DriverManager
-					.getConnection(String.format(dataBaseType.getUrl(), host, dataBaseName), username, password));
+					.getConnection(String.format(dataBaseType.getUrl(), host, dataBaseName), username, password))
+					.orElseThrow(() -> new DatabaseException(String.format(dataBaseType + "数据库连接异常，连接信息：\n用户名：%s\n密码：%s\n连接url：%s", username,
+					password, String.format(dataBaseType.getUrl(), host, dataBaseName))));
 		} catch (SQLException e) {
 			throw new DatabaseException(String.format(dataBaseType + "数据库连接异常，连接信息：\n用户名：%s\n密码：%s\n连接url：%s", username,
 					password, String.format(dataBaseType.getUrl(), host, dataBaseName)), e);
@@ -109,9 +119,13 @@ public class SqlAction {
 			throw new DatabaseException("SQL语句为空");
 		}
 
-		// 若无法获取Connection类对象，则抛出异常
-		Connection connect = this.connect.orElseThrow(() -> new DatabaseException("数据库连接异常"));
-
+		// 添加数据库驱动信息
+		try {
+			Class.forName(dataBaseType.getClassName());
+		} catch (ClassNotFoundException e) {
+			throw new DatabaseException("数据库驱动不存在：" + dataBaseType.getClassName(), e);
+		}
+		// 连接数据库
 		try {
 			// 执行SQL，设置结果集可以滚动
 			result = Optional
@@ -141,7 +155,7 @@ public class SqlAction {
 	 * 
 	 * @return 结果集
 	 */
-	public ResultSet getResult() {
+	public ResultSet getResultSet() {
 		return result.orElseThrow(DatabaseException::new);
 	}
 
@@ -152,7 +166,7 @@ public class SqlAction {
 	 */
 	public int getResultSize() {
 		int size = -1;
-		ResultSet result = getResult();
+		ResultSet result = getResultSet();
 		try {
 			// 获取当前行
 			int nowIndex = result.getRow();
@@ -181,22 +195,24 @@ public class SqlAction {
 	}
 
 	/**
-	 * 用于返回结果集中第一条数据，即第一行第一列的数据。若结果集中无任何数据，则返回空串
+	 * 用于根据表中的字段名，获取结果集指定行数的内容，并以字符串的形式进行存储。
+	 * <p>
+	 * <b>注意：</b>其行下标参数从1开始计算，即传入1则表示为获取第一行数据，具体参数说明可参考{@link #getResult(int, int, List)}
+	 * </p>
 	 * 
-	 * @return 结果集第一条数据
+	 * @param startIndex 开始行
+	 * @param endIndex   结束行
+	 * @param fieldNames 字段组，可传入多个值
+	 * @return 字段组对应的结果文本集合
 	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
+	 * @see #getResult(int, int, List)
 	 */
-	public String getFirstResult() {
-		// 返回字符串，若搜索结果无对应行，则返回空串
-		try {
-			return getFirstRowResult(1, 1).get(0);
-		} catch (IndexOutOfBoundsException e) {
-			return "";
-		}
+	public TableData<String> getResult(int startIndex, int endIndex, String... fieldNames) {
+		return getResult(startIndex, endIndex, Arrays.asList(Optional.ofNullable(fieldNames).orElse(new String[] {})));
 	}
 
 	/**
-	 * 用于以字符串集合的形式返回结果集第一列指定行的结果
+	 * 用于根据表中的字段名，获取结果集指定行数的内容，并以字符串的形式进行存储。
 	 * <p>
 	 * 方法接收结果集的起始下标与结束下标，并根据该组下标，获取结果，将其转换为
 	 * 字符串的形式进行返回，另外，行下标从1开始遍历，下标传入0或者1都表示获取第1行元素，且下标允许 传入负数，表示反序遍历。其可能会出现以下情况：
@@ -212,67 +228,14 @@ public class SqlAction {
 	 * 进行传参，即假设结果集中有100个元素，下标传入-2时，会将其转换为99（倒数第二行）进行处理。 若负数下标的绝对值超过结果集的总数，则表示获取第一行元素
 	 * </p>
 	 * 
-	 * @param startIndex 起始下标
-	 * @param endIndex   结束下标
-	 * @return 第一列指定行的元素集合
-	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
-	 */
-	public ArrayList<String> getFirstRowResult(int startIndex, int endIndex) {
-		return getRowResult(fieldNameList.get(0), startIndex, endIndex);
-	}
-
-	/**
-	 * 用于以字符串集合的形式返回结果集指定列及指定行的结果，其下标规则可 参考{@link #getFirstRowResult(int, int)}方法
-	 * 
-	 * @param fieldName  字段名称
-	 * @param startIndex 起始下标
-	 * @param endIndex   结束下标
-	 * @return 第一列指定行的元素集合
-	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
-	 * @see #getFirstRowResult(int, int)
-	 */
-	public ArrayList<String> getRowResult(String fieldName, int startIndex, int endIndex) {
-		ArrayList<String> resultList = new ArrayList<>(getResult(startIndex, endIndex, fieldName)
-				.getColumnList(fieldName).stream()
-				.map(data -> data.orElse(""))
-				.collect(Collectors.toList())
-				);
-		return resultList;
-	}
-
-	/**
-	 * <p>
-	 * 用于以字符串集合的形式返回结果集指定列及指定行的结果，其下标规则可 参考{@link #getFirstRowResult(int, int)}方法。
-	 * </p>
-	 * <p>
-	 * <b>注意：</b>字段下标与结果集列下标的起始位置不同，字段下标的第1位，其下标为0，
-	 * 即调用{@code getRowResult(1, 1, 2)}方法时，表示获取第1列，第1行到第2行的数据
-	 * </p>
-	 * 
-	 * @param fieldIndex  列下标
-	 * @param startIndex 起始下标
-	 * @param endIndex   结束下标
-	 * @return 第一列指定行的元素集合
-	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
-	 * @see #getFirstRowResult(int, int)
-	 */
-	public ArrayList<String> getRowResult(int fieldIndex, int startIndex, int endIndex) {
-		return getRowResult(fieldNameList.get(fieldIndex), startIndex, endIndex);
-	}
-
-	/**
-	 * 用于根据表中的字段名，获取结果集指定行数的内容，并以字符串的形式进行存储。
-	 * <p>
-	 * <b>注意：</b>下标从1开始，可以传入负数，表示从后遍历
-	 * </p>
-	 * 
 	 * @param startIndex 开始行
 	 * @param endIndex   结束行
-	 * @param fieldNames 字段组，可传入多个值
+	 * @param fieldList  字段名集合
 	 * @return 字段组对应的结果文本集合
 	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
+	 * @see #getResult(int, int, String...)
 	 */
-	public TableData<String> getResult(int startIndex, int endIndex, String... fieldNames) {
+	public TableData<String> getResult(int startIndex, int endIndex, List<String> fieldList) {
 		// 转换下标
 		int length = getResultSize();
 		startIndex = changeIndex(startIndex, length);
@@ -280,11 +243,11 @@ public class SqlAction {
 
 		// 添加标题，若未传入标题，则设置为空数组
 		TableData<String> fieldResultTable = new TableData<>();
-		fieldResultTable.addTitle(Arrays.asList(Optional.ofNullable(fieldNames).orElse(new String[] {})));
+		fieldResultTable.addTitle(Optional.ofNullable(fieldList).orElse(new ArrayList<String>()));
 
 		// 判断是否存在结果集，不存在则抛出异常
 		ResultSet result = this.result.orElseThrow(DatabaseException::new);
-
+		
 		try {
 			// 记录当前结果集光标位置，用于最后设置回当前位置
 			int rowIndex = result.getRow();
@@ -298,7 +261,7 @@ public class SqlAction {
 				do {
 					// 获取相应字段的内容，若字段为null，则存储为空串
 					ArrayList<String> columnDataList = new ArrayList<>();
-					Arrays.stream(fieldNames).forEach(fieldName -> {
+					fieldList.forEach(fieldName -> {
 						try {
 							columnDataList.add(Optional.ofNullable(result.getString(fieldName)).orElse(""));
 						} catch (SQLException e) {
@@ -306,7 +269,7 @@ public class SqlAction {
 							throw new DatabaseException(String.format("“%s”字段内容无法获取", fieldName), e);
 						}
 					});
-
+					
 					fieldResultTable.addRow(columnDataList);
 				} while ((index++) < endIndex && result.next());
 			}
@@ -319,6 +282,48 @@ public class SqlAction {
 		}
 
 		return fieldResultTable;
+	}
+
+	/**
+	 * 用于获取结果集指定行数的所有列内容，并以字符串的形式进行存储。
+	 * <p>
+	 * <b>注意：</b>其行下标参数从1开始计算，即传入1则表示为获取第一行数据，具体参数说明可参考{@link #getResult(int, int, List)}
+	 * </p>
+	 * 
+	 * @param startIndex 开始行
+	 * @param endIndex   结束行
+	 * @return 字段组对应的结果文本集合
+	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
+	 * @see #getResult(int, int, List)
+	 */
+	public TableData<String> getAllColumnResult(int startIndex, int endIndex) {
+		return getResult(startIndex, endIndex, getColumnNames());
+	}
+	
+	/**
+	 * 用于获取结果集中所有的内容，并以字符串的形式进行存储。
+	 * <p>
+	 * <b>注意：</b>调用该方法会将数据库中所有的数据全部获取并存储至类中，
+	 * 若返回数据较多时，建议使用分行获取方法{@link #getAllColumnResult(int, int)}
+	 * </p>
+	 * 
+	 * @return 字段组对应的结果文本集合
+	 * @throws DatabaseException 若字段有误或未执行SQL或无结果集时抛出的异常
+	 * @see #getAllColumnResult(int, int)
+	 */
+	public TableData<String> getAllResult() {
+		return getAllColumnResult(1, -1);
+	}
+	
+	/**
+	 * 用于关闭数据库的连接
+	 */
+	public void close() {
+		try {
+			connect.close();
+		} catch (SQLException e) {
+			throw new DatabaseException("数据库连接无法关闭", e);
+		}
 	}
 
 	/**

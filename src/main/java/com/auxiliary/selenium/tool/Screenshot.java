@@ -2,12 +2,15 @@ package com.auxiliary.selenium.tool;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
+
+import com.auxiliary.tool.date.Time;
 
 /**
  * 该类用于在使用selenium进行自动化测试中进行截图的工具。使用该类时可以指定截图保存的位置以及
@@ -40,18 +43,15 @@ public class Screenshot {
 	 * 注意，传入的文件路径可为相对路径，也可为绝对路径，若路径不符合windows下文件夹名称的名称规则，
 	 * 则抛出IncorrectDirectoryException异常
 	 * 
-	 * @param driver
-	 *            WebDriver对象
-	 * @param savePathFolder
-	 *            指定的截图保存路径
-	 * @throws IncorrectDirectoryException
-	 *             传入路径不合法时抛出的异常
+	 * @param driver         WebDriver对象
+	 * @param savePathFolder 指定的截图保存路径
+	 * @throws IncorrectDirectoryException 传入路径不合法时抛出的异常
 	 */
 	public Screenshot(WebDriver driver, File savePathFolder) {
 		setDriver(driver);
 		setSavePathFolder(savePathFolder);
 	}
-	
+
 	/**
 	 * 该方法用于返回截图保存的路径
 	 * 
@@ -63,10 +63,11 @@ public class Screenshot {
 
 	/**
 	 * 该方法用于设置截图文件保存路径
+	 * 
 	 * @param savePathFolder
 	 */
 	public void setSavePathFolder(File savePathFolder) {
-		this.savePathFolder = savePathFolder;
+		this.savePathFolder = Optional.ofNullable(savePathFolder).orElse(this.savePathFolder);
 	}
 
 	/**
@@ -81,18 +82,16 @@ public class Screenshot {
 	/**
 	 * 该方法用于设置WebDriver对象
 	 * 
-	 * @param driver
-	 *            指定的WebDriver对象
+	 * @param driver 指定的WebDriver对象
 	 */
 	public void setDriver(WebDriver driver) {
-		this.driver = driver;
+		this.driver = Optional.ofNullable(driver).orElseThrow(() -> new WebDriverException("未指定WebDriver类对象"));
 	}
 
 	/**
 	 * 用于设置截图的等待时间
 	 * 
-	 * @param time
-	 *            设置等待时间，单位为毫秒
+	 * @param time 设置等待时间，单位为毫秒
 	 */
 	public void setTime(long time) {
 		this.time = time;
@@ -101,58 +100,44 @@ public class Screenshot {
 	/**
 	 * 该方法用于创建截图并保存到相应的路径下，通过指定的截图文件名称和类中存储的WebDriver对象、截图保存路径来创建截图
 	 * 
-	 * @param imageName
-	 *            指定的截图文件名
-	 * @throws IOException
-	 *             文件流状态不正确时抛出的异常
-	 * @throws WebDriverException
-	 *             WebDriver引用错误时抛出的异常
-	 * @throws NullPointerException
-	 *             WebDriver为空时抛出的异常
-	 * @throws UndefinedDirectoryException
-	 *             截图保存路径或截图名称为指定时抛出的异常
+	 * @param imageName 指定的截图文件名
+	 * @throws IOException                 文件流状态不正确时抛出的异常
+	 * @throws WebDriverException          WebDriver引用错误时抛出的异常
+	 * @throws NullPointerException        WebDriver为空时抛出的异常
+	 * @throws UndefinedDirectoryException 截图保存路径或截图名称为指定时抛出的异常
 	 */
-	public synchronized File creatImage(String imageName) throws WebDriverException, IOException {
+	public synchronized File creatImage(String imageName) {
 		// 调用无参方法
 		return saveScreenshot(imageName);
 	}
-	
+
 	/**
 	 * 用于逐时进行截图，其截图的时间间隔与等待时间有关系，可对截图等待时间进行设置{@link #setTime(long)}
 	 */
 	public void screenshotToTime() {
-		//开辟提条线程，让其独立于主线程运行
+		// 开辟提条线程，让其独立于主线程运行
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				int i = 1;
-				while(true) {
+				while (true) {
 					try {
 						creatImage("截图" + (i++) + "_");
-					} catch (WebDriverException e) {
-						return;
-					} catch (IOException e) {
+					} catch (Exception e) {
 						return;
 					}
 				}
 			}
 		}).start();
 	}
-	
+
 	/**
 	 * 该方法用于保存并转移截图
 	 * 
-	 * @throws IOException
-	 *             文件流状态不正确时抛出的异常
-	 * @throws WebDriverException
-	 *             WebDriver引用错误时抛出的异常
+	 * @throws IOException        文件流状态不正确时抛出的异常
+	 * @throws WebDriverException WebDriver引用错误时抛出的异常
 	 */
-	private File saveScreenshot(String fileName) throws WebDriverException, IOException {
-		// 判断driver对象是否为空，
-		if (driver == null) {
-			throw new NullPointerException("无效的WebDriver对象");
-		}
-				
+	private File saveScreenshot(String fileName) {
 		// 将savePath中保存的路径作为截图保存路径创建文件夹
 		savePathFolder.mkdirs();
 
@@ -161,15 +146,20 @@ public class Screenshot {
 			try {
 				Thread.sleep(time);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
-		
-		File imageFile = new File(savePathFolder + fileName + ".png");
+
+		//判断是否传入文件名，若未传入文件名，则指定当前时间戳为文件名
+		File imageFile = new File(savePathFolder + Optional.ofNullable(fileName).filter(text -> !text.isEmpty())
+				.orElse(String.valueOf(Time.parse().getMilliSecond())) + ".png");
 
 		// 截图，并将得到的截图转移到指定的目录下
 		// 由于通过selenium的getScreenshotAs()得到的截图会不知道存储在哪，故需要通过文件流的方式将截图复制到指定的文件夹下
-		FileUtils.copyFile(((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE), imageFile);
+		try {
+			FileUtils.copyFile(((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE), imageFile);
+		} catch (WebDriverException | IOException e) {
+			throw new IncorrectDirectoryException("文件路径存在异常：" + imageFile.getAbsolutePath());
+		}
 
 		return imageFile;
 	}

@@ -1,8 +1,6 @@
 package com.auxiliary.datadriven;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +8,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
-import com.auxiliary.tool.data.ListUtil;
 import com.auxiliary.tool.data.TableData;
 import com.auxiliary.tool.date.Time;
-import com.auxiliary.tool.file.TableFileReadUtil;
 
 /**
  * <p>
@@ -74,21 +70,12 @@ public class TestNGDataDriver {
 	/**
 	 * 用于对日期格式或特殊字段输入的日期进行转换
 	 */
-	private Time time = new Time();
+	private Time time = Time.parse();
 
 	/**
-	 * 构造类，并将默认的数据驱动函数（{@link Functions}）加载至类中
+	 * 构造对象，初始化数据
 	 */
 	public TestNGDataDriver() {
-		// 构造Functions，通过反射，将所有Functions中的所有方法执行并添加至dataFunctionMap中
-		Functions functions = new Functions();
-		for (Method method : functions.getClass().getDeclaredMethods()) {
-			try {
-				addFunction((DataDriverFunction) method.invoke(functions));
-			} catch (Exception e) {
-			}
-		}
-
 		dataTable = new TableData<>();
 	}
 
@@ -119,23 +106,16 @@ public class TestNGDataDriver {
 	}
 
 	/**
-	 * 根据传入文件格式，读取文件的内容添加至数据驱动中。该方法可用于读取xls/xlsx/csv/doc/docx/txt格式的文件，
-	 * 根据不同的文件格式，其pattern参数具有不同的意义：
-	 * <ol>
-	 * <li>当读取的文件为Excel文件（xls/xlsx格式）时，其传入的pattern表示需要读取的sheet名称</li>
-	 * <li>当读取的文件为文本文件（doc/docx/txt格式）时，其传入的pattern表示对每一行文本的切分规则，以得到一个列表</li>
-	 * <li>当读取的文件为csv文件（csv格式）时，其传入的pattern不生效（无意义）</li>
-	 * </ol>
+	 * 用于添加根据存储的表数据类对象（{@link TableData}类）向数据驱动添加数据
 	 * 
-	 * @param dataFile     源数据文件类对象
-	 * @param pattern      读取规则
-	 * @param isFirstTitle 首行是否为标题
-	 * @throws IOException 当文件读取有误时抛出的异常
+	 * @param table 表数据类对象
 	 */
-	public void addDataDriver(File dataFile, String pattern, boolean isFirstTitle) {
-		// 读取文件内的数据
-		dataTable.addTable(ListUtil.changeTable(TableFileReadUtil.readFile(dataFile, pattern, isFirstTitle),
-				data -> (Object) data));
+	public void addDataDriver(TableData<Object> table) {
+		dataTable.addTable(Optional.ofNullable(table)
+				//判断table中是否存在数据
+				.filter(t -> t.getLongColumnSize() != 0)
+				//若本身为空或者无数据，则抛出异常
+				.orElseThrow(() -> new DataNotFoundException("表中无数据或对象为空，添加异常")));
 	}
 
 	/**
@@ -352,7 +332,7 @@ public class TestNGDataDriver {
 		 * @return {@link Time}类型的数据
 		 */
 		public Time getTime(int index) {
-			return new Time(getString(index));
+			return Time.parse(getString(index));
 		}
 
 		/**
@@ -362,7 +342,7 @@ public class TestNGDataDriver {
 		 * @return {@link Time}类型的数据
 		 */
 		public Time getTime(String listName) {
-			return new Time(getString(listName));
+			return Time.parse(getString(listName));
 		}
 
 		/**
@@ -448,9 +428,10 @@ public class TestNGDataDriver {
 			// 若内容不与任何正则匹配，则返回原始内容
 			return null;
 		}
-		
+
 		/**
 		 * 用于根据列下标返回列名称，若列下标对应的列不存在，则抛出异常
+		 * 
 		 * @param index 列下标
 		 * @return 下标对应的列名
 		 * @throws DataNotFoundException 列不存在时抛出的异常

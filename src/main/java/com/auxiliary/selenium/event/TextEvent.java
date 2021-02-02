@@ -1,14 +1,12 @@
 package com.auxiliary.selenium.event;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import com.auxiliary.selenium.brower.AbstractBrower;
@@ -168,14 +166,7 @@ public class TextEvent extends AbstractEvent {
 		Rectangle r = webElement.getRect();
 		// 构造截图对象，并创建截图
 		Screenshot sc = new Screenshot(brower.getDriver(), new File("Temp"));
-		File image = null;
-		try {
-			image = sc.creatImage("code");
-		} catch (WebDriverException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		File image = sc.creatImage("code");
 
 		// 设置图片识别的语言包存放位置
 		RecognitionImage.setTessdataPath(new File(TESSDATA));
@@ -205,14 +196,7 @@ public class TextEvent extends AbstractEvent {
 		Rectangle r = webElement.getRect();
 		// 构造截图对象，并创建截图
 		Screenshot sc = new Screenshot(brower.getDriver(), new File("Temp"));
-		File image = null;
-		try {
-			image = sc.creatImage("code");
-		} catch (WebDriverException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		File image = sc.creatImage("code");
 
 		// 设置图片识别的语言包存放位置
 		RecognitionImage.setTessdataPath(new File(TESSDATA));

@@ -1482,7 +1482,7 @@ public class InformationCase extends Case {
 	 * <p><b>修改时间：</b>2020年3月15日下午5:50:28</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	private enum WordType {
@@ -1604,7 +1604,7 @@ public class InformationCase extends Case {
 	 * <p><b>修改时间：</b>2020年3月14日 下午9:14:30</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 */
 	public enum InputRuleType {
 		/**
@@ -1659,7 +1659,7 @@ public class InformationCase extends Case {
 	 * <p><b>修改时间：</b>2020年3月14日 下午9:14:30</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 */
 	public enum PhoneType {
 		/**
@@ -1679,7 +1679,7 @@ public class InformationCase extends Case {
 	 * <p><b>修改时间：</b>2020年3月18日上午9:30:34</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	public enum FileRuleType {
@@ -1756,7 +1756,7 @@ public class InformationCase extends Case {
 	 * <p><b>修改时间：</b>2020年3月18日上午9:56:51</p>
 	 * @author 彭宇琦
 	 * @version Ver1.0
-	 * @since JDK 12
+	 * @since JDK 1.8
 	 *
 	 */
 	public enum UploadFileType {

@@ -272,7 +272,7 @@ public class ExcelRecord extends AbstractWriteExcel<ExcelRecord> {
 		switchSheet("运行记录")
 			.addContent("state", isError ? "2" : "1")
 			.addContent("bug_number", String.valueOf(resultBugList.size()))
-			.addContent("active_time", new Time().getFormatTime())
+			.addContent("active_time", Time.parse().getFormatTime())
 			.addContent("use_time", startTime == 0L ? "" : (String.valueOf((System.currentTimeMillis() - startTime) / 1000.0) + "s"));
 		
 		//获取父类的end方法，结束当前的记录
