@@ -1,6 +1,5 @@
 package com.auxiliary.tool.data;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -56,9 +55,8 @@ public class DisposeText {
 	/**
 	 * 该方法用于对文本进行去重，保留不重复的字符
 	 * 
-	 * @param textFile 存储文本的文件
+	 * @param text 待去重的文本
 	 * @return 去重后的文本
-	 * @throws IOException
 	 */
 	public static String textDelDuplication(String text) {
 		// 存储文件中的文本
@@ -108,7 +106,7 @@ public class DisposeText {
 	/**
 	 * 该方法用于对文本中单词进行去重，输出不重复单词
 	 * 
-	 * @param testFile 待测文件
+	 * @param textList 待去重的词语集合
 	 * @return 去重后的单词数组
 	 */
 	public static List<String> wordDelDuplication(List<String> textList) {

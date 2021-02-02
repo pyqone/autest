@@ -55,6 +55,7 @@ public class InitTimeUtil {
 	 * <b>注意：</b>若日期未传入（null），则默认为当天的日期
 	 * </p>
 	 * 
+	 * @param isLastTime 是否指定为最后一刻
 	 * @param date 指定的日期
 	 * @return 更改的日期
 	 */
@@ -73,6 +74,7 @@ public class InitTimeUtil {
 	 * <b>注意：</b>若日期未传入（null），则默认为当天的日期
 	 * </p>
 	 * 
+	 * @param date 指定的日期
 	 * @return 更改的日期
 	 */
 	public static LocalDateTime firstDayOfMonth(LocalDateTime date) {
@@ -93,6 +95,8 @@ public class InitTimeUtil {
 	 * <b>注意：</b>若日期未传入（null），则默认为当天的日期
 	 * </p>
 	 * 
+	 * @param isLastTime 是否指定为最后一刻
+	 * @param date 指定的日期
 	 * @return 更改的日期
 	 */
 	public static LocalDateTime lastDayOfMonth(boolean isLastTime, LocalDateTime date) {
@@ -120,6 +124,7 @@ public class InitTimeUtil {
 	 * <b>注意：</b>若日期未传入（null），则默认为当天的日期
 	 * </p>
 	 * 
+	 * @param date 指定的日期
 	 * @return 更改的日期
 	 */
 	public static LocalDateTime startTimeOfDay(LocalDateTime date) {
@@ -136,6 +141,7 @@ public class InitTimeUtil {
 	 * <b>注意：</b>若日期未传入（null），则默认为当天的日期
 	 * </p>
 	 * 
+	 * @param date 指定的日期
 	 * @return 更改的日期
 	 */
 	public static LocalDateTime lastTimeOfDay(LocalDateTime date) {
@@ -157,6 +163,7 @@ public class InitTimeUtil {
 	 * </p>
 	 * 
 	 * @param hour 指定的小时数
+	 * @param date 指定的日期
 	 * @return 更改的日期
 	 */
 	public static LocalDateTime startHour(int hour, LocalDateTime date) {
@@ -180,7 +187,8 @@ public class InitTimeUtil {
 	 * </ol>
 	 * </p>
 	 * 
-	 * @param hour 指定的分钟数
+	 * @param minute 指定的分钟数
+	 * @param date 指定的日期
 	 * @return 更改的日期
 	 */
 	public static LocalDateTime startMinute(int minute, LocalDateTime date) {

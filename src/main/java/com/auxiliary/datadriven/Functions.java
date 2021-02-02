@@ -385,7 +385,6 @@ public class Functions {
 	 * </ol>
 	 * </p>
 	 * 
-	 * @param splitText 分隔符，必须按照正则表达式的形式传入
 	 * @return {@link DataDriverFunction}类对象
 	 */
 	public static DataDriverFunction randomWord() {

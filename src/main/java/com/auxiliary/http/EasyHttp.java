@@ -331,7 +331,7 @@ public class EasyHttp implements Cloneable {
 	
 	/**
 	 * 用于设置请求头
-	 * @param request 请求类对象
+	 * @param requestBase 请求类对象
 	 * @return 设置请求头的类对象
 	 */
 	public HttpRequestBase setHead(HttpRequestBase requestBase) {

@@ -21,25 +21,6 @@ import com.auxiliary.tool.data.TableData;
  * </p>
  * <p>
  * 类中的所有方法均为重头遍历结果集，与当前在结果集中光标的位置无关，并且遍历后不影响当前光标的位置。
- * 以调用{@link #getFirstResult()}方法为例：
- * </p>
- * <p>
- * 查询的结果集中存在ID字段，并且字段下有如下数据[1, 2, 3, 4, 5, 6, 7]，对该字段循环获取5次： <code><pre>
- * // run为SqlAction类对象
- * ResultSet result = run.{@link #getResult()};
- * for (int index = 0; index < 5 && result.next(), index++) {
- * 	System.out.print(result.getString("ID"));
- * }
- * 
- * System.out.print(run.{@link #getFirstResult()});
- * 
- * if (result.next()) {
- * 	System.out.print(result.getString("ID"));
- * }
- * </pre></code> 其结果输出为：<br>
- * 12345<br>
- * 1<br>
- * 6<br>
  * </p>
  * <p>
  * <b>编码时间：</b>2020年12月7日上午8:12:04

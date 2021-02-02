@@ -336,7 +336,7 @@ public class Time implements Comparable<Time> {
 	 * </ul>
 	 * 具体的计算规则与{@link #addTime(double, TimeUnit)}方法一致
 	 * </p>
-	 * @param regex 时间规则
+	 * @param calculateTimeText 增减时间的规则
 	 * @return 返回修改后的时间戳
 	 */
 	public Time addTime(String calculateTimeText) {
