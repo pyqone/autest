@@ -55,13 +55,7 @@
 			<version>3.17</version>
 		</dependency>
 
-		<!-- xml解析工具 
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
-		</dependency>-->
-		<!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
+		<!-- xml解析工具 -->
 		<dependency>
 		    <groupId>org.dom4j</groupId>
 		    <artifactId>dom4j</artifactId>
