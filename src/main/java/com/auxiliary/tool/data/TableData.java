@@ -66,6 +66,10 @@ public class TableData<T> {
 	public TableData(Map<String, ? extends List<T>> tableMap) {
 		tableMap.forEach(this::addColumn);
 	}
+	
+	public TableData(TableData<T> tableData) {
+		this.addTable(tableData);
+	} 
 
 	/**
 	 * 用于设置是否对传入的数据列表的个数进行严格校验，即在调用{@link #getData(int, int, List)}等获取数据的方法时，
