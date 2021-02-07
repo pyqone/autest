@@ -258,9 +258,10 @@ public final class DataTableEvent extends AbstractEvent {
 	}
 
 	/**
-	 * 通过条件，点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮，对列表进行搜索。方法中需要接收一个
-	 * 返回值为boolean类型的操作，若操作的返回值为false时，则不会点击按钮，可参考以下写法：
-	 * 
+	 * 通过条件，点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮，对列表进行搜索。
+	 * <p>
+	 * 方法中需要接收一个返回值为boolean类型的操作，若操作的返回值为false时，
+	 * 则不会点击按钮，可参考以下写法：
 	 * <code><pre>
 	 * DataTableEvent test = new DataTableEvent(brower);
 	 * test.searchList(() -&gt; {
@@ -268,6 +269,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 	return true;
 	 * });
 	 * </pre></code>
+	 * </p>
 	 * 
 	 * @param action 返回值为boolean类型的操作
 	 * @return 列表是否有变化
@@ -301,6 +303,15 @@ public final class DataTableEvent extends AbstractEvent {
 
 		return result;
 	}
+	
+	/**
+	 * 用于无条件点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮。
+	 * 
+	 * @return列表是否有变化
+	 */
+	public boolean searchList() {
+		return searchList(() -> true);
+	}
 
 	/**
 	 * <p>
@@ -327,7 +338,6 @@ public final class DataTableEvent extends AbstractEvent {
 				.filter(table -> !table.isEmpty())
 				//若当前为空集合，则抛出异常
 				.orElseThrow(() -> new ControlException("当前行元素为空，无法获取"));
-
 	}
 	
 	/**
@@ -349,7 +359,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 		return rowTextList;
 	}
-
+	
 	/**
 	 * 获取指定列的文本，若该列元素异常时，则抛出异常
 	 * 
@@ -370,6 +380,32 @@ public final class DataTableEvent extends AbstractEvent {
 		logText = "获取列表的" + listName + "列元素内容的文本，其获取到的文本内容为：" + resultText;
 
 		return listTextList;
+	}
+	
+	/**
+	 * 用于以{@link TableData}的形式返回元素列表
+	 * @return 元素列表
+	 */
+	public TableData<Element> getElementTable() {
+		
+		return new TableData<Element>(elementTable);
+	}
+	
+	/**
+	 * 用于随机返回指定列表的随机一个元素
+	 * @param listName 列表名称
+	 * @return 指定列表的随机元素
+	 */
+	public Element getRandomElement(String listName) {
+		//按列表长度获取随机数
+		int listSize = elementTable.getListSize(listName);
+		int randomIndex = new Random().nextInt(listSize);
+		
+		//根据随机数返回元素；若当前随机的元素不存在，则返回列表第一个元素
+		//若列表第一个元素仍不存在，则跑出异常
+		return elementTable.getColumnList(listName).get(randomIndex)
+				.orElse(elementTable.getColumnList(listName).get(0)
+						.orElseThrow(() -> new ControlException("当前列元素为空，无法获取")));
 	}
 
 	/**
