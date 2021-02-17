@@ -239,7 +239,6 @@ public class CreateExcelFile {
 	 * 
 	 * @param xw 指向excel文件对象
 	 */
-	@SuppressWarnings("unchecked")
 	private void createDataValidation(XSSFWorkbook xw) {
 		// 读取所有sheet标签
 		List<Element> xmlSheetList = xml.getRootElement().elements("sheet");
@@ -336,7 +335,6 @@ public class CreateExcelFile {
 	 * @param rowIndex
 	 * @param columnIndex
 	 */
-	@SuppressWarnings("unchecked")
 	private void writeDataValidity(Element datasElement, XSSFSheet dataSheet, int rowIndex, int columnIndex) {
 		// 添加数据，获取相应datas下的所有data标签
 		List<Element> dataElementList = datasElement.elements();
