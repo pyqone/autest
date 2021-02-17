@@ -465,7 +465,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * @throws IOException            流异常时抛出的异常
 	 * @throws IncorrectFileException 当模板文件内容异常时抛出的异常
 	 */
-	@SuppressWarnings("unchecked")
 	public void writeFile() throws IOException {
 		// 定义输入流，用于读取模版文件
 		FileInputStream fip = new FileInputStream(tempFile);
@@ -507,7 +506,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * @param caseElement case标签对应的elemenet对象
 	 * @return 当前行号
 	 */
-	@SuppressWarnings("unchecked")
 	private void writeContent(int index, XSSFSheet xs, Element caseElement) {
 		// 获取字段元素，需要获取配置xml文件中的以及用例xml文件中的字段
 		List<Element> fieldElements = caseElement.elements("field");
@@ -804,7 +802,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	 * 
 	 * @param sheetName sheet的name属性
 	 */
-	@SuppressWarnings("unchecked")
 	private void getAllColumnId() {
 		// 清空fieldMap中的内容
 //		fieldMap.clear();
@@ -1148,7 +1145,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * @param content 标记中记录的内容
 		 * @return 类本身
 		 */
-		@SuppressWarnings("unchecked")
 		public FieldMark fieldComment(String sheetName, String field, String content) {
 			// 查找nowSheetName指向的sheet中的与uuid一致的单元格
 			Element caseElement = getCaseElement(sheetName);
@@ -1183,7 +1179,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * @param markColorsType {@link MarkColorsType}类枚举
 		 * @return 类本身
 		 */
-		@SuppressWarnings("unchecked")
 		public FieldMark changeFieldBackground(String sheetName, String field, MarkColorsType markColorsType) {
 			// 查找nowSheetName指向的sheet中的与uuid一致的单元格
 			Element caseElement = getCaseElement(sheetName);
@@ -1216,7 +1211,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * @param markColorsType {@link MarkColorsType}类枚举
 		 * @return 类本身
 		 */
-		@SuppressWarnings("unchecked")
 		public FieldMark changeRowBackground(String sheetName, MarkColorsType markColorsType) {
 			// 查找nowSheetName指向的sheet中的与uuid一致的单元格
 			Element caseElement = getCaseElement(sheetName);
@@ -1244,7 +1238,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * @param markColorsType {@link MarkColorsType}类枚举
 		 * @return 类本身
 		 */
-		@SuppressWarnings("unchecked")
 		public FieldMark changeRowTextColor(String sheetName, MarkColorsType markColorsType) {
 			// 查找nowSheetName指向的sheet中的与uuid一致的单元格
 			Element caseElement = getCaseElement(sheetName);
@@ -1310,7 +1303,6 @@ public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 		 * @param markColorsType {@link MarkColorsType}类枚举
 		 * @return 类本身
 		 */
-		@SuppressWarnings("unchecked")
 		public FieldMark changeTextColor(String sheetName, String field, int startIndex, int endIndex,
 				MarkColorsType markColorsType) {
 			// 查找nowSheetName指向的sheet中的与uuid一致的单元格
