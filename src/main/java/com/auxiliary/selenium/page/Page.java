@@ -1,19 +1,24 @@
 package com.auxiliary.selenium.page;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebDriver;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.selenium.brower.AbstractBrower;
+import com.auxiliary.selenium.element.ElementData;
 
 /**
  * <p><b>文件名：</b>Page.java</p>
  * <p><b>用途：</b>用于存储对浏览器加载的页面信息以及页面操作</p>
  * <p><b>编码时间：</b>2020年4月10日上午8:02:45</p>
- * <p><b>修改时间：</b>2020年10月12日下午8:02:45</p>
+ * <p><b>修改时间：</b>2021年2月18日下午6:12:14</p>
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  * @since JDK 1.8
  *
  */
@@ -27,9 +32,10 @@ public class Page {
 	 */
 	private int loadTime = 120;
 	/**
-	 * 用于存储目标站点的title
+	 * 用于存储需要断言的内容
 	 */
-	private String assertTitle = "";
+//	private String assertTitle = "";
+	private HashMap<PageAssertType, List<Object>> assertMap;
 	/**
 	 * 用于存储页面的名称
 	 */
@@ -56,6 +62,10 @@ public class Page {
 	public Page(String url, String pageName) {
 		this.url = url;
 		this.pageName = pageName;
+		
+		assertMap = new HashMap<>(16);
+		//初始化断言的内容
+		Arrays.stream(PageAssertType.values()).forEach(type -> assertMap.put(type, new ArrayList<>()));
 		
 		//存储页面信息
 		pageInformationJson.put("页面名称", pageName);
@@ -109,14 +119,88 @@ public class Page {
 	
 	/**
 	 * 用于设置对页面的标题断言
-	 * @param assertTitle 标题断言
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>页面断言为一次性断言，故添加的断言内容只累积，即多次添加断言内容，在进行断言时将全部用于判断</li>
+	 * <li>设置的断言内容为正则表达式，若设置的断言内容存在正则表达式中的特殊字符，则请自行转译，
+	 * 否则可能会得到不符合预期的结果</li>
+	 * </ol>
+	 * </p>
+	 * @param titles 标题断言
 	 */
-	public void setAssertTitle(String assertTitle) {
-		this.assertTitle = assertTitle;
+	public void setAssertTitle(String...titles) {
+		List<Object> list = assertMap.get(PageAssertType.TITLE);
+		Arrays.stream(titles).forEach(list::add);
 		
-		pageInformationJson.put("页面断言", assertTitle);
+		assertMap.put(PageAssertType.TITLE, list);
+		
+		pageInformationJson.put("页面标题断言", list);
 	}
-
+	
+	/**
+	 * 用于设置对页面的html内容断言
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>页面断言为一次性断言，故添加的断言内容只累积，即多次添加断言内容，在进行断言时将全部用于判断</li>
+	 * <li>设置的断言内容为正则表达式，若设置的断言内容存在正则表达式中的特殊字符，则请自行转译，
+	 * 否则可能会得到不符合预期的结果</li>
+	 * </ol>
+	 * </p>
+	 * @param htmls html断言数组
+	 */
+	public void setAssertHtml(String...htmls) {
+		List<Object> list = assertMap.get(PageAssertType.HTML);
+		Arrays.stream(htmls).forEach(list::add);
+		
+		assertMap.put(PageAssertType.HTML, list);
+		
+		pageInformationJson.put("页面html断言", list);
+	}
+	
+	/**
+	 * 用于设置对页面的文本内容断言
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>页面断言为一次性断言，故添加的断言内容只累积，即多次添加断言内容，在进行断言时将全部用于判断</li>
+	 * <li>设置的断言内容为正则表达式，若设置的断言内容存在正则表达式中的特殊字符，则请自行转译，
+	 * 否则可能会得到不符合预期的结果</li>
+	 * </ol>
+	 * </p>
+	 * @param texts 页面文本断言数组
+	 */
+	public void setAssertText(String...texts) {
+		List<Object> list = assertMap.get(PageAssertType.TEXT);
+		Arrays.stream(texts).forEach(list::add);
+		
+		assertMap.put(PageAssertType.TEXT, list);
+		
+		pageInformationJson.put("页面文本断言", list);
+	}
+	
+	/**
+	 * 用于设置对页面的元素断言
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>页面断言为一次性断言，故添加的断言内容只累积，即多次添加断言内容，在进行断言时将全部用于判断</li>
+	 * <li>设置的断言内容为正则表达式，若设置的断言内容存在正则表达式中的特殊字符，则请自行转译，
+	 * 否则可能会得到不符合预期的结果</li>
+	 * </ol>
+	 * </p>
+	 * @param elements 元素断言数组
+	 */
+	public void setAssertText(ElementData...elements) {
+		List<Object> list = assertMap.get(PageAssertType.ELEMENT);
+		Arrays.stream(elements).forEach(list::add);
+		
+		assertMap.put(PageAssertType.ELEMENT, list);
+		
+		pageInformationJson.put("页面元素断言", list);
+	}
+	
 	/**
 	 * 用于设置对页面自动加载次数的限制
 	 * @param rafreshCount 加载次数限制
@@ -227,5 +311,37 @@ public class Page {
 		} else if (!url.equals(other.url))
 			return false;
 		return true;
+	}
+	
+	/**
+	 * <p><b>文件名：</b>Page.java</p>
+	 * <p><b>用途：</b>
+	 * 指定页面断言的条件枚举
+	 * </p>
+	 * <p><b>编码时间：</b>2021年2月18日下午5:25:34</p>
+	 * <p><b>修改时间：</b>2021年2月18日下午5:25:34</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 1.8
+	 *
+	 */
+	public enum PageAssertType {
+		/**
+		 * 断言页面标题
+		 */
+		TITLE, 
+		/**
+		 * 断言页面html代码
+		 */
+		HTML, 
+		/**
+		 * 断言页面文本
+		 */
+		TEXT, 
+		/**
+		 * 断言页面元素
+		 */
+		ELEMENT
+		;
 	}
 }
