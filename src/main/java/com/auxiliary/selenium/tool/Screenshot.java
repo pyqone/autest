@@ -101,10 +101,6 @@ public class Screenshot {
 	 * 该方法用于创建截图并保存到相应的路径下，通过指定的截图文件名称和类中存储的WebDriver对象、截图保存路径来创建截图
 	 * 
 	 * @param imageName 指定的截图文件名
-	 * @throws IOException                 文件流状态不正确时抛出的异常
-	 * @throws WebDriverException          WebDriver引用错误时抛出的异常
-	 * @throws NullPointerException        WebDriver为空时抛出的异常
-	 * @throws UndefinedDirectoryException 截图保存路径或截图名称为指定时抛出的异常
 	 */
 	public synchronized File creatImage(String imageName) {
 		// 调用无参方法
@@ -150,7 +146,7 @@ public class Screenshot {
 		}
 
 		//判断是否传入文件名，若未传入文件名，则指定当前时间戳为文件名
-		File imageFile = new File(savePathFolder + Optional.ofNullable(fileName).filter(text -> !text.isEmpty())
+		File imageFile = new File(savePathFolder + "/" + Optional.ofNullable(fileName).filter(text -> !text.isEmpty())
 				.orElse(String.valueOf(Time.parse().getMilliSecond())) + ".png");
 
 		// 截图，并将得到的截图转移到指定的目录下

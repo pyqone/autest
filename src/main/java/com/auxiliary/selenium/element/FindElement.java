@@ -265,20 +265,13 @@ public abstract class FindElement {
 		ArrayList<ByType> elementByTypeList = elementData.getByTypeList();
 		ArrayList<String> elementValueList = elementData.getValueList();
         
-        //获取两个列表长度的最小者
-        int minLength = Math.min(elementByTypeList.size(), elementValueList.size());
-        //循环，遍历所有的定位方式，使用根据定位方式，判断页面是否存在定位方式指向的元素
-        for (int index = 0; index < minLength; index++) {
-        	//根据当前元素信息，在页面获取元素
-        	List<WebElement> elementList = findElement(elementByTypeList.get(index), 
-        			elementValueList.get(index), 
-        			elementData.getWaitTime() == -1 ? globalWaitTime : elementData.getWaitTime());
-        	
-        	//若获取到的元素列表为空，则继续循环，调用下一个定位方式
-        	if (elementList.size() != 0) {
-        		return elementList;
-        	}
-        }
+		List<WebElement> elementList = findElement(elementByTypeList, elementValueList, 
+    			elementData.getWaitTime() == -1 ? globalWaitTime : elementData.getWaitTime());
+    	
+    	//若获取到的元素列表为空，则继续循环，调用下一个定位方式
+    	if (elementList.size() != 0) {
+    		return elementList;
+    	}
         
         throw new TimeoutException("页面上无相应定位方式的元素，元素名称：" + elementData.getName());
 	}
@@ -286,25 +279,35 @@ public abstract class FindElement {
 	/**
 	 * 根据传入的定位方式枚举，以及定位内容，在页面查找
 	 * 元素，返回查到的元素列表，若查不到元素，则返回空列表
-	 * @param byType {@link ByType}枚举类
-	 * @param value 元素定位内容
+	 * @param byTypeList {@link ByType}枚举类集合
+	 * @param valueList 元素定位内容集合
 	 * @param waitTime 元素查找超时时间
 	 * @return 页面查找到的{@link WebElement}类对象{@link List}集合
 	 */
-	protected List<WebElement> findElement(ByType byType, String value, long waitTime) {
+	protected List<WebElement> findElement(List<ByType> byTypeList, List<String> valueList, long waitTime) {
 		try {
 			return new WebDriverWait(brower.getDriver(), waitTime, 200)
 					.until(driver -> {
-						try {
-							List<WebElement> webElementList = driver.findElements(getBy(value, byType));
-							if (webElementList != null && webElementList.size() != 0) {
-								return webElementList;
-							} else {
-								return null;
+						int minLength = Math.min(byTypeList.size(), valueList.size());
+						//遍历所有的定位方式与定位内容
+						for (int i = 0; i < minLength; i++) {
+							try {
+								//页面查找元素
+								List<WebElement> webElementList = driver.findElements(getBy(valueList.get(i), byTypeList.get(i)));
+								//若元素组为空或者获取的元素为空，则重新循环；反之，则返回找到元素
+								if (webElementList != null && webElementList.size() != 0) {
+									return webElementList;
+								} else {
+									continue;
+								}
+							} catch (Exception e) {
+								//若抛出异常，则重新循环
+								continue;
 							}
-						} catch (Exception e) {
-							return null;
 						}
+						
+						//若循环完毕仍未找到元素，则返回null
+						return null;
 					});
 		} catch (TimeoutException e) {
 			return new ArrayList<WebElement>();

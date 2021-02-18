@@ -59,7 +59,7 @@ public class XmlLocation extends AbstractLocation {
 		try {
 			dom = new SAXReader().read(xmlFile);
 		} catch (DocumentException e) {
-			throw new IncorrectFileException("xml文件异常，文件位置：" + xmlFile.getAbsolutePath());
+			throw new IncorrectFileException("xml文件异常，文件位置：" + xmlFile.getAbsolutePath(), e);
 		}
 		
 	}
@@ -76,12 +76,9 @@ public class XmlLocation extends AbstractLocation {
 	public ArrayList<ByType> findElementByTypeList(String name) {
 		ArrayList<ByType> byTypeList = new ArrayList<ByType>();
 		//查询并存储元素下的子元素
-		@SuppressWarnings("unchecked")
-		ArrayList<Object> lableElementList = new ArrayList<>(getElementLabelElement(name).elements());
+		ArrayList<Element> lableElementList = new ArrayList<>(getElementLabelElement(name).elements());
 		
 		lableElementList.stream()
-				//强转为Element类型
-				.map(lable -> (Element)lable)
 				//获取标签名称
 				.map(lable -> lable.getName())
 				//将名称转换为ByType枚举
@@ -90,7 +87,6 @@ public class XmlLocation extends AbstractLocation {
 				.filter(lable -> lable != null)
 				//存储标签
 				.forEach(byTypeList::add);
-				;
 		
 		return byTypeList;
 	}
@@ -98,25 +94,32 @@ public class XmlLocation extends AbstractLocation {
 	@Override
 	public ArrayList<String> findValueList(String name) {
 		ArrayList<String> valueList = new ArrayList<>();
-		//查询元素
-		Element element = getElementLabelElement(name);
 		
-		//遍历元素下所有的定位标签，并将其转换为相应的ByType枚举，存储至byTypeList中
-		for (Object byElement : element.elements()) {
-			//判断元素是否启用，若元素未启用，则下一个循环
-			String isUserText = ((Element) byElement).attributeValue("is_user");
-			if (isUserText != null && !Boolean.valueOf(isUserText)) {
-				continue;
-			}
-			
-			//判断元素是否启用模板，若启用模板，则获取模板内容，并将定位内容进行转换
-			String tempId = ((Element) byElement).attributeValue("temp_id");
-			String value = tempId != null ? 
-					getTemplateValue(tempId, toByType(((Element) byElement).getName())) :
-					((Element)byElement).getText();
-			
-			valueList.add(replaceValue(((Element) byElement), value));
-		}
+		//查询元素，遍历元素下所有的定位标签，并过滤掉元素标签
+		getElementLabelElement(name).elements().stream().filter(ele -> !"element".equals(ele.getName()))
+				//过滤不启用的标签
+				.filter(ele -> {
+					return Optional.ofNullable(ele.attributeValue("is_user"))
+							.filter(t -> !t.isEmpty())
+							.map(t -> {
+								try {
+									return Boolean.valueOf(t).booleanValue();
+								} catch (Exception e) {
+									return true;
+								}
+							}).orElse(true);
+				//根据值或模板，将定位内容转译，并存储至valueList
+				}).forEach(ele -> {
+					String value = "";
+					String tempId = Optional.ofNullable(ele.attributeValue("temp_id")).orElse("");
+					if (tempId.isEmpty()) {
+						value = ele.getText();
+					} else {
+						value = getTemplateValue(tempId, toByType(ele.getName()));
+					}
+					
+					valueList.add(replaceValue(ele, value));
+				});
 		
 		return valueList;
 	}
