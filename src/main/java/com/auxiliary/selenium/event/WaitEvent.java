@@ -115,6 +115,7 @@ public class WaitEvent extends AbstractEvent{
 	 * 该方法用于等待指定元素中显示相应的文本，可指定显示文本的关键词，直到显示相应的关键词为止，
 	 * 若不传入关键词，则只判断元素加载出文本。若元素未出现，则返回false
 	 * @param element {@link Element}对象
+	 * @param keys 需要判断的文本
 	 * @return 元素是否存在文本或包含指定文本
 	 * @throws TimeoutException 等待超时时抛出的异常
 	 */ 
