@@ -1,5 +1,7 @@
 package com.auxiliary.selenium.location;
 
+import org.openqa.selenium.By;
+
 /**
  * <p>
  * <b>文件名：</b>ByType.java
@@ -56,5 +58,31 @@ public enum ByType {
 	 */
 	public String getValue() {
 		return value;
+	}
+	
+	/**
+	 * 根据枚举内容，返回相应的{@link By}对象
+	 * @param value 元素的定位内容
+	 * @return 包含定位内容的元素{@link By}对象
+	 */
+	public By getBy(String value) {
+		switch (this) {
+		case CLASSNAME:
+			return By.className(value);
+		case CSS:
+			return By.cssSelector(value);
+		case ID:
+			return By.id(value);
+		case LINKTEXT:
+			return By.linkText(value);
+		case NAME:
+			return By.name(value);
+		case TAGNAME:
+			return By.tagName(value);
+		case XPATH:
+			return By.xpath(value);
+		default:
+			return null;
+		}
 	}
 }
