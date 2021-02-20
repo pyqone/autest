@@ -2,6 +2,7 @@ package com.auxiliary.tool.data;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
  * <b>编码时间：</b>2020年12月22日上午8:27:07
  * </p>
  * <p>
- * <b>修改时间：</b>2020年12月22日上午8:27:07
+ * <b>修改时间：</b>2021年2月20日上午7:20:37
  * </p>
  * 
  * @author 彭宇琦
@@ -145,10 +146,10 @@ public class ListUtil {
 	/**
 	 * 用于对列表中的数据类型进行转换，返回新数据类型的列表
 	 * 
-	 * @param <T>      原数据类型
-	 * @param <U>      新数据类型
+	 * @param <T>       原数据类型
+	 * @param <U>       新数据类型
 	 * @param tableData 原数据类型表
-	 * @param mapper   数据转换方式
+	 * @param mapper    数据转换方式
 	 * @return 转换后的数据类型表
 	 */
 	public static <T, U> TableData<U> changeTable(TableData<T> tableData, Function<T, U> mapper) {
@@ -156,6 +157,76 @@ public class ListUtil {
 		tableData.columnForEach((key, value) -> newTable.addColumn(key, changeList(value, mapper).stream()
 				.map(dataOptional -> dataOptional.orElse(null)).collect(Collectors.toList())));
 		return newTable;
+
+	}
+
+	/**
+	 * 用于对集合中的元素进行去重
+	 * <p>
+	 * <b>注意：</b>被比较的泛型对象去重按照equals()方法进行比较，需要正确实现equals()方法，才能达到去重的目的
+	 * </p>
+	 * 
+	 * @param <T>  需要去重的数据类型
+	 * @param list 需要去重的集合
+	 * @return 去重后的集合
+	 */
+	public static <T> List<Optional<T>> removeRepetition(List<Optional<T>> list) {
+		LinkedHashSet<Optional<T>> set = new LinkedHashSet<>();
+		Optional.ofNullable(list).filter(l -> !l.isEmpty()).ifPresent(l -> l.forEach(set::add));
+
+		return new ArrayList<Optional<T>>(set);
+	}
+
+	/**
+	 * 用于根据指定的条件行对表中的数据进行去重
+	 * <p>
+	 * 方法需要指定列名，表示以指定的列为基准，对数据进行去重。类似于数据库中指定字段为主键或联合主键。
+	 * 当指定的列的数据重复时，将舍弃该数据所在行的整行数据，达到去重的目的
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>被比较的泛型对象去重按照equals()方法进行比较，需要正确实现equals()方法</li>
+	 * <li>被舍弃的数据不区分其他内容，只保留第一次存储的数据</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @param <T>       需要去重的数据类型
+	 * @param tableData 需要去重的表
+	 * @param columns   作为条件的列名称
+	 * @return 去重后的表
+	 */
+	public static <T> TableData<T> removeRepetition(TableData<T> tableData, String... columns) {
+		//若传入的条件为空，则直接返回传入的tableData
+		if (!Optional.ofNullable(columns).filter(cs -> cs.length != 0).isPresent()) {
+			return tableData;
+		}
 		
+		//定义新的表数据，并初始化其标题
+		TableData<T> nowTable = new TableData<>();
+		
+		//按行遍历tableData的所有数据，过滤掉与nowTable中指定行数据一致的行数据，之后添加未被过滤的数据
+		Optional.ofNullable(tableData).filter(td -> !td.isEmpty()).ifPresent(td -> {
+			nowTable.addTitle(tableData.getColumnName());
+			td.rowStream().filter(list -> {
+				boolean isRepeat = true;
+				for (String column : columns) {
+					//获取指定列数据，若新表中该列的数据包含了当前的数据，则返回false
+					if (nowTable.getColumnList(column).contains(list.get(tableData.getFieldIndex(column)))) {
+						isRepeat =  true;
+						continue;
+					} else {
+						isRepeat =  false;
+						break;
+					}
+				}
+				
+				//返回不重复的结果
+				return !isRepeat;
+				//由于返回的元素为封装类对象，需要对元素脱壳处理。处理方式为直接返回即可
+			}).map(list -> list.stream().map(e -> e.get()).collect(Collectors.toList())).forEach(nowTable::addRow);
+		});
+		
+		return nowTable;
 	}
 }
