@@ -77,13 +77,13 @@ public class IeBrower extends AbstractBrower {
 	}
 
 	@Override
-	void openBrower() {
+	protected void openBrower() {
 		//构造浏览器
 		driver = new InternetExplorerDriver(ieOption);
 	}
 
 	@Override
-	String getBrowerDriverSetName() {
+	protected String getBrowerDriverSetName() {
 		return "webdriver.ie.driver";
 	}
 }

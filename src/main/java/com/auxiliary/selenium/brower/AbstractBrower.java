@@ -216,14 +216,14 @@ public abstract class AbstractBrower {
 	/**
 	 * 用于打开浏览器
 	 */
-	abstract void openBrower();
+	protected abstract void openBrower();
 
 	/**
 	 * 用于返回浏览器驱动设置的名称，由于每个浏览器不同，导致启动驱动名称也不同
 	 * 
 	 * @return 驱动设置名称
 	 */
-	abstract String getBrowerDriverSetName();
+	protected abstract String getBrowerDriverSetName();
 
 	public String getAllInformation() {
 		// 遍历所有标签页，存储标签页信息

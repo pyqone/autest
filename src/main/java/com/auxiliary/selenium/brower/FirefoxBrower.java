@@ -86,12 +86,12 @@ public class FirefoxBrower extends AbstractBrower {
 	}
 
 	@Override
-	void openBrower() {
+	protected void openBrower() {
 		driver = new FirefoxDriver(firefoxOption);
 	}
 
 	@Override
-	String getBrowerDriverSetName() {
+	protected String getBrowerDriverSetName() {
 		return "webdriver.gecko.driver";
 	}
 
