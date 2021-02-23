@@ -307,7 +307,7 @@ public final class DataTableEvent extends AbstractEvent {
 	/**
 	 * 用于无条件点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮。
 	 * 
-	 * @return列表是否有变化
+	 * @return 列表是否有变化
 	 */
 	public boolean searchList() {
 		return searchList(() -> true);
