@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -39,30 +40,30 @@ public abstract class AbstractBrower {
 	/**
 	 * 用于接收浏览器启动所需的文件路径
 	 */
-	File driverFile;
+	protected File driverFile;
 	/**
 	 * 用于存储获取到的浏览器对象
 	 */
-	WebDriver driver = null;
+	protected WebDriver driver = null;
 	/**
 	 * 存储打开的页面
 	 */
-	HashMap<String, Page> pageMap = new HashMap<String, Page>(16);
+	protected HashMap<String, Page> pageMap = new HashMap<String, Page>(16);
 
 	/**
 	 * 存储浏览器打开的窗口handle值
 	 */
-	HashSet<String> windowHandleSet = new HashSet<>();
+	protected HashSet<String> windowHandleSet = new HashSet<>();
 
 	/**
 	 * 用于存储WebDriver当前指向的页面信息
 	 */
-	Page nowPage;
+	protected Page nowPage;
 
 	/**
 	 * 用于存储浏览器启动时的信息
 	 */
-	JSONObject informationJson = new JSONObject();
+	protected JSONObject informationJson = new JSONObject();
 
 	/**
 	 * 指定驱动文件所在路径
@@ -73,7 +74,7 @@ public abstract class AbstractBrower {
 		this.driverFile = driverFile;
 
 		// 存储页面信息
-		informationJson.put("驱动所在路径", driverFile.getAbsolutePath());
+		Optional.ofNullable(driverFile).ifPresent(file -> informationJson.put("驱动所在路径", driverFile.getAbsolutePath()));
 	}
 
 	/**
@@ -195,13 +196,13 @@ public abstract class AbstractBrower {
 		// 若driver对象未生成，则进行开启浏览器的操作
 		if (driver == null) {
 			// 添加驱动的存储位置
-			System.setProperty(getBrowerDriverSetName(), driverFile.getAbsolutePath());
+			Optional.ofNullable(driverFile).ifPresent(file -> System.setProperty(getBrowerDriverSetName(), driverFile.getAbsolutePath()));
 			// 打开浏览器
 			openBrower();
 
 			// 添加操作信息
 			informationJson.put("浏览器名称", ((RemoteWebDriver) driver).getCapabilities().getBrowserName());
-			informationJson.put("浏览器版本", ((RemoteWebDriver) driver).getCapabilities().getVersion());
+			informationJson.put("浏览器版本", ((RemoteWebDriver) driver).getCapabilities().getBrowserVersion());
 			informationJson.put("操作系统版本", System.getProperties().getProperty("os.name"));
 
 			// 若存在需要打开的页面，则打开第一个页面
@@ -216,14 +217,14 @@ public abstract class AbstractBrower {
 	/**
 	 * 用于打开浏览器
 	 */
-	abstract void openBrower();
+	protected abstract void openBrower();
 
 	/**
 	 * 用于返回浏览器驱动设置的名称，由于每个浏览器不同，导致启动驱动名称也不同
 	 * 
 	 * @return 驱动设置名称
 	 */
-	abstract String getBrowerDriverSetName();
+	protected abstract String getBrowerDriverSetName();
 
 	public String getAllInformation() {
 		// 遍历所有标签页，存储标签页信息

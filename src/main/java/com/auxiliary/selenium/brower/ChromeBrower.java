@@ -169,12 +169,12 @@ public class ChromeBrower extends AbstractBrower {
 	}
 
 	@Override
-	void openBrower() {
+	protected void openBrower() {
 		driver = new ChromeDriver(chromeOption);
 	}
 	
 	@Override
-	String getBrowerDriverSetName() {
+	protected String getBrowerDriverSetName() {
 		return "webdriver.chrome.driver";
 	}
 
