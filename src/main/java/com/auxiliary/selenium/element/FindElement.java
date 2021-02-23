@@ -1,5 +1,6 @@
 package com.auxiliary.selenium.element;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -286,7 +287,7 @@ public abstract class FindElement {
 	 */
 	protected List<WebElement> findElement(List<ByType> byTypeList, List<String> valueList, long waitTime) {
 		try {
-			return new WebDriverWait(brower.getDriver(), waitTime, 200)
+			return new WebDriverWait(brower.getDriver(), Duration.ofSeconds(waitTime), Duration.ofMillis(200))
 					.until(driver -> {
 						int minLength = Math.min(byTypeList.size(), valueList.size());
 						//遍历所有的定位方式与定位内容

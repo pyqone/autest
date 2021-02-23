@@ -72,7 +72,7 @@ public abstract class AbstractEvent {
 	 */
 	public AbstractEvent(AbstractBrower brower) {
 		this.brower = brower;
-		wait = new WebDriverWait(brower.getDriver(), waitTime, 200);
+		wait = new WebDriverWait(brower.getDriver(), Duration.ofSeconds(waitTime), Duration.ofMillis(200));
 	}
 
 	/**
