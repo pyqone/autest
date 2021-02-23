@@ -72,7 +72,7 @@ public abstract class AbstractEvent {
 	 */
 	public AbstractEvent(AbstractBrower brower) {
 		this.brower = brower;
-		wait = new WebDriverWait(brower.getDriver(), waitTime, 200);
+		wait = new WebDriverWait(brower.getDriver(), Duration.ofSeconds(waitTime), Duration.ofMillis(200));
 	}
 
 	/**
@@ -84,6 +84,10 @@ public abstract class AbstractEvent {
 		wait.withTimeout(Duration.ofSeconds(waitTime));
 	}
 	
+	/**
+	 * 用于设置是否将页面移至元素所在的位置
+	 * @param isLocationElement 是否将页面移至元素所在的位置
+	 */
 	public void setLocationElement(boolean isLocationElement) {
 		this.isLocationElement = isLocationElement;
 	}

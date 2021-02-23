@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  * <b>编码时间：</b>2020年12月17日上午8:24:47
  * </p>
  * <p>
- * <b>修改时间：</b>2020年12月17日上午8:24:47
+ * <b>修改时间：</b>2021年2月19日下午6:39:48
  * </p>
  * 
  * @author 彭宇琦
@@ -66,6 +66,10 @@ public class TableData<T> {
 	public TableData(Map<String, ? extends List<T>> tableMap) {
 		tableMap.forEach(this::addColumn);
 	}
+	
+	public TableData(TableData<T> tableData) {
+		this.addTable(tableData);
+	} 
 
 	/**
 	 * 用于设置是否对传入的数据列表的个数进行严格校验，即在调用{@link #getData(int, int, List)}等获取数据的方法时，
@@ -363,8 +367,8 @@ public class TableData<T> {
 	 * @return 指定列的所有数据
 	 */
 	public ArrayList<Optional<T>> getColumnList(String columnName) {
-		columnName = Optional.ofNullable(columnName).filter(tableMap::containsKey)
-				.orElseThrow(() -> new IllegalDataException("不存在的元素列"));
+		Optional.ofNullable(columnName).filter(tableMap::containsKey)
+				.orElseThrow(() -> new IllegalDataException("不存在的元素列：" + columnName));
 
 		ArrayList<Optional<T>> columnDataList = new ArrayList<>();
 		columnDataList.addAll(tableMap.get(columnName));
@@ -389,7 +393,7 @@ public class TableData<T> {
 	public Optional<T> getFirstData() {
 		return getFirstColumn().get(0);
 	}
-
+	
 	/**
 	 * 用于获取指定列与指定列的数据，并以传入的字段顺序，将获取到的每列数据进行存储
 	 * <p>
@@ -549,7 +553,7 @@ public class TableData<T> {
 	public void columnForEach(BiConsumer<String, List<Optional<T>>> action) {
 		tableMap.forEach(action);
 	}
-
+	
 	/**
 	 * 刷新表中最长与最短列的元素个数，用于清空或删除表时的计算
 	 */
@@ -586,5 +590,10 @@ public class TableData<T> {
 		} else {
 			return index;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "[" + tableMap + "]";
 	}
 }

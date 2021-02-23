@@ -140,6 +140,17 @@ public class ElementData {
 	public long getWaitTime() {
 		return waitTime;
 	}
+	
+	/**
+	 * 返回元素定位方式的个数
+	 * <p>
+	 * 若定位方式与定位内容不一致时，则返回两者中的最小长度
+	 * </p>
+	 * @return 元素定位方式的个数
+	 */
+	public int getLocationSize() {
+		return Math.min(byTypeList.size(), valueList.size());
+	}
 
 	/**
 	 * 用于添加元素定位外链词语
