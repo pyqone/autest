@@ -7,7 +7,7 @@ autest为Auxiliary Test的英文缩写意为辅助测试，其中包括日常测
 <dependency>
     <groupId>com.gitee.pyqone</groupId>
     <artifactId>autest</artifactId>
-    <version>2.0.0</version>
+    <version>${NEW_VERSION}</version>
 </dependency>
 ```
 
