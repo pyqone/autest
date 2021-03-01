@@ -135,7 +135,7 @@ public class WaitEvent extends AbstractEvent {
 			logText = "等待“" + element.getElementData().getName() + "”元素加载出文本内容";
 
 			// 判断元素是否存在，若不存在，则直接返回false
-			if (isExistElement(element)) {
+			if (!isExistElement(element)) {
 				resultText = Boolean.toString(false);
 				return false;
 			} else {
