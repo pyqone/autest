@@ -114,7 +114,7 @@ public class WaitEvent extends AbstractEvent {
 			}
 		});
 
-		logText = "等待“" + element.getElementData().getName() + "”元素从页面消失";
+		logText = "等待“" + element.getElementData().getName() + "”元素出现在页面";
 		resultText = String.valueOf(result);
 
 		return result;
@@ -135,7 +135,7 @@ public class WaitEvent extends AbstractEvent {
 			logText = "等待“" + element.getElementData().getName() + "”元素加载出文本内容";
 
 			// 判断元素是否存在，若不存在，则直接返回false
-			if (isExistElement(element)) {
+			if (!isExistElement(element)) {
 				resultText = Boolean.toString(false);
 				return false;
 			} else {
