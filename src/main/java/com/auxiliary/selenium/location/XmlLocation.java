@@ -52,7 +52,7 @@ public class XmlLocation extends AbstractLocation {
 	/**
 	 * 用于存储指向的父层文件对象
 	 */
-	private ArrayList<File> parentFileList = new ArrayList<>();
+	private ArrayList<XmlLocation> parentLocationList = new ArrayList<>();
 	
 	/**
 	 * 根据xml文件对象进行构造
@@ -199,12 +199,11 @@ public class XmlLocation extends AbstractLocation {
 		//将元素名称转换为查找使用的xpath
 		String xpath = Optional.ofNullable(name).filter(n -> !n.isEmpty())
 				.map(n -> "//*[@name='" + n + "']")
-				.orElseThrow(() -> new UndefinedElementException(name, ExceptionElementType.ELEMENT));
+				.orElseThrow(() -> new UndefinedElementException("错误的元素名称：" + name));
 		
-		Element element = (Element) (readDom.selectSingleNode(xpath));
-		if (element != null) {
-			return element;
-		}
+		//根据xpath查找元素
+		return Optional.ofNullable(xpath2Element(xpath))
+				.orElseThrow(() -> new UndefinedElementException(name, ExceptionElementType.ELEMENT));
   	}
 	
 	/**
@@ -216,6 +215,8 @@ public class XmlLocation extends AbstractLocation {
 	 */
 	private String getTemplateValue(String tempId, ByType byType) {
 		String selectTempXpath = "//templet/" + byType.getValue() + "[@id='" + tempId + "']";
+		
+		/*
 		//根据xpath获取元素，若无法获取到元素，则抛出异常
 		Element element = (Element) readDom.selectSingleNode(selectTempXpath);
 		if (element != null) {
@@ -223,6 +224,36 @@ public class XmlLocation extends AbstractLocation {
 		} else {
 			throw new UndefinedElementException(tempId, ExceptionElementType.TEMPLET);
 		}
+		*/
+		return Optional.ofNullable(xpath2Element(selectTempXpath))
+				.orElseThrow(() -> new UndefinedElementException(tempId, ExceptionElementType.TEMPLET))
+				.getText();
+	}
+	
+	/**
+	 * 根据xpath在指定的XmlLocation对象中查找元素
+	 * @param xml XmlLocation对象
+	 * @param xpath 查询元素的xpath
+	 * @return 被查询的元素，无元素时返回null
+	 */
+	private Element xpath2Element(String xpath) {
+		//在当前层级查找节点
+		Element element = (Element) (readDom.selectSingleNode(xpath));
+		//判断节点是否存在，若存在，则返回元素
+		if (element != null) {
+			return element;
+		} else {
+			//若当前不存在节点，则循环查找所有的父层元素，并调用父层的该方法，直到找到元素为止
+			for (XmlLocation x : parentLocationList) {
+				element = x.xpath2Element(xpath);
+				if (element != null) {
+					return element;
+				}
+			}
+		}
+		
+		//若遍历完父层级仍无法找到元素，则返回null
+		return null;
 	}
 	
 	/**
@@ -261,15 +292,8 @@ public class XmlLocation extends AbstractLocation {
 	private void readParentFile() {
 		Optional.ofNullable(readDom.getRootElement().element("parents")).map(e -> e.elements("parent"))
 				.filter(list -> !list.isEmpty()).ifPresent(list -> {
-					list.stream().map(Element::getText).map(File::new).forEach(parentFileList::add);
+					list.stream().map(Element::getText).map(File::new)
+							.map(XmlLocation::new).forEach(parentLocationList::add);
 				});
-	}
-	
-	/**
-	 * TODO 测试方法
-	 * @return
-	 */
-	public ArrayList<File> test() {
-		return parentFileList;
 	}
 }
