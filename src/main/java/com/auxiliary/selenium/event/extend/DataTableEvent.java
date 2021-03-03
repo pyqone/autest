@@ -207,7 +207,7 @@ public final class DataTableEvent extends AbstractEvent {
 			nowCount++;
 		}
 
-		logText = "点击“" + controlMap.get(DataTableKeywordType.PREVIOUS_PAGE_BUTTON).getElementData().getName()
+		logText = "点击“" + controlMap.get(dataTableKeywordType).getElementData().getName()
 				+ "”元素，使列表返回至" + (dataTableKeywordType == DataTableKeywordType.PREVIOUS_PAGE_BUTTON ? "上" : "下")
 				+ "页，其实际翻页数为：" + nowCount;
 		resultText = String.valueOf(nowCount);
