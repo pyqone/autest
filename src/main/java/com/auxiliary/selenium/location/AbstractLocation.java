@@ -31,6 +31,11 @@ public abstract class AbstractLocation implements ReadLocation {
 	 */
 	public static final String END_SIGN = "}";
 	
+	/**
+	 * 用于缓存当前查找的元素
+	 */
+	protected String name = "";
+	
 	
 	/**
 	 * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
@@ -99,5 +104,26 @@ public abstract class AbstractLocation implements ReadLocation {
 		} catch (NumberFormatException e) {
 			return -1L;
 		}
+	}
+	
+	protected ElementInformation find(String name) {
+		
+	}
+	
+	/**
+	 * <p><b>文件名：</b>AbstractLocation.java</p>
+	 * <p><b>用途：</b>
+	 * 缓存当前元素名称的所有信息
+	 * </p>
+	 * <p><b>编码时间：</b>2021年3月4日下午6:38:28</p>
+	 * <p><b>修改时间：</b>2021年3月4日下午6:38:28</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 1.8
+	 *
+	 */
+	protected class ElementInformation {
+		String name;
+		
 	}
 }
