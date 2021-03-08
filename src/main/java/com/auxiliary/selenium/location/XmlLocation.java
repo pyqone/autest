@@ -323,35 +323,10 @@ public class XmlLocation extends AbstractLocation {
 	}
 
 	@Override
-	public ArrayList<ByType> findElementByTypeList() {
-		return byTypeList;
-	}
-
-	@Override
-	public ArrayList<String> findValueList() {
-		return valueList;
-	}
-
-	@Override
-	public ElementType findElementType() {
-		return elementType;
-	}
-
-	@Override
-	public ArrayList<String> findIframeNameList() {
-		return iframeNameList;
-	}
-
-	@Override
-	public long findWaitTime() {
-		return waitTime;
-	}
-
-	@Override
 	public void find(String name) {
 		// 判断传入的名称是否正确
 		String newName = Optional.ofNullable(name).filter(n -> !n.isEmpty())
-				.orElseThrow(() -> new UndefinedElementException("错误的元素名称：" + name));
+				.orElseThrow(() -> new UndefinedElementException(name, ExceptionElementType.ELEMENT));
 		
 		// 判断当前查找的元素是否与原元素名称一致，不一致，则进行元素查找
 		if (!newName.equals(this.name)) {

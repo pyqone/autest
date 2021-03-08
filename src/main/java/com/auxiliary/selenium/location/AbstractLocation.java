@@ -58,6 +58,30 @@ public abstract class AbstractLocation implements ReadLocation {
 	 */
 	protected long waitTime = -1;
 	
+	@Override
+	public ArrayList<ByType> findElementByTypeList() {
+		return byTypeList;
+	}
+
+	@Override
+	public ArrayList<String> findValueList() {
+		return valueList;
+	}
+
+	@Override
+	public ElementType findElementType() {
+		return elementType;
+	}
+
+	@Override
+	public ArrayList<String> findIframeNameList() {
+		return iframeNameList;
+	}
+
+	@Override
+	public long findWaitTime() {
+		return waitTime;
+	}
 	
 	/**
 	 * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
