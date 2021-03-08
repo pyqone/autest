@@ -21,38 +21,100 @@ public interface ReadLocation {
 	 * @param name 元素名称
 	 * @return 元素的所有定位方式（{@link ByType}枚举）集合
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @deprecated 已改进元素查找的机制，需要先调用{@link #find(String)}查找元素后，
+	 * 再调用{@link #findElementByTypeList()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
 	 */
+	@Deprecated
 	public abstract ArrayList<ByType> findElementByTypeList(String name);
+	
+	/**
+	 * 用于返回元素的所有定位方式集合
+	 * @return 元素的所有定位方式（{@link ByType}枚举）集合
+	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @since V2.2.0
+	 */
+	public abstract ArrayList<ByType> findElementByTypeList();
 	
 	/**
 	 * 用于返回与定位方式对应的元素定位内容集合
 	 * @param name 元素名称
 	 * @return 元素定位内容集合
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @deprecated 已改进元素查找的机制，需要先调用{@link #find(String)}查找元素后，
+	 * 再调用{@link #findValueList()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
 	 */
+	@Deprecated
 	public abstract ArrayList<String> findValueList(String name);
+	
+	/**
+	 * 用于返回与定位方式对应的元素定位内容集合
+	 * @return 元素定位内容集合
+	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @since V2.2.0
+	 */
+	public abstract ArrayList<String> findValueList();
 	
 	/**
 	 * 用于返回元素的类型
 	 * @param name 元素名称
 	 * @return 元素类型（{@link ElementType}枚举）
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @deprecated 已改进元素查找的机制，需要先调用{@link #find(String)}查找元素后，
+	 * 再调用{@link #findElementType()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
 	 */
+	@Deprecated
 	public abstract ElementType findElementType(String name);
+	
+	/**
+	 * 用于返回元素的类型
+	 * @return 元素类型（{@link ElementType}枚举）
+	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @since V2.2.0
+	 */
+	public abstract ElementType findElementType();
 	
 	/**
 	 * 用于返回元素的所有父窗体名称集合
 	 * @param name 元素名称
 	 * @return 元素的所有父窗体名称集合
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @deprecated 已改进元素查找的机制，需要先调用{@link #find(String)}查找元素后，
+	 * 再调用{@link #findIframeNameList()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
 	 */
+	@Deprecated
 	public abstract ArrayList<String> findIframeNameList(String name);
+	
+	/**
+	 * 用于返回元素的所有父窗体名称集合
+	 * @return 元素的所有父窗体名称集合
+	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @since V2.2.0
+	 */
+	public abstract ArrayList<String> findIframeNameList();
 	
 	/**
 	 * 用于返回元素的等待时间
 	 * @param name 元素名称
 	 * @return 元素的等待时间
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @deprecated 已改进元素查找的机制，需要先调用{@link #find(String)}查找元素后，
+	 * 再调用{@link #findWaitTime()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
 	 */
+	@Deprecated
 	public abstract long findWaitTime(String name);
+	
+	/**
+	 * 用于返回元素的等待时间
+	 * @return 元素的等待时间
+	 * @throws UndefinedElementException 元素不存在时抛出的异常
+	 * @since V2.2.0
+	 */
+	public abstract long findWaitTime();
+	
+	/**
+	 * 用于预读元素信息，并将元素信息进行缓存，以便于快速查找元素信息
+	 * @param name 元素名称
+	 * @since V2.2.0
+	 */
+	public abstract void find(String name);
 }

@@ -1,5 +1,7 @@
 package com.auxiliary.selenium.location;
 
+import java.util.ArrayList;
+
 import com.auxiliary.selenium.element.ElementType;
 
 /**
@@ -32,9 +34,29 @@ public abstract class AbstractLocation implements ReadLocation {
 	public static final String END_SIGN = "}";
 	
 	/**
-	 * 用于缓存当前查找的元素
+	 * 元素名称
 	 */
 	protected String name = "";
+	/**
+	 * 元素定位方式集合
+	 */
+	protected ArrayList<ByType> byTypeList = new ArrayList<>();
+	/**
+	 * 元素定位内容集合
+	 */
+	protected ArrayList<String> valueList = new ArrayList<>();
+	/**
+	 * 元素类型
+	 */
+	protected ElementType elementType;
+	/**
+	 * 元素父层窗体集合
+	 */
+	protected ArrayList<String> iframeNameList = new ArrayList<>();
+	/**
+	 * 元素等待时间
+	 */
+	protected long waitTime = -1;
 	
 	
 	/**
@@ -106,24 +128,12 @@ public abstract class AbstractLocation implements ReadLocation {
 		}
 	}
 	
-	protected ElementInformation find(String name) {
-		
-	}
-	
 	/**
-	 * <p><b>文件名：</b>AbstractLocation.java</p>
-	 * <p><b>用途：</b>
-	 * 缓存当前元素名称的所有信息
-	 * </p>
-	 * <p><b>编码时间：</b>2021年3月4日下午6:38:28</p>
-	 * <p><b>修改时间：</b>2021年3月4日下午6:38:28</p>
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 * @since JDK 1.8
-	 *
+	 * 用于清理集合类型的缓存
 	 */
-	protected class ElementInformation {
-		String name;
-		
+	protected void clearCache() {
+		byTypeList.clear();
+		valueList.clear();
+		iframeNameList.clear();
 	}
 }

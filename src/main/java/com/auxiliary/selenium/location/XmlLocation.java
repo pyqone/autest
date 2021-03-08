@@ -83,30 +83,62 @@ public class XmlLocation extends AbstractLocation {
 	}
 	
 	@Override
+	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
-		ArrayList<ByType> byTypeList = new ArrayList<ByType>();
-		//查询并存储元素下的子元素
-		ArrayList<Element> lableElementList = new ArrayList<>(getElementLabelElement(name).elements());
-		
-		lableElementList.stream()
-				//获取标签名称
-				.map(lable -> lable.getName())
+		find(name);
+		return findElementByTypeList();
+	}
+
+	@Override
+	@Deprecated
+	public ArrayList<String> findValueList(String name) {
+		find(name);
+		return findValueList();
+	}
+
+	@Override
+	@Deprecated
+	public ElementType findElementType(String name) {
+		find(name);
+		return findElementType();
+	}
+
+	@Override
+	@Deprecated
+	public ArrayList<String> findIframeNameList(String name) {
+		find(name);
+		return findIframeNameList();
+	}
+
+	@Override
+	@Deprecated
+	public long findWaitTime(String name) {
+		find(name);
+		return findWaitTime();
+	}
+	
+	/**
+	 * 用于查找元素的所有定位方式集合，并进行缓存
+	 * @param element 元素对象
+	 */
+	private void saveElementByTypeList(Element element) {
+		//获取标签名称
+		element.elements().stream().map(lable -> lable.getName())
 				//将名称转换为ByType枚举
 				.map(this::toByType)
 				//过滤掉返回为null的元素
 				.filter(lable -> lable != null)
 				//存储标签
 				.forEach(byTypeList::add);
-		
-		return byTypeList;
 	}
-
-	@Override
-	public ArrayList<String> findValueList(String name) {
-		ArrayList<String> valueList = new ArrayList<>();
-		
+	
+	/**
+	 * 用于查找元素定位内容集合，并进行缓存
+	 * @param element 元素对象
+	 */
+	private void saveValueList(Element element) {
 		//查询元素，遍历元素下所有的定位标签，并过滤掉元素标签
-		getElementLabelElement(name).elements().stream().filter(ele -> !"element".equals(ele.getName()))
+		element.elements().stream().filter(ele -> !"element".equals(ele.getName()))
 				//过滤不启用的标签
 				.filter(ele -> {
 					return Optional.ofNullable(ele.attributeValue("is_user"))
@@ -130,63 +162,58 @@ public class XmlLocation extends AbstractLocation {
 					
 					valueList.add(replaceValue(ele, value));
 				});
-		
-		return valueList;
 	}
-
-	@Override
-	public ElementType findElementType(String name) {
-		//查询元素
-		Element element = getElementLabelElement(name);
+	
+	/**
+	 * 用于查找元素的类型，并进行缓存
+	 * @param element 元素对象
+	 */
+	private void saveElementType(Element element) {
 		//若元素标签为iframe，则无法获取属性，直接赋予窗体类型
 		if ("iframe".equals(element.getName())) {
-			return ElementType.IFRAME_ELEMENT;
+			elementType =  ElementType.IFRAME_ELEMENT;
 		} else {
 			//非窗体元素，则获取元素的元素类型属性
 			String elementTypeText = element.attributeValue("element_type");
 			//若属性不存在，则使其指向普通元素
-			return toElementType(elementTypeText == null ? "0" : elementTypeText);
+			elementType =   toElementType(elementTypeText == null ? "0" : elementTypeText);
 		}
 	}
-
-	@Override
-	public ArrayList<String> findIframeNameList(String name) {
-		//查询元素
-		Element element = getElementLabelElement(name);
-		
-		//存储父层iframe元素名称
-		ArrayList<String> iframeName = new ArrayList<>();
-		
+	
+	/**
+	 * 用于查找元素的所有父窗体名称集合，并进行缓存
+	 * @param element 元素对象
+	 */
+	private void saveIframeNameList(Element element) {
 		//循环，获取元素的父层级，直到获取到顶层为止
 		while (!element.isRootElement()) {
 			//定位到元素的父层
 			element = element.getParent();
 			//判断当前元素的标签名称，若为iframe标签，则获取其名称，并存储至集合中
 			if (element.getName().equals("iframe")) {
-				iframeName.add(element.attributeValue("name"));
+				iframeNameList.add(element.attributeValue("name"));
 			}
 		}
 		
 		//反序集合，使最上层窗体排在最前面
-		Collections.reverse(iframeName);
-		return iframeName;
+		Collections.reverse(iframeNameList);
 	}
-
-	@Override
-	public long findWaitTime(String name) {
-		return Optional.ofNullable(getElementLabelElement(name))
-				.map(ele -> ele.attributeValue("wait"))
-				//获取元素存储等待时间属性值，并转换为long类型
-				.map(text -> {
-					try {
-						 return Long.valueOf(text);
-					} catch (NumberFormatException e) {
-						return -1L;
-					}
-				})
-				//过滤时间小于0
-				.filter(time -> time < 0L)
-				.orElse(-1L);
+	
+	/**
+	 * 用于查找元素的等待时间，并进行缓存
+	 * @param element 元素对象
+	 */
+	private void saveWaitTime(Element element) {
+		String waitText = element.attributeValue("wait");
+		try {
+			waitTime = Long.valueOf(waitText);
+			//若等待时间小于0，则以-1赋值
+			if (waitTime < 0L) {
+				waitTime = -1L;
+			}
+		} catch (NumberFormatException e) {
+			waitTime = -1L;
+		}
 	}
 	
 	/**
@@ -197,9 +224,7 @@ public class XmlLocation extends AbstractLocation {
 	 */
 	private Element getElementLabelElement(String name) {
 		//将元素名称转换为查找使用的xpath
-		String xpath = Optional.ofNullable(name).filter(n -> !n.isEmpty())
-				.map(n -> "//*[@name='" + n + "']")
-				.orElseThrow(() -> new UndefinedElementException("错误的元素名称：" + name));
+		String xpath = "//*[@name='" + name + "']";
 		
 		//根据xpath查找元素
 		return Optional.ofNullable(xpath2Element(xpath))
@@ -295,5 +320,52 @@ public class XmlLocation extends AbstractLocation {
 					list.stream().map(Element::getText).map(File::new)
 							.map(XmlLocation::new).forEach(parentLocationList::add);
 				});
+	}
+
+	@Override
+	public ArrayList<ByType> findElementByTypeList() {
+		return byTypeList;
+	}
+
+	@Override
+	public ArrayList<String> findValueList() {
+		return valueList;
+	}
+
+	@Override
+	public ElementType findElementType() {
+		return elementType;
+	}
+
+	@Override
+	public ArrayList<String> findIframeNameList() {
+		return iframeNameList;
+	}
+
+	@Override
+	public long findWaitTime() {
+		return waitTime;
+	}
+
+	@Override
+	public void find(String name) {
+		// 判断传入的名称是否正确
+		String newName = Optional.ofNullable(name).filter(n -> !n.isEmpty())
+				.orElseThrow(() -> new UndefinedElementException("错误的元素名称：" + name));
+		
+		// 判断当前查找的元素是否与原元素名称一致，不一致，则进行元素查找
+		if (!newName.equals(this.name)) {
+			//清除原始缓存
+			clearCache();
+			
+			//查找元素
+			Element element = getElementLabelElement(newName);
+			//根据元素对象查找元素信息，并缓存
+			saveElementByTypeList(element);
+			saveElementType(element);
+			saveIframeNameList(element);
+			saveValueList(element);
+			saveWaitTime(element);
+		}
 	}
 }
