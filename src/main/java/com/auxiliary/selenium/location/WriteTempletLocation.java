@@ -14,7 +14,8 @@ package com.auxiliary.selenium.location;
 public interface WriteTempletLocation {
 	/**
 	 * 用于设置元素定位模板内容，将根据对模板的id来区分模板，多次设置将覆盖上一次设置的内容
-	 * @param templetId 模板id
+	 * 
+	 * @param templetId    模板id
 	 * @param templetValue 模板内容
 	 */
 	public abstract void putTemplet(String templetId, String templetValue);
