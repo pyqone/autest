@@ -34,9 +34,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <p>
  * <b>编码时间：</b>2017年9月25日下午4:23:40
  * </p>
- * <p>
- * <b>修改时间：</b>2020年9月29日上午9:40:40
- * </p>
+ * <p><b>修改时间：</b>2021年3月8日上午8:08:45</p>
  * 
  * @author 彭宇琦
  * @version Ver1.0
@@ -85,36 +83,31 @@ public class XmlLocation extends AbstractLocation {
 	@Override
 	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
-		find(name);
-		return findElementByTypeList();
+		return find(name).getElementByTypeList();
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findValueList(String name) {
-		find(name);
-		return findValueList();
+		return find(name).getValueList();
 	}
 
 	@Override
 	@Deprecated
 	public ElementType findElementType(String name) {
-		find(name);
-		return findElementType();
+		return find(name).getElementType();
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findIframeNameList(String name) {
-		find(name);
-		return findIframeNameList();
+		return find(name).getIframeNameList();
 	}
 
 	@Override
 	@Deprecated
 	public long findWaitTime(String name) {
-		find(name);
-		return findWaitTime();
+		return find(name).getWaitTime();
 	}
 	
 	/**
@@ -323,7 +316,7 @@ public class XmlLocation extends AbstractLocation {
 	}
 
 	@Override
-	public void find(String name) {
+	public ReadLocation find(String name) {
 		// 判断传入的名称是否正确
 		String newName = Optional.ofNullable(name).filter(n -> !n.isEmpty())
 				.orElseThrow(() -> new UndefinedElementException(name, ExceptionElementType.ELEMENT));
@@ -342,5 +335,7 @@ public class XmlLocation extends AbstractLocation {
 			saveValueList(element);
 			saveWaitTime(element);
 		}
+		
+		return this;
 	}
 }

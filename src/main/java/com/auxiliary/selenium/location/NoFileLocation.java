@@ -15,7 +15,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * 方式，并在编写脚本过程中进行调用
  * </p>
  * <p><b>编码时间：</b>2020年10月29日上午8:38:24</p>
- * <p><b>修改时间：</b>2020年10月29日上午8:38:24</p>
+ * <p><b>修改时间：</b>2021年3月9日上午8:08:45</p>
  * @author 彭宇琦
  * @version Ver1.0
  */
@@ -136,33 +136,63 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	}
 
 	@Override
+	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
 		//对json定位方式读取类进行重构判断，并调用相应的方法
-		return getJsonLocation().findElementByTypeList(name);
+		return find(name).getElementByTypeList();
 	}
 
 	@Override
+	@Deprecated
 	public ArrayList<String> findValueList(String name) {
 		//对json定位方式读取类进行重构判断，并调用相应的方法
-		return getJsonLocation().findValueList(name);
+		return find(name).getValueList();
 	}
 
 	@Override
+	@Deprecated
 	public ElementType findElementType(String name) {
 		//对json定位方式读取类进行重构判断，并调用相应的方法
-		return getJsonLocation().findElementType(name);
+		return find(name).getElementType();
 	}
 
 	@Override
+	@Deprecated
 	public ArrayList<String> findIframeNameList(String name) {
 		//对json定位方式读取类进行重构判断，并调用相应的方法
-		return getJsonLocation().findIframeNameList(name);
+		return find(name).getIframeNameList();
 	}
 
 	@Override
+	@Deprecated
 	public long findWaitTime(String name) {
 		//对json定位方式读取类进行重构判断，并调用相应的方法
-		return getJsonLocation().findWaitTime(name);
+		return find(name).getWaitTime();
+	}
+	
+	@Override
+	public ArrayList<ByType> getElementByTypeList() {
+		return jsonLocation.getElementByTypeList();
+	}
+
+	@Override
+	public ArrayList<String> getValueList() {
+		return jsonLocation.getValueList();
+	}
+
+	@Override
+	public ElementType getElementType() {
+		return jsonLocation.getElementType();
+	}
+
+	@Override
+	public ArrayList<String> getIframeNameList() {
+		return jsonLocation.getIframeNameList();
+	}
+
+	@Override
+	public long getWaitTime() {
+		return jsonLocation.getWaitTime();
 	}
 	
 	/**
@@ -183,6 +213,7 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	 * 用于构建JsonLocation类，若当前json未改变，则不重新构造；反之，则重新构造元素定位方式
 	 * @return 返回JsonLocation类
 	 */
+	/*
 	private JsonLocation getJsonLocation() {
 		if (!isJsonChange()) {
 			jsonLocation.analysisJson(newLocationJson.toJSONString());
@@ -191,6 +222,8 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 		
 		return jsonLocation;
 	}
+	*/
+	
 	
 	/**
 	 * 用于判断当前json是否有变化，即是否对当前的json进行过变更
@@ -198,5 +231,15 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	 */
 	private boolean isJsonChange() {
 		return nowLocationJson.equals(newLocationJson);
+	}
+
+	@Override
+	public ReadLocation find(String name) {
+		if (!isJsonChange()) {
+			jsonLocation.analysisJson(newLocationJson.toJSONString());
+			nowLocationJson = JSON.parseObject(newLocationJson.toJSONString());
+		}
+		
+		return jsonLocation.find(name);
 	}
 }

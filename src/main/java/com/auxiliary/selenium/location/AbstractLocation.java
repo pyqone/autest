@@ -10,7 +10,7 @@ import com.auxiliary.selenium.element.ElementType;
  * 定义读取自动化测试中元素定位方式的基本方法
  * </p>
  * <p><b>编码时间：</b>2020年9月28日上午7:37:00</p>
- * <p><b>修改时间：</b>2020年9月28日上午7:37:00</p>
+ * <p><b>修改时间：</b>2021年3月8日上午8:08:45</p>
  * @author 彭宇琦
  * @version Ver1.0
  *
@@ -59,27 +59,27 @@ public abstract class AbstractLocation implements ReadLocation {
 	protected long waitTime = -1;
 	
 	@Override
-	public ArrayList<ByType> findElementByTypeList() {
+	public ArrayList<ByType> getElementByTypeList() {
 		return byTypeList;
 	}
 
 	@Override
-	public ArrayList<String> findValueList() {
+	public ArrayList<String> getValueList() {
 		return valueList;
 	}
 
 	@Override
-	public ElementType findElementType() {
+	public ElementType getElementType() {
 		return elementType;
 	}
 
 	@Override
-	public ArrayList<String> findIframeNameList() {
+	public ArrayList<String> getIframeNameList() {
 		return iframeNameList;
 	}
 
 	@Override
-	public long findWaitTime() {
+	public long getWaitTime() {
 		return waitTime;
 	}
 	

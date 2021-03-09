@@ -20,7 +20,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * 用于读取以json形式存储的元素定位信息
  * </p>
  * <p><b>编码时间：</b>2020年10月28日上午8:24:56</p>
- * <p><b>修改时间：</b>2020年10月28日上午8:24:56</p>
+ * <p><b>修改时间：</b>2021年3月8日上午8:08:45</p>
  * @author 彭宇琦
  * @version Ver1.0
  *
@@ -99,36 +99,31 @@ public class JsonLocation extends AbstractLocation {
 	@Override
 	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
-		find(name);
-		return findElementByTypeList();
+		return find(name).getElementByTypeList();
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findValueList(String name) {
-		find(name);
-		return findValueList();
+		return find(name).getValueList();
 	}
 
 	@Override
 	@Deprecated
 	public ElementType findElementType(String name) {
-		find(name);
-		return findElementType();
+		return find(name).getElementType();
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findIframeNameList(String name) {
-		find(name);
-		return findIframeNameList();
+		return find(name).getIframeNameList();
 	}
 
 	@Override
 	@Deprecated
 	public long findWaitTime(String name) {
-		find(name);
-		return findWaitTime();
+		return find(name).getWaitTime();
 	}
 	
 	/**
@@ -152,7 +147,7 @@ public class JsonLocation extends AbstractLocation {
 	 * @param text json文本
 	 * @throws UndefinedElementException json中无元素信息时抛出的异常
 	 */
-	public void analysisJson(String text) {
+	protected void analysisJson(String text) {
 		//将文件解析成JSONObject类对象
 		JSONObject json = JSON.parseObject(text);
 		
@@ -223,7 +218,7 @@ public class JsonLocation extends AbstractLocation {
 	}
 
 	@Override
-	public void find(String name) {
+	public ReadLocation find(String name) {
 		// 判断传入的名称是否正确
 		String newName = Optional.ofNullable(name).filter(n -> !n.isEmpty())
 				.orElseThrow(() -> new UndefinedElementException(name, ExceptionElementType.ELEMENT));
@@ -242,6 +237,8 @@ public class JsonLocation extends AbstractLocation {
 			saveValueList(element);
 			saveWaitTime(element);
 		}
+		
+		return this;
 	}
 
 	/**
@@ -290,11 +287,10 @@ public class JsonLocation extends AbstractLocation {
 	 * @param element 元素对象
 	 */
 	private void saveIframeNameList(JSONObject element) {
-		//查找当前元素
-		JSONObject elementJson = getElementJson(name);
 		//存储当前元素的父窗体的名称
 		String iframeName = "";
 		
+		JSONObject elementJson = element;
 		//循环，根据父层级向上遍历元素，直到元素无父层窗体为止
 		while(!(iframeName = getNextIframe(elementJson)).isEmpty()) {
 			elementJson = getElementJson(iframeName);

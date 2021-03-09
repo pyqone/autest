@@ -3,6 +3,7 @@ package com.auxiliary.selenium.location;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import com.auxiliary.selenium.element.ElementType;
 
@@ -27,13 +28,12 @@ import com.auxiliary.selenium.element.ElementType;
  * </ul>
  * </p>
  * <p><b>编码时间：</b>2020年11月3日下午8:45:25</p>
- * <p><b>修改时间：</b>2020年11月3日下午8:45:25</p>
+ * <p><b>修改时间：</b>2021年3月9日上午8:08:45</p>
  * @author 彭宇琦
  * @version Ver1.0
  *
  */
 public class TextLocation extends AbstractLocation {
-	//TODO 设计外部使用分隔符号时的转译
 	/**
 	 * 默认元素信息分隔符号
 	 */
@@ -98,8 +98,13 @@ public class TextLocation extends AbstractLocation {
 	 * @param levelSplitSign 元素层级分隔符
 	 */
 	public TextLocation(String text, String infoSplitSign, String levelSplitSign) {
-		this.infoSplitSign = infoSplitSign;
-		this.levelSplitSign = levelSplitSign;
+		Optional.ofNullable(text).filter(t -> !t.isEmpty()).orElseThrow(() -> new UndefinedElementException("元素信息为空"));
+		
+		this.infoSplitSign = Optional.ofNullable(infoSplitSign)
+				.filter(t -> !t.isEmpty()).orElseThrow(() -> new UndefinedElementException("元素信息切分符为空"));
+		
+		this.levelSplitSign = Optional.ofNullable(levelSplitSign)
+				.filter(t -> !t.isEmpty()).orElseThrow(() -> new UndefinedElementException("元素层级切分符为空"));
 		
 		noFileLocation = new NoFileLocation();
 		
@@ -120,29 +125,60 @@ public class TextLocation extends AbstractLocation {
 		this.levelSplitSign = levelSign;
 	}
 	
+	
 	@Override
+	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
 		return noFileLocation.findElementByTypeList(name);
 	}
 
 	@Override
+	@Deprecated
 	public ArrayList<String> findValueList(String name) {
 		return noFileLocation.findValueList(name);
 	}
 
 	@Override
+	@Deprecated
 	public ElementType findElementType(String name) {
 		return noFileLocation.findElementType(name);
 	}
 
 	@Override
+	@Deprecated
 	public ArrayList<String> findIframeNameList(String name) {
 		return noFileLocation.findIframeNameList(name);
 	}
 
 	@Override
+	@Deprecated
 	public long findWaitTime(String name) {
 		return noFileLocation.findWaitTime(name);
+	}
+	
+	@Override
+	public ArrayList<ByType> getElementByTypeList() {
+		return noFileLocation.getElementByTypeList();
+	}
+
+	@Override
+	public ArrayList<String> getValueList() {
+		return noFileLocation.getValueList();
+	}
+
+	@Override
+	public ElementType getElementType() {
+		return noFileLocation.getElementType();
+	}
+
+	@Override
+	public ArrayList<String> getIframeNameList() {
+		return noFileLocation.getIframeNameList();
+	}
+
+	@Override
+	public long getWaitTime() {
+		return noFileLocation.getWaitTime();
 	}
 	
 	/**
@@ -233,5 +269,10 @@ public class TextLocation extends AbstractLocation {
 		}
 		
 		return elementInfoTexts[0];
+	}
+
+	@Override
+	public ReadLocation find(String name) {
+		return noFileLocation.find(name);
 	}
 }

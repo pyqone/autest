@@ -14,7 +14,7 @@ import com.auxiliary.selenium.location.ReadLocation;
  * 用于存储页面元素的基本信息，以便于在查找元素中进行使用
  * </p>
  * <p><b>编码时间：</b>2020年9月27日上午7:50:44</p>
- * <p><b>修改时间：</b>2020年9月27日上午7:50:44</p>
+ * <p><b>修改时间：</b>2021年3月9日上午8:08:45</p>
  * @author 彭宇琦
  * @version Ver1.0
  */
@@ -59,11 +59,12 @@ public class ElementData {
 		this.name = name;
 		
 		//根据传入的读取配置文件类对象，使用其中的返回方法，初始化元素信息
-		byTypeList = read.findElementByTypeList(name);
-		valueList = read.findValueList(name);
-		elementType = read.findElementType(name);
-		iframeNameList = read.findIframeNameList(name);
-		waitTime = read.findWaitTime(name);
+		read.find(name);
+		byTypeList = read.getElementByTypeList();
+		valueList = read.getValueList();
+		elementType = read.getElementType();
+		iframeNameList = read.getIframeNameList();
+		waitTime = read.getWaitTime();
 	}
 
 	/**
