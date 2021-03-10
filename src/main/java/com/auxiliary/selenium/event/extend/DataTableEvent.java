@@ -1,11 +1,14 @@
 package com.auxiliary.selenium.event.extend;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.Keys;
 
@@ -13,7 +16,6 @@ import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.selenium.element.Element;
 import com.auxiliary.selenium.element.FindDataListElement;
 import com.auxiliary.selenium.event.AbstractEvent;
-import com.auxiliary.selenium.event.AssertEvent;
 import com.auxiliary.selenium.event.ClickEvent;
 import com.auxiliary.selenium.event.TextEvent;
 import com.auxiliary.selenium.event.WaitEvent;
@@ -31,13 +33,12 @@ import com.auxiliary.tool.data.TableData;
  * <b>编码时间：</b>2020年11月17日上午7:58:40
  * </p>
  * <p>
- * <b>修改时间：</b>2020年11月17日上午7:58:40
+ * <b>修改时间：</b>2021年3月10日上午8:05:36
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  * @since JDK 1.8
- *
  */
 public final class DataTableEvent extends AbstractEvent {
 	/**
@@ -49,10 +50,6 @@ public final class DataTableEvent extends AbstractEvent {
 	 */
 	private TextEvent textEvent;
 	/**
-	 * 用于进行断言事件
-	 */
-	private AssertEvent assertEvent;
-	/**
 	 * 用于进行等待事件
 	 */
 	private WaitEvent waitEvent;
@@ -60,9 +57,8 @@ public final class DataTableEvent extends AbstractEvent {
 	/**
 	 * 用于存储当前的列表的元素
 	 */
-//	protected ArrayList<DataListBy> tableList = new ArrayList<>();
-//	protected LinkedHashMap<String, List<Element>> tableMap = new LinkedHashMap<>(16);
-	protected TableData<Element> elementTable = new TableData<>();
+//	protected TableData<Element> elementTable = new TableData<>();
+	protected LinkedHashMap<String, FindDataListElement> elementTableMap = new LinkedHashMap<>();
 	/**
 	 * 用于存储列表相应的操作元素映射
 	 */
@@ -76,6 +72,11 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 用于存储当前列表的长度
 	 */
 	protected int listSize = -1;
+	
+	/**
+	 * 用于存储是否需要严格检查
+	 */
+	protected boolean isExamine = true;
 
 	/**
 	 * 构造对象
@@ -87,7 +88,6 @@ public final class DataTableEvent extends AbstractEvent {
 
 		clickEvent = new ClickEvent(brower);
 		textEvent = new TextEvent(brower);
-		assertEvent = new AssertEvent(brower);
 		waitEvent = new WaitEvent(brower);
 	}
 
@@ -96,9 +96,11 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 若元素个数与初次传入的个数不符且需要严格校验，则抛出异常；反之，则直接进行存储
 	 * 
 	 * @param isExamine 是否严格校验元素个数
+	 * @deprecated 方法可在返回列表对象{@link TableData}中调用{@link TableData#setExamine(boolean)}进行设置
 	 */
+	@Deprecated
 	public void setExamine(boolean isExamine) {
-		elementTable.setExamine(isExamine);
+		this.isExamine = isExamine;
 	}
 
 	/**
@@ -120,11 +122,13 @@ public final class DataTableEvent extends AbstractEvent {
 	 * @param dataListBy 元素列查找对象
 	 */
 	public void addList(FindDataListElement dataListBy) {
-		elementTable.addColumn(dataListBy.getElementData().getName(), new ArrayList<>(Optional.ofNullable(dataListBy)
-				// 将By对象转换为元素集合
-				.map(by -> by.getAllElement())
-				// 若当前为空对象，则返回一个空元素集合
-				.orElse(new ArrayList<Element>())));
+		// 判定当前传入的元素是否为空
+		if (Optional.ofNullable(dataListBy).filter(data -> data.size() != 0).isPresent()) {
+//			elementTable.addColumn(dataListBy.getElementData().getName(), dataListBy.getAllElement());
+			elementTableMap.put(dataListBy.getElementData().getName(), dataListBy);
+		} else {
+			throw new InvalidDataListException("指定的元素集合为空或未进行查找");
+		}
 	}
 
 	/**
@@ -138,23 +142,45 @@ public final class DataTableEvent extends AbstractEvent {
 	}
 
 	/**
-	 * 用于点击多次上一页按钮，并返回实际点击次数（实际点击次数）。若设置的翻页次数小于0 ，则持续翻页至无法翻页为止
+	 * <p>
+	 * 用于点击多次上一页按钮，并返回实际点击次数（实际点击次数）。
+	 * </p>
+	 * <p>
+	 * 根据设置的翻页数，对列表进行翻页，若翻页数小于等于0，则不进行翻页。方法可设置需要断言的列，
+	 * 每次翻页时，均会断言对列表设置的值进行断言，以此判断列表翻页是否有效。不传入断言列或断言列
+	 * 为空时，则表示不进行断言
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>在不进行断言或断言列为空时，则翻页将一直返回成功，直到达到指定的翻页数量为止
+	 * </p>
 	 * 
 	 * @param count 点击次数
+	 * @param columnNames 需要进行断言的列名称
 	 * @return 实际点击次数
 	 */
-	public int previousPage(int count) {
-		return pageTurning(DataTableKeywordType.PREVIOUS_PAGE_BUTTON, count);
+	public int previousPage(int count, String...columnNames) {
+		return pageTurning(DataTableKeywordType.PREVIOUS_PAGE_BUTTON, count, columnNames);
 	}
 
 	/**
-	 * 用于点击多次下一页按钮，并返回实际点击次数（实际点击次数）。若设置的翻页次数小于0 ，则持续翻页至无法翻页为止
+	 * <p>
+	 * 用于点击多次下一页按钮，并返回实际点击次数（实际点击次数）。
+	 * </p>
+	 * <p>
+	 * 根据设置的翻页数，对列表进行翻页，若翻页数小于等于0，则不进行翻页。方法可设置需要断言的列，
+	 * 每次翻页时，均会断言对列表设置的值进行断言，以此判断列表翻页是否有效。不传入断言列或断言列
+	 * 为空时，则表示不进行断言
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>在不进行断言或断言列为空时，则翻页将一直返回成功，直到达到指定的翻页数量为止
+	 * </p>
 	 * 
 	 * @param count 点击次数
+	 * @param columnNames 需要进行断言的列名称
 	 * @return 实际点击次数
 	 */
-	public int nextPage(int count) {
-		return pageTurning(DataTableKeywordType.NEXT_PAGE_BUTTON, count);
+	public int nextPage(int count, String...columnNames) {
+		return pageTurning(DataTableKeywordType.NEXT_PAGE_BUTTON, count, columnNames);
 	}
 
 	/**
@@ -162,9 +188,15 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 
 	 * @param dataTableKeywordType 翻页按钮类型
 	 * @param count                指定的翻页次数
+	 * @param columnNames 需要进行断言的列名称
 	 * @return 实际翻页次数
 	 */
-	private int pageTurning(DataTableKeywordType dataTableKeywordType, int count) {
+	protected int pageTurning(DataTableKeywordType dataTableKeywordType, int count, String...columnNames) {
+		//判断翻页数是否大于0，小于0，则直接结束
+		if (count <= 0) {
+			return 0;
+		}
+		
 		// 判断当前按钮是否存在映射
 		if (!controlMap.containsKey(dataTableKeywordType)) {
 			throw new ControlException(dataTableKeywordType.getName(), dataTableKeywordType.toString());
@@ -175,13 +207,14 @@ public final class DataTableEvent extends AbstractEvent {
 		while (true) {
 			// 判断翻页数，若当前翻页数大于指定翻页数时，则结束循环
 			// 若指定的翻页数小于0，则持续翻页，直到翻页失败为止
-			if (nowCount >= count && count >= 0) {
+			if (nowCount >= count) {
 				break;
 			}
 
 			Element controlElement = controlMap.get(dataTableKeywordType);
-
-			boolean result = assertData(() -> {
+			
+			boolean result = true;
+			result = assertData(() -> {
 				// 判断按钮是否可以点击
 				if (!controlElement.getWebElement().isEnabled()) {
 					return false;
@@ -197,7 +230,8 @@ public final class DataTableEvent extends AbstractEvent {
 				} catch (Exception e) {
 					return false;
 				}
-			});
+			}, columnNames);
+			
 
 			// 若点击成功，则nowCount自增，若点击失败，则退出循环
 			if (!result) {
@@ -207,9 +241,9 @@ public final class DataTableEvent extends AbstractEvent {
 			nowCount++;
 		}
 
-		logText = "点击“" + controlMap.get(dataTableKeywordType).getElementData().getName()
-				+ "”元素，使列表返回至" + (dataTableKeywordType == DataTableKeywordType.PREVIOUS_PAGE_BUTTON ? "上" : "下")
-				+ "页，其实际翻页数为：" + nowCount;
+		logText = "点击“" + controlMap.get(dataTableKeywordType).getElementData().getName() + "”元素，使列表返回至"
+				+ (dataTableKeywordType == DataTableKeywordType.PREVIOUS_PAGE_BUTTON ? "上" : "下") + "页，其实际翻页数为："
+				+ nowCount;
 		resultText = String.valueOf(nowCount);
 
 		// 返回实际点击次数
@@ -223,6 +257,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * @param pageCount 页码数
 	 */
 	public boolean jumpPage(String pageCount) {
+		//TODO 添加断言列表形参
 		if (!controlMap.containsKey(DataTableKeywordType.PAGE_INPUT_TEXTBOX)) {
 			throw new ControlException(DataTableKeywordType.PAGE_INPUT_TEXTBOX.getName(),
 					DataTableKeywordType.PAGE_INPUT_TEXTBOX.toString());
@@ -260,9 +295,7 @@ public final class DataTableEvent extends AbstractEvent {
 	/**
 	 * 通过条件，点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮，对列表进行搜索。
 	 * <p>
-	 * 方法中需要接收一个返回值为boolean类型的操作，若操作的返回值为false时，
-	 * 则不会点击按钮，可参考以下写法：
-	 * <code><pre>
+	 * 方法中需要接收一个返回值为boolean类型的操作，若操作的返回值为false时， 则不会点击按钮，可参考以下写法： <code><pre>
 	 * DataTableEvent test = new DataTableEvent(brower);
 	 * test.searchList(() -&gt; {
 	 * 	te.input(cb.getElement("账号搜索文本框"), "13000000000");
@@ -303,7 +336,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 		return result;
 	}
-	
+
 	/**
 	 * 用于无条件点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮。
 	 * 
@@ -318,8 +351,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 获取指定的一行元素，下标允许传入负数，表示从后向前遍历
 	 * </p>
 	 * <p>
-	 * <b>注意：</b>下标从1开始计算，即传入1时表示获取第1行数据；若传入0，则以表中最长列的元素个数为基准，
-	 * 返回一个随机的数字
+	 * <b>注意：</b>下标从1开始计算，即传入1时表示获取第1行数据；若传入0，则以表中最长列的元素个数为基准， 返回一个随机的数字
 	 * </p>
 	 * 
 	 * @param rowIndex 需要获取的行下标
@@ -327,19 +359,21 @@ public final class DataTableEvent extends AbstractEvent {
 	 * @throws ControlException 元素集合为空时抛出的异常
 	 */
 	public List<Optional<Element>> getRowElement(int rowIndex) {
-		//转换下标，若下标为0，则取随机数，若不为0，则使用原下标
+		TableData<Element> elementTable = getElementTable();
+		
+		// 转换下标，若下标为0，则取随机数，若不为0，则使用原下标
 		rowIndex = (rowIndex == 0 ? new Random().nextInt(elementTable.getLongColumnSize()) + 1 : rowIndex);
 		return Optional.ofNullable(elementTable.getData(rowIndex, rowIndex, elementTable.getColumnName()))
-				//将带标题的元素表转换为无标题元素表
+				// 将带标题的元素表转换为无标题元素表
 				.map(ListUtil::toNoTitleTable)
-				//将表转置，使第一列存储获取的行元素
+				// 将表转置，使第一列存储获取的行元素
 				.map(table -> ListUtil.rowDataToList(table, 0))
-				//判断当前元素集合是否为空
+				// 判断当前元素集合是否为空
 				.filter(table -> !table.isEmpty())
-				//若当前为空集合，则抛出异常
+				// 若当前为空集合，则抛出异常
 				.orElseThrow(() -> new ControlException("当前行元素为空，无法获取"));
 	}
-	
+
 	/**
 	 * 获取指定行的文本，其行号可传入负数，具体规则可参考{@link FindDataListElement#getElement(int)}方法
 	 * 
@@ -348,7 +382,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 */
 	public ArrayList<Optional<String>> getRowText(int rowIndex) {
 		// 重新获取列表元素
-		againFindDataList();
+		elementTableMap.forEach((k, v) -> v.find(k));
 
 		ArrayList<Optional<String>> rowTextList = new ArrayList<>(
 				ListUtil.changeList(getRowElement(rowIndex), textEvent::getText));
@@ -359,7 +393,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 		return rowTextList;
 	}
-	
+
 	/**
 	 * 获取指定列的文本，若该列元素异常时，则抛出异常
 	 * 
@@ -367,13 +401,12 @@ public final class DataTableEvent extends AbstractEvent {
 	 * @return 指定列的文本内容
 	 * @throws ControlException 该列不存在或该列元素为空时抛出的异常
 	 */
-	public  ArrayList<Optional<String>> getListText(String listName) {
+	public ArrayList<Optional<String>> getListText(String listName) {
 		// 重新获取列表元素
-		againFindDataList();
+		elementTableMap.forEach((k, v) -> v.find(k));
 
 		ArrayList<Optional<String>> listTextList = new ArrayList<>(
-				ListUtil.changeList(elementTable.getColumnList(listName), textEvent::getText));
-
+				ListUtil.changeList(getElementTable().getColumnList(listName), textEvent::getText));
 
 		// 添加日志
 		resultText = listTextList.toString();
@@ -381,31 +414,40 @@ public final class DataTableEvent extends AbstractEvent {
 
 		return listTextList;
 	}
-	
+
 	/**
 	 * 用于以{@link TableData}的形式返回元素列表
+	 * 
 	 * @return 元素列表
 	 */
 	public TableData<Element> getElementTable() {
-		
-		return new TableData<Element>(elementTable);
+		TableData<Element> elementTable = new TableData<>();
+		elementTableMap.forEach((key, value) -> {
+			//重新获取数据
+			value.find(key);
+			//存储数据
+			elementTable.addColumn(key, value.getAllElement());
+		});
+		return elementTable;
 	}
-	
+
 	/**
 	 * 用于随机返回指定列表的随机一个元素
+	 * 
 	 * @param listName 列表名称
 	 * @return 指定列表的随机元素
 	 */
 	public Element getRandomElement(String listName) {
-		//按列表长度获取随机数
+		TableData<Element> elementTable = getElementTable();
+		
+		// 按列表长度获取随机数
 		int listSize = elementTable.getListSize(listName);
 		int randomIndex = new Random().nextInt(listSize);
-		
-		//根据随机数返回元素；若当前随机的元素不存在，则返回列表第一个元素
-		//若列表第一个元素仍不存在，则跑出异常
-		return elementTable.getColumnList(listName).get(randomIndex)
-				.orElse(elementTable.getColumnList(listName).get(0)
-						.orElseThrow(() -> new ControlException("当前列元素为空，无法获取")));
+
+		// 根据随机数返回元素；若当前随机的元素不存在，则返回列表第一个元素
+		// 若列表第一个元素仍不存在，则跑出异常
+		return elementTable.getColumnList(listName).get(randomIndex).orElse(
+				elementTable.getColumnList(listName).get(0).orElseThrow(() -> new ControlException("当前列元素为空，无法获取")));
 	}
 
 	/**
@@ -414,24 +456,33 @@ public final class DataTableEvent extends AbstractEvent {
 	 * @param action 需要执行的内容
 	 * @return 是否翻页成功
 	 */
-	protected boolean assertData(BooleanSupplier action) {
-		// 若元素列表非空，则获取第一行元素，用于进行断言
-		ArrayList<Optional<String>> oldTextList = new ArrayList<>();
-		if (elementTable.getLongColumnSize() > 0) {
-			// 获取第一行元素，并将其转换为文本后存储
-			oldTextList = getRowText(1);
-		}
-		// 获取当前集合的长度
-		int oldListSize = elementTable.getShortColumnSize();
-
+	protected boolean assertData(BooleanSupplier action, String...columnNames) {
+		List<String> oldTextList = getAssertRowText(columnNames);
 		// 执行操作，并获取操作的返回结果；若返回值为true，则需要进行元素断言操作
 		if (action.getAsBoolean()) {
 			// 若当前未获取原元素的内容，则不进行列表断言
-			if (oldTextList.size() != 0) {
-				// 断言元素，并返回结果
-				return assertDataChange(oldTextList, oldListSize);
-			} else {
+			if (oldTextList.isEmpty()) {
 				return true;
+			} else {
+				//重新获取元素
+				elementTableMap.forEach((k, v) -> v.find(k));
+				//再次获取断言行文本
+				List<String> newTextList = getAssertRowText(columnNames);
+				
+				//对比两集合的长度，若长度不一致，则返回true
+				if (oldTextList.size() != newTextList.size()) {
+					return true;
+				} else {
+					//对文本一一比对，若存在不一致的数据，则返回true
+					for (int i = 0; i < oldTextList.size(); i++) {
+						if (!oldTextList.get(i).equals(newTextList.get(i))) {
+							return true;
+						}
+					}
+					
+					//若所有数据均一致，则返回false
+					return false;
+				}
 			}
 		} else {
 			return false;
@@ -439,50 +490,24 @@ public final class DataTableEvent extends AbstractEvent {
 	}
 
 	/**
-	 * 断言数据是否有改变，若数据改变，则返回true；反之，返回false
-	 * 
-	 * @param oldTextList 原始数据文本集合
-	 * @param oldListSize 原始数据个数
-	 * @return 元素是否存在改变
+	 * 用于返回断言所需指定列的第一行文本
+	 * @param columnNames 列名称数组
+	 * @return 获取的文本集合
 	 */
-	protected boolean assertDataChange(ArrayList<Optional<String>> oldTextList, int oldListSize) {
-		// 重新获取集合元素
-		againFindDataList();
-
-		// 获取操作后的第一行元素
-		List<Optional<Element>> newElementList = getRowElement(1);
-
-		// 若集合的长度发生改变，则表示集合存在变化
-		if (oldListSize != listSize) {
-			return true;
+	protected List<String> getAssertRowText(String...columnNames) {
+		//若断言列为空或存储的列为空，则记录需要直接返回true
+		if (Optional.ofNullable(columnNames).filter(c -> c.length != 0).isPresent() && elementTableMap.isEmpty()) {
+			// 若元素列表非空，则获取第一行元素，用于进行断言
+			return Arrays.stream(columnNames).filter(elementTableMap::containsKey)
+					.filter(name -> elementTableMap.get(name).size() > 0)
+					.map(name -> elementTableMap.get(name).getElement(1))
+					.map(textEvent::getText)
+					.collect(Collectors.toList());
+		} else {
+			return new ArrayList<String>();
 		}
-
-		// 为避免不进行翻页时，列表也会进行一次刷新，则获取信息，对每个文本数据进行比对
-		for (int index = 0; index < oldTextList.size(); index++) {
-			if (assertEvent.assertNotEqualsText(newElementList.get(index).orElse(null), oldTextList.get(index).orElse(""))) {
-				return true;
-			}
-		}
-
-		return false;
 	}
-
-	/**
-	 * 用于重新获取元素信息
-	 */
-	private void againFindDataList() {
-		elementTable.getFirstRowData().forEach(data -> {
-			if (data.isPresent()) {
-				Element element = data.get();
-				element.againFindElement();
-				
-				String columnName = element.getElementData().getName();
-				elementTable.clearColumn(columnName);
-				addList((FindDataListElement) element.getBy());
-			}
-		});
-	}
-
+	
 	/**
 	 * <p>
 	 * <b>文件名：</b>DataTableEvent.java
