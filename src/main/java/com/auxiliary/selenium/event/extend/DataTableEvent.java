@@ -458,7 +458,7 @@ public final class DataTableEvent extends AbstractEvent {
 		if (action.getAsBoolean()) {
 			// 若当前未获取原元素的内容，则不进行列表断言
 			if (oldTextList.isEmpty()) {
-				return true;
+				return false;
 			} else {
 				//重新获取元素
 				elementTableMap.forEach((k, v) -> v.find(k));
@@ -492,7 +492,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 */
 	protected List<String> getAssertRowText(String...columnNames) {
 		//若断言列为空或存储的列为空，则记录需要直接返回true
-		if (Optional.ofNullable(columnNames).filter(c -> c.length != 0).isPresent() && elementTableMap.isEmpty()) {
+		if (Optional.ofNullable(columnNames).filter(c -> c.length != 0).isPresent() && !elementTableMap.isEmpty()) {
 			// 若元素列表非空，则获取第一行元素，用于进行断言
 			return Arrays.stream(columnNames).filter(elementTableMap::containsKey)
 					.filter(name -> elementTableMap.get(name).size() > 0)
