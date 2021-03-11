@@ -210,7 +210,7 @@ public final class DataTableEvent extends AbstractEvent {
 			if (nowCount >= count) {
 				break;
 			}
-
+			
 			Element controlElement = controlMap.get(dataTableKeywordType);
 			
 			boolean result = true;
@@ -220,16 +220,12 @@ public final class DataTableEvent extends AbstractEvent {
 					return false;
 				}
 
-				try {
-					clickEvent.click(controlElement);
-					// 等待控件消失
-					if (waitElement != null) {
-						waitEvent.disappear(waitElement);
-					}
-					return true;
-				} catch (Exception e) {
-					return false;
+				clickEvent.click(controlElement);
+				// 等待控件消失
+				if (waitElement != null) {
+					waitEvent.disappear(waitElement);
 				}
+				return true;
 			}, columnNames);
 			
 

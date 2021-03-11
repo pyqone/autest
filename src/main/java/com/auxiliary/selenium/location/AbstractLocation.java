@@ -67,12 +67,12 @@ public abstract class AbstractLocation implements ReadLocation {
 
 	@Override
 	public ArrayList<ByType> getElementByTypeList() {
-		return byTypeList;
+		return new ArrayList<ByType> (byTypeList);
 	}
 
 	@Override
 	public ArrayList<String> getValueList() {
-		return valueList;
+		return new ArrayList<String> (valueList);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public abstract class AbstractLocation implements ReadLocation {
 
 	@Override
 	public ArrayList<String> getIframeNameList() {
-		return iframeNameList;
+		return new ArrayList<String> (iframeNameList);
 	}
 
 	@Override
