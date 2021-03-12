@@ -379,40 +379,6 @@ public final class DataTableEvent extends AbstractEvent {
 	 * @see #searchList(BooleanSupplier, String...)
 	 */
 	public List<Boolean> searchList(String columnName, String key, Element textboxElement) {
-		/*
-		 * List<Boolean> resultList = new ArrayList<>(); // 判断关键词是否为空 if
-		 * (!Optional.ofNullable(key).filter(k -> !k.isEmpty()).isPresent()) { return
-		 * resultList; }
-		 * 
-		 * // 判断控件是否存在 if (!Optional.ofNullable(textboxElement).isPresent()) { throw new
-		 * ControlException("未指定搜索条件元素"); }
-		 * 
-		 * // 判断控件是否存在 if (!controlMap.containsKey(DataTableKeywordType.SEARCH_BUTTON))
-		 * { throw new ControlException(DataTableKeywordType.SEARCH_BUTTON.getName(),
-		 * DataTableKeywordType.SEARCH_BUTTON.toString()); }
-		 * 
-		 * // 输入关键词，点击搜索 textEvent.input(textboxElement, key);
-		 * clickEvent.click(controlMap.get(DataTableKeywordType.SEARCH_BUTTON));
-		 * 
-		 * // 等待控件消失 if (waitElement != null) { waitEvent.disappear(waitElement); }
-		 * 
-		 * // 判断指定的列是否存在，存在则进行断言操作 Optional.ofNullable(columnName).filter(name ->
-		 * !name.isEmpty()).filter(elementTableMap::containsKey) .ifPresent(name -> { //
-		 * 重新获取列元素，并对列所有的元素文本进行断言
-		 * elementTableMap.get(name).find(name).getAllElement().stream() .map(e ->
-		 * assertEvent.assertTextContainKey(e, true, key)).forEach(resultList::add); });
-		 * 
-		 * // 记录日志 logText = String.format("在“%s”搜索条件输入“%s”，点击“%s”元素，对列表进行搜索",
-		 * textboxElement.getElementData().getName(), key,
-		 * controlMap.get(DataTableKeywordType.SEARCH_BUTTON).getElementData().getName()
-		 * ); if (!resultList.isEmpty()) { StringJoiner text = new StringJoiner("\n");
-		 * for (int i = 0; i < resultList.size(); i++) {
-		 * text.add(String.format("列表第%d条数据%s包含关键词“%s”", i, resultList.get(i) ? "" :
-		 * "不", key)); } resultText = text.toString(); } else { resultText = "未进行列表断言";
-		 * }
-		 * 
-		 * return resultList;
-		 */
 		// 判断控件是否存在
 		if (!Optional.ofNullable(textboxElement).isPresent()) {
 			throw new ControlException("未指定搜索条件元素");
