@@ -5,6 +5,9 @@
 /Templet/
 /Test/
 /Resource/
+/src/test/java
+/src/test/resources
+/logs/
 .classpath
 .factorypath
 .project
@@ -13,3 +16,4 @@
 .settings/org.eclipse.jdt.core.prefs
 .settings/org.eclipse.m2e.core.prefs
 .settings/org.testng.eclipse.maven.prefs
+.gitignore
