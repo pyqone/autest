@@ -251,6 +251,8 @@ public class JsonLocation extends AbstractLocation {
 			saveIframeNameList(element);
 			saveValueList(element);
 			saveWaitTime(element);
+			
+			this.name = newName;
 		}
 
 		return this;

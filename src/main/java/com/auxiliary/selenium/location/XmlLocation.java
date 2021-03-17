@@ -3,6 +3,7 @@ package com.auxiliary.selenium.location;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.dom4j.Attribute;
@@ -42,7 +43,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * @since JDK 8
  *
  */
-public class XmlLocation extends AbstractLocation {
+public class XmlLocation extends AbstractLocation implements ReadElementLimit {
 	/**
 	 * 存储构造后的Document类对象，以读取xml文件中的内容
 	 */
@@ -340,8 +341,32 @@ public class XmlLocation extends AbstractLocation {
 			saveIframeNameList(element);
 			saveValueList(element);
 			saveWaitTime(element);
+			
+			this.name = newName;
 		}
 
 		return this;
+	}
+
+	private void saveDefaultValue() {
+		
+	}
+	
+	@Override
+	public String getDefaultValue() {
+		// 查找元素
+		Element element = getElementLabelElement(name);
+	}
+
+	@Override
+	public List<LimitType> getLimitType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> getLimitValue() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
