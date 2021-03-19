@@ -243,12 +243,6 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit {
 	private String getTemplateValue(String tempId, ByType byType) {
 		String selectTempXpath = "//templet/" + byType.getValue() + "[@id='" + tempId + "']";
 
-		/*
-		 * //根据xpath获取元素，若无法获取到元素，则抛出异常 Element element = (Element)
-		 * readDom.selectSingleNode(selectTempXpath); if (element != null) { return
-		 * element.getText(); } else { throw new UndefinedElementException(tempId,
-		 * ExceptionElementType.TEMPLET); }
-		 */
 		return Optional.ofNullable(xpath2Element(selectTempXpath))
 				.orElseThrow(() -> new UndefinedElementException(tempId, ExceptionElementType.TEMPLET)).getText();
 	}
@@ -348,25 +342,10 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit {
 		return this;
 	}
 
-	private void saveDefaultValue() {
-		
-	}
-	
 	@Override
 	public String getDefaultValue() {
 		// 查找元素
 		Element element = getElementLabelElement(name);
-	}
-
-	@Override
-	public List<LimitType> getLimitType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> getLimitValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return Optional.ofNullable(element.attributeValue("value")).orElse("");
 	}
 }
