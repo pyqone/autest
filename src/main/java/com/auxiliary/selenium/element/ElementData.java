@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import com.auxiliary.selenium.location.AbstractLocation;
-import com.auxiliary.selenium.location.ByType;
+import com.auxiliary.selenium.location.ElementLocation;
 import com.auxiliary.selenium.location.ReadLocation;
 
 /**
@@ -33,11 +33,12 @@ public class ElementData {
 	/**
 	 * 存储元素的定位方式，需要与valueList一一对应
 	 */
-	private ArrayList<ByType> byTypeList = new ArrayList<>();
+//	private ArrayList<ByType> byTypeList = new ArrayList<>();
 	/**
 	 * 存储元素的定位内容，需要与byTypeList一一对应
 	 */
-	private ArrayList<String> valueList = new ArrayList<>();
+//	private ArrayList<String> valueList = new ArrayList<>();
+	private ArrayList<ElementLocation> locationList = new ArrayList<>();
 	/**
 	 * 用于标记元素的类型
 	 */
@@ -68,8 +69,9 @@ public class ElementData {
 
 		// 根据传入的读取配置文件类对象，使用其中的返回方法，初始化元素信息
 		read.find(name);
-		byTypeList = read.getElementByTypeList();
-		valueList = read.getValueList();
+//		byTypeList = read.getElementByTypeList();
+//		valueList = read.getValueList();
+		locationList = read.getElementLocation();
 		elementType = read.getElementType();
 		iframeNameList = read.getIframeNameList();
 		waitTime = read.getWaitTime();
@@ -89,28 +91,28 @@ public class ElementData {
 	 * 
 	 * @return 元素定位类型集合
 	 */
-	public ArrayList<ByType> getByTypeList() {
-		return byTypeList;
-	}
+//	public ArrayList<ByType> getByTypeList() {
+//		return byTypeList;
+//	}
 
 	/**
 	 * 返回元素定位内容集合
 	 * 
 	 * @return 元素定位内容集合
 	 */
-	public ArrayList<String> getValueList() {
+	public ArrayList<ElementLocation> getLocationList() {
 		// 若存储的外链词语不为空，则对需要外链的定位内容进行处理
 		if (!linkWordList.isEmpty()) {
-			for (int i = 0; i < valueList.size(); i++) {
+			for (int i = 0; i < locationList.size(); i++) {
 				// 判断字符串是否包含替换词语的开始标志，若不包含，则进行不进行替换操作
-				if (!valueList.get(i).contains(AbstractLocation.START_SIGN)) {
+				if (!locationList.get(i).getLocationText().contains(AbstractLocation.START_SIGN)) {
 					continue;
 				}
 
 				// 获取替换词语集合的迭代器
 				Iterator<String> linkWordIter = linkWordList.iterator();
 				// 存储当前定位内容文本
-				StringBuilder value = new StringBuilder(valueList.get(i));
+				StringBuilder value = new StringBuilder(locationList.get(i).getLocationText());
 				// 循环，替换当前定位内容中所有需要替换的词语，直到无词语替换或定位内容不存在需要替换的词语为止
 				while (linkWordIter.hasNext() && value.indexOf(AbstractLocation.START_SIGN) > -1) {
 					// 存储替换符的开始和结束位置
@@ -122,11 +124,11 @@ public class ElementData {
 				}
 
 				// 存储当前替换后的定位内容
-				valueList.set(i, value.toString());
+				locationList.get(i).setLocationText(value.toString());
 			}
 		}
 
-		return valueList;
+		return locationList;
 	}
 
 	/**
@@ -163,9 +165,11 @@ public class ElementData {
 	 * </p>
 	 * 
 	 * @return 元素定位方式的个数
+	 * @deprecated 通过{@link #getLocationList()}方法获取到集合后，调用{@link ArrayList#size()}可获得
 	 */
+	@Deprecated
 	public int getLocationSize() {
-		return Math.min(byTypeList.size(), valueList.size());
+		return locationList.size();
 	}
 
 	/**

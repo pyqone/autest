@@ -162,13 +162,8 @@ public class TextLocation extends AbstractLocation {
 	}
 
 	@Override
-	public ArrayList<ByType> getElementByTypeList() {
-		return noFileLocation.getElementByTypeList();
-	}
-
-	@Override
-	public ArrayList<String> getValueList() {
-		return noFileLocation.getValueList();
+	public ArrayList<ElementLocation> getElementLocation() {
+		return noFileLocation.getElementLocation();
 	}
 
 	@Override

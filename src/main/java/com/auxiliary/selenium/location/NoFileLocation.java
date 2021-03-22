@@ -145,14 +145,14 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
 		// 对json定位方式读取类进行重构判断，并调用相应的方法
-		return find(name).getElementByTypeList();
+		return jsonLocation.findElementByTypeList(name);
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findValueList(String name) {
 		// 对json定位方式读取类进行重构判断，并调用相应的方法
-		return find(name).getValueList();
+		return jsonLocation.findValueList(name);
 	}
 
 	@Override
@@ -175,15 +175,10 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 		// 对json定位方式读取类进行重构判断，并调用相应的方法
 		return find(name).getWaitTime();
 	}
-
+	
 	@Override
-	public ArrayList<ByType> getElementByTypeList() {
-		return jsonLocation.getElementByTypeList();
-	}
-
-	@Override
-	public ArrayList<String> getValueList() {
-		return jsonLocation.getValueList();
+	public ArrayList<ElementLocation> getElementLocation() {
+		return jsonLocation.getElementLocation();
 	}
 
 	@Override
