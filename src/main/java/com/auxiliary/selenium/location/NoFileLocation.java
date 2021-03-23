@@ -177,7 +177,7 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	}
 	
 	@Override
-	public ArrayList<ElementLocation> getElementLocation() {
+	public ArrayList<ElementLocationInfo> getElementLocation() {
 		return jsonLocation.getElementLocation();
 	}
 

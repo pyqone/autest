@@ -115,14 +115,14 @@ public class JsonLocation extends AbstractLocation {
 	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
 		return new ArrayList<ByType>(
-				find(name).getElementLocation().stream().map(ElementLocation::getByType).collect(Collectors.toList()));
+				find(name).getElementLocation().stream().map(ElementLocationInfo::getByType).collect(Collectors.toList()));
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findValueList(String name) {
 		return new ArrayList<String>(
-				find(name).getElementLocation().stream().map(ElementLocation::getLocationText).collect(Collectors.toList()));
+				find(name).getElementLocation().stream().map(ElementLocationInfo::getLocationText).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -288,8 +288,8 @@ public class JsonLocation extends AbstractLocation {
 	}
 
 	@Override
-	public ArrayList<ElementLocation> getElementLocation() {
-		ArrayList<ElementLocation> locationList = new ArrayList<>();
+	public ArrayList<ElementLocationInfo> getElementLocation() {
+		ArrayList<ElementLocationInfo> locationList = new ArrayList<>();
 
 		// 获取当前元素的定位数组
 		JSONArray locationListJson = element.getJSONArray(KEY_LOCATION);
@@ -327,7 +327,7 @@ public class JsonLocation extends AbstractLocation {
 					locationText = analysisTemplet(locationJson);
 				}
 
-				locationList.add(new ElementLocation(byType, locationText));
+				locationList.add(new ElementLocationInfo(byType, locationText));
 			}
 		}
 

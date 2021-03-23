@@ -20,7 +20,6 @@ import com.auxiliary.selenium.element.ElementType;
  * 
  * @author 彭宇琦
  * @version Ver1.0
- *
  */
 public interface ReadLocation {
 	/**
@@ -36,15 +35,6 @@ public interface ReadLocation {
 	public abstract ArrayList<ByType> findElementByTypeList(String name);
 
 	/**
-	 * 用于返回元素的所有定位方式集合
-	 * 
-	 * @return 元素的所有定位方式（{@link ByType}枚举）集合
-	 * @throws UndefinedElementException 元素不存在时抛出的异常
-	 * @since autest 2.2.0
-	 */
-//	public abstract ArrayList<ByType> getElementByTypeList();
-
-	/**
 	 * 用于返回与定位方式对应的元素定位内容集合
 	 * 
 	 * @param name 元素名称
@@ -57,20 +47,12 @@ public interface ReadLocation {
 	public abstract ArrayList<String> findValueList(String name);
 
 	/**
-	 * 用于返回与定位方式对应的元素定位内容集合
-	 * 
-	 * @return 元素定位内容集合
-	 * @throws UndefinedElementException 元素不存在时抛出的异常
-	 * @since autest 2.2.0
-	 */
-//	public abstract ArrayList<String> getValueList();
-	/**
 	 * 用于返回元素的定位信息
 	 * @return 元素定位信息
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
 	 * @since autest 2.2.0
 	 */
-	public abstract ArrayList<ElementLocation> getElementLocation();
+	public abstract ArrayList<ElementLocationInfo> getElementLocation();
 
 	/**
 	 * 用于返回元素的类型

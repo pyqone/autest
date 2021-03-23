@@ -14,7 +14,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.selenium.location.AbstractLocation;
 import com.auxiliary.selenium.location.ByType;
-import com.auxiliary.selenium.location.ElementLocation;
+import com.auxiliary.selenium.location.ElementLocationInfo;
 
 /**
  * <p>
@@ -281,7 +281,7 @@ public abstract class FindElement {
 		}
 
 		// 获取元素的定位类型及定位内容
-		ArrayList<ElementLocation> locationList = elementData.getLocationList();
+		ArrayList<ElementLocationInfo> locationList = elementData.getLocationList();
 
 		List<WebElement> elementList = findElement(locationList,
 				elementData.getWaitTime() == -1 ? globalWaitTime : elementData.getWaitTime());
@@ -302,7 +302,7 @@ public abstract class FindElement {
 	 * @param waitTime   元素查找超时时间
 	 * @return 页面查找到的{@link WebElement}类对象{@link List}集合
 	 */
-	protected List<WebElement> findElement(List<ElementLocation> locationList, long waitTime) {
+	protected List<WebElement> findElement(List<ElementLocationInfo> locationList, long waitTime) {
 		try {
 			return new WebDriverWait(brower.getDriver(), Duration.ofSeconds(waitTime), Duration.ofMillis(200))
 					.until(driver -> {

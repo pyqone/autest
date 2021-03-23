@@ -91,14 +91,14 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit {
 	@Override
 	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
-		return new ArrayList<ByType>(find(name).getElementLocation().stream().map(ElementLocation::getByType)
+		return new ArrayList<ByType>(find(name).getElementLocation().stream().map(ElementLocationInfo::getByType)
 				.collect(Collectors.toList()));
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findValueList(String name) {
-		return new ArrayList<String>(find(name).getElementLocation().stream().map(ElementLocation::getLocationText)
+		return new ArrayList<String>(find(name).getElementLocation().stream().map(ElementLocationInfo::getLocationText)
 				.collect(Collectors.toList()));
 	}
 
@@ -121,8 +121,8 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit {
 	}
 
 	@Override
-	public ArrayList<ElementLocation> getElementLocation() {
-		ArrayList<ElementLocation> locationList = new ArrayList<>();
+	public ArrayList<ElementLocationInfo> getElementLocation() {
+		ArrayList<ElementLocationInfo> locationList = new ArrayList<>();
 		// 判断是否进行元素查找
 		if (element == null) {
 			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
@@ -160,7 +160,7 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit {
 			locationText = replaceValue(e, locationText);
 
 			// 构造并存储该定位方式
-			locationList.add(new ElementLocation(byType, locationText));
+			locationList.add(new ElementLocationInfo(byType, locationText));
 		}
 
 		return locationList;

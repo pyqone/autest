@@ -12,7 +12,7 @@ package com.auxiliary.selenium.location;
  * @since JDK 1.8
  * @since autest 2.2.0
  */
-public class ElementLocation {
+public class ElementLocationInfo {
 	/**
 	 * 存储元素定位类型
 	 */
@@ -27,7 +27,7 @@ public class ElementLocation {
 	 * @param byType 元素定位类型
 	 * @param locationText 元素定位方式
 	 */
-	public ElementLocation(ByType byType, String locationText) {
+	public ElementLocationInfo(ByType byType, String locationText) {
 		this.byType = byType;
 		this.locationText = locationText;
 	}
