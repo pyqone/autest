@@ -1,5 +1,7 @@
 package com.auxiliary.datadriven;
 
+import java.util.Optional;
+
 /**
  * <p><b>文件名：</b>DataDriverFunction.java</p>
  * <p><b>用途：</b>
@@ -28,8 +30,8 @@ public class DataDriverFunction {
 	 * @param function 数据对应的处理方法
 	 */
 	public DataDriverFunction(String regex, DataFunction function) {
-		this.regex = regex;
-		this.function = function;
+		this.regex = Optional.ofNullable(regex).filter(re -> !re.isEmpty()).orElseThrow(FunctionExceptional::new);
+		this.function = Optional.ofNullable(function).orElseThrow(FunctionExceptional::new);
 	}
 
 	/**
@@ -46,5 +48,21 @@ public class DataDriverFunction {
 	 */
 	public DataFunction getFunction() {
 		return function;
+	}
+	
+	public class FunctionExceptional extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public FunctionExceptional() {
+			this("未指定公式名称或公式本体");
+		}
+
+		public FunctionExceptional(String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		public FunctionExceptional(String message) {
+			super(message);
+		}
 	}
 }
