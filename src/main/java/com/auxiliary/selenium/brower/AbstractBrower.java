@@ -64,7 +64,14 @@ public abstract class AbstractBrower {
 	 * 用于存储浏览器启动时的信息
 	 */
 	protected JSONObject informationJson = new JSONObject();
-
+	
+	/**
+	 * 无参构造，方便子类扩展其他构造方法
+	 */
+	protected AbstractBrower(Page page){
+		nowPage = page;
+	}
+	
 	/**
 	 * 指定驱动文件所在路径
 	 * 
