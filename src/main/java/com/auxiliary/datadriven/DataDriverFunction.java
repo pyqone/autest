@@ -28,6 +28,7 @@ public class DataDriverFunction {
 	 * 初始化数据
 	 * @param regex 正则表达式
 	 * @param function 数据对应的处理方法
+	 * @throws FunctionExceptional 未指定公式匹配规则或公式时抛出的异常
 	 */
 	public DataDriverFunction(String regex, DataFunction function) {
 		this.regex = Optional.ofNullable(regex).filter(re -> !re.isEmpty()).orElseThrow(FunctionExceptional::new);
@@ -50,6 +51,56 @@ public class DataDriverFunction {
 		return function;
 	}
 	
+	/**
+	 * 用于将公式关键词与存储的正则表达式进行匹配，返回匹配的结果
+	 * @param key 公式关键词
+	 * @return 与正则表达式匹配的结果
+	 */
+	public boolean matchRegex(String key) {
+		return key.matches(regex);
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((regex == null) ? 0 : regex.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DataDriverFunction other = (DataDriverFunction) obj;
+		if (regex == null) {
+			if (other.regex != null)
+				return false;
+		} else if (!regex.equals(other.regex))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return getRegex();
+	}
+	
+	/**
+	 * <p><b>文件名：</b>DataDriverFunction.java</p>
+	 * <p><b>用途：</b>
+	 * 定义公式指定有误时抛出的异常
+	 * </p>
+	 * <p><b>编码时间：</b>2021年3月24日上午7:35:35</p>
+	 * <p><b>修改时间：</b>2021年3月24日上午7:35:35</p>
+	 * @author 彭宇琦
+	 * @version Ver1.0
+	 * @since JDK 1.8
+	 */
 	public class FunctionExceptional extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 

@@ -48,9 +48,6 @@ public class ElementData {
 	 * @param read 配置文件类对象
 	 */
 	public ElementData(String name, ReadLocation read) {
-		//对元素进行查找
-		read.find(name);
-		
 		//若查找成功，则存储元素名称与元素信息读取类对象
 		this.name = name;
 		this.read = read;
@@ -71,6 +68,9 @@ public class ElementData {
 	 * @return 元素定位信息集合
 	 */
 	public ArrayList<ElementLocationInfo> getLocationList() {
+		//对元素进行查找
+		read.find(name);
+				
 		//获取元素定位信息
 		ArrayList<ElementLocationInfo> locationList = new ArrayList<> (read.getElementLocation());
 		
@@ -110,6 +110,8 @@ public class ElementData {
 	 * @return 元素
 	 */
 	public ElementType getElementType() {
+		//对元素进行查找
+		read.find(name);
 		return read.getElementType();
 	}
 
@@ -119,6 +121,8 @@ public class ElementData {
 	 * @return 父层窗体名称列表
 	 */
 	public ArrayList<String> getIframeNameList() {
+		//对元素进行查找
+		read.find(name);
 		ArrayList<String> iframeNameList = new ArrayList<>(read.getIframeNameList());
 		return iframeNameList;
 	}
@@ -129,6 +133,8 @@ public class ElementData {
 	 * @return 元素加载超时时间
 	 */
 	public long getWaitTime() {
+		//对元素进行查找
+		read.find(name);
 		return read.getWaitTime();
 	}
 	
@@ -137,6 +143,8 @@ public class ElementData {
 	 * @return 元素的默认值
 	 */
 	public String getDefaultValue() {
+		//对元素进行查找
+		read.find(name);
 		String defaultValue = "";
 		//判断元素读取类是否
 		if (read instanceof ReadElementLimit) {
