@@ -28,13 +28,12 @@ import com.auxiliary.selenium.page.Page;
  * <b>编码时间：</b>2020年4月17日下午8:51:53
  * </p>
  * <p>
- * <b>修改时间：</b>2020年4月17日下午8:51:53
+ * <b>修改时间：</b>2021年3月26日下午7:23:54
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  * @since JDK 1.8
- *
  */
 public abstract class AbstractBrower {
 	/**
@@ -64,14 +63,14 @@ public abstract class AbstractBrower {
 	 * 用于存储浏览器启动时的信息
 	 */
 	protected JSONObject informationJson = new JSONObject();
-	
+
 	/**
 	 * 无参构造，方便子类扩展其他构造方法
 	 */
-	protected AbstractBrower(Page page){
+	protected AbstractBrower(Page page) {
 		nowPage = page;
 	}
-	
+
 	/**
 	 * 指定驱动文件所在路径
 	 * 
@@ -203,7 +202,8 @@ public abstract class AbstractBrower {
 		// 若driver对象未生成，则进行开启浏览器的操作
 		if (driver == null) {
 			// 添加驱动的存储位置
-			Optional.ofNullable(driverFile).ifPresent(file -> System.setProperty(getBrowerDriverSetName(), driverFile.getAbsolutePath()));
+			Optional.ofNullable(driverFile)
+					.ifPresent(file -> System.setProperty(getBrowerDriverSetName(), driverFile.getAbsolutePath()));
 			// 打开浏览器
 			openBrower();
 
@@ -291,7 +291,7 @@ public abstract class AbstractBrower {
 			driver.navigate().refresh();
 		}
 	}
-	
+
 	/**
 	 * 用于将浏览器全屏显示
 	 */

@@ -10,12 +10,18 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import com.auxiliary.selenium.page.Page;
 
 /**
- * <p><b>文件名：</b>RemoteBrower.java</p>
- * <p><b>用途：</b>
- * 定义连接远程服务器上浏览器的方法，指定远程浏览器地址后，便可调起远程浏览器
+ * <p>
+ * <b>文件名：</b>RemoteBrower.java
  * </p>
- * <p><b>编码时间：</b>2021年3月26日下午7:23:54</p>
- * <p><b>修改时间：</b>2021年3月26日下午7:23:54</p>
+ * <p>
+ * <b>用途：</b> 定义连接远程服务器上浏览器的方法，指定远程浏览器地址后，便可调起远程浏览器
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2021年3月26日下午7:23:54
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2021年3月26日下午7:23:54
+ * </p>
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -74,7 +80,7 @@ public class RemoteBrower extends AbstractBrower {
 	public void setSystemType(Platform platform) {
 		this.platform = platform;
 	}
-	
+
 	/**
 	 * 用于设置远程浏览器的版本
 	 * <p>
