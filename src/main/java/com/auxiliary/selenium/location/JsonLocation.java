@@ -33,7 +33,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * @version Ver1.0
  *
  */
-public class JsonLocation extends AbstractLocation {
+public class JsonLocation extends AbstractLocation implements ReadElementLimit {
 	/**
 	 * 指向json中的模板key值
 	 */
@@ -62,6 +62,10 @@ public class JsonLocation extends AbstractLocation {
 	 * 指向json中的元素等待时间key值
 	 */
 	public static final String KEY_WAIT = "wait";
+	/**
+	 * 指向json中的元素默认值的key值
+	 */
+	public static final String KEY_DEFAULT_VALUE = "value";
 	/**
 	 * 指向json中的元素所在窗体key值
 	 */
@@ -258,11 +262,20 @@ public class JsonLocation extends AbstractLocation {
 
 	@Override
 	public long getWaitTime() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
 		return toWaitTime(element.getString(KEY_WAIT));
 	}
 
 	@Override
 	public ArrayList<String> getIframeNameList() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+
 		ArrayList<String> iframeNameList = new ArrayList<>();
 		// 存储当前元素的父窗体的名称
 		String iframeName = "";
@@ -282,6 +295,11 @@ public class JsonLocation extends AbstractLocation {
 
 	@Override
 	public ElementType getElementType() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+
 		String elementTypeText = element.getString(KEY_TYPE);
 		// 若elementTypeText为空，则赋为0
 		return toElementType(elementTypeText == null ? "0" : elementTypeText);
@@ -289,6 +307,11 @@ public class JsonLocation extends AbstractLocation {
 
 	@Override
 	public ArrayList<ElementLocationInfo> getElementLocation() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+
 		ArrayList<ElementLocationInfo> locationList = new ArrayList<>();
 
 		// 获取当前元素的定位数组
@@ -332,5 +355,15 @@ public class JsonLocation extends AbstractLocation {
 		}
 
 		return locationList;
+	}
+
+	@Override
+	public String getDefaultValue() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+
+		return Optional.ofNullable(element.getString(KEY_DEFAULT_VALUE)).orElse("");
 	}
 }
