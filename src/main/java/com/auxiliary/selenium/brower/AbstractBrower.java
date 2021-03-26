@@ -284,6 +284,15 @@ public abstract class AbstractBrower {
 			driver.navigate().refresh();
 		}
 	}
+	
+	/**
+	 * 用于将浏览器全屏显示
+	 */
+	public void maxWindow() {
+		if (driver != null) {
+			driver.manage().window().maximize();
+		}
+	}
 
 	/**
 	 * 用于关闭当前标签，若只存在一个标签时，关闭标签页后将生成一个空白页
