@@ -1,7 +1,5 @@
 package com.auxiliary.selenium.location;
 
-import java.util.ArrayList;
-
 import com.auxiliary.selenium.element.ElementType;
 
 /**
@@ -47,24 +45,25 @@ public abstract class AbstractLocation implements ReadLocation {
 	/**
 	 * 元素定位方式集合
 	 */
-	protected ArrayList<ByType> byTypeList = new ArrayList<>();
+//	protected ArrayList<ByType> byTypeList = new ArrayList<>();
 	/**
 	 * 元素定位内容集合
 	 */
-	protected ArrayList<String> valueList = new ArrayList<>();
+//	protected ArrayList<String> valueList = new ArrayList<>();
 	/**
 	 * 元素类型
 	 */
-	protected ElementType elementType;
+//	protected ElementType elementType;
 	/**
 	 * 元素父层窗体集合
 	 */
-	protected ArrayList<String> iframeNameList = new ArrayList<>();
+//	protected ArrayList<String> iframeNameList = new ArrayList<>();
 	/**
 	 * 元素等待时间
 	 */
-	protected long waitTime = -1;
-
+//	protected long waitTime = -1;
+	
+	/*
 	@Override
 	public ArrayList<ByType> getElementByTypeList() {
 		return new ArrayList<ByType> (byTypeList);
@@ -89,6 +88,7 @@ public abstract class AbstractLocation implements ReadLocation {
 	public long getWaitTime() {
 		return waitTime;
 	}
+	*/
 
 	/**
 	 * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
@@ -138,6 +138,7 @@ public abstract class AbstractLocation implements ReadLocation {
 		// 定义需要忽略的标签
 		case "element":
 		case "iframe":
+		case "limits":
 			return null;
 		default:
 			throw new IllegalArgumentException("不存在的定位方式: " + labelName);
@@ -160,14 +161,5 @@ public abstract class AbstractLocation implements ReadLocation {
 		} catch (NumberFormatException e) {
 			return -1L;
 		}
-	}
-
-	/**
-	 * 用于清理集合类型的缓存
-	 */
-	protected void clearCache() {
-		byTypeList.clear();
-		valueList.clear();
-		iframeNameList.clear();
 	}
 }

@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import com.auxiliary.selenium.location.AbstractLocation;
-import com.auxiliary.selenium.location.ByType;
+import com.auxiliary.selenium.location.ElementLocationInfo;
+import com.auxiliary.selenium.location.ReadElementLimit;
 import com.auxiliary.selenium.location.ReadLocation;
 
 /**
@@ -27,29 +28,13 @@ import com.auxiliary.selenium.location.ReadLocation;
  */
 public class ElementData {
 	/**
-	 * 存储元素的名称或定位内容
+	 * 存储元素的名称
 	 */
 	private String name;
 	/**
-	 * 存储元素的定位方式，需要与valueList一一对应
+	 * 存储元素读取的方式
 	 */
-	private ArrayList<ByType> byTypeList = new ArrayList<>();
-	/**
-	 * 存储元素的定位内容，需要与byTypeList一一对应
-	 */
-	private ArrayList<String> valueList = new ArrayList<>();
-	/**
-	 * 用于标记元素的类型
-	 */
-	private ElementType elementType;
-	/**
-	 * 用于存储元素的父层窗体（所有的父层窗体）
-	 */
-	private ArrayList<String> iframeNameList = new ArrayList<>();
-	/**
-	 * 存储元素
-	 */
-	private long waitTime;
+	private ReadLocation read;
 
 	/**
 	 * 用于存储外链的词语
@@ -63,16 +48,9 @@ public class ElementData {
 	 * @param read 配置文件类对象
 	 */
 	public ElementData(String name, ReadLocation read) {
-		// 存储元素名称
+		//若查找成功，则存储元素名称与元素信息读取类对象
 		this.name = name;
-
-		// 根据传入的读取配置文件类对象，使用其中的返回方法，初始化元素信息
-		read.find(name);
-		byTypeList = read.getElementByTypeList();
-		valueList = read.getValueList();
-		elementType = read.getElementType();
-		iframeNameList = read.getIframeNameList();
-		waitTime = read.getWaitTime();
+		this.read = read;
 	}
 
 	/**
@@ -85,32 +63,29 @@ public class ElementData {
 	}
 
 	/**
-	 * 返回元素定位类型集合
+	 * 返回元素定位信息集合
 	 * 
-	 * @return 元素定位类型集合
+	 * @return 元素定位信息集合
 	 */
-	public ArrayList<ByType> getByTypeList() {
-		return byTypeList;
-	}
-
-	/**
-	 * 返回元素定位内容集合
-	 * 
-	 * @return 元素定位内容集合
-	 */
-	public ArrayList<String> getValueList() {
+	public ArrayList<ElementLocationInfo> getLocationList() {
+		//对元素进行查找
+		read.find(name);
+				
+		//获取元素定位信息
+		ArrayList<ElementLocationInfo> locationList = new ArrayList<> (read.getElementLocation());
+		
 		// 若存储的外链词语不为空，则对需要外链的定位内容进行处理
 		if (!linkWordList.isEmpty()) {
-			for (int i = 0; i < valueList.size(); i++) {
+			for (int i = 0; i < locationList.size(); i++) {
 				// 判断字符串是否包含替换词语的开始标志，若不包含，则进行不进行替换操作
-				if (!valueList.get(i).contains(AbstractLocation.START_SIGN)) {
+				if (!locationList.get(i).getLocationText().contains(AbstractLocation.START_SIGN)) {
 					continue;
 				}
 
 				// 获取替换词语集合的迭代器
 				Iterator<String> linkWordIter = linkWordList.iterator();
 				// 存储当前定位内容文本
-				StringBuilder value = new StringBuilder(valueList.get(i));
+				StringBuilder value = new StringBuilder(locationList.get(i).getLocationText());
 				// 循环，替换当前定位内容中所有需要替换的词语，直到无词语替换或定位内容不存在需要替换的词语为止
 				while (linkWordIter.hasNext() && value.indexOf(AbstractLocation.START_SIGN) > -1) {
 					// 存储替换符的开始和结束位置
@@ -119,14 +94,14 @@ public class ElementData {
 
 					// 对当前位置的词语进行替换
 					value.replace(replaceStartIndex, replaceEndIndex + 1, linkWordIter.next());
-				}
+				} 
 
 				// 存储当前替换后的定位内容
-				valueList.set(i, value.toString());
+				locationList.get(i).setLocationText(value.toString());
 			}
 		}
 
-		return valueList;
+		return locationList;
 	}
 
 	/**
@@ -135,7 +110,9 @@ public class ElementData {
 	 * @return 元素
 	 */
 	public ElementType getElementType() {
-		return elementType;
+		//对元素进行查找
+		read.find(name);
+		return read.getElementType();
 	}
 
 	/**
@@ -144,6 +121,9 @@ public class ElementData {
 	 * @return 父层窗体名称列表
 	 */
 	public ArrayList<String> getIframeNameList() {
+		//对元素进行查找
+		read.find(name);
+		ArrayList<String> iframeNameList = new ArrayList<>(read.getIframeNameList());
 		return iframeNameList;
 	}
 
@@ -153,7 +133,25 @@ public class ElementData {
 	 * @return 元素加载超时时间
 	 */
 	public long getWaitTime() {
-		return waitTime;
+		//对元素进行查找
+		read.find(name);
+		return read.getWaitTime();
+	}
+	
+	/**
+	 * 用于返回元素的默认值。若元素不存在默认值，则返回空串
+	 * @return 元素的默认值
+	 */
+	public String getDefaultValue() {
+		//对元素进行查找
+		read.find(name);
+		String defaultValue = "";
+		//判断元素读取类是否
+		if (read instanceof ReadElementLimit) {
+			defaultValue = ((ReadElementLimit)read).getDefaultValue();
+		}
+		
+		return defaultValue;
 	}
 
 	/**
@@ -163,9 +161,11 @@ public class ElementData {
 	 * </p>
 	 * 
 	 * @return 元素定位方式的个数
+	 * @deprecated 通过{@link #getLocationList()}方法获取到集合后，调用{@link ArrayList#size()}可获得
 	 */
+	@Deprecated
 	public int getLocationSize() {
-		return Math.min(byTypeList.size(), valueList.size());
+		return getLocationList().size();
 	}
 
 	/**
@@ -178,12 +178,11 @@ public class ElementData {
 			linkWordList.addAll(Arrays.asList(linkWords));
 		}
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((iframeNameList == null) ? 0 : iframeNameList.hashCode());
 		result = prime * result + ((linkWordList == null) ? 0 : linkWordList.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
@@ -198,11 +197,6 @@ public class ElementData {
 		if (getClass() != obj.getClass())
 			return false;
 		ElementData other = (ElementData) obj;
-		if (iframeNameList == null) {
-			if (other.iframeNameList != null)
-				return false;
-		} else if (!iframeNameList.equals(other.iframeNameList))
-			return false;
 		if (linkWordList == null) {
 			if (other.linkWordList != null)
 				return false;

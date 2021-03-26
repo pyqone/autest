@@ -38,7 +38,6 @@ import com.auxiliary.selenium.element.ElementType;
  * 
  * @author 彭宇琦
  * @version Ver1.0
- *
  */
 public class TextLocation extends AbstractLocation {
 	/**
@@ -162,13 +161,8 @@ public class TextLocation extends AbstractLocation {
 	}
 
 	@Override
-	public ArrayList<ByType> getElementByTypeList() {
-		return noFileLocation.getElementByTypeList();
-	}
-
-	@Override
-	public ArrayList<String> getValueList() {
-		return noFileLocation.getValueList();
+	public ArrayList<ElementLocationInfo> getElementLocation() {
+		return noFileLocation.getElementLocation();
 	}
 
 	@Override

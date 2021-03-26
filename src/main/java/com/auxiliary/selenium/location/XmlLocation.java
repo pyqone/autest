@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -34,15 +35,19 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <b>编码时间：</b>2017年9月25日下午4:23:40
  * </p>
  * <p>
- * <b>修改时间：</b>2021年3月8日上午8:08:45
+ * <b>修改时间：</b>2021年3月22日上午7:53:11
  * </p>
  * 
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 8
- *
  */
-public class XmlLocation extends AbstractLocation {
+public class XmlLocation extends AbstractLocation implements ReadElementLimit {
+	/**
+	 * 缓存元素信息
+	 */
+	protected Element element = null;
+
 	/**
 	 * 存储构造后的Document类对象，以读取xml文件中的内容
 	 */
@@ -86,13 +91,15 @@ public class XmlLocation extends AbstractLocation {
 	@Override
 	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
-		return find(name).getElementByTypeList();
+		return new ArrayList<ByType>(find(name).getElementLocation().stream().map(ElementLocationInfo::getByType)
+				.collect(Collectors.toList()));
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findValueList(String name) {
-		return find(name).getValueList();
+		return new ArrayList<String>(find(name).getElementLocation().stream().map(ElementLocationInfo::getLocationText)
+				.collect(Collectors.toList()));
 	}
 
 	@Override
@@ -113,77 +120,80 @@ public class XmlLocation extends AbstractLocation {
 		return find(name).getWaitTime();
 	}
 
-	/**
-	 * 用于查找元素的所有定位方式集合，并进行缓存
-	 * 
-	 * @param element 元素对象
-	 */
-	private void saveElementByTypeList(Element element) {
-		// 获取标签名称
-		element.elements().stream().map(lable -> lable.getName())
-				// 将名称转换为ByType枚举
-				.map(this::toByType)
-				// 过滤掉返回为null的元素
-				.filter(lable -> lable != null)
-				// 存储标签
-				.forEach(byTypeList::add);
+	@Override
+	public ArrayList<ElementLocationInfo> getElementLocation() {
+		ArrayList<ElementLocationInfo> locationList = new ArrayList<>();
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+
+		// 遍历元素下的所有子标签
+		for (Element e : element.elements()) {
+			ByType byType = toByType(e.getName());
+			// 忽略不能转换成ByType类型的其他标签
+			if (byType == null) {
+				continue;
+			}
+
+			// 判断标签是否启用，若不启用，则继续循环
+			boolean isUse = Optional.ofNullable(e.attributeValue("is_user")).filter(t -> !t.isEmpty()).map(t -> {
+				try {
+					return Boolean.valueOf(t).booleanValue();
+				} catch (Exception ex) {
+					return true;
+				}
+			}).orElse(true);
+			if (!isUse) {
+				continue;
+			}
+
+			String locationText = "";
+			String tempId = Optional.ofNullable(e.attributeValue("temp_id")).orElse("");
+			// 判断是否存在模板，并返回相应的定位方式
+			if (tempId.isEmpty()) {
+				locationText = e.getText();
+			} else {
+				locationText = getTemplateValue(tempId, toByType(e.getName()));
+			}
+			// 替换占位符，得到最终的定位方式
+			locationText = replaceValue(e, locationText);
+
+			// 构造并存储该定位方式
+			locationList.add(new ElementLocationInfo(byType, locationText));
+		}
+
+		return locationList;
 	}
 
-	/**
-	 * 用于查找元素定位内容集合，并进行缓存
-	 * 
-	 * @param element 元素对象
-	 */
-	private void saveValueList(Element element) {
-		// 查询元素，遍历元素下所有的定位标签，并过滤掉元素标签
-		element.elements().stream().filter(ele -> !"element".equals(ele.getName()))
-				// 过滤不启用的标签
-				.filter(ele -> {
-					return Optional.ofNullable(ele.attributeValue("is_user")).filter(t -> !t.isEmpty()).map(t -> {
-						try {
-							return Boolean.valueOf(t).booleanValue();
-						} catch (Exception e) {
-							return true;
-						}
-					}).orElse(true);
-					// 根据值或模板，将定位内容转译，并存储至valueList
-				}).forEach(ele -> {
-					String value = "";
-					String tempId = Optional.ofNullable(ele.attributeValue("temp_id")).orElse("");
-					if (tempId.isEmpty()) {
-						value = ele.getText();
-					} else {
-						value = getTemplateValue(tempId, toByType(ele.getName()));
-					}
-
-					valueList.add(replaceValue(ele, value));
-				});
-	}
-
-	/**
-	 * 用于查找元素的类型，并进行缓存
-	 * 
-	 * @param element 元素对象
-	 */
-	private void saveElementType(Element element) {
+	@Override
+	public ElementType getElementType() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+				
 		// 若元素标签为iframe，则无法获取属性，直接赋予窗体类型
 		if ("iframe".equals(element.getName())) {
-			elementType = ElementType.IFRAME_ELEMENT;
+			return ElementType.IFRAME_ELEMENT;
 		} else {
 			// 非窗体元素，则获取元素的元素类型属性
 			String elementTypeText = element.attributeValue("element_type");
 			// 若属性不存在，则使其指向普通元素
-			elementType = toElementType(elementTypeText == null ? "0" : elementTypeText);
+			return toElementType(elementTypeText == null ? "0" : elementTypeText);
 		}
 	}
 
-	/**
-	 * 用于查找元素的所有父窗体名称集合，并进行缓存
-	 * 
-	 * @param element 元素对象
-	 */
-	private void saveIframeNameList(Element element) {
+	@Override
+	public ArrayList<String> getIframeNameList() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+				
+		ArrayList<String> iframeNameList = new ArrayList<>();
 		// 循环，获取元素的父层级，直到获取到顶层为止
+		Element element = this.element;
 		while (!element.isRootElement()) {
 			// 定位到元素的父层
 			element = element.getParent();
@@ -195,24 +205,28 @@ public class XmlLocation extends AbstractLocation {
 
 		// 反序集合，使最上层窗体排在最前面
 		Collections.reverse(iframeNameList);
+
+		return iframeNameList;
 	}
 
-	/**
-	 * 用于查找元素的等待时间，并进行缓存
-	 * 
-	 * @param element 元素对象
-	 */
-	private void saveWaitTime(Element element) {
-		String waitText = element.attributeValue("wait");
-		try {
-			waitTime = Long.valueOf(waitText);
-			// 若等待时间小于0，则以-1赋值
-			if (waitTime < 0L) {
-				waitTime = -1L;
-			}
-		} catch (NumberFormatException e) {
-			waitTime = -1L;
+	@Override
+	public long getWaitTime() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
 		}
+		
+		return toWaitTime(element.attributeValue("wait"));
+	}
+	
+	@Override
+	public String getDefaultValue() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+		
+		return Optional.ofNullable(element.attributeValue("value")).orElse("");
 	}
 
 	/**
@@ -242,12 +256,6 @@ public class XmlLocation extends AbstractLocation {
 	private String getTemplateValue(String tempId, ByType byType) {
 		String selectTempXpath = "//templet/" + byType.getValue() + "[@id='" + tempId + "']";
 
-		/*
-		 * //根据xpath获取元素，若无法获取到元素，则抛出异常 Element element = (Element)
-		 * readDom.selectSingleNode(selectTempXpath); if (element != null) { return
-		 * element.getText(); } else { throw new UndefinedElementException(tempId,
-		 * ExceptionElementType.TEMPLET); }
-		 */
 		return Optional.ofNullable(xpath2Element(selectTempXpath))
 				.orElseThrow(() -> new UndefinedElementException(tempId, ExceptionElementType.TEMPLET)).getText();
 	}
@@ -329,17 +337,9 @@ public class XmlLocation extends AbstractLocation {
 
 		// 判断当前查找的元素是否与原元素名称一致，不一致，则进行元素查找
 		if (!newName.equals(this.name)) {
-			// 清除原始缓存
-			clearCache();
-
 			// 查找元素
-			Element element = getElementLabelElement(newName);
-			// 根据元素对象查找元素信息，并缓存
-			saveElementByTypeList(element);
-			saveElementType(element);
-			saveIframeNameList(element);
-			saveValueList(element);
-			saveWaitTime(element);
+			this.element = getElementLabelElement(newName);
+			this.name = newName;
 		}
 
 		return this;

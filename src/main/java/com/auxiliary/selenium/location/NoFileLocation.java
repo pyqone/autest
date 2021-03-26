@@ -13,19 +13,19 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <b>文件名：</b>NoFileLocation.java
  * </p>
  * <p>
- * <b>用途：</b> 提供在不编写元素定位文件的情况下读取元素定位方法，通过该类，可存储一些临时添加的元素定位 方式，并在编写脚本过程中进行调用
+ * <b>用途：</b> 提供在不编写元素定位文件的情况下读取元素定位方法，通过该类，可存储一些临时添加的元素定位方式，并在编写脚本过程中进行调用
  * </p>
  * <p>
  * <b>编码时间：</b>2020年10月29日上午8:38:24
  * </p>
  * <p>
- * <b>修改时间：</b>2021年3月9日上午8:08:45
+ * <b>修改时间：</b>2021年3月26日下午3:53:05
  * </p>
  * 
  * @author 彭宇琦
  * @version Ver1.0
  */
-public class NoFileLocation extends AbstractLocation implements WriteLocation, WriteTempletLocation {
+public class NoFileLocation extends AbstractLocation implements WriteLocation, WriteTempletLocation, ReadElementLimit {
 	/**
 	 * 存储json的读取方式
 	 */
@@ -144,20 +144,23 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	@Override
 	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
+		find(name);
 		// 对json定位方式读取类进行重构判断，并调用相应的方法
-		return find(name).getElementByTypeList();
+		return jsonLocation.findElementByTypeList(name);
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findValueList(String name) {
+		find(name);
 		// 对json定位方式读取类进行重构判断，并调用相应的方法
-		return find(name).getValueList();
+		return jsonLocation.findValueList(name);
 	}
 
 	@Override
 	@Deprecated
 	public ElementType findElementType(String name) {
+		find(name);
 		// 对json定位方式读取类进行重构判断，并调用相应的方法
 		return find(name).getElementType();
 	}
@@ -165,25 +168,22 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	@Override
 	@Deprecated
 	public ArrayList<String> findIframeNameList(String name) {
+		find(name);
 		// 对json定位方式读取类进行重构判断，并调用相应的方法
-		return find(name).getIframeNameList();
+		return jsonLocation.getIframeNameList();
 	}
 
 	@Override
 	@Deprecated
 	public long findWaitTime(String name) {
+		find(name);
 		// 对json定位方式读取类进行重构判断，并调用相应的方法
-		return find(name).getWaitTime();
+		return jsonLocation.getWaitTime();
 	}
 
 	@Override
-	public ArrayList<ByType> getElementByTypeList() {
-		return jsonLocation.getElementByTypeList();
-	}
-
-	@Override
-	public ArrayList<String> getValueList() {
-		return jsonLocation.getValueList();
+	public ArrayList<ElementLocationInfo> getElementLocation() {
+		return jsonLocation.getElementLocation();
 	}
 
 	@Override
@@ -217,19 +217,6 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	}
 
 	/**
-	 * 用于构建JsonLocation类，若当前json未改变，则不重新构造；反之，则重新构造元素定位方式
-	 * 
-	 * @return 返回JsonLocation类
-	 */
-	/*
-	 * private JsonLocation getJsonLocation() { if (!isJsonChange()) {
-	 * jsonLocation.analysisJson(newLocationJson.toJSONString()); nowLocationJson =
-	 * JSON.parseObject(newLocationJson.toJSONString()); }
-	 * 
-	 * return jsonLocation; }
-	 */
-
-	/**
 	 * 用于判断当前json是否有变化，即是否对当前的json进行过变更
 	 * 
 	 * @return json是否存在变化
@@ -246,5 +233,21 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 		}
 
 		return jsonLocation.find(name);
+	}
+
+	@Override
+	public String getDefaultValue() {
+		return jsonLocation.getDefaultValue();
+	}
+
+	/**
+	 * 用于写入元素的默认值
+	 * 
+	 * @param name         元素名称
+	 * @param defaultValue 元素默认值
+	 */
+	public void putDefaultValue(String name, String defaultValue) {
+		// 获取元素对象，并存储键值
+		getElementJson(name).put(JsonLocation.KEY_DEFAULT_VALUE, defaultValue);
 	}
 }
