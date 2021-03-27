@@ -150,8 +150,8 @@
 	<licenses>
 		<!-- Apache许可证 -->
 		<license>
-			<name>Apache-2.0</name>
-			<url>http://www.apache.org/licenses/</url>
+			<name>BSD 3-clause</name>
+			<url>https://opensource.org/licenses/BSD-3-Clause</url>
 		</license>
 	</licenses>
 
