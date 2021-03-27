@@ -17,6 +17,7 @@ import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.selenium.brower.IncorrectPageException;
 import com.auxiliary.selenium.element.ElementData;
 import com.auxiliary.selenium.location.ByType;
+import com.auxiliary.selenium.location.ElementLocationInfo;
 import com.auxiliary.selenium.location.NoFileLocation;
 
 /**
@@ -403,14 +404,13 @@ public class Page {
 			//将Object类转换为ElementData类
 			ElementData e = (ElementData) assertObj;
 			//获取元素的定位方式
-			List<ByType> byTypeList = e.getByTypeList();
-			List<String> valueList = e.getValueList();
+			List<ElementLocationInfo> locationList = e.getLocationList();
 			
 			//遍历元素的定位方式，拼接定位方式为By对象
 			boolean isSuccess = true;
-			for (int i = 0; i < e.getLocationSize(); i++) {
+			for (int i = 0; i < locationList.size(); i++) {
 				try {
-					driver.findElement(byTypeList.get(i).getBy(valueList.get(i)));
+					driver.findElement(locationList.get(i).getByType().getBy(locationList.get(i).getLocationText()));
 					isSuccess = true;
 				} catch (NoSuchElementException ex) {
 					isSuccess = false;
