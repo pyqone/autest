@@ -297,8 +297,7 @@ public abstract class FindElement {
 	/**
 	 * 根据传入的定位方式枚举，以及定位内容，在页面查找 元素，返回查到的元素列表，若查不到元素，则返回空列表
 	 * 
-	 * @param byTypeList {@link ByType}枚举类集合
-	 * @param valueList  元素定位内容集合
+	 * @param locationList 元素定位信息类{@link ElementLocationInfo}对象
 	 * @param waitTime   元素查找超时时间
 	 * @return 页面查找到的{@link WebElement}类对象{@link List}集合
 	 */

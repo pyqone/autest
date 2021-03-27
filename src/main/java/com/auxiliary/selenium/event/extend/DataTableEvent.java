@@ -371,7 +371,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * </ol>
 	 * </p>
 	 * 
-	 * @param column         断言列名称
+	 * @param columnName     断言列名称
 	 * @param key            关键词
 	 * @param textboxElement 搜索条件控件的{@link Element}对象
 	 * @return 搜索后每一行的断言结果
@@ -412,9 +412,9 @@ public final class DataTableEvent extends AbstractEvent {
 	 * </ol>
 	 * </p>
 	 * 
-	 * @param column 断言列名称
-	 * @param key    关键词
-	 * @param action 点击搜索按钮前的操作
+	 * @param columnName 断言列名称
+	 * @param key        关键词
+	 * @param action     点击搜索按钮前的操作
 	 * @return 搜索后每一行的断言结果
 	 * @throws ControlException 未指定搜索按钮的映射或搜索条件控件未传入时抛出的异常
 	 * @see #searchList(BooleanSupplier, String...)
