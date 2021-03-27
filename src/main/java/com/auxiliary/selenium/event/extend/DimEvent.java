@@ -97,7 +97,7 @@ public class DimEvent extends AbstractEvent {
 	 * <b>注意：</b>
 	 * <ol>
 	 * <li>公式的返回值和传参均为{@link String}类型</li>
-	 * <li>在{@link Functions}类中已定义多个默认公式可供选择，其方法均为静态方法，返回值为{@link addFunction}</li>
+	 * <li>在{@link Functions}类中已定义多个默认公式可供选择，其方法均为静态方法，返回值为{@link DataDriverFunction}</li>
 	 * </ol>
 	 * </p>
 	 * 

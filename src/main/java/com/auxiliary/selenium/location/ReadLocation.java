@@ -29,7 +29,7 @@ public interface ReadLocation {
 	 * @return 元素的所有定位方式（{@link ByType}枚举）集合
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
 	 * @deprecated 已改进元素查找的机制，需要先调用{@link #find(String)}查找元素后，
-	 *             再调用{@link #getElementByTypeList()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
+	 *             再调用{@link #getElementLocation()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
 	 */
 	@Deprecated
 	public abstract ArrayList<ByType> findElementByTypeList(String name);
@@ -41,7 +41,7 @@ public interface ReadLocation {
 	 * @return 元素定位内容集合
 	 * @throws UndefinedElementException 元素不存在时抛出的异常
 	 * @deprecated 已改进元素查找的机制，需要先调用{@link #find(String)}查找元素后，
-	 *             再调用{@link #getValueList()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
+	 *             再调用{@link #getElementLocation()}方法对元素信息进行返回。此方法将在2.3.0版本中删除
 	 */
 	@Deprecated
 	public abstract ArrayList<String> findValueList(String name);
