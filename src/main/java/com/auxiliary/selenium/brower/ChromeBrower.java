@@ -42,7 +42,7 @@ import com.auxiliary.selenium.page.Page;
  * @since JDK 1.8
  *
  */
-public class ChromeBrower extends AbstractBrower {
+public class ChromeBrower extends AbstractWebBrower {
 	/**
 	 * 用于存储需要对浏览器进行配置的参数
 	 */

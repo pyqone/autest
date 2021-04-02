@@ -34,7 +34,7 @@ import com.auxiliary.selenium.page.Page;
  * @version Ver1.0
  * @since JDK 1.8
  */
-public class FirefoxBrower extends AbstractBrower {
+public class FirefoxBrower extends AbstractWebBrower {
 	/**
 	 * 用于存储与火狐浏览器相关的配置
 	 */
