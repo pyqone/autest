@@ -195,7 +195,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 			// 添加操作信息
 			informationJson.put("浏览器名称", ((RemoteWebDriver) driver).getCapabilities().getBrowserName());
-			informationJson.put("浏览器版本", ((RemoteWebDriver) driver).getCapabilities().getBrowserVersion());
+			informationJson.put("浏览器版本", ((RemoteWebDriver) driver).getCapabilities().getVersion());
 			informationJson.put("操作系统版本", System.getProperties().getProperty("os.name"));
 
 			// 若存在需要打开的页面，则打开第一个页面
