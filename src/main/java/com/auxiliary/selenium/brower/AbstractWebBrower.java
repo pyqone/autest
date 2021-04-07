@@ -14,7 +14,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.selenium.page.Page;
 
 /**
@@ -41,10 +40,6 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	 */
 	protected File driverFile;
 	/**
-	 * 用于存储获取到的浏览器对象
-	 */
-	protected WebDriver driver = null;
-	/**
 	 * 存储打开的页面
 	 */
 	protected HashMap<String, Page> pageMap = new HashMap<String, Page>(16);
@@ -58,11 +53,6 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	 * 用于存储WebDriver当前指向的页面信息
 	 */
 	protected Page nowPage;
-
-	/**
-	 * 用于存储浏览器启动时的信息
-	 */
-	protected JSONObject informationJson = new JSONObject();
 
 	/**
 	 * 无参构造，方便子类扩展其他构造方法
@@ -218,11 +208,6 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	}
 
 	/**
-	 * 用于打开浏览器
-	 */
-	protected abstract void openBrower();
-
-	/**
 	 * 用于返回浏览器驱动设置的名称，由于每个浏览器不同，导致启动驱动名称也不同
 	 * 
 	 * @return 驱动设置名称
@@ -332,14 +317,9 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 		}
 	}
 
-	/**
-	 * 用于关闭浏览器
-	 */
+	@Override
 	public void closeBrower() {
-		// 关闭浏览器
-		driver.quit();
-		// 将driver指定为null
-		driver = null;
+		super.closeBrower();
 		// 清空页面存储的内容
 		pageMap.clear();
 		nowPage = null;

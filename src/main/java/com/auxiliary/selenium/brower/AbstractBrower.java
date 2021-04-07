@@ -2,6 +2,8 @@ package com.auxiliary.selenium.brower;
 
 import org.openqa.selenium.WebDriver;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * <p><b>文件名：</b>AbstractBrower.java</p>
  * <p><b>用途：</b>
@@ -15,6 +17,16 @@ import org.openqa.selenium.WebDriver;
  */
 public abstract class AbstractBrower {
 	/**
+	 * 用于存储获取到的浏览器对象
+	 */
+	protected WebDriver driver = null;
+	
+	/**
+	 * 用于存储浏览器启动时的信息
+	 */
+	protected JSONObject informationJson = new JSONObject();
+	
+	/**
 	 * 用于启动浏览器，并返回WebDriver对象
 	 * 
 	 * @return 指向浏览器的WebDriver对象
@@ -26,4 +38,19 @@ public abstract class AbstractBrower {
 	 * @return 浏览器的信息
 	 */
 	public abstract String getAllInformation();
+	
+	/**
+	 * 用于关闭浏览器
+	 */
+	public void closeBrower() {
+		// 关闭浏览器
+		driver.quit();
+		// 将driver指定为null
+		driver = null;
+	}
+	
+	/**
+	 * 用于启动浏览器
+	 */
+	protected abstract void openBrower();
 }
