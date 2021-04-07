@@ -36,29 +36,22 @@ public abstract class CellphoneBrower extends AbstractBrower {
 	protected boolean isRestartDriver = false;
 	
 	/**
-	 * 构造对象，并初始化设备名称
-	 * @param deviceName 设备名称
-	 * @param linkUrl appium的连接地址
-	 */
-	public CellphoneBrower(String deviceName, URL linkUrl) {
-		driverInfo.setCapability(CapabilityType.DEVICE_NAME.getName(), Optional.ofNullable(deviceName).orElseThrow(() -> new BrowerException("未指定设备名称")));
-		this.linkUrl = Optional.ofNullable(linkUrl).orElseThrow(() -> new BrowerException("未指定appium的连接地址"));
-	}
-	
-	/**
-	 * 构造对象，并初始化设备名称以及待测试app包信息
+	 * 构造对象，并初始化设备名称以及待测试app包信息，默认使用“uiautomator2”执行器，并清除app信息后启动
 	 * @param deviceName 设备名称
 	 * @param linkUrl appium的连接地址
 	 * @param appPackage app包信息
 	 */
 	public CellphoneBrower(String deviceName, URL linkUrl, AppPackage appPackage) {
-		this(deviceName, linkUrl);
+		driverInfo.setCapability(CapabilityType.DEVICE_NAME.getName(), Optional.ofNullable(deviceName).orElseThrow(() -> new BrowerException("未指定设备名称")));
+		driverInfo.setCapability(CapabilityType.AUTOMATION_NAME.getName(), "uiautomator2");
+		driverInfo.setCapability(CapabilityType.NO_RESET.getName(), "false");
+		this.linkUrl = Optional.ofNullable(linkUrl).orElseThrow(() -> new BrowerException("未指定appium的连接地址"));
 		driverInfo.setCapability(CapabilityType.APP_PACKAGE.getName(), appPackage.getAppPackage());
 		driverInfo.setCapability(CapabilityType.APP_ACTIVITY.getName(), appPackage.getAppActivity());
 	}
 	
 	/**
-	 * 构造对象，并初始化设备名称以及待测试app包信息
+	 * 构造对象，并初始化设备名称以及待测试app包信息，默认使用“uiautomator2”执行器，并清除app信息后启动
 	 * @param deviceName 设备名称
 	 * @param linkUrl appium的连接地址
 	 * @param packageName app包名称
