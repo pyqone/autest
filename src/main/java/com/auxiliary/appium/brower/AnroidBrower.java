@@ -1,6 +1,8 @@
 package com.auxiliary.appium.brower;
 
 import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
 
 import org.openqa.selenium.WebElement;
 
@@ -40,12 +42,12 @@ public class AnroidBrower extends CellphoneBrower {
 	}
 
 	@Override
-	public String getAllInformation() {
-		return null;
+	protected void openBrower() {
+		driver = new AndroidDriver<WebElement>(linkUrl, driverInfo);
 	}
 
 	@Override
-	protected void openBrower() {
-		driver = new AndroidDriver<WebElement>(linkUrl, driverInfo);
+	protected Map<String, Object> getCapabilities() {
+		return Optional.ofNullable(((AndroidDriver<?>)driver)).map(d -> d.getCapabilities().asMap()).orElse(driverInfo.asMap());
 	}
 }

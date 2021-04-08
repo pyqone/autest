@@ -1,11 +1,13 @@
 package com.auxiliary.appium.brower;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.selenium.brower.BrowerException;
 
@@ -42,10 +44,17 @@ public abstract class CellphoneBrower extends AbstractBrower {
 	 * @param appPackage app包信息
 	 */
 	public CellphoneBrower(String deviceName, URL linkUrl, AppPackage appPackage) {
-		driverInfo.setCapability(CapabilityType.DEVICE_NAME.getName(), Optional.ofNullable(deviceName).orElseThrow(() -> new BrowerException("未指定设备名称")));
+		if (appPackage == null) {
+			throw new BrowerException("未指定app包信息");
+		}
+		
+		//设置自动化连接的设备信息
+		driverInfo.setCapability(CapabilityType.DEVICE_NAME.getName(), Optional.ofNullable(deviceName).filter(t -> !t.isEmpty()).orElseThrow(() -> new BrowerException("未指定设备名称")));
 		driverInfo.setCapability(CapabilityType.AUTOMATION_NAME.getName(), "uiautomator2");
 		driverInfo.setCapability(CapabilityType.NO_RESET.getName(), "false");
 		this.linkUrl = Optional.ofNullable(linkUrl).orElseThrow(() -> new BrowerException("未指定appium的连接地址"));
+		
+		//设置app信息
 		driverInfo.setCapability(CapabilityType.APP_PACKAGE.getName(), appPackage.getAppPackage());
 		driverInfo.setCapability(CapabilityType.APP_ACTIVITY.getName(), appPackage.getAppActivity());
 	}
@@ -71,8 +80,10 @@ public abstract class CellphoneBrower extends AbstractBrower {
 	 * @param value 值
 	 */
 	public void setCapability(String capabilityName, String value) {
-		driverInfo.setCapability(capabilityName, value);
-		isRestartDriver = true;
+		Optional.ofNullable(capabilityName).filter(t -> !t.isEmpty()).ifPresent(cn -> {
+			driverInfo.setCapability(cn, value);
+			isRestartDriver = true;
+		});
 	}
 	
 	/**
@@ -85,15 +96,36 @@ public abstract class CellphoneBrower extends AbstractBrower {
 	 * @param value 值
 	 */
 	public void setCapability(CapabilityType capabilityType, String value) {
-		driverInfo.setCapability(capabilityType.getName(), value);
-		isRestartDriver = true;
+		Optional.ofNullable(capabilityType).ifPresent(cat -> {
+			driverInfo.setCapability(cat.getName(), value);
+			isRestartDriver = true;
+		});
 	}
 	
+	@Override
+	public String getAllInformation() {
+		JSONObject json = new JSONObject();
+		
+//		Map<String, Object> infoMap = driverInfo.toJson();
+		Map<String, Object> infoMap = getCapabilities();
+		json.put("app包名", infoMap.get("appPackage"));
+		json.put("app启动类名", infoMap.get("appActivity"));
+		json.put("操作系统", infoMap.get("platformName"));
+		json.put("版本", infoMap.get("platformVersion"));
+		json.put("设备名称", infoMap.get("deviceName"));
+		json.put("执行器名称", infoMap.get("automationName"));
+		json.put("分辨率", infoMap.get("deviceScreenSize"));
+		
+		return json.toJSONString();
+	}
+	
+	protected abstract Map<String, Object> getCapabilities();
+
 	@Override
 	public WebDriver getDriver() {
 		//若浏览器设置的状态发生改变，则关闭原有的连接，重新启动浏览器
 		if (isRestartDriver) {
-			driver.quit();
+			closeBrower();
 		}
 		
 		// 若driver对象未生成，则进行开启浏览器的操作
