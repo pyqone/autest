@@ -50,7 +50,7 @@ public class WaitEvent extends AbstractEvent {
 	 */
 	public WaitEvent(AbstractBrower brower, long waitTime) {
 		super(brower);
-		eventWait = new WebDriverWait(brower.getDriver(), Duration.ofSeconds(waitTime), Duration.ofMillis(200));
+		eventWait = new WebDriverWait(brower.getDriver(), waitTime, 200);
 		eventWait.withMessage("等待超时，事件等待失败，超时时间：" + waitTime + "秒");
 	}
 

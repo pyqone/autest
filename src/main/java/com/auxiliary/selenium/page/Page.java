@@ -1,11 +1,11 @@
 package com.auxiliary.selenium.page;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -291,7 +291,7 @@ public class Page {
 		// 进入站点
 		driver.get(url);
 		// 读取并设置浏览器等待时间
-		driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(loadTime));
+		driver.manage().timeouts().pageLoadTimeout(loadTime, TimeUnit.SECONDS);
 		
 		// 循环执行页面加载判断，判断其是否加载出目标站点，若加载出来页面，则结束循环，若用户设置的自动刷新次数循环完还没加载出页面，则
 		// 抛出PageNotFoundException异常。页面加载判断必须读取一次，所以使用do...while循环

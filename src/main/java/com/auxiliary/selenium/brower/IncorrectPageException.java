@@ -8,7 +8,6 @@ package com.auxiliary.selenium.brower;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- *
  */
 public class IncorrectPageException extends RuntimeException {
 
@@ -16,28 +15,23 @@ public class IncorrectPageException extends RuntimeException {
 
 	public IncorrectPageException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public IncorrectPageException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
 	}
 
 	public IncorrectPageException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	public IncorrectPageException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	public IncorrectPageException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

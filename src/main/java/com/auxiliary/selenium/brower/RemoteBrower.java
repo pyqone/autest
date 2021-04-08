@@ -26,7 +26,7 @@ import com.auxiliary.selenium.page.Page;
  * @version Ver1.0
  * @since JDK 1.8
  */
-public class RemoteBrower extends AbstractBrower {
+public class RemoteBrower extends AbstractWebBrower {
 	/**
 	 * 指向浏览器名称
 	 */
