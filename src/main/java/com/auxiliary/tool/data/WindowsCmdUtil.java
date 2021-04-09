@@ -56,13 +56,13 @@ public class WindowsCmdUtil {
 	 * @throws ActionException 未指定命令或命令执行出错时抛出的异常
 	 */
 	public static String action(String cmd, boolean isFull, String... keys) {
-		Optional.ofNullable(cmd).filter(c -> !c.isEmpty()).orElseThrow(() -> new ActionException("需要指定执行命令"));
+		Optional.ofNullable(cmd).filter(c -> !c.isEmpty()).orElseThrow(() -> new IllegalDataException("需要指定执行命令"));
 
 		Process result;
 		try {
 			result = Runtime.getRuntime().exec(cmd);
 		} catch (IOException e1) {
-			throw new ActionException("无法执行命令：" + cmd, e1);
+			throw new IllegalDataException("无法执行命令：" + cmd, e1);
 		}
 
 		// 获取命令的执行结果
@@ -124,48 +124,5 @@ public class WindowsCmdUtil {
 		}
 
 		return resultText.toString();
-	}
-
-	/**
-	 * <p>
-	 * <b>文件名：</b>WindowsCmdUtil.java
-	 * </p>
-	 * <p>
-	 * <b>用途：</b> 定义执行命令失败时抛出的异常
-	 * </p>
-	 * <p>
-	 * <b>编码时间：</b>2021年4月2日下午7:27:08
-	 * </p>
-	 * <p>
-	 * <b>修改时间：</b>2021年4月2日下午7:27:08
-	 * </p>
-	 * 
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 * @since JDK 1.8
-	 */
-	static class ActionException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-
-		public ActionException() {
-			super();
-		}
-
-		public ActionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-			super(message, cause, enableSuppression, writableStackTrace);
-		}
-
-		public ActionException(String message, Throwable cause) {
-			super(message, cause);
-		}
-
-		public ActionException(String message) {
-			super(message);
-		}
-
-		public ActionException(Throwable cause) {
-			super(cause);
-		}
-
 	}
 }
