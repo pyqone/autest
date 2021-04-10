@@ -60,4 +60,9 @@ public class AnroidBrower extends AbstractCellphoneBrower {
 		return Optional.ofNullable(((AndroidDriver<?>) driver)).map(d -> d.getCapabilities().asMap())
 				.orElse(driverInfo.asMap());
 	}
+
+	@Override
+	public String getNativeName() {
+		return "NATIVE_APP";
+	}
 }

@@ -139,6 +139,12 @@ public abstract class AbstractCellphoneBrower extends AbstractBrower {
 	 * @return 参数信息
 	 */
 	protected abstract Map<String, Object> getCapabilities();
+	
+	/**
+	 * 用于返回app原生元素所在上下文名称
+	 * @return 上下文名称
+	 */
+	public abstract String getNativeName();
 
 	@Override
 	public WebDriver getDriver() {

@@ -163,6 +163,8 @@ public class ElementData {
 	 * @return 元素是否为app原生元素
 	 */
 	public boolean isNativeElement() {
+		//对元素进行查找
+		read.find(name);
 		if (read instanceof AppElementLocation) {
 			return ((AppElementLocation)read).isNative();
 		} else {
@@ -178,6 +180,8 @@ public class ElementData {
 	 * @return app元素所在WebView的上下文
 	 */
 	public String getWebViewContext() {
+		//对元素进行查找
+		read.find(name);
 		if (read instanceof AppElementLocation) {
 			return ((AppElementLocation)read).getContext();
 		} else {
