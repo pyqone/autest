@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import com.auxiliary.selenium.location.AbstractLocation;
+import com.auxiliary.selenium.location.AppElementLocation;
 import com.auxiliary.selenium.location.ElementLocationInfo;
 import com.auxiliary.selenium.location.ReadElementLimit;
 import com.auxiliary.selenium.location.ReadLocation;
@@ -20,11 +21,11 @@ import com.auxiliary.selenium.location.ReadLocation;
  * <b>编码时间：</b>2020年9月27日上午7:50:44
  * </p>
  * <p>
- * <b>修改时间：</b>2021年3月9日上午8:08:45
+ * <b>修改时间：</b>2021年4月10日下午2:53:33
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.2
  */
 public class ElementData {
 	/**
@@ -37,10 +38,10 @@ public class ElementData {
 	private ReadLocation read;
 
 	/**
-	 * 用于存储外链的词语
+	 * 存储外链的词语
 	 */
 	private ArrayList<String> linkWordList = new ArrayList<>();
-
+	
 	/**
 	 * 根据元素名称，在配置文件中查找元素，将元素的信息进行存储
 	 * 
@@ -152,6 +153,36 @@ public class ElementData {
 		}
 		
 		return defaultValue;
+	}
+	
+	/**
+	 * 用于返回当前元素是否为app原生元素
+	 * <p>
+	 * <b>注意：</b>若元素属于app元素，则返回false
+	 * </p>
+	 * @return 元素是否为app原生元素
+	 */
+	public boolean isNativeElement() {
+		if (read instanceof AppElementLocation) {
+			return ((AppElementLocation)read).isNative();
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * 用于返回app元素所在WebView的上下文
+	 * <p>
+	 * <b>注意：</b>若元素非app元素或app的原生元素，则返回空串
+	 * </p>
+	 * @return app元素所在WebView的上下文
+	 */
+	public String getWebViewContext() {
+		if (read instanceof AppElementLocation) {
+			return ((AppElementLocation)read).getContext();
+		} else {
+			return "";
+		}
 	}
 
 	/**
