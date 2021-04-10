@@ -35,11 +35,11 @@ import io.appium.java_client.AppiumDriver;
  * <b>编码时间：</b>2020年4月25日 下午4:18:37
  * </p>
  * <p>
- * <b>修改时间：</b>2020年4月25日 下午4:18:37
+ * <b>修改时间：</b>2021年4月10日下午2:53:33
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  * @since JDK 1.8
  */
 public abstract class FindElement {
