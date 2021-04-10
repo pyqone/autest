@@ -35,14 +35,14 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <b>编码时间：</b>2017年9月25日下午4:23:40
  * </p>
  * <p>
- * <b>修改时间：</b>2021年3月22日上午7:53:11
+ * <b>修改时间：</b>2021年4月10日下午2:53:33
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.5
  * @since JDK 8
  */
-public class XmlLocation extends AbstractLocation implements ReadElementLimit {
+public class XmlLocation extends AbstractLocation implements ReadElementLimit, AppElementLocation {
 	/**
 	 * 缓存元素信息
 	 */
@@ -343,5 +343,25 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit {
 		}
 
 		return this;
+	}
+
+	@Override
+	public boolean isNative() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+				
+		return element.attribute("context") == null;
+	}
+
+	@Override
+	public String getContext() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+		
+		return Optional.ofNullable(element.attributeValue("context")).orElse("");
 	}
 }

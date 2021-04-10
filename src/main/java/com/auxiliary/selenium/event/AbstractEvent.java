@@ -129,11 +129,10 @@ public abstract class AbstractEvent {
 	 * @param element {@link Element}对象
 	 */
 	protected void locationElement(WebElement  element) {
-		//若抛出NoSuchElementException异常，则将异常抛出，其他异常将不做处理
+		//若抛出NoSuchElementException异常，则不做处理
 		try {
 			((JavascriptExecutor) brower.getDriver()).executeScript(LOCATION_ELEMENT_JS, element);
 		} catch (Exception e) {
-			throw e;
 		}
 	}
 	
