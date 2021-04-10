@@ -41,7 +41,7 @@ public class ElementData {
 	 * 存储外链的词语
 	 */
 	private ArrayList<String> linkWordList = new ArrayList<>();
-	
+
 	/**
 	 * 根据元素名称，在配置文件中查找元素，将元素的信息进行存储
 	 * 
@@ -49,7 +49,7 @@ public class ElementData {
 	 * @param read 配置文件类对象
 	 */
 	public ElementData(String name, ReadLocation read) {
-		//若查找成功，则存储元素名称与元素信息读取类对象
+		// 若查找成功，则存储元素名称与元素信息读取类对象
 		this.name = name;
 		this.read = read;
 	}
@@ -69,12 +69,12 @@ public class ElementData {
 	 * @return 元素定位信息集合
 	 */
 	public ArrayList<ElementLocationInfo> getLocationList() {
-		//对元素进行查找
+		// 对元素进行查找
 		read.find(name);
-				
-		//获取元素定位信息
-		ArrayList<ElementLocationInfo> locationList = new ArrayList<> (read.getElementLocation());
-		
+
+		// 获取元素定位信息
+		ArrayList<ElementLocationInfo> locationList = new ArrayList<>(read.getElementLocation());
+
 		// 若存储的外链词语不为空，则对需要外链的定位内容进行处理
 		if (!linkWordList.isEmpty()) {
 			for (int i = 0; i < locationList.size(); i++) {
@@ -95,7 +95,7 @@ public class ElementData {
 
 					// 对当前位置的词语进行替换
 					value.replace(replaceStartIndex, replaceEndIndex + 1, linkWordIter.next());
-				} 
+				}
 
 				// 存储当前替换后的定位内容
 				locationList.get(i).setLocationText(value.toString());
@@ -111,7 +111,7 @@ public class ElementData {
 	 * @return 元素
 	 */
 	public ElementType getElementType() {
-		//对元素进行查找
+		// 对元素进行查找
 		read.find(name);
 		return read.getElementType();
 	}
@@ -122,7 +122,7 @@ public class ElementData {
 	 * @return 父层窗体名称列表
 	 */
 	public ArrayList<String> getIframeNameList() {
-		//对元素进行查找
+		// 对元素进行查找
 		read.find(name);
 		ArrayList<String> iframeNameList = new ArrayList<>(read.getIframeNameList());
 		return iframeNameList;
@@ -134,56 +134,59 @@ public class ElementData {
 	 * @return 元素加载超时时间
 	 */
 	public long getWaitTime() {
-		//对元素进行查找
+		// 对元素进行查找
 		read.find(name);
 		return read.getWaitTime();
 	}
-	
+
 	/**
 	 * 用于返回元素的默认值。若元素不存在默认值，则返回空串
+	 * 
 	 * @return 元素的默认值
 	 */
 	public String getDefaultValue() {
-		//对元素进行查找
+		// 对元素进行查找
 		read.find(name);
 		String defaultValue = "";
-		//判断元素读取类是否
+		// 判断元素读取类是否
 		if (read instanceof ReadElementLimit) {
-			defaultValue = ((ReadElementLimit)read).getDefaultValue();
+			defaultValue = ((ReadElementLimit) read).getDefaultValue();
 		}
-		
+
 		return defaultValue;
 	}
-	
+
 	/**
 	 * 用于返回当前元素是否为app原生元素
 	 * <p>
 	 * <b>注意：</b>若元素属于app元素，则返回false
 	 * </p>
+	 * 
 	 * @return 元素是否为app原生元素
 	 */
 	public boolean isNativeElement() {
-		//对元素进行查找
+		// 对元素进行查找
 		read.find(name);
 		if (read instanceof AppElementLocation) {
-			return ((AppElementLocation)read).isNative();
+			return ((AppElementLocation) read).isNative();
 		} else {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 用于返回app元素所在WebView的上下文
 	 * <p>
 	 * <b>注意：</b>若元素非app元素或app的原生元素，则返回空串
 	 * </p>
+	 * 
 	 * @return app元素所在WebView的上下文
 	 */
 	public String getWebViewContext() {
-		//对元素进行查找
+		// 对元素进行查找
 		read.find(name);
 		if (read instanceof AppElementLocation) {
-			return ((AppElementLocation)read).getContext();
+			return ((AppElementLocation) read).getContext();
 		} else {
 			return "";
 		}
@@ -213,7 +216,7 @@ public class ElementData {
 			linkWordList.addAll(Arrays.asList(linkWords));
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
