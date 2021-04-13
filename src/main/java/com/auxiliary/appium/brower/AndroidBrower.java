@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import io.appium.java_client.android.AndroidDriver;
@@ -26,7 +28,7 @@ import io.appium.java_client.android.AndroidDriver;
  * @version Ver1.0
  * @since JDK 1.8
  */
-public class AnroidBrower extends AbstractCellphoneBrower {
+public class AndroidBrower extends AbstractCellphoneBrower {
 	/**
 	 * 构造对象，并初始化设备名称以及待测试app包信息，默认使用“uiautomator2”执行器，并清除app信息后启动
 	 * 
@@ -34,7 +36,7 @@ public class AnroidBrower extends AbstractCellphoneBrower {
 	 * @param linkUrl    appium的连接地址
 	 * @param appPackage app包信息
 	 */
-	public AnroidBrower(String deviceName, URL linkUrl, AppPackage appPackage) {
+	public AndroidBrower(String deviceName, URL linkUrl, AppPackage appPackage) {
 		super(deviceName, linkUrl, appPackage);
 	}
 
@@ -46,7 +48,7 @@ public class AnroidBrower extends AbstractCellphoneBrower {
 	 * @param packageName  app包名称
 	 * @param activityName app启动类名称
 	 */
-	public AnroidBrower(String deviceName, URL linkUrl, String packageName, String activityName) {
+	public AndroidBrower(String deviceName, URL linkUrl, String packageName, String activityName) {
 		super(deviceName, linkUrl, packageName, activityName);
 	}
 
@@ -64,5 +66,18 @@ public class AnroidBrower extends AbstractCellphoneBrower {
 	@Override
 	public String getNativeName() {
 		return "NATIVE_APP";
+	}
+	
+	/**
+	 * 用于以安卓驱动的形式返回驱动类对象
+	 * @return 安卓驱动类对象
+	 */
+	public AndroidDriver<?> getAndroidDriver() {
+		WebDriver driver = getDriver();
+		if (driver instanceof AndroidDriver) {
+			return (AndroidDriver<?>)driver;
+		} else {
+			throw new WebDriverException("无法以安卓驱动类对象进行返回");
+		}
 	}
 }
