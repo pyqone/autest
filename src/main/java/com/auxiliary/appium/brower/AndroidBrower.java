@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.AndroidElement;
 
 /**
  * <p>
@@ -72,10 +73,11 @@ public class AndroidBrower extends AbstractCellphoneBrower {
 	 * 用于以安卓驱动的形式返回驱动类对象
 	 * @return 安卓驱动类对象
 	 */
-	public AndroidDriver<?> getAndroidDriver() {
+	@SuppressWarnings("unchecked")
+	public AndroidDriver<AndroidElement> getAndroidDriver() {
 		WebDriver driver = getDriver();
 		if (driver instanceof AndroidDriver) {
-			return (AndroidDriver<?>)driver;
+			return (AndroidDriver<AndroidElement>)driver;
 		} else {
 			throw new WebDriverException("无法以安卓驱动类对象进行返回");
 		}
