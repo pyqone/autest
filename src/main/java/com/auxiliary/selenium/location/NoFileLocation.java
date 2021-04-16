@@ -19,11 +19,11 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <b>编码时间：</b>2020年10月29日上午8:38:24
  * </p>
  * <p>
- * <b>修改时间：</b>2021年3月26日下午3:53:05
+ * <b>修改时间：</b>2021年4月16日 下午9:33:38
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.2
  */
 public class NoFileLocation extends AbstractLocation
 		implements WriteLocation, WriteTempletLocation, ReadElementLimit, WriteAppElementLocation, AppElementLocation {

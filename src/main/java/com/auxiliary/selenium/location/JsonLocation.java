@@ -26,11 +26,11 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <b>编码时间：</b>2020年10月28日上午8:24:56
  * </p>
  * <p>
- * <b>修改时间：</b>2021年3月22日上午7:53:11
+ * <b>修改时间：</b>2021年4月16日 下午9:33:38
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  *
  */
 public class JsonLocation extends AbstractLocation implements ReadElementLimit, AppElementLocation {
@@ -122,15 +122,15 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 	@Override
 	@Deprecated
 	public ArrayList<ByType> findElementByTypeList(String name) {
-		return new ArrayList<ByType>(
-				find(name).getElementLocation().stream().map(ElementLocationInfo::getByType).collect(Collectors.toList()));
+		return new ArrayList<ByType>(find(name).getElementLocation().stream().map(ElementLocationInfo::getByType)
+				.collect(Collectors.toList()));
 	}
 
 	@Override
 	@Deprecated
 	public ArrayList<String> findValueList(String name) {
-		return new ArrayList<String>(
-				find(name).getElementLocation().stream().map(ElementLocationInfo::getLocationText).collect(Collectors.toList()));
+		return new ArrayList<String>(find(name).getElementLocation().stream().map(ElementLocationInfo::getLocationText)
+				.collect(Collectors.toList()));
 	}
 
 	@Override
@@ -377,7 +377,7 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 		if (element == null) {
 			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
 		}
-		
+
 		return element.getString(KEY_CONTEXT_VALUE) == null;
 	}
 
