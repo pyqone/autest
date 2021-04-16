@@ -14,6 +14,15 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 
+/**
+ * <p><b>文件名：</b>TouchEvent.java</p>
+ * <p><b>用途：</b>提供app自动化测试中触摸相关的事件操作。</p>
+ * <p><b>编码时间：</b>2021年4月16日 下午4:28:56</p>
+ * <p><b>修改时间：</b>2021年4月16日 下午4:28:56</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 1.8
+ */
 public class TouchEvent extends AbstractEvent {
 	/**
 	 * 指定坐标的间距
