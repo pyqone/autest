@@ -25,7 +25,8 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * @author 彭宇琦
  * @version Ver1.0
  */
-public class NoFileLocation extends AbstractLocation implements WriteLocation, WriteTempletLocation, ReadElementLimit {
+public class NoFileLocation extends AbstractLocation
+		implements WriteLocation, WriteTempletLocation, ReadElementLimit, WriteAppElementLocation, AppElementLocation {
 	/**
 	 * 存储json的读取方式
 	 */
@@ -249,5 +250,21 @@ public class NoFileLocation extends AbstractLocation implements WriteLocation, W
 	public void putDefaultValue(String name, String defaultValue) {
 		// 获取元素对象，并存储键值
 		getElementJson(name).put(JsonLocation.KEY_DEFAULT_VALUE, defaultValue);
+	}
+
+	@Override
+	public boolean isNative() {
+		return jsonLocation.isNative();
+	}
+
+	@Override
+	public String getContext() {
+		return jsonLocation.getContext();
+	}
+
+	@Override
+	public void putContext(String name, String context) {
+		// 获取元素对象，并存储键值
+		getElementJson(name).put(JsonLocation.KEY_CONTEXT_VALUE, context);
 	}
 }

@@ -33,7 +33,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * @version Ver1.0
  *
  */
-public class JsonLocation extends AbstractLocation implements ReadElementLimit {
+public class JsonLocation extends AbstractLocation implements ReadElementLimit, AppElementLocation {
 	/**
 	 * 指向json中的模板key值
 	 */
@@ -70,6 +70,10 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit {
 	 * 指向json中的元素所在窗体key值
 	 */
 	public static final String KEY_IFRAME = "iframe";
+	/**
+	 * 指向json中的元素与app相关的上下文key值
+	 */
+	public static final String KEY_CONTEXT_VALUE = "context";
 
 	/**
 	 * 存储转换后获得到的模板json对象
@@ -365,5 +369,25 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit {
 		}
 
 		return Optional.ofNullable(element.getString(KEY_DEFAULT_VALUE)).orElse("");
+	}
+
+	@Override
+	public boolean isNative() {
+		/// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+		
+		return element.getString(KEY_CONTEXT_VALUE) == null;
+	}
+
+	@Override
+	public String getContext() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+
+		return Optional.ofNullable(element.getString(KEY_CONTEXT_VALUE)).orElse("");
 	}
 }
