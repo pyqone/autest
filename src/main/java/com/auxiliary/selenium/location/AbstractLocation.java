@@ -42,53 +42,6 @@ public abstract class AbstractLocation implements ReadLocation {
 	 * 元素名称
 	 */
 	protected String name = "";
-	/**
-	 * 元素定位方式集合
-	 */
-//	protected ArrayList<ByType> byTypeList = new ArrayList<>();
-	/**
-	 * 元素定位内容集合
-	 */
-//	protected ArrayList<String> valueList = new ArrayList<>();
-	/**
-	 * 元素类型
-	 */
-//	protected ElementType elementType;
-	/**
-	 * 元素父层窗体集合
-	 */
-//	protected ArrayList<String> iframeNameList = new ArrayList<>();
-	/**
-	 * 元素等待时间
-	 */
-//	protected long waitTime = -1;
-	
-	/*
-	@Override
-	public ArrayList<ByType> getElementByTypeList() {
-		return new ArrayList<ByType> (byTypeList);
-	}
-
-	@Override
-	public ArrayList<String> getValueList() {
-		return new ArrayList<String> (valueList);
-	}
-
-	@Override
-	public ElementType getElementType() {
-		return elementType;
-	}
-
-	@Override
-	public ArrayList<String> getIframeNameList() {
-		return new ArrayList<String> (iframeNameList);
-	}
-
-	@Override
-	public long getWaitTime() {
-		return waitTime;
-	}
-	*/
 
 	/**
 	 * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
