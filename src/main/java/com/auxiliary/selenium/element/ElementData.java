@@ -200,7 +200,7 @@ public class ElementData {
 	public long getBeforeTime() {
 		// 对元素进行查找
 		read.find(name);
-		return read.getWaitTime();
+		return read.getBeforeTime();
 	}
 
 	/**
