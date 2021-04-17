@@ -19,11 +19,11 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <b>编码时间：</b>2020年10月29日上午8:38:24
  * </p>
  * <p>
- * <b>修改时间：</b>2021年4月16日 下午9:33:38
+ * <b>修改时间：</b>2021年4月17日 下午12:21:42
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.2
+ * @version Ver1.3
  */
 public class NoFileLocation extends AbstractLocation
 		implements WriteLocation, WriteTempletLocation, ReadElementLimit, WriteAppElementLocation, AppElementLocation {
@@ -266,5 +266,16 @@ public class NoFileLocation extends AbstractLocation
 	public void putContext(String name, String context) {
 		// 获取元素对象，并存储键值
 		getElementJson(name).put(JsonLocation.KEY_CONTEXT_VALUE, context);
+	}
+
+	@Override
+	public long getBeforeTime() {
+		return jsonLocation.getBeforeTime();
+	}
+
+	@Override
+	public void putBeforeTime(String name, long beforeTime) {
+		// 获取元素对象，并存储键值
+		getElementJson(name).put(JsonLocation.KEY_BEFORE_TIME_VALUE, beforeTime);
 	}
 }

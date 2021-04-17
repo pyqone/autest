@@ -257,7 +257,23 @@ public class TextLocation extends AbstractLocation {
 		if (length < 3) {
 			throw new UndefinedElementException("元素信息不足，缺少必要信息！元素分隔符号：" + infoSplitSign + "；元素内容：" + elementText);
 		}
-
+		
+		switch(length) {
+			case 6:
+				noFileLocation.putBeforeTime(elementInfoTexts[0], toWaitTime(elementInfoTexts[5]));
+			case 5:
+				noFileLocation.putElementType(elementInfoTexts[0], toElementType(elementInfoTexts[4]));
+			case 4:
+				noFileLocation.putWaitTime(elementInfoTexts[0], toWaitTime(elementInfoTexts[3]));
+			case 3:
+				// 存储元素名称
+				noFileLocation.putElementLocation(elementInfoTexts[0], toByType(elementInfoTexts[1]), elementInfoTexts[2]);
+				break;
+			default:
+				throw new UndefinedElementException("元素信息不足，缺少必要信息！元素分隔符号：" + infoSplitSign + "；元素内容：" + elementText);
+		}
+				
+		/*
 		// 存储元素名称
 		noFileLocation.putElementLocation(elementInfoTexts[0], toByType(elementInfoTexts[1]), elementInfoTexts[2]);
 
@@ -269,6 +285,7 @@ public class TextLocation extends AbstractLocation {
 				noFileLocation.putElementType(elementInfoTexts[0], toElementType(elementInfoTexts[4]));
 			}
 		}
+		*/
 
 		return elementInfoTexts[0];
 	}
@@ -276,5 +293,10 @@ public class TextLocation extends AbstractLocation {
 	@Override
 	public ReadLocation find(String name) {
 		return noFileLocation.find(name);
+	}
+
+	@Override
+	public long getBeforeTime() {
+		return noFileLocation.getBeforeTime();
 	}
 }

@@ -26,11 +26,11 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <b>编码时间：</b>2020年10月28日上午8:24:56
  * </p>
  * <p>
- * <b>修改时间：</b>2021年4月16日 下午9:33:38
+ * <b>修改时间：</b>2021年4月17日 上午11:20:56
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.1
+ * @version Ver1.2
  *
  */
 public class JsonLocation extends AbstractLocation implements ReadElementLimit, AppElementLocation {
@@ -74,6 +74,10 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 	 * 指向json中的元素与app相关的上下文key值
 	 */
 	public static final String KEY_CONTEXT_VALUE = "context";
+	/**
+	 * 指向json中的元素前置等待时间key值
+	 */
+	public static final String KEY_BEFORE_TIME_VALUE = "before_time";
 
 	/**
 	 * 存储转换后获得到的模板json对象
@@ -389,5 +393,17 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 		}
 
 		return Optional.ofNullable(element.getString(KEY_CONTEXT_VALUE)).orElse("");
+	}
+
+	@Override
+	public long getBeforeTime() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+		
+		//转换等待时间，若等待时间小于0，则返回为0
+		long time = toWaitTime(element.getString(KEY_BEFORE_TIME_VALUE));
+		return time < 0 ? 0 : time;
 	}
 }
