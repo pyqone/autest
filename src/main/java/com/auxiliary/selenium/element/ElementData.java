@@ -191,6 +191,17 @@ public class ElementData {
 			return "";
 		}
 	}
+	
+	/**
+	 * 返回元素前置等待时间
+	 * 
+	 * @return 元素前置等待时间
+	 */
+	public long getBeforeTime() {
+		// 对元素进行查找
+		read.find(name);
+		return read.getWaitTime();
+	}
 
 	/**
 	 * 返回元素定位方式的个数
