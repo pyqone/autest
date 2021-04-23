@@ -7,8 +7,10 @@ import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 
 import com.auxiliary.appium.brower.AbstractCellphoneBrower;
+import com.auxiliary.selenium.element.Element;
 import com.auxiliary.selenium.event.AbstractEvent;
 
 import io.appium.java_client.AppiumDriver;
@@ -72,12 +74,8 @@ public class TouchEvent extends AbstractEvent {
 	/**
 	 * 存储中心点坐标
 	 */
-	protected PointOption<?> centrePoint;
+	protected Point centrePoint;
 
-	/**
-	 * 多手指执行类对象
-	 */
-	protected MultiTouchAction touch;
 	/**
 	 * 默认的手指滑动事件
 	 */
@@ -96,7 +94,6 @@ public class TouchEvent extends AbstractEvent {
 		super(brower);
 
 		appDriver = (AppiumDriver<?>) brower.getDriver();
-		touch = new MultiTouchAction(appDriver);
 		defaultTouch = new TouchAction<>(appDriver);
 
 		// 计算各个特殊坐标的值
@@ -107,7 +104,7 @@ public class TouchEvent extends AbstractEvent {
 		bottomYNum = hight - topYNum;
 		leftXNum = width / SPACE_BETWEEN;
 		rigthXNum = width - leftXNum;
-		centrePoint = PointOption.point(width / 2, hight / 2);
+		centrePoint = new Point(width / 2, hight / 2);
 
 		wait.withMessage("当前无法进行滑动操作");
 	}
@@ -264,13 +261,13 @@ public class TouchEvent extends AbstractEvent {
 			return true;
 		});
 
+		StringJoiner pointText = new StringJoiner("、");
 		for (PointOption<?> point : points) {
-			StringJoiner pointText = new StringJoiner("、");
 			Map<String, Object> pointMap = point.build();
 			pointText.add(String.format("(%s, %s)", pointMap.get("x"), pointMap.get("y")));
-
-			logText = "单手指依次从以下坐标进行滑动：" + pointText.toString();
 		}
+
+		logText = "单手指依次从以下坐标进行滑动：" + pointText.toString();
 	}
 
 	/**
@@ -283,17 +280,17 @@ public class TouchEvent extends AbstractEvent {
 	 * @param pixel         滑动的像素值
 	 */
 	public void directionGlide(DirectionType directionType, int pixel) {
-		//判断位移值是否小于等于0
+		// 判断位移值是否小于等于0
 		if (pixel <= 0) {
 			return;
 		}
-		
+
 		// 获取中心点坐标
-		Map<String, Object> coordinateMap = centrePoint.build();
-		int x = (Integer) coordinateMap.get("x");
-		int y = (Integer) coordinateMap.get("y");
-		
-		//根据滑动方向，指定滑动的点
+//		Map<String, Object> coordinateMap = centrePoint.build();
+		int x = centrePoint.getX();
+		int y = centrePoint.getY();
+
+		// 根据滑动方向，指定滑动的点
 		PointOption<?> movePoint;
 		switch (Optional.ofNullable(directionType).orElse(DirectionType.CENTER)) {
 		case UP:
@@ -311,11 +308,160 @@ public class TouchEvent extends AbstractEvent {
 		default:
 			return;
 		}
-		
-		//滑动页面
-		actionGlide(centrePoint, movePoint);
-		
+
+		// 滑动页面
+		actionGlide(PointOption.point(centrePoint), movePoint);
+
 		logText = String.format("由中心点坐标(%d, %d)向%s移动%d个像素", x, y, directionType.getName(), pixel);
+	}
+
+	/**
+	 * 用于从一个元素的坐标点滑动到另一个元素坐标点上
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>该方法仅对原生元素有效，WebView元素获取到的坐标点可能与实际坐标有所偏差。</li>
+	 * <li>若未指定开始元素，则以右顶部坐标为起始坐标；若未指定终止滑动元素，则以右底部坐标为终止坐标</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @param startElement 起始元素
+	 * @param endElement   终止滑动元素
+	 */
+	public void glideToElement(Element startElement, Element endElement) {
+		// 获取元素坐标，并设置默认坐标点
+		Point startPoint = Optional.ofNullable(startElement).map(e -> e.getWebElement().getLocation())
+				.orElse(new Point(rigthXNum, topYNum));
+		Point endPoint = Optional.ofNullable(endElement).map(e -> e.getWebElement().getLocation())
+				.orElse(new Point(rigthXNum, bottomYNum));
+
+		// 滑动页面
+		actionGlide(PointOption.point(startPoint), PointOption.point(endPoint));
+
+		logText = String.format("由起始元素坐标(%d, %d)滑动终止元素坐标(%d, %d)", startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+	}
+
+	/**
+	 * 用于通过屏幕中心点向左下和右上两个方向滑动，以模拟放大操作
+	 */
+	public void enlargement() {
+		MultiTouchAction touch = new MultiTouchAction(appDriver);
+
+		// 指定滑动坐标点
+		Point leftDownPoint = new Point(leftXNum, bottomYNum);
+		Point rightUpPoint = new Point(rigthXNum, topYNum);
+
+		// 指定手指以及滑动的点
+		TouchAction<?> touch1 = new TouchAction<>(appDriver);
+		TouchAction<?> touch2 = new TouchAction<>(appDriver);
+
+		touch1.press(PointOption.point(centrePoint)).waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
+				.moveTo(PointOption.point(leftDownPoint)).release();
+		touch2.press(PointOption.point(centrePoint)).waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
+				.moveTo(PointOption.point(rightUpPoint)).release();
+
+		// 进行操作
+		wait.until(driver -> {
+			try {
+				touch.add(touch1).add(touch2);
+				touch.perform();
+			} catch (Exception e) {
+				System.out.println(e);
+				return null;
+			}
+
+			return true;
+		});
+
+		logText = String.format("由中心点坐标(%d, %d)模拟两根手指同时滑动到屏幕左下角(%d, %d)与屏幕右上角(%d, %d)，模拟放大操作", centrePoint.x,
+				centrePoint.y, leftDownPoint.x, leftDownPoint.y, rightUpPoint.x, rightUpPoint.y);
+	}
+
+	/**
+	 * 用于通过屏幕左下和右上两个方向中心点滑动，以模拟缩小操作
+	 */
+	public void reduce() {
+		MultiTouchAction touch = new MultiTouchAction(appDriver);
+
+		// 指定滑动坐标点
+		Point leftDownPoint = new Point(leftXNum, bottomYNum);
+		Point rightUpPoint = new Point(rigthXNum, topYNum);
+
+		// 指定手指以及滑动的点
+		TouchAction<?> touch1 = new TouchAction<>(appDriver);
+		TouchAction<?> touch2 = new TouchAction<>(appDriver);
+
+		touch1.press(PointOption.point(leftDownPoint))
+				.waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
+				.moveTo(PointOption.point(leftDownPoint)).release();
+		touch2.press(PointOption.point(rightUpPoint))
+				.waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
+				.moveTo(PointOption.point(centrePoint)).release();
+
+		// 进行操作
+		wait.until(driver -> {
+			try {
+				touch.add(touch1).add(touch2);
+				touch.perform();
+			} catch (Exception e) {
+				System.out.println(e);
+				return null;
+			}
+
+			return true;
+		});
+
+		logText = String.format("模拟两根手指同时由屏幕左下角(%d, %d)与屏幕右上角(%d, %d)滑动到中心点坐标(%d, %d)，模拟缩小操作", leftDownPoint.x,
+				leftDownPoint.y, rightUpPoint.x, rightUpPoint.y, centrePoint.x, centrePoint.y);
+	}
+
+	/**
+	 * 用于模拟三指下拉操作
+	 */
+	public void threeDownGlide() {
+		MultiTouchAction touch = new MultiTouchAction(appDriver);
+
+		// 指定三指下拉的起始坐标
+		Point leftUpPoint = new Point(leftXNum, topYNum);
+		Point centerUpPoint = new Point(centrePoint.x, topYNum);
+		Point rightUpPoint = new Point(rigthXNum, topYNum);
+
+		// 指定三指下拉的结束坐标
+		Point leftDownPoint = new Point(leftXNum, bottomYNum);
+		Point centerDownPoint = new Point(centrePoint.x, bottomYNum);
+		Point rightDownPoint = new Point(rigthXNum, bottomYNum);
+
+		// 指定手指以及滑动的点
+		TouchAction<?> touch1 = new TouchAction<>(appDriver);
+		TouchAction<?> touch2 = new TouchAction<>(appDriver);
+		TouchAction<?> touch3 = new TouchAction<>(appDriver);
+
+		touch1.press(PointOption.point(leftUpPoint)).waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
+				.moveTo(PointOption.point(leftDownPoint)).release();
+		touch2.press(PointOption.point(centerUpPoint))
+				.waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
+				.moveTo(PointOption.point(centerDownPoint)).release();
+		touch3.press(PointOption.point(rightUpPoint))
+				.waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
+				.moveTo(PointOption.point(rightDownPoint)).release();
+
+		// 进行操作
+		wait.until(driver -> {
+			try {
+				touch.add(touch1).add(touch2).add(touch3).perform();
+			} catch (Exception e) {
+				System.out.println(e);
+				return null;
+			}
+
+			return true;
+		});
+
+		logText = String.format(
+				"模拟三根手指同时由屏幕上方左(%d, %d)、中(%d, %d)、右(%d, %d)三个坐标，滑动至屏幕下方左(%d, %d)、中(%d, %d)、右(%d, %d)三个坐标，模拟三指下拉操作",
+				leftUpPoint.x, leftUpPoint.y, centerUpPoint.x, centerUpPoint.y, rightUpPoint.x, rightUpPoint.y,
+				leftDownPoint.x, leftDownPoint.y, centerDownPoint.x, centerDownPoint.y, rightDownPoint.x,
+				rightDownPoint.y);
 	}
 
 	/**
@@ -327,8 +473,12 @@ public class TouchEvent extends AbstractEvent {
 	private void actionGlide(PointOption<?> startPoints, PointOption<?> endPoints) {
 		// 使用默认手指进行滑动
 		wait.until(driver -> {
-			defaultTouch.press(startPoints).waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
-					.moveTo(endPoints).release().perform();
+			try {
+				defaultTouch.press(startPoints).waitAction(WaitOptions.waitOptions(Duration.ofMillis(operateTime)))
+						.moveTo(endPoints).release().perform();
+			} catch (Exception e) {
+				return null;
+			}
 
 			return true;
 		});
@@ -368,13 +518,12 @@ public class TouchEvent extends AbstractEvent {
 		/**
 		 * 向左滑动
 		 */
-		LEFT("左"), 
+		LEFT("左"),
 		/**
 		 * 向中心滑动
 		 */
-		CENTER("中心")
-		;
-		
+		CENTER("中心");
+
 		/**
 		 * 标记移动方向的名称
 		 */
@@ -382,6 +531,7 @@ public class TouchEvent extends AbstractEvent {
 
 		/**
 		 * 初始化枚举名称
+		 * 
 		 * @param name 枚举名称
 		 */
 		private DirectionType(String name) {
@@ -390,6 +540,7 @@ public class TouchEvent extends AbstractEvent {
 
 		/**
 		 * 返回枚举的名称
+		 * 
 		 * @return 枚举名称
 		 */
 		public String getName() {
