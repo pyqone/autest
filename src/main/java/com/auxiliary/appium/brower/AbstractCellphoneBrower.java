@@ -49,7 +49,7 @@ public abstract class AbstractCellphoneBrower extends AbstractBrower {
 	protected boolean isRestartDriver = false;
 
 	/**
-	 * 构造对象，并初始化设备名称以及待测试app包信息，默认使用“uiautomator2”执行器，并清除app信息后启动
+	 * 构造对象，并初始化设备名称以及待测试app包信息，并清除app信息后启动
 	 * 
 	 * @param deviceName 设备名称
 	 * @param linkUrl    appium的连接地址
@@ -63,7 +63,6 @@ public abstract class AbstractCellphoneBrower extends AbstractBrower {
 		// 设置自动化连接的设备信息
 		driverInfo.setCapability(CapabilityType.DEVICE_NAME.getName(), Optional.ofNullable(deviceName)
 				.filter(t -> !t.isEmpty()).orElseThrow(() -> new BrowerException("未指定设备名称")));
-		driverInfo.setCapability(CapabilityType.AUTOMATION_NAME.getName(), "uiautomator2");
 		driverInfo.setCapability(CapabilityType.NO_RESET.getName(), "false");
 		this.linkUrl = Optional.ofNullable(linkUrl).orElseThrow(() -> new BrowerException("未指定appium的连接地址"));
 
@@ -75,7 +74,7 @@ public abstract class AbstractCellphoneBrower extends AbstractBrower {
 	}
 
 	/**
-	 * 构造对象，并初始化设备名称以及待测试app包信息，默认使用“uiautomator2”执行器，并清除app信息后启动
+	 * 构造对象，并初始化设备名称以及待测试app包信息，并清除app信息后启动
 	 * 
 	 * @param deviceName   设备名称
 	 * @param linkUrl      appium的连接地址
