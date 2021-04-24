@@ -465,6 +465,32 @@ public class TouchEvent extends AbstractEvent {
 	}
 
 	/**
+	 * 用于通过滑动的形式打开手机的通知栏
+	 */
+	public void openNotification() {
+		Point startPoint = new Point(centrePoint.x, 0);
+		Point endPoint = new Point(centrePoint.x, bottomYNum);
+
+		actionGlide(PointOption.point(startPoint), PointOption.point(endPoint));
+
+		logText = String.format("使用单根手指从屏幕中心顶点坐标(%d, %d)滑动到屏幕中心底部坐标(%d, %d)，模拟打开通知栏", startPoint.x, startPoint.y,
+				endPoint.x, endPoint.y);
+	}
+	
+	/**
+	 * 用于通过滑动的形式关闭手机的通知栏
+	 */
+	public void closeNotification() {
+		Point startPoint = new Point(centrePoint.x, bottomYNum);
+		Point endPoint = new Point(centrePoint.x, 0);
+
+		actionGlide(PointOption.point(startPoint), PointOption.point(endPoint));
+
+		logText = String.format("使用单根手指从屏幕中心底部坐标(%d, %d)滑动到屏幕中心顶部坐标(%d, %d)，模拟关闭通知栏", startPoint.x, startPoint.y,
+				endPoint.x, endPoint.y);
+	}
+
+	/**
 	 * 根据坐标点进行滑动
 	 * 
 	 * @param startPoints 起始坐标点
