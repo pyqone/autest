@@ -476,7 +476,7 @@ public class TouchEvent extends AbstractEvent {
 		logText = String.format("使用单根手指从屏幕中心顶点坐标(%d, %d)滑动到屏幕中心底部坐标(%d, %d)，模拟打开通知栏", startPoint.x, startPoint.y,
 				endPoint.x, endPoint.y);
 	}
-	
+
 	/**
 	 * 用于通过滑动的形式关闭手机的通知栏
 	 */
