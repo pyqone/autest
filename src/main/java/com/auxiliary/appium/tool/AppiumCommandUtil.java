@@ -274,7 +274,7 @@ public class AppiumCommandUtil {
 		// 拼接并执行命令
 		String result = WindowsCmdUtil.action(String.format("%s -P %d install -r -t -d %s %s", adbCommand(), port,
 				(isGrant ? "-g" : ""), Optional.ofNullable(appFile).filter(File::isFile)
-						.orElseThrow(() -> new IllegalDataException("错误的待安装App应用路径：" + appFile))));
+						.orElseThrow(() -> new IllegalDataException("错误的App应用路径：" + appFile))));
 
 		// 返回是否安装成功
 		return result.contains("Success");
@@ -322,7 +322,7 @@ public class AppiumCommandUtil {
 	 */
 	public static boolean uninstallApp(int port, File appFile) {
 		return uninstallApp(port, getAppPackageName(Optional.ofNullable(appFile).filter(File::isFile)
-				.orElseThrow(() -> new IllegalDataException("错误的待安装App应用路径：" + appFile))));
+				.orElseThrow(() -> new IllegalDataException("错误的App应用路径：" + appFile))));
 	}
 
 	/**
