@@ -18,11 +18,11 @@ import com.auxiliary.tool.data.WindowsCmdUtil;
  * <b>编码时间：</b>2021年4月8日下午7:04:55
  * </p>
  * <p>
- * <b>修改时间：</b>2021年4月8日下午7:04:55
+ * <b>修改时间：</b>2021年4月25日上午10:17:19
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  * @since JDK 1.8
  */
 public class AppiumCommandUtil {
@@ -215,7 +215,6 @@ public class AppiumCommandUtil {
 	/**
 	 * 用于通过默认端口（5037端口）的adb服务，连接指定的设备名称
 	 * 
-	 * @param port       端口号
 	 * @param deviceName 设备名称
 	 * @throws IllegalDataException 未指定设备名称时抛出的异常
 	 */
@@ -248,12 +247,102 @@ public class AppiumCommandUtil {
 	/**
 	 * 用于通过默认端口（5037端口）的adb服务，断开指定设备名称的连接
 	 * 
-	 * @param port       端口号
 	 * @param deviceName 设备名称
 	 * @throws IllegalDataException 未指定设备名称时抛出的异常
 	 */
 	public static boolean disconnectDevice(String deviceName) {
 		return disconnectDevice(5037, deviceName);
+	}
+
+	/**
+	 * 用于通过指定端口的adb服务，安装指定路径下的app文件
+	 * <p>
+	 * <b>注意：</b>需要保证指定的端口上存在设备，否则命令会一直处于等待状态，直到连上设备为止
+	 * </p>
+	 * 
+	 * @param port    端口号
+	 * @param isGrant 安装后是否授权所有的权限
+	 * @param appFile app所在路径
+	 * @return 是否安装成功
+	 */
+	public static boolean installApp(int port, boolean isGrant, File appFile) {
+		// 判断端口号是否合法
+		if (port < 0 || port > 65535) {
+			throw new IllegalDataException("端口号范围只能是0～65535之间：" + port);
+		}
+
+		// 拼接并执行命令
+		String result = WindowsCmdUtil.action(String.format("%s -P %d install -r -t -d %s %s", adbCommand(), port,
+				(isGrant ? "-g" : ""), Optional.ofNullable(appFile).filter(File::isFile)
+						.orElseThrow(() -> new IllegalDataException("错误的待安装App应用路径：" + appFile))));
+
+		// 返回是否安装成功
+		return result.contains("Success");
+	}
+
+	/**
+	 * 用于通过默认端口（5037端口）的adb服务，安装指定路径下的app文件
+	 * 
+	 * @param isGrant 安装后是否授权所有的权限
+	 * @param appFile app所在路径
+	 * @return 是否安装成功
+	 */
+	public static boolean installApp(boolean isGrant, File appFile) {
+		return installApp(5037, isGrant, appFile);
+	}
+
+	/**
+	 * 用于通过指定端口的adb服务，卸载设备上指定的app
+	 * 
+	 * @param port           端口
+	 * @param appPackageName app包名
+	 * @return 是否卸载成功
+	 */
+	public static boolean uninstallApp(int port, String appPackageName) {
+		// 判断端口号是否合法
+		if (port < 0 || port > 65535) {
+			throw new IllegalDataException("端口号范围只能是0～65535之间：" + port);
+		}
+
+		// 拼接并执行命令
+		String result = WindowsCmdUtil.action(String.format("%s -P %d uninstall %s", adbCommand(), port,
+				Optional.ofNullable(appPackageName).filter(t -> !t.isEmpty())
+						.orElseThrow(() -> new IllegalDataException("错误的app包名：" + appPackageName))));
+
+		// 返回是否安装成功
+		return result.contains("Success");
+	}
+
+	/**
+	 * 用于通过指定端口的adb服务，卸载设备上指定的app
+	 * 
+	 * @param port    端口
+	 * @param appFile app所在路径
+	 * @return 是否卸载成功
+	 */
+	public static boolean uninstallApp(int port, File appFile) {
+		return uninstallApp(port, getAppPackageName(Optional.ofNullable(appFile).filter(File::isFile)
+				.orElseThrow(() -> new IllegalDataException("错误的待安装App应用路径：" + appFile))));
+	}
+
+	/**
+	 * 用于通过指定端口的adb服务，卸载设备上指定的app
+	 * 
+	 * @param appPackageName app包名
+	 * @return 是否卸载成功
+	 */
+	public static boolean uninstallApp(String appPackageName) {
+		return uninstallApp(5037, appPackageName);
+	}
+
+	/**
+	 * 用于通过指定端口的adb服务，卸载设备上指定的app
+	 * 
+	 * @param appFile app所在路径
+	 * @return 是否卸载成功
+	 */
+	public static boolean uninstallApp(File appFile) {
+		return uninstallApp(5037, appFile);
 	}
 
 	/**
