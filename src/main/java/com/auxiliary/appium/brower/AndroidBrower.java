@@ -39,6 +39,7 @@ public class AndroidBrower extends AbstractCellphoneBrower {
 	 */
 	public AndroidBrower(String deviceName, URL linkUrl, AppPackage appPackage) {
 		super(deviceName, linkUrl, appPackage);
+		driverInfo.setCapability(CapabilityType.AUTOMATION_NAME.getName(), "uiautomator2");
 	}
 
 	/**
@@ -51,6 +52,7 @@ public class AndroidBrower extends AbstractCellphoneBrower {
 	 */
 	public AndroidBrower(String deviceName, URL linkUrl, String packageName, String activityName) {
 		super(deviceName, linkUrl, packageName, activityName);
+		driverInfo.setCapability(CapabilityType.AUTOMATION_NAME.getName(), "uiautomator2");
 	}
 
 	@Override
