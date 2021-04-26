@@ -153,12 +153,6 @@ public class AssertEvent extends AbstractEvent {
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
 	 */
 	public boolean assertTextNotContainKey(Element element, boolean isJudgeAllKey, String... keys) {
-		//判断是否传入关键词
-//		boolean result = true;
-//		if (keys != null && keys.length != 0) {
-//			result = judgetText(textEvent.getText(element), isJudgeAllKey, true, keys);	
-//		}
-		
 		boolean result = assertTextNotContainKey(element, (e) -> textEvent.getText(e), 
 				isJudgeAllKey, keys);
 		
@@ -213,12 +207,6 @@ public class AssertEvent extends AbstractEvent {
 	 */
 	public boolean assertAttributeNotContainKey(Element element, String attributeName, boolean isJudgeAllKey,
 			String... keys) {
-//		//判断是否传入关键词
-//		boolean result = true;
-//		if (keys != null && keys.length != 0) {
-//			result = judgetText(textEvent.getAttributeValue(element, attributeName), isJudgeAllKey, true, keys);	
-//		}
-		
 		boolean result = assertTextNotContainKey(element, (e) -> textEvent.getAttributeValue(e, attributeName), 
 				isJudgeAllKey, keys);
 		
