@@ -8,7 +8,6 @@ import com.auxiliary.selenium.event.AbstractEvent;
 import com.auxiliary.selenium.event.AssertEvent;
 import com.auxiliary.selenium.event.ClickEvent;
 import com.auxiliary.selenium.event.CompareNumberType;
-import com.auxiliary.selenium.event.JsEvent;
 import com.auxiliary.selenium.event.TextEvent;
 import com.auxiliary.selenium.event.WaitEvent;
 import com.auxiliary.selenium.location.AbstractLocation;
@@ -27,7 +26,7 @@ import com.auxiliary.selenium.location.AbstractLocation;
  * <b>修改时间：</b>2021年4月25日上午10:59:29
  * </p>
  * 
- * @author
+ * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
  */
@@ -58,6 +57,10 @@ public class CommonEventCollection extends AbstractEvent {
 	 * 日志信息集合，收集每个操作步骤返回的日志
 	 */
 	protected ArrayList<String> logTextList = new ArrayList<>();
+	/**
+	 * 控制日志前的序号，若序号为-1，则不再为日志添加序号
+	 */
+	protected boolean isReportLogIndex = false;
 
 	/**
 	 * 构造对象并存储浏览器对象
@@ -89,6 +92,14 @@ public class CommonEventCollection extends AbstractEvent {
 	public void setReadMode(AbstractLocation read, boolean isBreakRootFrame) {
 		findElement.setReadMode(read, isBreakRootFrame);
 	}
+	
+	/**
+	 * 设置是否需要为当前收集的日志添加序号
+	 * @param isReportLogIndex 是否添加日志序号
+	 */
+	public void setIsReportLogIndex(boolean isReportLogIndex) {
+		this.isReportLogIndex = isReportLogIndex;
+	}
 
 	/**
 	 * 鼠标左键单击元素，参见{@link ClickEvent#click(com.auxiliary.selenium.element.Element)}
@@ -98,6 +109,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public void click(String elementName, String... linkKeys) {
 		clickEvent.click(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 	}
 
 	/**
@@ -108,6 +120,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public void doubleClick(String elementName, String... linkKeys) {
 		clickEvent.doubleClick(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 	}
 
 	/**
@@ -118,6 +131,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public void rightClick(String elementName, String... linkKeys) {
 		clickEvent.rightClick(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 	}
 
 	/**
@@ -130,6 +144,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public void continuousClick(int clickCount, long sleepInMillis, String elementName, String... linkKeys) {
 		clickEvent.continuousClick(findElement.getElement(elementName, linkKeys), clickCount, sleepInMillis);
+		logTextList.add(logText);
 	}
 
 	/**
@@ -141,6 +156,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public String clear(String elementName, String... linkKeys) {
 		textEvent.clear(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 		return resultText;
 	}
 
@@ -154,6 +170,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public String getAttributeValue(String attributeName, String elementName, String... linkKeys) {
 		textEvent.getAttributeValue(findElement.getElement(elementName, linkKeys), attributeName);
+		logTextList.add(logText);
 		return resultText;
 	}
 
@@ -166,6 +183,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public String getText(String elementName, String... linkKeys) {
 		textEvent.getText(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 		return resultText;
 	}
 
@@ -179,6 +197,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public String input(String text, String elementName, String... linkKeys) {
 		textEvent.input(findElement.getElement(elementName, linkKeys), text);
+		logTextList.add(logText);
 		return resultText;
 	}
 
@@ -191,6 +210,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public String getImageText(String elementName, String... linkKeys) {
 		textEvent.getImageText(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 		return resultText;
 	}
 
@@ -203,6 +223,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public boolean disappear(String elementName, String... linkKeys) {
 		boolean result = waitEvent.disappear(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -215,6 +236,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public boolean appear(String elementName, String... linkKeys) {
 		boolean result = waitEvent.appear(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -228,6 +250,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public boolean showText(String[] keys, String elementName, String... linkKeys) {
 		boolean result = waitEvent.showText(findElement.getElement(elementName, linkKeys), keys);
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -243,6 +266,7 @@ public class CommonEventCollection extends AbstractEvent {
 	public boolean assertTextContainKey(boolean isJudgeAllKey, String[] keys, String elementName, String... linkKeys) {
 		boolean result = assertEvent.assertTextContainKey(findElement.getElement(elementName, linkKeys), isJudgeAllKey,
 				keys);
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -259,6 +283,7 @@ public class CommonEventCollection extends AbstractEvent {
 			String... linkKeys) {
 		boolean result = assertEvent.assertTextNotContainKey(findElement.getElement(elementName, linkKeys),
 				isJudgeAllKey, keys);
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -276,6 +301,7 @@ public class CommonEventCollection extends AbstractEvent {
 			String elementName, String... linkKeys) {
 		boolean result = assertEvent.assertAttributeContainKey(findElement.getElement(elementName, linkKeys),
 				attributeName, isJudgeAllKey, keys);
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -290,6 +316,7 @@ public class CommonEventCollection extends AbstractEvent {
 			String elementName, String... linkKeys) {
 		boolean result = assertEvent.assertAttributeNotContainKey(findElement.getElement(elementName, linkKeys),
 				attributeName, isJudgeAllKey, keys);
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -303,6 +330,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public boolean assertEqualsText(String text, String elementName, String... linkKeys) {
 		boolean result = assertEvent.assertEqualsText(findElement.getElement(elementName, linkKeys), text);
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -316,6 +344,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public boolean assertNotEqualsText(String text, String elementName, String... linkKeys) {
 		boolean result = assertEvent.assertNotEqualsText(findElement.getElement(elementName, linkKeys), text);
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -328,6 +357,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public boolean assertExistElement(String elementName, String... linkKeys) {
 		boolean result = assertEvent.assertExistElement(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -340,6 +370,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 */
 	public boolean assertNotExistElement(String elementName, String... linkKeys) {
 		boolean result = assertEvent.assertNotExistElement(findElement.getElement(elementName, linkKeys));
+		logTextList.add(logText);
 		return result;
 	}
 
@@ -356,6 +387,31 @@ public class CommonEventCollection extends AbstractEvent {
 			String... linkKeys) {
 		boolean result = assertEvent.assertNumber(findElement.getElement(elementName, linkKeys), compareNumberType,
 				compareNumber);
+		logTextList.add(logText);
 		return result;
+	}
+	
+	/**
+	 * 用于返回收集的日志信息，并根据参数决定是否清空当前收集的日志
+	 * @param isClear 是否清空日志集
+	 * @return 日志集
+	 */
+	public ArrayList<String> getLogList(boolean isClear) {
+		ArrayList<String> logList = new ArrayList<>();
+		
+		//判断当前是否需要加上日志序号
+		if (isReportLogIndex) {
+			for (int index = 0; index < logTextList.size(); index++) {
+				logList.add(String.format("%d.%s", (index + 1), logTextList.get(index)));
+			}
+		} else {
+			logList.addAll(logTextList);
+		}
+		
+		//判断是否清空收集的日志
+		if (isClear) {
+			logTextList.clear();
+		}
+		return logList;
 	}
 }

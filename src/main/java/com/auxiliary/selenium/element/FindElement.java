@@ -419,8 +419,9 @@ public abstract class FindElement {
 				for (int i = 0; i < locationList.size(); i++) {
 					try {
 						// 页面查找元素
-						List<WebElement> webElementList = driver.findElements(
-								getBy(locationList.get(i).getLocationText(), locationList.get(i).getByType()));
+						ElementLocationInfo einfo = locationList.get(i);
+						List<WebElement> webElementList = driver
+								.findElements(getBy(einfo.getLocationText(), einfo.getByType()));
 						// 若元素组为空或者获取的元素为空，则重新循环；反之，则返回找到元素
 						if (webElementList != null && webElementList.size() != 0) {
 							return webElementList;
