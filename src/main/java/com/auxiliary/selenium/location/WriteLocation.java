@@ -13,11 +13,11 @@ import com.auxiliary.selenium.element.ElementType;
  * <b>编码时间：</b>2020年10月29日下午1:06:46
  * </p>
  * <p>
- * <b>修改时间：</b>2020年10月29日下午1:06:46
+ * <b>修改时间：</b>2021年4月17日 上午10:33:29
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  *
  */
 public interface WriteLocation {
@@ -53,4 +53,15 @@ public interface WriteLocation {
 	 * @param waitTime 元素等待时间
 	 */
 	public abstract void putWaitTime(String name, long waitTime);
+
+	/**
+	 * 用于设置元素的前置等待时间，多次设置内容时将覆盖上一次设置的内容
+	 * <p>
+	 * <b>注意：</b>该方法写入的时间单位为毫秒
+	 * </p>
+	 * 
+	 * @param name       元素名称
+	 * @param beforeTime 前置等待时间
+	 */
+	public abstract void putBeforeTime(String name, long beforeTime);
 }

@@ -32,7 +32,7 @@ import com.auxiliary.selenium.page.Page;
  * @version Ver1.0
  * @since JDK 1.8
  */
-public class IeBrower extends AbstractBrower {
+public class IeBrower extends AbstractWebBrower {
 	/**
 	 * TODO 用于存储对IE的设置，目前未开发在类中设置IE的方法，此处保留
 	 */

@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnsupportedCommandException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.auxiliary.selenium.brower.AbstractBrower;
@@ -50,7 +51,7 @@ public class WaitEvent extends AbstractEvent {
 	 */
 	public WaitEvent(AbstractBrower brower, long waitTime) {
 		super(brower);
-		eventWait = new WebDriverWait(brower.getDriver(), Duration.ofSeconds(waitTime), Duration.ofMillis(200));
+		eventWait = new WebDriverWait(brower.getDriver(), waitTime, 200);
 		eventWait.withMessage("等待超时，事件等待失败，超时时间：" + waitTime + "秒");
 	}
 
@@ -93,12 +94,19 @@ public class WaitEvent extends AbstractEvent {
 	}
 
 	/**
-	 * 该方法用于根据元素信息，在元素被加载后，等待元素在页面中出现，并返回元素出现的结果，
-	 * 注意，等待元素出现的超时时间与元素中设置的超时时间一致，与类中超时时间无关
+	 * 该方法用于根据元素信息，在元素被加载后，等待元素在页面中出现，并返回元素出现的结果
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>等待元素出现的超时时间与元素中设置的超时时间一致，与类中超时时间无关</li>
+	 * <li>该方法对app元素无效，若等待的元素为app元素，则会抛出{@link UnsupportedCommandException}异常</li>
+	 * </ol>
+	 * </p>
 	 * 
 	 * @param element {@link Element}对象
 	 * @return 元素是否出现
 	 * @throws TimeoutException 等待超时时抛出的异常
+	 * @throws UnsupportedCommandException 使用app元素进行等待时抛出的异常
 	 */
 	public boolean appear(Element element) {
 		eventWait.withMessage("等待超时，元素“" + element.getElementData().getName() + "”仍然不存在，超时时间：" + waitTime + "秒");

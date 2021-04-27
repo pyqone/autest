@@ -35,14 +35,14 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <b>编码时间：</b>2017年9月25日下午4:23:40
  * </p>
  * <p>
- * <b>修改时间：</b>2021年3月22日上午7:53:11
+ * <b>修改时间：</b>2021年4月17日 上午11:21:25
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.6
  * @since JDK 8
  */
-public class XmlLocation extends AbstractLocation implements ReadElementLimit {
+public class XmlLocation extends AbstractLocation implements ReadElementLimit, AppElementLocation {
 	/**
 	 * 缓存元素信息
 	 */
@@ -343,5 +343,37 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit {
 		}
 
 		return this;
+	}
+
+	@Override
+	public boolean isNative() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+				
+		return element.attribute("context") == null;
+	}
+
+	@Override
+	public String getContext() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+		
+		return Optional.ofNullable(element.attributeValue("context")).orElse("");
+	}
+
+	@Override
+	public long getBeforeTime() {
+		// 判断是否进行元素查找
+		if (element == null) {
+			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
+		}
+		
+		//转换等待时间，若等待时间小于0，则返回为0
+		long time = toWaitTime(element.attributeValue("before_time"));
+		return time < 0 ? 0 : time;
 	}
 }

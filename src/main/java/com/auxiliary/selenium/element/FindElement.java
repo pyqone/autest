@@ -1,8 +1,8 @@
 package com.auxiliary.selenium.element;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.By;
@@ -11,10 +11,14 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.auxiliary.appium.brower.AbstractCellphoneBrower;
 import com.auxiliary.selenium.brower.AbstractBrower;
+import com.auxiliary.selenium.brower.AbstractWebBrower;
 import com.auxiliary.selenium.location.AbstractLocation;
 import com.auxiliary.selenium.location.ByType;
 import com.auxiliary.selenium.location.ElementLocationInfo;
+
+import io.appium.java_client.AppiumDriver;
 
 /**
  * <p>
@@ -31,11 +35,11 @@ import com.auxiliary.selenium.location.ElementLocationInfo;
  * <b>编码时间：</b>2020年4月25日 下午4:18:37
  * </p>
  * <p>
- * <b>修改时间：</b>2020年4月25日 下午4:18:37
+ * <b>修改时间：</b>2021年4月10日下午2:53:33
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  * @since JDK 1.8
  */
 public abstract class FindElement {
@@ -61,6 +65,10 @@ public abstract class FindElement {
 	 * 存储当前定位的窗体层级，由于多个子类之间需要互通，故此处标记为static
 	 */
 	private static ArrayList<ElementData> nowIframeList = new ArrayList<>();
+	/**
+	 * 存储当前app上下文是否切换到原生层
+	 */
+	private static boolean isNative = true;
 
 	/**
 	 * 用于当元素获取失败时执行的方法
@@ -121,7 +129,11 @@ public abstract class FindElement {
 	}
 
 	/**
-	 * 用于设置元素定位方式文件读取类对象，并根据传参，判断窗体是否需要回到顶层
+	 * 用于设置元素定位方式文件读取类对象
+	 * <p>
+	 * isBreakRootFrame参数表示是否将所有的元素切回到顶层，对于web元素而言，则是将iframe切回到顶层；对于app元素
+	 * 而言，则是将上下文切换至原生层
+	 * </p>
 	 * 
 	 * @param read             元素定位方式文件读取类对象
 	 * @param isBreakRootFrame 是否需要将窗体切回到顶层
@@ -131,6 +143,10 @@ public abstract class FindElement {
 
 		if (isBreakRootFrame) {
 			switchRootFrame();
+
+			if (brower instanceof AbstractCellphoneBrower) {
+				switchAppNativeContext();
+			}
 		}
 	}
 
@@ -147,6 +163,15 @@ public abstract class FindElement {
 	 * 该方法用于将窗体切回顶层，当本身是在最顶层时，则该方法将使用无效
 	 */
 	public void switchRootFrame() {
+		if (elementData == null) {
+			return;
+		}
+
+		// 判断元素是否是app原生元素，若是该元素，则不进行切换
+		if (brower instanceof AbstractCellphoneBrower && elementData.isNativeElement()) {
+			return;
+		}
+
 		// 切换窗口至顶层
 		brower.getDriver().switchTo().defaultContent();
 		// 清空nowIframeNameList中的内容
@@ -159,6 +184,11 @@ public abstract class FindElement {
 	 * @param count 需要切换父层的次数
 	 */
 	public void switchParentFrame(int count) {
+		// 判断元素是否是app原生元素，若是该元素，则不进行切换
+		if (brower instanceof AbstractCellphoneBrower && elementData.isNativeElement()) {
+			return;
+		}
+
 		// 判断count是否小于等于0，若小于等于0，则不进行切换
 		if (count <= 0) {
 			return;
@@ -183,8 +213,85 @@ public abstract class FindElement {
 	 * @param iframeElementData 窗体的信息
 	 */
 	public void switchFrame(ElementData iframeElementData) {
+		// 判断元素是否是app原生元素，若是该元素，则不进行切换
+		if (brower instanceof AbstractCellphoneBrower && elementData.isNativeElement()) {
+			return;
+		}
+
 		brower.getDriver().switchTo().frame(recognitionElement(iframeElementData).get(0));
 		nowIframeList.add(iframeElementData);
+	}
+
+	/**
+	 * 用于切换到app的原生上下文中
+	 * <p>
+	 * <b>注意：</b>该方法对web端元素无效
+	 * </p>
+	 */
+	public void switchAppNativeContext() {
+		// 判断元素是否是app原生元素，若是该元素，则不进行切换
+		if (brower instanceof AbstractWebBrower) {
+			return;
+		}
+
+		// 切换上下文
+		((AppiumDriver<?>) brower.getDriver()).context(((AbstractCellphoneBrower) brower).getNativeName());
+		isNative = true;
+	}
+
+	/**
+	 * 用于根据写入到元素信息中的WebView上下文，对WebView上下文进行切换
+	 * <p>
+	 * <b>注意：</b>该方法对web端元素无效，若元素信息中元素上下文属性为空，则按照默认的名称进行切换
+	 * </p>
+	 */
+	public void switchWebViewContext(String context) {
+		// 若未指定上下文，则不进行任何操作
+		if (!Optional.ofNullable(context).filter(t -> !t.isEmpty()).isPresent()) {
+			return;
+		}
+
+		// 判断元素是否是app原生元素，若是该元素，则不进行切换
+		if (brower instanceof AbstractWebBrower) {
+			return;
+		}
+
+		// 判断元素上下文是否与原生上下文一致，若一致，则切换到顶层
+		if (((AbstractCellphoneBrower) brower).getNativeName().equals(context)) {
+			switchAppNativeContext();
+		}
+
+		AppiumDriver<?> appiumDriver = (AppiumDriver<?>) brower.getDriver();
+		// 设置等待，直到获取到上下文为止，若获取不到上下文，则抛出异常，若成功获取，则切换上下文
+		appiumDriver.context(new WebDriverWait(appiumDriver, globalWaitTime, 200).withMessage("指定上下文不存在：" + context)
+				.until(driver -> {
+					if (appiumDriver.getContextHandles().contains(context)) {
+						return context;
+					} else {
+						return null;
+					}
+				}));
+		isNative = false;
+	}
+
+	protected void autoSwitchContext(ElementData elementData) {
+		// 获取当前是否为原生层元素
+		boolean nowNativeContext = elementData.isNativeElement();
+
+		// 判断当前元素所在上下文是否与之前元素所在的上下文一致，不一致则根据当前层进行切换
+		if (isNative != nowNativeContext) {
+			if (nowNativeContext) {
+				switchAppNativeContext();
+			} else {
+				String context = elementData.getWebViewContext();
+				// 若未指定webview的上下文，则按照默认上下文进行拼接
+				if (context.isEmpty()) {
+					context = "WEBVIEW_" + ((AbstractCellphoneBrower) brower).getAppPackage().getAppPackage();
+				}
+
+				switchWebViewContext(context);
+			}
+		}
 	}
 
 	/**
@@ -277,6 +384,10 @@ public abstract class FindElement {
 	protected List<WebElement> recognitionElement(ElementData elementData) {
 		// 判断是否需要自动切换窗体，若需要，则对元素窗体进行切换
 		if (isAutoSwitchIframe) {
+			if (brower instanceof AbstractCellphoneBrower) {
+				autoSwitchContext(elementData);
+			}
+
 			autoSwitchFrame(elementData.getIframeNameList());
 		}
 
@@ -298,34 +409,34 @@ public abstract class FindElement {
 	 * 根据传入的定位方式枚举，以及定位内容，在页面查找 元素，返回查到的元素列表，若查不到元素，则返回空列表
 	 * 
 	 * @param locationList 元素定位信息类{@link ElementLocationInfo}对象
-	 * @param waitTime   元素查找超时时间
+	 * @param waitTime     元素查找超时时间
 	 * @return 页面查找到的{@link WebElement}类对象{@link List}集合
 	 */
 	protected List<WebElement> findElement(List<ElementLocationInfo> locationList, long waitTime) {
 		try {
-			return new WebDriverWait(brower.getDriver(), Duration.ofSeconds(waitTime), Duration.ofMillis(200))
-					.until(driver -> {
-						// 遍历所有的定位方式与定位内容
-						for (int i = 0; i < locationList.size(); i++) {
-							try {
-								// 页面查找元素
-								List<WebElement> webElementList = driver.findElements(
-										getBy(locationList.get(i).getLocationText(), locationList.get(i).getByType()));
-								// 若元素组为空或者获取的元素为空，则重新循环；反之，则返回找到元素
-								if (webElementList != null && webElementList.size() != 0) {
-									return webElementList;
-								} else {
-									continue;
-								}
-							} catch (Exception e) {
-								// 若抛出异常，则重新循环
-								continue;
-							}
+			return new WebDriverWait(brower.getDriver(), waitTime, 200).until(driver -> {
+				// 遍历所有的定位方式与定位内容
+				for (int i = 0; i < locationList.size(); i++) {
+					try {
+						// 页面查找元素
+						ElementLocationInfo einfo = locationList.get(i);
+						List<WebElement> webElementList = driver
+								.findElements(getBy(einfo.getLocationText(), einfo.getByType()));
+						// 若元素组为空或者获取的元素为空，则重新循环；反之，则返回找到元素
+						if (webElementList != null && webElementList.size() != 0) {
+							return webElementList;
+						} else {
+							continue;
 						}
+					} catch (Exception e) {
+						// 若抛出异常，则重新循环
+						continue;
+					}
+				}
 
-						// 若循环完毕仍未找到元素，则返回null
-						return null;
-					});
+				// 若循环完毕仍未找到元素，则返回null
+				return null;
+			});
 		} catch (TimeoutException e) {
 			return new ArrayList<WebElement>();
 		}
