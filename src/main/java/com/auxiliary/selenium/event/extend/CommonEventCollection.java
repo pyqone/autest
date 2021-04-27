@@ -92,9 +92,10 @@ public class CommonEventCollection extends AbstractEvent {
 	public void setReadMode(AbstractLocation read, boolean isBreakRootFrame) {
 		findElement.setReadMode(read, isBreakRootFrame);
 	}
-	
+
 	/**
 	 * 设置是否需要为当前收集的日志添加序号
+	 * 
 	 * @param isReportLogIndex 是否添加日志序号
 	 */
 	public void setIsReportLogIndex(boolean isReportLogIndex) {
@@ -390,16 +391,17 @@ public class CommonEventCollection extends AbstractEvent {
 		logTextList.add(logText);
 		return result;
 	}
-	
+
 	/**
 	 * 用于返回收集的日志信息，并根据参数决定是否清空当前收集的日志
+	 * 
 	 * @param isClear 是否清空日志集
 	 * @return 日志集
 	 */
 	public ArrayList<String> getLogList(boolean isClear) {
 		ArrayList<String> logList = new ArrayList<>();
-		
-		//判断当前是否需要加上日志序号
+
+		// 判断当前是否需要加上日志序号
 		if (isReportLogIndex) {
 			for (int index = 0; index < logTextList.size(); index++) {
 				logList.add(String.format("%d.%s", (index + 1), logTextList.get(index)));
@@ -407,8 +409,8 @@ public class CommonEventCollection extends AbstractEvent {
 		} else {
 			logList.addAll(logTextList);
 		}
-		
-		//判断是否清空收集的日志
+
+		// 判断是否清空收集的日志
 		if (isClear) {
 			logTextList.clear();
 		}
