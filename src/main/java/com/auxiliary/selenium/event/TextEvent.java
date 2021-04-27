@@ -94,7 +94,7 @@ public class TextEvent extends AbstractEvent {
 	/**
 	 * 用于在指定的控件中输入相应的内容
 	 * @param element {@link Element}对象
-	 * @param text 需要输入到控件中的
+	 * @param text 需要输入到控件中的内容
 	 * @return 在控件中输入的内容
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常 
