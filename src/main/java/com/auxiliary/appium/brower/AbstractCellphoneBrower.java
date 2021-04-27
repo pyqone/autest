@@ -69,7 +69,7 @@ public abstract class AbstractCellphoneBrower extends AbstractBrower {
 		// 设置app信息
 		driverInfo.setCapability(CapabilityType.APP_PACKAGE.getName(), appPackage.getAppPackage());
 		driverInfo.setCapability(CapabilityType.APP_ACTIVITY.getName(), appPackage.getAppActivity());
-		
+
 		this.appPackage = appPackage;
 	}
 
@@ -135,12 +135,14 @@ public abstract class AbstractCellphoneBrower extends AbstractBrower {
 
 	/**
 	 * 用于返回浏览器相关的参数信息
+	 * 
 	 * @return 参数信息
 	 */
 	protected abstract Map<String, Object> getCapabilities();
-	
+
 	/**
 	 * 用于返回app原生元素所在上下文名称
+	 * 
 	 * @return 上下文名称
 	 */
 	public abstract String getNativeName();
@@ -164,6 +166,7 @@ public abstract class AbstractCellphoneBrower extends AbstractBrower {
 
 	/**
 	 * 用于返回app包相关的信息
+	 * 
 	 * @return app包信息类对象
 	 */
 	public AppPackage getAppPackage() {

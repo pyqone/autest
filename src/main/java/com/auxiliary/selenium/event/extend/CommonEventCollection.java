@@ -247,7 +247,7 @@ public class CommonEventCollection extends AbstractEvent {
 	 * @param keys        需要判断的文本
 	 * @param elementName 元素名称
 	 * @param linkKeys    外链词语
-	 * @return
+	 * @return 文本是否出现
 	 */
 	public boolean showText(String[] keys, String elementName, String... linkKeys) {
 		boolean result = waitEvent.showText(findElement.getElement(elementName, linkKeys), keys);
@@ -307,7 +307,7 @@ public class CommonEventCollection extends AbstractEvent {
 	}
 
 	/**
-	 * 断言元素的文本内容中不包含指定的关键词，参见{@link AssertEvent#}
+	 * 断言元素的文本内容中不包含指定的关键词，参见{@link AssertEvent#assertAttributeNotContainKey(com.auxiliary.selenium.element.Element, String, boolean, String...)}
 	 * 
 	 * @param elementName 元素名称
 	 * @param linkKeys    外链词语

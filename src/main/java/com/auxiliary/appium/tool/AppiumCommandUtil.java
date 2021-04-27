@@ -70,7 +70,7 @@ public class AppiumCommandUtil {
 	 * 例如，命令所在路径为“D:\test\adb.exe”，则传入的File对象必须为：{@code new File("D:\\test\\adb.exe")}
 	 * </p>
 	 * 
-	 * @param aaptFolder adb命令所在路径
+	 * @param adbFolder adb命令所在路径
 	 */
 	public static void setAdbFolder(File adbFolder) {
 		AppiumCommandUtil.adbFolder = adbFolder;

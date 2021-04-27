@@ -30,7 +30,7 @@ import io.appium.java_client.android.nativekey.KeyEvent;
  * <b>修改时间：</b>2021年4月23日下午8:46:38
  * </p>
  * 
- * @author
+ * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
  */
@@ -70,7 +70,7 @@ public class AndroidClickEvent extends ClickEvent {
 	 * <b>注意：</b>目前方法只支持发送单一按键，尚未找到组合按键的解决方案
 	 * </p>
 	 * 
-	 * @param key 安卓按键{@link AndroidKey}枚举
+	 * @param androidKey 安卓按键{@link AndroidKey}枚举
 	 */
 	public void clickKey(AndroidKey androidKey) {
 		keyEvent.withKey(androidKey);
@@ -87,7 +87,7 @@ public class AndroidClickEvent extends ClickEvent {
 	 * <b>注意：</b>目前方法只支持发送单一按键，尚未找到组合按键的解决方案
 	 * </p>
 	 * 
-	 * @param key 安卓按键{@link AndroidKey}枚举
+	 * @param androidKey 安卓按键{@link AndroidKey}枚举
 	 */
 	public void longPressKey(AndroidKey androidKey) {
 		keyEvent.withKey(androidKey);
@@ -108,7 +108,7 @@ public class AndroidClickEvent extends ClickEvent {
 	 * <b>修改时间：</b>2021年4月24日下午6:27:57
 	 * </p>
 	 * 
-	 * @author
+	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
 	 */

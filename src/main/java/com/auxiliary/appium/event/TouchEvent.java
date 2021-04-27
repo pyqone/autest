@@ -163,7 +163,7 @@ public class TouchEvent extends AbstractEvent {
 	 * <b>注意：</b>当滑动停止坐标小于底部坐标时，则滑动无效</li>
 	 * </p>
 	 * 
-	 * @param pointOption 滑动停止坐标
+	 * @param y 滑动停止坐标
 	 */
 	public void upGlide(int y) {
 		upGlide(PointOption.point(rigthXNum, y));
@@ -174,8 +174,6 @@ public class TouchEvent extends AbstractEvent {
 	 * <p>
 	 * 该方法为由屏幕底部1/10处位置作为起始y轴坐标，屏幕右侧1/10处位置作为x轴坐标，向上滑动至屏幕顶部1/10处位置坐标处位置
 	 * </p>
-	 * 
-	 * @param pointOption 滑动停止坐标
 	 */
 	public void upGlide() {
 		// 计算起始位置的x轴坐标
@@ -216,7 +214,7 @@ public class TouchEvent extends AbstractEvent {
 	 * 该方法所取的顶部坐标点与底部坐标点的获取方法类似，取顶部1/10处作为起始点，向下滑动至目标点。可参考{@link #upGlide(int)}方法进行传参
 	 * </p>
 	 * 
-	 * @param pointOption 滑动停止坐标
+	 * @param y 滑动停止坐标
 	 */
 	public void downGlide(int y) {
 		downGlide(PointOption.point(rigthXNum, y));
@@ -227,8 +225,6 @@ public class TouchEvent extends AbstractEvent {
 	 * <p>
 	 * 该方法为由屏幕顶部1/10处位置作为起始y轴坐标，屏幕右侧1/10处位置作为x轴坐标，向下滑动至屏幕底部1/10处位置坐标处位置
 	 * </p>
-	 * 
-	 * @param pointOption 滑动停止坐标
 	 */
 	public void downGlide() {
 		// 计算起始位置的x轴坐标
@@ -241,8 +237,7 @@ public class TouchEvent extends AbstractEvent {
 	 * <b>注意：</b>若指定的坐标点小于2个时，则不进行操作
 	 * </p>
 	 * 
-	 * @param startPoint 起始点坐标
-	 * @param endPoint   结束点坐标
+	 * @param points 滑动坐标组
 	 */
 	public void glide(PointOption<?>... points) {
 		// 判断是否指定相应数量的坐标点

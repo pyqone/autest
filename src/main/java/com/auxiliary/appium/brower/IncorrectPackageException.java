@@ -1,13 +1,20 @@
 package com.auxiliary.appium.brower;
 
 /**
- * <p><b>文件名：</b>IncorrectPackageException.java</p>
- * <p><b>用途：</b>
- * 当app包信息有误时抛出的异常
+ * <p>
+ * <b>文件名：</b>IncorrectPackageException.java
  * </p>
- * <p><b>编码时间：</b>2021年4月7日上午8:12:46</p>
- * <p><b>修改时间：</b>2021年4月7日上午8:12:46</p>
- * @author 
+ * <p>
+ * <b>用途：</b> 当app包信息有误时抛出的异常
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2021年4月7日上午8:12:46
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2021年4月7日上午8:12:46
+ * </p>
+ * 
+ * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
  */

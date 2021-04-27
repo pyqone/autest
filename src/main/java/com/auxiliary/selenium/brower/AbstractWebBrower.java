@@ -105,7 +105,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	 * 注意：
 	 * <ol>
 	 * <li>若未生成WebDriver对象时（即未调用{@link #getDriver()}方法时），则抛出异常</li>
-	 * <li>若生成WebDriver对象但未设置默认页面时（即调用了{@link #AbstractBrower(File)}单参构造来构造对象），
+	 * <li>若生成WebDriver对象但未设置默认页面时（即调用了{@link #AbstractWebBrower(File)}单参构造来构造对象），
 	 * 则在调用该方法时，无论openNewLabel传入是何值，均不影响在第一个标签中打开页面</li>
 	 * <li>执行该方法后，其WebDriver对象将切换至新的标签页上</li>
 	 * </ol>
@@ -134,7 +134,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	 * 注意：
 	 * <ol>
 	 * <li>若未生成WebDriver对象时（即未调用{@link #getDriver()}方法时），则抛出异常</li>
-	 * <li>若生成WebDriver对象但未设置默认页面时（即调用了{@link #AbstractBrower(File)}单参构造来构造对象），
+	 * <li>若生成WebDriver对象但未设置默认页面时（即调用了{@link #AbstractWebBrower(File)}单参构造来构造对象），
 	 * 则在调用该方法时，无论openNewLabel传入是何值，均不影响在第一个标签中打开页面</li>
 	 * <li>执行该方法后，其WebDriver对象将切换至新的标签页上</li>
 	 * </ol>
