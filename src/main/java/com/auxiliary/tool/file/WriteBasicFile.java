@@ -18,6 +18,10 @@ import com.auxiliary.tool.file.excel.AbstractWriteExcel.Field;
 public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
 	protected final String KEY_CONTENT = "content";
 	protected final String KEY_TEXT = "text";
+	protected final String KEY_DEFAULT = "default";
+	protected final String KEY_CASE = "case";
+	protected final String KEY_TEMPLET = "templet";
+	protected final String KEY_DATA = "data";
 
 	/**
 	 * 存储模板文件的构造类
@@ -46,6 +50,11 @@ public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
 	 * 存储待替换的词语以及被替换的词语
 	 */
 	protected HashMap<String, DataFunction> replaceWordMap = new HashMap<>(16);
+	
+	/**
+	 * 指向当前需要编写的用例下标
+	 */
+	protected int caseIndex = -1;
 
 	/**
 	 * 构造对象，初始化创建文件的模板
@@ -172,6 +181,38 @@ public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
 
 		defaultCaseJson.put(field, defaultListJson);
 	}
+	
+	/**
+	 * 用于获取指定下标的用例内容
+	 * <p>
+	 * 调用该方法后，当前编写的用例将指向为指定下标的用例。若当前正在编写用例，调用该方法后，将覆盖当前编写的用例。
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>若下标为负数或大于当前内容最大个数时，则不获取指定内容。下标从0开始计算，及0表示第一条用例
+	 * </p>
+	 * @param index 用例下标
+	 * @return 类本身
+	 */
+	@SuppressWarnings("unchecked")
+	public T getContent(int index) {
+		if (index < 0) {
+			return (T) this;
+		}
+		
+		// 获取用例集合
+		JSONArray caseListJson = contentJson.getJSONArray(KEY_CONTENT);
+		// 判断下标指向的集合内容是否存在，不存在，则不进行获取
+		if (index >=  caseListJson.size()) {
+			return (T) this;
+		}
+		
+		// 设置当前用例下标为指定的下标
+		caseIndex = index;
+		// 获取下标对应的用例内容
+		caseJson = caseListJson.getJSONObject(caseIndex);
+		
+		return (T) this;
+	}
 
 	/**
 	 * 通过传入的字段id，将对应的字段内容写入到用例最后的段落中，字段id对应xml配置文件中的单元格标签的id属性。
@@ -232,10 +273,22 @@ public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
 
 		// 获取内容字段的数组，并将用例写入到文本中
 		JSONArray contentListJson = Optional.ofNullable(contentJson.getJSONArray(KEY_CONTENT)).orElse(new JSONArray());
-		contentListJson.add(JSONObject.parse(caseJson.toJSONString()));
+		// 将caseJson中存储的内容重新放入到一个json中
+		
+		// 判断当前用例下标是否为-1，为-1，则记录到内容中的最后一条；反之，则使用当前内容进行覆盖
+		if (caseIndex == -1) {
+			contentListJson.add(JSONObject.parse(caseJson.toJSONString()));
+		} else {
+			contentListJson.set(caseIndex, JSONObject.parse(caseJson.toJSONString()));
+		}
+		
+		// 将用例集合重新添加至内容json中
 		contentJson.put(KEY_CONTENT, contentListJson);
 		
+		// 清除用例json中的内容，并指定用例下标为-1
 		caseJson.clear();
+		caseIndex = -1;
+		
 		return (T) this;
 	}
 
@@ -249,13 +302,13 @@ public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
 	 */
 	public String toWriteFileJson() {
 		JSONObject mainjson = new JSONObject();
-		mainjson.put("templet", JSONObject.parse(templet.getTempletJson()));
+		mainjson.put(KEY_TEMPLET, JSONObject.parse(templet.getTempletJson()));
 
 		JSONObject dataJson = new JSONObject();
-		dataJson.put("default", defaultCaseJson);
-		dataJson.put("case", contentJson);
+		dataJson.put(KEY_DEFAULT, defaultCaseJson);
+		dataJson.put(KEY_CASE, contentJson);
 
-		mainjson.put("data", dataJson);
+		mainjson.put(KEY_DATA, dataJson);
 
 		return mainjson.toJSONString();
 	}
