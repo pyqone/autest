@@ -12,9 +12,42 @@ import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
-import com.auxiliary.testcase.templet.LabelNotFoundException;
 import com.auxiliary.tool.file.excel.AbstractWriteExcel.Field;
 
+/**
+ * <p><b>文件名：</b>WriteTempletFile.java</p>
+ * <p><b>用途：</b>
+ * 快速写入模板型的文件进行的工具。可通过类中提供的词语替换和默认内容的方法，对一类模板型的文件内容（如，测试用例）
+ * 进行快速写作，提高工作效率。并且，若存在内容相同，但模板不同的文件，还可通过调用{@link #toWriteFileJson()}方法
+ * 以完成各个子类之间的消息互通，达到快速生成多种同一内容，不同存放文件的目的。
+ * </p>
+ * <p>
+ * 在注释中，存在以下名词需要解释：
+ * <ul>
+ * <li><b>用例</b>：写入到模板文件中的一条数据，类似于一条测试用例</li>
+ * <li><b>内容</b>：写入到模板文件中的所有数据，类似于写在测试用例文件中的所有测试用例</li>
+ * </ul>
+ * </p>
+ * <p>
+ * 在编写内容时，可使用关键词替换和默认内容写入的方式 TODO 编写替换相关的注释
+ * </p>
+ * <p>
+ * 通过传入的字段，将对应的字段内容写入到用例最后的段落中，字段id对应xml配置文件中的单元格标签的id属性。
+ * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
+ * testing<br>
+ * 需要替换其中的“ing”，则传参：<br>
+ * test#ing#<br>
+ * 添加数据时，其亦可对存在数据有效性的数据进行转换，在传值时，只需要传入相应的字段值即可，例如：<br>
+ * 当字段存在两个数据有效性：“测试1”和“测试2”时，则，可传入addContent(..., "1")（注意，下标从1开始），
+ * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容，具体说明可以参见{@link Field#getDataValidation(int)}。
+ * </p>
+ * <p><b>编码时间：</b>2021年5月15日上午11:13:26</p>
+ * <p><b>修改时间：</b>2021年5月15日上午11:13:26</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 1.8
+ * @param <T> 子类
+ */
 public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	protected final String KEY_CONTENT = "content";
 	protected final String KEY_TEXT = "text";
@@ -55,6 +88,14 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 指向当前需要编写的用例下标
 	 */
 	protected int caseIndex = -1;
+	/**
+	 * 存储需要分页的行数
+	 */
+	protected int writeRowNum = 0;
+	/**
+	 * 存储当前已写入的行数
+	 */
+	protected int nowRowNum = 0;
 
 	/**
 	 * 构造对象，初始化创建文件的模板
@@ -151,13 +192,13 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 若字段存在内容，则不会写入默认值
 	 * </p>
 	 * <p>
-	 * <b>注意：</b>若模板中不存在指定的字段，则不写入该默认值
+	 * <b>注意：</b>若模板中不存在指定的字段，则不写入该默认值；每次重新编写字段默认值时，会覆盖上次编写的内容
 	 * </p>
 	 * 
 	 * @param field    字段
 	 * @param contents 默认内容
 	 */
-	public void setFieldValue(String field, int index, String... contents) {
+	public void setFieldValue(String field, String... contents) {
 		// 判断字段是否存在，若不存在，则不进行操作
 		if (!templet.contains(field)) {
 			return;
@@ -168,8 +209,8 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			return;
 		}
 
-		// 获取字段指向的用例内容
-		JSONArray defaultListJson = Optional.ofNullable(defaultCaseJson.getJSONArray(field)).orElse(new JSONArray());
+		// 定义新的内容集合
+		JSONArray defaultListJson = new JSONArray();
 
 		// 查找特殊词语，并对词语进行替换，并将内容写入到字段中
 		Arrays.stream(contents).map(this::replaceWord).map(text -> {
@@ -177,19 +218,30 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			fieldJson.put(KEY_TEXT, text);
 
 			return fieldJson;
-		}).forEach(json -> {
-			if (index < 0 || index >= defaultListJson.size()) {
-				defaultListJson.add(json);
-			} else {
-				defaultListJson.add(index, json);
-			}
-		});
+		}).forEach(defaultListJson::add);
 
 		defaultCaseJson.put(field, defaultListJson);
 	}
 	
 	/**
-	 * 用于获取指定下标的用例内容
+	 * 用于设置
+	 * @param writeRowNum
+	 */
+	public void setWriteRowNum(int writeRowNum) {
+		this.writeRowNum = writeRowNum < 0 ? 0 : writeRowNum;
+	}
+	
+	public void clearFieldValue(String field) {
+		// 判断字段是否存在，若不存在，则不进行操作
+		if (!templet.contains(field)) {
+			return;
+		}
+
+		defaultCaseJson.remove(field);
+	}
+	
+	/**
+	 * 用于获取指定下标的用例内容，并对内容进行重写
 	 * <p>
 	 * 调用该方法后，当前编写的用例将指向为指定下标的用例。若当前正在编写用例，调用该方法后，将覆盖当前编写的用例。
 	 * </p>
@@ -200,7 +252,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @return 类本身
 	 */
 	@SuppressWarnings("unchecked")
-	public T getContent(int index) {
+	public T getCase(int index) {
 		if (index < 0) {
 			return (T) this;
 		}
@@ -219,24 +271,35 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		
 		return (T) this;
 	}
-
+	
 	/**
-	 * 通过传入的字段id，将对应的字段内容写入到用例最后的段落中，字段id对应xml配置文件中的单元格标签的id属性。
-	 * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
-	 * testing<br>
-	 * 需要替换其中的“ing”，则传参：<br>
-	 * test#ing#<br>
-	 * 添加数据时，其亦可对存在数据有效性的数据进行转换，在传值时，只需要传入相应的字段值即可，例如：<br>
-	 * 当字段存在两个数据有效性：“测试1”和“测试2”时，则，可传入addContent(..., "1")（注意，下标从1开始），
-	 * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容，具体说明可以参见{@link Field#getDataValidation(int)}。
+	 * 根据传入的字段信息，将指定的内容插入到用例相应字段的最后一行 
+	 * <p>
+	 * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。
+	 * </p>
 	 * 
 	 * @param field    字段id
 	 * @param contents 相应字段的内容
-	 * @return 类本身，以方便链式编码
-	 * @throws LabelNotFoundException 当在sheet标签中查不到相应的单元格id不存在时抛出的异常
+	 * @return 类本身
+	 */
+	public T addContent(String field, String... contents) {
+		return addContent(field, -1, contents);
+	}
+
+	/**
+	 * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下
+	 * <p>
+	 * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，
+	 * 则将内容写入到集合最后
+	 * </p>
+	 * 
+	 * @param field    字段id
+	 * @param index 指定插入的位置
+	 * @param contents 相应字段的内容
+	 * @return 类本身
 	 */
 	@SuppressWarnings("unchecked")
-	public T addContent(String field, String... contents) {
+	public T addContent(String field, int index, String... contents) {
 		// 判断字段是否存在，若不存在，则不进行操作
 		if (!templet.contains(field)) {
 			return (T) this;
@@ -256,24 +319,92 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			fieldJson.put(KEY_TEXT, text);
 
 			return fieldJson;
-		}).forEach(contentListJson::add);
+		}).forEach(json -> {
+			// 判断传入的下标是否符合当前内容集合的个数限制，不符合，则将内容写入到最后一行
+			if (index < 0 || index >= contentListJson.size()) {
+				contentListJson.add(json);
+			} else {
+				contentListJson.add(index, json);
+			}
+		});
 
 		// 将内容写入到用例数据中
 		caseJson.put(field, contentListJson);
 
 		return (T) this;
 	}
-
+	
 	/**
-	 * 标记完成一条用例数据的编写。
+	 * 用于清除用例字段下指定下标段落的内容
+	 * @param field 字段
+	 * @param index 段落下标
+	 * @return 类本身
+	 */
+	@SuppressWarnings("unchecked")
+	public T clearContent(String field, int index) {
+		// 判断字段是否存在，若不存在，则不进行操作
+		if (!templet.contains(field)) {
+			return (T) this;
+		}
+		
+		if (index < 0) {
+			return (T) this;
+		}
+		
+		// 获取字段指向的用例内容
+		JSONArray contentListJson = caseJson.getJSONArray(field);
+		// 判断字段内容是否为空
+		if (contentListJson != null && !contentListJson.isEmpty()) {
+			// 若指定的下标小于内容集合的个数，则移除相应的内容
+			if (index < contentListJson.size()) {
+				contentListJson.remove(index);
+			}
+		}
+		
+		return (T) this;
+	}
+	
+	public void clearCase(int index) {
+		if (index < 0) {
+			return;
+		}
+		
+		// 获取用例集合
+		JSONArray caseListJson = contentJson.getJSONArray(KEY_CONTENT);
+		// 判断下标指向的集合内容是否存在，不存在，则不进行获取
+		if (index >=  caseListJson.size()) {
+			return;
+		}
+		
+		caseListJson.remove(index);
+	}
+	
+	/**
+	 * 标记完成一条用例数据的编写，并将内容插入到最后一行内容下
 	 * <p>
 	 * 调用该方法后，则将数据的缓存写入到文本的缓存内容中，以表示当前段落数据编写完成， 之后再次调用添加数据方法时，则写入一段新的内容。
 	 * </p>
 	 * 
 	 * @return 类本身
 	 */
-	@SuppressWarnings("unchecked")
 	public T end() {
+		return end(Integer.MAX_VALUE);
+	}
+	
+	/**
+	 * 标记完成一条用例数据的编写，并将内容插入到指定行内容下
+	 * <p>
+	 * 调用该方法后，则将数据的缓存写入到文本的缓存内容中，以表示当前段落数据编写完成， 之后再次调用添加数据方法时，则写入一段新的内容。
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>若调用了{@link #getCase(int)}方法覆盖指定行内容的用例时，则传入的下标无效
+	 * </p>
+	 * 
+	 * @param contentIndex 内容下标
+	 * @return 类本身
+	 */
+	@SuppressWarnings("unchecked")
+	public T end(int contentIndex) {
 		// 将默认值附加到字段上
 		replenishDefaultContent();
 
@@ -283,13 +414,27 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		
 		// 判断当前用例下标是否为-1，为-1，则记录到内容中的最后一条；反之，则使用当前内容进行覆盖
 		if (caseIndex == -1) {
-			contentListJson.add(JSONObject.parse(caseJson.toJSONString()));
+			//判断传入的内容下标是否正确，不正确，则对下标进行修正
+			if (contentIndex < 0) {
+				contentListJson.add(0, JSONObject.parse(caseJson.toJSONString()));
+			} else if (contentIndex >= 0 && contentIndex < contentListJson.size()) {
+				contentListJson.add(contentIndex, JSONObject.parse(caseJson.toJSONString()));
+			} else {
+				contentListJson.add(JSONObject.parse(caseJson.toJSONString()));
+			}
 		} else {
 			contentListJson.set(caseIndex, JSONObject.parse(caseJson.toJSONString()));
 		}
 		
 		// 将用例集合重新添加至内容json中
 		contentJson.put(KEY_CONTENT, contentListJson);
+		
+		// 若当前指定了分行写入文件，则判断当前行数是否需要分行写入文件
+		if (writeRowNum != 0 && contentListJson.size() % writeRowNum == 0) {
+			write();
+			//指定当前写入的行为当前内容的行数
+			nowRowNum = contentListJson.size();
+		}
 		
 		// 清除用例json中的内容，并指定用例下标为-1
 		caseJson.clear();
@@ -320,9 +465,25 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	}
 	
 	/**
-	 * 用于将编写的内容写入到文件中
+	 * 用于将编写的所有内容写入到文件中
 	 */
-	public abstract void write();
+	public void write() {
+		// 若分页行数不为0，则获取当前行数作为编写的起始行数
+		int startIndex = 0;
+		if (writeRowNum != 0) {
+			startIndex = nowRowNum;
+		}
+		
+		write(startIndex, contentJson.getJSONArray(KEY_CONTENT).size());
+	}
+	
+	/**
+	 * 用于将编写的部分内容写入到文件中
+	 * 
+	 * @param caseStartIndex 写入文件开始下标
+	 * @param caseEndIndex 写入文件结束下标
+	 */
+	public abstract void write(int caseStartIndex, int caseEndIndex);
 
 	/**
 	 * 用于在用例中补充默认的字段内容，若用例存在内容，则不添加默认值
@@ -335,7 +496,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			}
 		}
 	}
-
+	
 	/**
 	 * 用于对当前文本内容中的词语进行提取，并返回替换后的内容
 	 * 
@@ -398,5 +559,10 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		return wordList;
+	}
+	
+	//TODO 编写默认值是否结尾插入
+	protected class DefaultField {
+		
 	}
 }
