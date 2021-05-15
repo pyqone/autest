@@ -15,7 +15,7 @@ import com.auxiliary.datadriven.Functions;
 import com.auxiliary.testcase.templet.LabelNotFoundException;
 import com.auxiliary.tool.file.excel.AbstractWriteExcel.Field;
 
-public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
+public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	protected final String KEY_CONTENT = "content";
 	protected final String KEY_TEXT = "text";
 	protected final String KEY_DEFAULT = "default";
@@ -61,7 +61,7 @@ public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
 	 * 
 	 * @param templet 模板类对象
 	 */
-	public WriteBasicFile(FileTemplet templet) {
+	public WriteTempletFile(FileTemplet templet) {
 		this.templet = templet;
 
 		contentJson.put(KEY_CONTENT, new JSONArray());
@@ -157,7 +157,7 @@ public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
 	 * @param field    字段
 	 * @param contents 默认内容
 	 */
-	public void setFieldValue(String field, String... contents) {
+	public void setFieldValue(String field, int index, String... contents) {
 		// 判断字段是否存在，若不存在，则不进行操作
 		if (!templet.contains(field)) {
 			return;
@@ -177,7 +177,13 @@ public abstract class WriteBasicFile<T extends WriteBasicFile<T>> {
 			fieldJson.put(KEY_TEXT, text);
 
 			return fieldJson;
-		}).forEach(defaultListJson::add);
+		}).forEach(json -> {
+			if (index < 0 || index >= defaultListJson.size()) {
+				defaultListJson.add(json);
+			} else {
+				defaultListJson.add(index, json);
+			}
+		});
 
 		defaultCaseJson.put(field, defaultListJson);
 	}
