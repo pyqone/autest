@@ -53,8 +53,6 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	protected final String KEY_TEXT = "text";
 	protected final String KEY_DEFAULT = "default";
 	protected final String KEY_CASE = "case";
-	protected final String KEY_TEMPLET = "templet";
-	protected final String KEY_DATA = "data";
 
 	/**
 	 * 存储模板文件的构造类
@@ -106,6 +104,23 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		this.templet = templet;
 
 		contentJson.put(KEY_CONTENT, new JSONArray());
+	}
+	
+	/**
+	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
+	 * @param writeTempletFile 文件写入类对象
+	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
+	 */
+	public WriteTempletFile(WriteTempletFile<?> writeTempletFile) {
+		// 若传入的文件写入类为空，则抛出异常
+		if (writeTempletFile == null) {
+			throw new WriteFileException("未指定文件写入类对象，无法进行构造");
+		}
+		
+		this.templet = writeTempletFile.templet;
+		this.contentJson = writeTempletFile.contentJson;
+		this.defaultCaseJson = writeTempletFile.defaultCaseJson;
+		this.replaceWordMap = writeTempletFile.replaceWordMap;
 	}
 
 	/**
@@ -453,13 +468,9 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 */
 	public String toWriteFileJson() {
 		JSONObject mainjson = new JSONObject();
-		mainjson.put(KEY_TEMPLET, JSONObject.parse(templet.getTempletJson()));
+		mainjson.put(KEY_DEFAULT, defaultCaseJson);
+		mainjson.put(KEY_CASE, contentJson);
 
-		JSONObject dataJson = new JSONObject();
-		dataJson.put(KEY_DEFAULT, defaultCaseJson);
-		dataJson.put(KEY_CASE, contentJson);
-
-		mainjson.put(KEY_DATA, dataJson);
 
 		return mainjson.toJSONString();
 	}
