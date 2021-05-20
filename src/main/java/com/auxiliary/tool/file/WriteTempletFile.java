@@ -3,6 +3,7 @@ package com.auxiliary.tool.file;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -12,7 +13,6 @@ import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
-import com.auxiliary.tool.file.excel.AbstractWriteExcel.Field;
 
 /**
  * <p><b>文件名：</b>WriteTempletFile.java</p>
@@ -28,19 +28,6 @@ import com.auxiliary.tool.file.excel.AbstractWriteExcel.Field;
  * <li><b>内容</b>：写入到模板文件中的所有数据，类似于写在测试用例文件中的所有测试用例</li>
  * </ul>
  * </p>
- * <p>
- * 在编写内容时，可使用关键词替换和默认内容写入的方式 TODO 编写替换相关的注释
- * </p>
- * <p>
- * 通过传入的字段，将对应的字段内容写入到用例最后的段落中，字段id对应xml配置文件中的单元格标签的id属性。
- * 若需要使用替换的词语，则需要使用“#XX#”进行标记，如传参：<br>
- * testing<br>
- * 需要替换其中的“ing”，则传参：<br>
- * test#ing#<br>
- * 添加数据时，其亦可对存在数据有效性的数据进行转换，在传值时，只需要传入相应的字段值即可，例如：<br>
- * 当字段存在两个数据有效性：“测试1”和“测试2”时，则，可传入addContent(..., "1")（注意，下标从1开始），
- * 此时，文件中该字段的值将为“测试1”，若传入的值无法转换成数字，则直接填入传入的内容，具体说明可以参见{@link Field#getDataValidation(int)}。
- * </p>
  * <p><b>编码时间：</b>2021年5月15日上午11:13:26</p>
  * <p><b>修改时间：</b>2021年5月15日上午11:13:26</p>
  * @author 彭宇琦
@@ -49,10 +36,11 @@ import com.auxiliary.tool.file.excel.AbstractWriteExcel.Field;
  * @param <T> 子类
  */
 public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
-	protected final String KEY_CONTENT = "content";
-	protected final String KEY_TEXT = "text";
-	protected final String KEY_DEFAULT = "default";
-	protected final String KEY_CASE = "case";
+	public static final String KEY_CONTENT = "content";
+	public static final String KEY_TEXT = "text";
+	public static final String KEY_DEFAULT = "default";
+	public static final String KEY_CASE = "case";
+	public static final String KEY_TEMPLET = "templet";
 
 	/**
 	 * 存储模板文件的构造类
@@ -124,7 +112,10 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	}
 
 	/**
-	 * 用于设置需要被替换的词语
+	 * 设置需要被替换的词语以及替换的内容
+	 * <p>
+	 * 在调用{@link #addContent(String, String...)}等方法编写内容时，用“#xx#”来表示待替换的词语，
+	 * </p>
 	 * 
 	 * @param word        需要替换的词语
 	 * @param replactWord 被替换的词语
@@ -215,7 +206,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 */
 	public void setFieldValue(String field, String... contents) {
 		// 判断字段是否存在，若不存在，则不进行操作
-		if (!templet.contains(field)) {
+		if (!templet.containsField(field)) {
 			return;
 		}
 
@@ -248,7 +239,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	
 	public void clearFieldValue(String field) {
 		// 判断字段是否存在，若不存在，则不进行操作
-		if (!templet.contains(field)) {
+		if (!templet.containsField(field)) {
 			return;
 		}
 
@@ -316,7 +307,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	@SuppressWarnings("unchecked")
 	public T addContent(String field, int index, String... contents) {
 		// 判断字段是否存在，若不存在，则不进行操作
-		if (!templet.contains(field)) {
+		if (!templet.containsField(field)) {
 			return (T) this;
 		}
 
@@ -358,7 +349,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	@SuppressWarnings("unchecked")
 	public T clearContent(String field, int index) {
 		// 判断字段是否存在，若不存在，则不进行操作
-		if (!templet.contains(field)) {
+		if (!templet.containsField(field)) {
 			return (T) this;
 		}
 		
@@ -495,6 +486,31 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @param caseEndIndex 写入文件结束下标
 	 */
 	public abstract void write(int caseStartIndex, int caseEndIndex);
+	
+	/**
+	 * 用于根据当前实际的模板数量，返回拼接后的模板json内容
+	 * <p>
+	 * 由于部分写入类可传入多个模板，为方便构造，则需要对所有模板的json进行返回
+	 * </p>
+	 * 
+	 * @return 拼接所有模板json后得到的模板json内容
+	 */
+	public String toTempletJson() {
+		// 转换模板Json，并进行存储
+		JSONArray templetJsonList = new JSONArray();
+		getAllTempletJson().stream().map(JSONObject::parseObject).forEach(templetJsonList::add);
+		
+		JSONObject tempJson = new JSONObject();
+		tempJson.put(KEY_TEMPLET, templetJsonList);
+		
+		return tempJson.toJSONString();
+	}
+	
+	/**
+	 * 将类中存储的模板类转换为模板json串，通过List集合收集后，进行返回
+	 * @return 返回类中所有的模板json串
+	 */
+	protected abstract List<String> getAllTempletJson();
 
 	/**
 	 * 用于在用例中补充默认的字段内容，若用例存在内容，则不添加默认值
@@ -570,10 +586,5 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		return wordList;
-	}
-	
-	//TODO 编写默认值是否结尾插入
-	protected class DefaultField {
-		
 	}
 }
