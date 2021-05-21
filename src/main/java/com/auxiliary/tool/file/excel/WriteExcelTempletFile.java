@@ -1,11 +1,14 @@
 package com.auxiliary.tool.file.excel;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.auxiliary.tool.file.FileTemplet;
+import com.auxiliary.tool.file.AbstractFileTemplet;
 import com.auxiliary.tool.file.MarkColorsType;
 import com.auxiliary.tool.file.MarkComment;
 import com.auxiliary.tool.file.MarkFieldBackground;
@@ -16,27 +19,30 @@ import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteFilePage;
 import com.auxiliary.tool.file.WriteTempletFile;
 
-public class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
+public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		extends WriteTempletFile<WriteExcelTempletFile<T>> implements MarkComment<WriteExcelTempletFile<T>>,
 		MarkFieldBackground<WriteExcelTempletFile<T>>, MarkTextColor<WriteExcelTempletFile<T>>,
 		MarkTextFont<WriteExcelTempletFile<T>>, MarkTextLink<WriteExcelTempletFile<T>>, WriteFilePage {
 	/**
 	 * 存储每个Sheet对应的模板
 	 */
-	HashMap<String, FileTemplet> sheetTempletMap = new HashMap<>();
+	HashMap<String, AbstractFileTemplet> sheetTempletMap = new HashMap<>();
 
 	/**
 	 * 构造Excel写入类，并设置一个Sheet页的模板及相应的名称
 	 * @param templetName 模板名称
 	 * @param templet 模板类
 	 */
-	public WriteExcelTempletFile(String templetName, FileTemplet templet) {
+	public WriteExcelTempletFile(String templetName, AbstractFileTemplet templet) {
 		super(templet);
 		addTempletName(templetName, templet);
 	}
 
 	/**
 	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
+	 * <p>
+	 * <b>注意：</b>在转换模板时，若模板的name字段为对象，则以默认名称“Sheet + 序号”来命名，并修改其中的name字段值
+	 * </p>
 	 * @param writeTempletFile 文件写入类对象
 	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
 	 */
@@ -47,7 +53,7 @@ public class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		JSONArray tempJsonList = JSONObject.parseObject(writeTempletFile.toTempletJson()).getJSONArray(KEY_TEMPLET);
 		// 循环，读取所有的模板，并对模板进行转换
 		for (int i = 0; i < tempJsonList.size(); i++) {
-			FileTemplet temp = FileTemplet.parse(tempJsonList.getJSONObject(i).toJSONString());
+			AbstractFileTemplet temp = new AbstractFileTemplet(tempJsonList.getJSONObject(i).toJSONString());
 			
 			// 判断模板是否包含"name"属性，不包含，则加入默认名称
 			if (!temp.containsAttribute(KEY_NAME)) {
@@ -55,7 +61,14 @@ public class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 				temp.addTempletAttribute(KEY_NAME, name);
 				sheetTempletMap.put(name, temp);
 			} else {
-				sheetTempletMap.put(temp.getTempletAttribute(KEY_NAME).toString(), temp);
+				Object obj = temp.getTempletAttribute(KEY_NAME);
+				if (obj instanceof String) {
+					sheetTempletMap.put(temp.getTempletAttribute(KEY_NAME).toString(), temp);
+				} else {
+					String name = "Sheet" + (i + 1);
+					temp.addTempletAttribute(KEY_NAME, name);
+					sheetTempletMap.put(name, temp);
+				}
 			}
 		}
 	}
@@ -66,15 +79,12 @@ public class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 
 	@Override
 	public void switchPage(String name) {
-		
+		// 判断名称是否为空、存在
+		if (Optional.ofNullable(name).filter(n -> !n.isEmpty()).filter(sheetTempletMap::containsKey).isPresent()) {
+			this.templet = sheetTempletMap.get(name);
+		}
 	}
 	
-	@Override
-	public void renamePage(String oldName, String newName) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	/**
 	 * 添加Sheet页模板，并设置模板的名称
 	 * <p>
@@ -82,7 +92,7 @@ public class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 	 * </p>
 	 */
 	@Override
-	public void addTempletName(String name, FileTemplet templet) {
+	public void addTempletName(String name, AbstractFileTemplet templet) {
 		WriteFilePage.super.addTempletName(name, templet);
 		sheetTempletMap.put(name, templet);
 	}
@@ -134,8 +144,14 @@ public class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 
 	@Override
 	protected List<String> getAllTempletJson() {
-		// TODO Auto-generated method stub
-		return null;
+		return sheetTempletMap.values().stream().map(AbstractFileTemplet::getTempletJson).collect(Collectors.toList());
 	}
 
+	@Override
+	protected void createTempletFile() {
+		// TODO 编写创建文件逻辑
+		sheetTempletMap.forEach((name, templet) -> {
+			
+		});
+	}
 }

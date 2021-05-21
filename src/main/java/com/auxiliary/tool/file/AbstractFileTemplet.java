@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSONObject;
  * @version Ver1.0
  * @since JDK 1.8
  */
-public class FileTemplet {
+public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
 	public static final String KEY_SAVE = "save";
 	public static final String KEY_FIELD = "field";
 
@@ -39,15 +39,28 @@ public class FileTemplet {
 	 * 
 	 * @param saveFile 模板文件保存路径
 	 */
-	public FileTemplet(File saveFile) {
+	public AbstractFileTemplet(File saveFile) {
 		templetJson.put(KEY_SAVE, saveFile.getAbsolutePath());
 		templetJson.put(KEY_FIELD, new JSONObject());
 	}
-
-	/**
-	 * 内部调用构造
-	 */
-	private FileTemplet() {
+	
+	public AbstractFileTemplet(String templetJsonText) {
+		// 将传入的json字符串转换成JSONObject类，并判断其是否包含必要字段，若不存在，则抛出异常
+		this.templetJson = Optional.ofNullable(templetJsonText).filter(t -> !t.isEmpty()).map(t -> {
+			try {
+				return JSONObject.parseObject(t);
+			} catch (Exception e) {
+				return new JSONObject();
+			}
+		}).filter(json -> json.containsKey(KEY_SAVE) && json.containsKey(KEY_FIELD)).filter(json -> {
+			// 判断传入的json中，其field字段是否为json类形式，若非该形式，则也被过滤
+			try {
+				json.getJSONObject(KEY_FIELD);
+				return true;
+			} catch (JSONException e) {
+				return false;
+			}
+		}).orElseThrow(() -> new WriteFileException("缺少模板必须字段，无法将文本转换为模板类"));
 	}
 
 	/**
@@ -57,12 +70,16 @@ public class FileTemplet {
 	 * </p>
 	 * 
 	 * @param field 字段ID
+	 * @return 类本身
 	 */
-	public void addField(String field) {
+	@SuppressWarnings("unchecked")
+	public T addField(String field) {
 		// 判断文本内容是否为空
 		if (!isEmpty(field)) {
 			templetJson.getJSONObject(KEY_FIELD).put(field, new JSONObject());
 		}
+		
+		return (T) this;
 	}
 
 	/**
@@ -74,11 +91,14 @@ public class FileTemplet {
 	 * @param field    字段ID
 	 * @param attName  属性名称
 	 * @param attValue 属性值
+	 * 
+	 * @return 类本身
 	 */
-	public void addFieldAttribute(String field, String attName, String attValue) {
+	@SuppressWarnings("unchecked")
+	public T addFieldAttribute(String field, String attName, String attValue) {
 		// 判断字段内容是否为空，任何一个内容为空时，则不进行存储
 		if (isEmpty(field) || isEmpty(attName) || isEmpty(attValue)) {
-			return;
+			return (T) this;
 		}
 
 		JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
@@ -86,6 +106,8 @@ public class FileTemplet {
 		if (fieldJson.containsKey(field)) {
 			fieldJson.getJSONObject(field).put(attName, attValue);
 		}
+		
+		return (T) this;
 	}
 
 	/**
@@ -96,11 +118,14 @@ public class FileTemplet {
 	 * 
 	 * @param attName  属性名称
 	 * @param attValue 属性值
+	 * 
+	 * @return 类本身
 	 */
-	public void addTempletAttribute(String attName, Object attValue) {
+	@SuppressWarnings("unchecked")
+	public T addTempletAttribute(String attName, Object attValue) {
 		// 判断字段内容是否为空，任何一个内容为空时，则不进行存储
 		if (isEmpty(attName) || attValue == null) {
-			return;
+			return (T) this;
 		}
 
 		// 判断关键词是否与指定关键词重复
@@ -109,6 +134,8 @@ public class FileTemplet {
 		}
 
 		templetJson.put(attName, attValue);
+		
+		return (T) this;
 	}
 	
 	/**
@@ -166,39 +193,16 @@ public class FileTemplet {
 		return templetJson.keySet();
 	}
 
-	/**
-	 * 将模板json串转换为模板类
-	 * @param templetJson 模板字符串
-	 * @return 模板类
-	 * @throws WriteFileException 传入的json缺少必要字段时，抛出的异常
-	 */
-	public static FileTemplet parse(String templetJson) {
-		FileTemplet templet = new FileTemplet();
-
-		// 将传入的json字符串转换成JSONObject类，并判断其是否包含必要字段，若不存在，则抛出异常
-		templet.templetJson = Optional.ofNullable(templetJson).filter(t -> !t.isEmpty()).map(t -> {
-			try {
-				return JSONObject.parseObject(t);
-			} catch (Exception e) {
-				return new JSONObject();
-			}
-		}).filter(json -> json.containsKey(KEY_SAVE) && json.containsKey(KEY_FIELD)).filter(json -> {
-			// 判断传入的json中，其field字段是否为json类形式，若非该形式，则也被过滤
-			try {
-				json.getJSONObject(KEY_FIELD);
-				return true;
-			} catch (JSONException e) {
-				return false;
-			}
-		}).orElseThrow(() -> new WriteFileException("缺少模板必须字段，无法将文本转换为模板类"));
-
-		return templet;
-	}
-
 	@Override
 	public String toString() {
 		return getTempletJson();
 	}
+	
+	/**
+	 * 用于生成模板文件
+	 * @return 模板文件类对象
+	 */
+	public abstract File createFile();
 
 	/**
 	 * 判断文本内容是否为空

@@ -15,9 +15,11 @@ import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
 
 /**
- * <p><b>文件名：</b>WriteTempletFile.java</p>
- * <p><b>用途：</b>
- * 快速写入模板型的文件进行的工具。可通过类中提供的词语替换和默认内容的方法，对一类模板型的文件内容（如，测试用例）
+ * <p>
+ * <b>文件名：</b>WriteTempletFile.java
+ * </p>
+ * <p>
+ * <b>用途：</b> 快速写入模板型的文件进行的工具。可通过类中提供的词语替换和默认内容的方法，对一类模板型的文件内容（如，测试用例）
  * 进行快速写作，提高工作效率。并且，若存在内容相同，但模板不同的文件，还可通过调用{@link #toWriteFileJson()}方法
  * 以完成各个子类之间的消息互通，达到快速生成多种同一内容，不同存放文件的目的。
  * </p>
@@ -28,8 +30,13 @@ import com.auxiliary.datadriven.Functions;
  * <li><b>内容</b>：写入到模板文件中的所有数据，类似于写在测试用例文件中的所有测试用例</li>
  * </ul>
  * </p>
- * <p><b>编码时间：</b>2021年5月15日上午11:13:26</p>
- * <p><b>修改时间：</b>2021年5月15日上午11:13:26</p>
+ * <p>
+ * <b>编码时间：</b>2021年5月15日上午11:13:26
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2021年5月15日上午11:13:26
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -45,7 +52,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	/**
 	 * 存储模板文件的构造类
 	 */
-	protected FileTemplet templet;
+	protected AbstractFileTemplet templet;
 
 	/**
 	 * 待替换词语的标记
@@ -69,7 +76,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 存储待替换的词语以及被替换的词语
 	 */
 	protected HashMap<String, DataFunction> replaceWordMap = new HashMap<>(16);
-	
+
 	/**
 	 * 指向当前需要编写的用例下标
 	 */
@@ -88,14 +95,15 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 
 	 * @param templet 模板类对象
 	 */
-	public WriteTempletFile(FileTemplet templet) {
+	public WriteTempletFile(AbstractFileTemplet templet) {
 		this.templet = templet;
 
 		contentJson.put(KEY_CONTENT, new JSONArray());
 	}
-	
+
 	/**
 	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
+	 * 
 	 * @param writeTempletFile 文件写入类对象
 	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
 	 */
@@ -104,7 +112,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		if (writeTempletFile == null) {
 			throw new WriteFileException("未指定文件写入类对象，无法进行构造");
 		}
-		
+
 		this.templet = writeTempletFile.templet;
 		this.contentJson = writeTempletFile.contentJson;
 		this.defaultCaseJson = writeTempletFile.defaultCaseJson;
@@ -135,7 +143,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @param replactFunction 替换规则
 	 * @throws FunctionExceptional 未指定替换词语或替换内容时抛出的异常
 	 * @deprecated 该方法已被{@link #setReplactWord(DataDriverFunction)}方法代替，可将方法改为
-	 * {@code setReplactWord(new DataDriverFunction(word, functions))}。该方法将在后续两个版本中删除
+	 *             {@code setReplactWord(new DataDriverFunction(word, functions))}。该方法将在后续两个版本中删除
 	 */
 	@Deprecated
 	public void setReplactWord(String word, DataFunction functions) {
@@ -149,12 +157,11 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 		replaceWordMap.put(word, functions);
 	}
-	
+
 	/**
 	 * 用于添加匹配公式与处理方式
 	 * <p>
-	 * 该方法允许添加待替换词语的处理方式，在写入用例时，若指定的待替换内容符合此方法指定的正则时，则会使用存储的替换方式，
-	 * 对词语进行替换。例如：
+	 * 该方法允许添加待替换词语的处理方式，在写入用例时，若指定的待替换内容符合此方法指定的正则时，则会使用存储的替换方式， 对词语进行替换。例如：
 	 * <code><pre>
 	 * {@literal @}Test
 	 * public void setReplactWordTest_DataDriverFunction() {
@@ -187,15 +194,14 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		if (functions == null) {
 			return;
 		}
-		
+
 		replaceWordMap.put(functions.getRegex(), functions.getFunction());
 	}
 
 	/**
 	 * 用于向字段中添加默认内容
 	 * <p>
-	 * 当完成一条用例编写后，若未写入存在默认内容的字段时，则在完成用例后自动将默认内容写入字段中。 
-	 * 若字段存在内容，则不会写入默认值
+	 * 当完成一条用例编写后，若未写入存在默认内容的字段时，则在完成用例后自动将默认内容写入字段中。 若字段存在内容，则不会写入默认值
 	 * </p>
 	 * <p>
 	 * <b>注意：</b>若模板中不存在指定的字段，则不写入该默认值；每次重新编写字段默认值时，会覆盖上次编写的内容
@@ -228,15 +234,16 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 		defaultCaseJson.put(field, defaultListJson);
 	}
-	
+
 	/**
 	 * 用于设置
+	 * 
 	 * @param writeRowNum
 	 */
 	public void setWriteRowNum(int writeRowNum) {
 		this.writeRowNum = writeRowNum < 0 ? 0 : writeRowNum;
 	}
-	
+
 	public void clearFieldValue(String field) {
 		// 判断字段是否存在，若不存在，则不进行操作
 		if (!templet.containsField(field)) {
@@ -245,7 +252,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 		defaultCaseJson.remove(field);
 	}
-	
+
 	/**
 	 * 用于获取指定下标的用例内容，并对内容进行重写
 	 * <p>
@@ -254,6 +261,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * <p>
 	 * <b>注意：</b>若下标为负数或大于当前内容最大个数时，则不获取指定内容。下标从0开始计算，及0表示第一条用例
 	 * </p>
+	 * 
 	 * @param index 用例下标
 	 * @return 类本身
 	 */
@@ -262,24 +270,24 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		if (index < 0) {
 			return (T) this;
 		}
-		
+
 		// 获取用例集合
 		JSONArray caseListJson = contentJson.getJSONArray(KEY_CONTENT);
 		// 判断下标指向的集合内容是否存在，不存在，则不进行获取
-		if (index >=  caseListJson.size()) {
+		if (index >= caseListJson.size()) {
 			return (T) this;
 		}
-		
+
 		// 设置当前用例下标为指定的下标
 		caseIndex = index;
 		// 获取下标对应的用例内容
 		caseJson = caseListJson.getJSONObject(caseIndex);
-		
+
 		return (T) this;
 	}
-	
+
 	/**
-	 * 根据传入的字段信息，将指定的内容插入到用例相应字段的最后一行 
+	 * 根据传入的字段信息，将指定的内容插入到用例相应字段的最后一行
 	 * <p>
 	 * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。
 	 * </p>
@@ -295,12 +303,11 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	/**
 	 * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下
 	 * <p>
-	 * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，
-	 * 则将内容写入到集合最后
+	 * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时， 则将内容写入到集合最后
 	 * </p>
 	 * 
 	 * @param field    字段id
-	 * @param index 指定插入的位置
+	 * @param index    指定插入的位置
 	 * @param contents 相应字段的内容
 	 * @return 类本身
 	 */
@@ -339,9 +346,10 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 		return (T) this;
 	}
-	
+
 	/**
 	 * 用于清除用例字段下指定下标段落的内容
+	 * 
 	 * @param field 字段
 	 * @param index 段落下标
 	 * @return 类本身
@@ -352,11 +360,11 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		if (!templet.containsField(field)) {
 			return (T) this;
 		}
-		
+
 		if (index < 0) {
 			return (T) this;
 		}
-		
+
 		// 获取字段指向的用例内容
 		JSONArray contentListJson = caseJson.getJSONArray(field);
 		// 判断字段内容是否为空
@@ -366,25 +374,25 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 				contentListJson.remove(index);
 			}
 		}
-		
+
 		return (T) this;
 	}
-	
+
 	public void clearCase(int index) {
 		if (index < 0) {
 			return;
 		}
-		
+
 		// 获取用例集合
 		JSONArray caseListJson = contentJson.getJSONArray(KEY_CONTENT);
 		// 判断下标指向的集合内容是否存在，不存在，则不进行获取
-		if (index >=  caseListJson.size()) {
+		if (index >= caseListJson.size()) {
 			return;
 		}
-		
+
 		caseListJson.remove(index);
 	}
-	
+
 	/**
 	 * 标记完成一条用例数据的编写，并将内容插入到最后一行内容下
 	 * <p>
@@ -396,7 +404,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	public T end() {
 		return end(Integer.MAX_VALUE);
 	}
-	
+
 	/**
 	 * 标记完成一条用例数据的编写，并将内容插入到指定行内容下
 	 * <p>
@@ -417,10 +425,10 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		// 获取内容字段的数组，并将用例写入到文本中
 		JSONArray contentListJson = Optional.ofNullable(contentJson.getJSONArray(KEY_CONTENT)).orElse(new JSONArray());
 		// 将caseJson中存储的内容重新放入到一个json中
-		
+
 		// 判断当前用例下标是否为-1，为-1，则记录到内容中的最后一条；反之，则使用当前内容进行覆盖
 		if (caseIndex == -1) {
-			//判断传入的内容下标是否正确，不正确，则对下标进行修正
+			// 判断传入的内容下标是否正确，不正确，则对下标进行修正
 			if (contentIndex < 0) {
 				contentListJson.add(0, JSONObject.parse(caseJson.toJSONString()));
 			} else if (contentIndex >= 0 && contentIndex < contentListJson.size()) {
@@ -431,21 +439,21 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		} else {
 			contentListJson.set(caseIndex, JSONObject.parse(caseJson.toJSONString()));
 		}
-		
+
 		// 将用例集合重新添加至内容json中
 		contentJson.put(KEY_CONTENT, contentListJson);
-		
+
 		// 若当前指定了分行写入文件，则判断当前行数是否需要分行写入文件
 		if (writeRowNum != 0 && contentListJson.size() % writeRowNum == 0) {
 			write();
-			//指定当前写入的行为当前内容的行数
+			// 指定当前写入的行为当前内容的行数
 			nowRowNum = contentListJson.size();
 		}
-		
+
 		// 清除用例json中的内容，并指定用例下标为-1
 		caseJson.clear();
 		caseIndex = -1;
-		
+
 		return (T) this;
 	}
 
@@ -462,10 +470,9 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		mainjson.put(KEY_DEFAULT, defaultCaseJson);
 		mainjson.put(KEY_CASE, contentJson);
 
-
 		return mainjson.toJSONString();
 	}
-	
+
 	/**
 	 * 用于将编写的所有内容写入到文件中
 	 */
@@ -475,18 +482,18 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		if (writeRowNum != 0) {
 			startIndex = nowRowNum;
 		}
-		
+
 		write(startIndex, contentJson.getJSONArray(KEY_CONTENT).size());
 	}
-	
+
 	/**
 	 * 用于将编写的部分内容写入到文件中
 	 * 
 	 * @param caseStartIndex 写入文件开始下标
-	 * @param caseEndIndex 写入文件结束下标
+	 * @param caseEndIndex   写入文件结束下标
 	 */
 	public abstract void write(int caseStartIndex, int caseEndIndex);
-	
+
 	/**
 	 * 用于根据当前实际的模板数量，返回拼接后的模板json内容
 	 * <p>
@@ -498,16 +505,19 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	public String toTempletJson() {
 		// 转换模板Json，并进行存储
 		JSONArray templetJsonList = new JSONArray();
-		getAllTempletJson().stream().map(JSONObject::parseObject).forEach(templetJsonList::add);
-		
+		// 若转换方法返回为null，则构造一个空串
+		Optional.ofNullable(getAllTempletJson()).orElse(new ArrayList<String>()).stream().map(JSONObject::parseObject)
+				.forEach(templetJsonList::add);
+
 		JSONObject tempJson = new JSONObject();
 		tempJson.put(KEY_TEMPLET, templetJsonList);
-		
+
 		return tempJson.toJSONString();
 	}
-	
+
 	/**
 	 * 将类中存储的模板类转换为模板json串，通过List集合收集后，进行返回
+	 * 
 	 * @return 返回类中所有的模板json串
 	 */
 	protected abstract List<String> getAllTempletJson();
@@ -523,7 +533,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			}
 		}
 	}
-	
+
 	/**
 	 * 用于对当前文本内容中的词语进行提取，并返回替换后的内容
 	 * 
@@ -531,22 +541,22 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @return 替换词语后的文本内容
 	 */
 	protected String replaceWord(String content) {
-		//获取内容中的待替换词语
+		// 获取内容中的待替换词语
 		ArrayList<String> wordList = getReplaceWord(content);
-		
-		//循环，遍历待替换词语，并对内容进行替换
+
+		// 循环，遍历待替换词语，并对内容进行替换
 		for (String word : wordList) {
-			//将词语与每一个规则进行匹配
+			// 将词语与每一个规则进行匹配
 			for (String key : replaceWordMap.keySet()) {
 				// 若传入的内容与正则匹配，则将数据进行处理，并返回处理结果
 				if (Pattern.compile(key).matcher(word).matches()) {
-					//将待替换的词语进行拼装
+					// 将待替换的词语进行拼装
 					String oldWord = WORD_SIGN + word + WORD_SIGN;
-					//获取替换的词语
+					// 获取替换的词语
 					String newWord = replaceWordMap.get(key).apply(word);
-					//循环，替换所有与oldWord相同的内容
-					//由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
-					while(content.contains(oldWord)) {
+					// 循环，替换所有与oldWord相同的内容
+					// 由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
+					while (content.contains(oldWord)) {
 						int startIndex = content.indexOf(oldWord);
 						int endIndex = startIndex + oldWord.length();
 						content = content.substring(0, startIndex) + newWord + content.substring(endIndex);
@@ -587,4 +597,10 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 		return wordList;
 	}
+	
+	/**
+	 * 用于创建模板文件
+	 * @return 模板文件对象
+	 */
+	protected abstract void createTempletFile();
 }

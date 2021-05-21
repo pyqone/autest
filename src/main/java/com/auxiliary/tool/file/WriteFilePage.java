@@ -30,7 +30,7 @@ public interface WriteFilePage {
 	 * @param name    模板名称
 	 * @param templet 模板类对象
 	 */
-	default void addTempletName(String name, FileTemplet templet) {
+	default void addTempletName(String name, AbstractFileTemplet templet) {
 		templet.addTempletAttribute("name", name);
 	}
 
@@ -40,11 +40,4 @@ public interface WriteFilePage {
 	 * @param name 模板名称
 	 */
 	void switchPage(String name);
-	
-	/**
-	 * 用于模板名称进行重命名，若指定的名称不存在，则不进行替换
-	 * @param oldName 原名称
-	 * @param newName 新名称
-	 */
-	void renamePage(String oldName, String newName);
 }
