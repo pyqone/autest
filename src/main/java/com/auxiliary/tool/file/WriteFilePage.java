@@ -30,7 +30,7 @@ public interface WriteFilePage {
 	 * @param name    模板名称
 	 * @param templet 模板类对象
 	 */
-	default void addTempletName(String name, AbstractFileTemplet templet) {
+	default void addTempletName(String name, FileTemplet templet) {
 		templet.addTempletAttribute("name", name);
 	}
 

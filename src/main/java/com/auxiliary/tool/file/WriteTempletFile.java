@@ -52,7 +52,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	/**
 	 * 存储模板文件的构造类
 	 */
-	protected AbstractFileTemplet templet;
+	protected FileTemplet templet;
 
 	/**
 	 * 待替换词语的标记
@@ -95,7 +95,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 
 	 * @param templet 模板类对象
 	 */
-	public WriteTempletFile(AbstractFileTemplet templet) {
+	public WriteTempletFile(FileTemplet templet) {
 		this.templet = templet;
 
 		contentJson.put(KEY_CONTENT, new JSONArray());

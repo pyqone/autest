@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSONObject;
  * @version Ver1.0
  * @since JDK 1.8
  */
-public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
+public class FileTemplet {
 	public static final String KEY_SAVE = "save";
 	public static final String KEY_FIELD = "field";
 
@@ -39,12 +39,12 @@ public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
 	 * 
 	 * @param saveFile 模板文件保存路径
 	 */
-	public AbstractFileTemplet(File saveFile) {
+	public FileTemplet(File saveFile) {
 		templetJson.put(KEY_SAVE, saveFile.getAbsolutePath());
 		templetJson.put(KEY_FIELD, new JSONObject());
 	}
 	
-	public AbstractFileTemplet(String templetJsonText) {
+	public FileTemplet(String templetJsonText) {
 		// 将传入的json字符串转换成JSONObject类，并判断其是否包含必要字段，若不存在，则抛出异常
 		this.templetJson = Optional.ofNullable(templetJsonText).filter(t -> !t.isEmpty()).map(t -> {
 			try {
@@ -72,14 +72,11 @@ public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
 	 * @param field 字段ID
 	 * @return 类本身
 	 */
-	@SuppressWarnings("unchecked")
-	public T addField(String field) {
+	public void addField(String field) {
 		// 判断文本内容是否为空
 		if (!isEmpty(field)) {
 			templetJson.getJSONObject(KEY_FIELD).put(field, new JSONObject());
 		}
-		
-		return (T) this;
 	}
 
 	/**
@@ -94,11 +91,10 @@ public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
 	 * 
 	 * @return 类本身
 	 */
-	@SuppressWarnings("unchecked")
-	public T addFieldAttribute(String field, String attName, String attValue) {
+	public void addFieldAttribute(String field, String attName, String attValue) {
 		// 判断字段内容是否为空，任何一个内容为空时，则不进行存储
 		if (isEmpty(field) || isEmpty(attName) || isEmpty(attValue)) {
-			return (T) this;
+			return;
 		}
 
 		JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
@@ -106,8 +102,6 @@ public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
 		if (fieldJson.containsKey(field)) {
 			fieldJson.getJSONObject(field).put(attName, attValue);
 		}
-		
-		return (T) this;
 	}
 
 	/**
@@ -121,11 +115,10 @@ public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
 	 * 
 	 * @return 类本身
 	 */
-	@SuppressWarnings("unchecked")
-	public T addTempletAttribute(String attName, Object attValue) {
+	public void addTempletAttribute(String attName, Object attValue) {
 		// 判断字段内容是否为空，任何一个内容为空时，则不进行存储
 		if (isEmpty(attName) || attValue == null) {
-			return (T) this;
+			return;
 		}
 
 		// 判断关键词是否与指定关键词重复
@@ -134,8 +127,6 @@ public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
 		}
 
 		templetJson.put(attName, attValue);
-		
-		return (T) this;
 	}
 	
 	/**
@@ -197,12 +188,6 @@ public abstract class AbstractFileTemplet<T extends AbstractFileTemplet<T>> {
 	public String toString() {
 		return getTempletJson();
 	}
-	
-	/**
-	 * 用于生成模板文件
-	 * @return 模板文件类对象
-	 */
-	public abstract File createFile();
 
 	/**
 	 * 判断文本内容是否为空
