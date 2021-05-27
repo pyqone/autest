@@ -1,16 +1,22 @@
 package com.auxiliary.tool.file.excel;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.tool.data.TableData;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.MarkColorsType;
 import com.auxiliary.tool.file.MarkComment;
@@ -18,18 +24,33 @@ import com.auxiliary.tool.file.MarkFieldBackground;
 import com.auxiliary.tool.file.MarkTextColor;
 import com.auxiliary.tool.file.MarkTextFont;
 import com.auxiliary.tool.file.MarkTextLink;
+import com.auxiliary.tool.file.TableFileReadUtil;
 import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteFilePage;
 import com.auxiliary.tool.file.WriteTempletFile;
 
+/**
+ * <p><b>文件名：</b>WriteExcelTempletFile.java</p>
+ * <p><b>用途：</b>
+ * 提供用于对excel数据型的内容进行编写的方法
+ * </p>
+ * <p><b>编码时间：</b>2021年5月27日上午8:09:29</p>
+ * <p><b>修改时间：</b>2021年5月27日上午8:09:29</p>
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 1.8
+ * @param <T> 子类
+ */
 public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		extends WriteTempletFile<WriteExcelTempletFile<T>> implements MarkComment<WriteExcelTempletFile<T>>,
 		MarkFieldBackground<WriteExcelTempletFile<T>>, MarkTextColor<WriteExcelTempletFile<T>>,
 		MarkTextFont<WriteExcelTempletFile<T>>, MarkTextLink<WriteExcelTempletFile<T>>, WriteFilePage {
+	protected final String DEFAULT_NAME = "Sheet";
+
 	/**
 	 * 存储每个Sheet对应的模板
 	 */
-	HashMap<String, FileTemplet> sheetTempletMap = new HashMap<>();
+	protected HashMap<String, FileTemplet> sheetTempletMap = new HashMap<>();
 
 	/**
 	 * 构造Excel写入类，并设置一个Sheet页的模板及相应的名称
@@ -39,7 +60,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 	 */
 	public WriteExcelTempletFile(String templetName, FileTemplet templet) {
 		super(templet);
-		addTempletName(templetName, templet);
+		addTemplet(templetName, templet);
 	}
 
 	/**
@@ -62,7 +83,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 
 			// 判断模板是否包含"name"属性，不包含，则加入默认名称
 			if (!temp.containsAttribute(KEY_NAME)) {
-				String name = "Sheet" + (i + 1);
+				String name = DEFAULT_NAME + (i + 1);
 				temp.addTempletAttribute(KEY_NAME, name);
 				sheetTempletMap.put(name, temp);
 			} else {
@@ -70,10 +91,112 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 				if (obj instanceof String) {
 					sheetTempletMap.put(temp.getTempletAttribute(KEY_NAME).toString(), temp);
 				} else {
-					String name = "Sheet" + (i + 1);
+					String name = DEFAULT_NAME + (i + 1);
 					temp.addTempletAttribute(KEY_NAME, name);
 					sheetTempletMap.put(name, temp);
 				}
+			}
+		}
+	}
+
+	/**
+	 * 通过模板配置xml文件对文件写入类进行构造
+	 * <p>
+	 * 通过该方法构造的写入类为包含模板的写入类，可直接按照字段编写文件内容
+	 * </p>
+	 * 
+	 * @param templetXml 模板配置文件
+	 * @param saveFile   文件保存路径
+	 */
+	public WriteExcelTempletFile(Document templetXml, File saveFile) {
+		// 获取所有的sheet
+		List<Element> sheetElementList = templetXml.getRootElement().elements();
+		// 遍历元素，将sheet元素转换为模板（使用普通for循环，以方便默认命名）
+		for (int index = 0; index < sheetElementList.size(); index++) {
+			Element sheetElement = sheetElementList.get(index);
+
+			ExcelFileTemplet excel = new ExcelFileTemplet(saveFile);
+			// 获取并存储name属性，若无该属性，则以默认方式命名
+			String sheetName = Optional.ofNullable(sheetElement.attributeValue(KEY_NAME))
+					.orElse(DEFAULT_NAME + (index + 1));
+			addTemplet(sheetName, excel);
+			// 获取需要冻结的单元格（原模板默认首行冻结，数值控制列冻结数，为空则不冻结列）
+			excel.setFreeze(1, Integer.valueOf(Optional.ofNullable(sheetElement.attributeValue("freeze")).orElse("0")));
+
+			// 获取模板中的字段信息
+			List<Element> fieldElementList = sheetElement.elements("column");
+			// 记录模板位置内容
+			AtomicInteger fieldIndex = new AtomicInteger(1);
+			for (Element fieldElement : fieldElementList) {
+				// 获取字段id
+				String fieldId = Optional.ofNullable(fieldElement.attributeValue("id")).filter(id -> !id.isEmpty())
+						.orElseThrow(() -> new WriteFileException(
+								String.format("未指定模板字段ID，位于“%s”中的第%d行", sheetName, fieldIndex.getAndAdd(1))));
+				// 存储字段名称
+				excel.addTitle(fieldId, fieldElement.attributeValue("name"));
+
+				// 存储字段对应单元格的宽度
+				Optional<String> wide = Optional.ofNullable(fieldElement.attributeValue("wide"));
+				if (wide.filter(f -> !f.isEmpty()).filter(f -> f.matches("\\d+(\\.\\d+)?")).isPresent()) {
+					excel.setWide(fieldId, Double.valueOf(wide.get()));
+				}
+
+				// 存储字段的水平对齐方式
+				excel.setAlignment(fieldId, Optional.ofNullable(fieldElement.attributeValue("align"))
+						.map(AlignmentType::getAlignmentType).orElse(AlignmentType.HORIZONTAL_LEFT));
+
+				// 存储字段是否分行写入
+				excel.setContentBranch(fieldId,
+						Integer.valueOf(Optional.ofNullable(fieldElement.attributeValue("row_text"))
+								.filter(f -> !f.isEmpty()).filter(f -> f.matches("\\d+")).orElse("0")));
+
+				// 存储字段是否自动编号
+				excel.setAutoSerialNumber(fieldId,
+						Boolean.valueOf(Optional.ofNullable(fieldElement.attributeValue("index"))
+								.filter(f -> !f.isEmpty()).filter(f -> f.matches("(true)|(false)")).orElse("false")));
+			}
+
+			// 获取模板中的数据有效性信息
+			List<Element> datasElementList = sheetElement.elements("datas");
+			for (Element datasElement : datasElementList) {
+				List<String> dataTextList = new ArrayList<>();
+				String dataListName = datasElement.attributeValue("id");
+				datasElement.elements().forEach(e -> {
+					if ("data".equals(e.getName())) {
+						// 若数据为单一元素，则直接获取相应的属性值
+						dataTextList.add(e.attributeValue("name"));
+					} else {
+						// 若数据为文件数据，则获取文件中的内容
+						TableData<String> tableData = TableFileReadUtil
+								.readExcel(
+										new File(Optional.ofNullable(e.attributeValue("path"))
+												.orElseThrow(() -> new WriteFileException(
+														String.format("无法读取文件中的数据选项：%s", dataListName)))),
+										Optional.ofNullable(e.attributeValue("regex"))
+												.orElseThrow(() -> new WriteFileException(
+														String.format("未指定读取的Sheet：%s", dataListName))),
+										true);
+						// 获取列名
+						String columnName = Optional.ofNullable(e.attributeValue("column"))
+								.filter(s -> s.matches("\\d+")).map(Integer::valueOf).map(tableData::getFieldName)
+								.orElseThrow(() -> new WriteFileException(
+										String.format("无效的列下标：%s", e.attributeValue("column"))));
+						// 获取列数据
+						ArrayList<Optional<String>> dataList = tableData.getColumnList(columnName);
+						// 根据列数据以及开始下标，生成序号
+						IntStream
+								.range(Optional.ofNullable(e.attributeValue("start_row"))
+										.filter(content -> content.matches("\\d+")).map(Integer::valueOf).orElse(0),
+										dataList.size())
+								// 转换序号为集合值，并将内容为null的数据转换为空串，最后过滤空串
+								.mapToObj(dataList::get).map(data -> data.orElse("")).filter(data -> !data.isEmpty())
+								// 存储最终获得的值
+								.forEach(dataTextList::add);
+					}
+				});
+				
+				// 存储获得的数据选项
+				excel.addDataOption(dataListName, dataTextList);
 			}
 		}
 	}
@@ -97,8 +220,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 	 * </p>
 	 */
 	@Override
-	public void addTempletName(String name, FileTemplet templet) {
-		WriteFilePage.super.addTempletName(name, templet);
+	public void addTemplet(String name, FileTemplet templet) {
+		WriteFilePage.super.addTemplet(name, templet);
 		sheetTempletMap.put(name, templet);
 	}
 
@@ -189,18 +312,31 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		public static final String KEY_FREEZE_TOP = "freezeTop";
 		public static final String KEY_FREEZE_LEFT = "freezeLeft";
 		public static final String KEY_FILTRATE = "filtrate";
-		public static final String KEY_OPTION = "option";
+		public static final String KEY_DATA = "data";
 
 		public ExcelFileTemplet(File saveFile) {
 			super(saveFile);
 
 			// 设置默认属性
 			setFreeze(1, 0);
+			// 设置打开筛选
 			setFiltrate(true);
+
+			// 初始化数据有效性内容
+			addTempletAttribute(KEY_DATA, new JSONObject());
 		}
 
 		public ExcelFileTemplet(String templetJsonText) {
 			super(templetJsonText);
+			// 判断模板是否包含冻结表格信息
+			setFreeze(Optional.ofNullable(templetJson.getInteger(KEY_FREEZE_TOP)).orElse(1),
+					Optional.ofNullable(templetJson.getInteger(KEY_FREEZE_LEFT)).orElse(0));
+			// 判断模板是否存在筛选信息
+			setFiltrate(Optional.ofNullable(templetJson.getBooleanValue(KEY_FILTRATE)).orElse(true));
+			// 判断模板是否包含存储数据有效性的字段
+			if (containsAttribute(KEY_DATA)) {
+				addTempletAttribute(KEY_DATA, new JSONObject());
+			}
 		}
 
 		/**
@@ -269,7 +405,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		 * @param alignmentType 对齐方式枚举
 		 * @return 类本身
 		 */
-		public ExcelFileTemplet setHorizontalAlignment(String field, AlignmentType alignmentType) {
+		public ExcelFileTemplet setAlignment(String field, AlignmentType alignmentType) {
 			// 判断字段是否存在，且是否传入指定的枚举
 			if (!containsField(field) || alignmentType == null) {
 				return this;
@@ -336,29 +472,45 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		 * @return 类本身
 		 */
 		public ExcelFileTemplet setFreeze(int topIndex, int leftIndex) {
-			addTempletAttribute(KEY_FREEZE_TOP, String.valueOf(topIndex > 0 ? topIndex : 0));
-			addTempletAttribute(KEY_FREEZE_LEFT, String.valueOf(leftIndex > 0 ? leftIndex : 0));
+			addTempletAttribute(KEY_FREEZE_TOP, topIndex > 0 ? topIndex : 0);
+			addTempletAttribute(KEY_FREEZE_LEFT, leftIndex > 0 ? leftIndex : 0);
 
 			return this;
 		}
 
 		/**
 		 * 用于设置是否在标题上加入筛选按钮，默认则存在筛选按钮
+		 * 
 		 * @param isFiltrate 是否添加筛选
 		 * @return 类本身
 		 */
 		public ExcelFileTemplet setFiltrate(boolean isFiltrate) {
-			addTempletAttribute(KEY_FILTRATE, String.valueOf(isFiltrate));
+			addTempletAttribute(KEY_FILTRATE, isFiltrate);
 			return this;
 		}
-		
+
 		/**
 		 * 用于添加数据选项
-		 * @param optionList
-		 * @return
+		 * 
+		 * @param optionList 数据集
+		 * @return 类本身
 		 */
-		public ExcelFileTemplet addDataOption(List<String> optionList) {
-			addTempletAttribute(KEY_OPTION, JSONArray.parseArray(optionList.toString()));
+		public ExcelFileTemplet addDataOption(String name, List<String> optionList) {
+			// 判空
+			if (!Optional.ofNullable(name).filter(n -> !n.isEmpty()).isPresent()) {
+				return this;
+			}
+			if (!Optional.ofNullable(optionList).filter(l -> !l.isEmpty()).isPresent()) {
+				return this;
+			}
+
+			// 获取指定名称的数据选项json，若不存在，则添加空json
+			JSONArray optionListJson = Optional.ofNullable(templetJson.getJSONObject(KEY_DATA).getJSONArray(name))
+					.orElse(new JSONArray());
+			optionListJson.addAll(optionList);
+
+			// 将数据选项附加到模板json上
+			templetJson.getJSONObject(KEY_DATA).put(name, optionListJson);
 			return this;
 		}
 	}
@@ -385,27 +537,27 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		/**
 		 * 水平左对齐
 		 */
-		HORIZONTAL_LEFT(HorizontalAlignment.LEFT, null, (short) 0),
+		HORIZONTAL_LEFT(HorizontalAlignment.LEFT, null, (short) 0, "left"),
 		/**
 		 * 水平右对齐
 		 */
-		HORIZONTAL_RIGHT(HorizontalAlignment.RIGHT, null, (short) 1),
+		HORIZONTAL_RIGHT(HorizontalAlignment.RIGHT, null, (short) 1, "right"),
 		/**
 		 * 水平居中对齐
 		 */
-		HORIZONTAL_CENTER(HorizontalAlignment.CENTER, null, (short) 2),
+		HORIZONTAL_MIDDLE(HorizontalAlignment.CENTER, null, (short) 2, "center"),
 		/**
 		 * 垂直顶部对齐
 		 */
-		VERTICAL_TOP(null, VerticalAlignment.TOP, (short) 3),
+		VERTICAL_TOP(null, VerticalAlignment.TOP, (short) 3, "top"),
 		/**
 		 * 垂直底部对齐
 		 */
-		VERTICAL_BOTTOM(null, VerticalAlignment.BOTTOM, (short) 4),
+		VERTICAL_BOTTOM(null, VerticalAlignment.BOTTOM, (short) 4, "bottom"),
 		/**
 		 * 垂直居中对齐
 		 */
-		VERTICAL_CENTER(null, VerticalAlignment.CENTER, (short) 5);
+		VERTICAL_CENTER(null, VerticalAlignment.CENTER, (short) 5, "middle");
 
 		/**
 		 * 水平对齐方式枚举
@@ -419,6 +571,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		 * 存储当前枚举的编号，用于识别当前枚举
 		 */
 		short code;
+		/**
+		 * 存储当前枚举的名称
+		 */
+		String name;
 
 		/**
 		 * 初始化枚举内容，若非相应的对齐方式，则其存储该方式为null
@@ -427,10 +583,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		 * @param horizontal 水平对齐方式枚举
 		 * @param vertical   垂直对齐方式枚举
 		 */
-		private AlignmentType(HorizontalAlignment horizontal, VerticalAlignment vertical, short code) {
+		private AlignmentType(HorizontalAlignment horizontal, VerticalAlignment vertical, short code, String name) {
 			this.horizontal = horizontal;
 			this.vertical = vertical;
 			this.code = code;
+			this.name = name;
 		}
 
 		/**
@@ -467,7 +624,16 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		}
 
 		/**
-		 * 根据枚举的编码，识别枚举值，并进行返回
+		 * 返回枚举的名称
+		 * 
+		 * @return 枚举名称
+		 */
+		public String getName() {
+			return name;
+		}
+
+		/**
+		 * 根据枚举的编码，识别枚举，并进行返回
 		 * <p>
 		 * 若无法查到与之匹配的编码，则返回null
 		 * </p>
@@ -475,9 +641,28 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		 * @param code 枚举编码
 		 * @return 对齐方式枚举
 		 */
-		public AlignmentType getAlignmentType(short code) {
+		public static AlignmentType getAlignmentType(short code) {
 			for (AlignmentType type : values()) {
 				if (code == type.code) {
+					return type;
+				}
+			}
+
+			return null;
+		}
+
+		/**
+		 * 用于根据枚举名称，识别枚举，并进行返回
+		 * <p>
+		 * 若无法查到与之匹配的编码，则返回null
+		 * </p>
+		 * 
+		 * @param code 枚举名称
+		 * @return 对齐方式枚举
+		 */
+		public static AlignmentType getAlignmentType(String name) {
+			for (AlignmentType type : values()) {
+				if (type.name.equals(name)) {
 					return type;
 				}
 			}

@@ -32,7 +32,7 @@ public class FileTemplet {
 	/**
 	 * 存储模板json串
 	 */
-	JSONObject templetJson = new JSONObject();
+	protected JSONObject templetJson = new JSONObject();
 
 	/**
 	 * 初始化模板文件的保存路径

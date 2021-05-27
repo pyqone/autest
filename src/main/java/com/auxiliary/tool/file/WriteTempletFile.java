@@ -118,6 +118,12 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		this.defaultCaseJson = writeTempletFile.defaultCaseJson;
 		this.replaceWordMap = writeTempletFile.replaceWordMap;
 	}
+	
+	/**
+	 * 无参构造，方便子类进行特殊的构造方法
+	 */
+	protected WriteTempletFile() {
+	}
 
 	/**
 	 * 设置需要被替换的词语以及替换的内容
