@@ -21,6 +21,11 @@ package com.auxiliary.tool.file;
  */
 public interface MarkComment<T extends MarkComment<T>> {
 	/**
+	 * 标记对内容添加注解
+	 */
+	String KEY_COMMENT = "comment";
+	
+	/**
 	 * 用于在字段上添加注解
 	 * 
 	 * @param field       字段

@@ -21,6 +21,11 @@ package com.auxiliary.tool.file;
  */
 public interface MarkTextLink<T extends MarkTextLink<T>> {
 	/**
+	 * 标记对内容添加超链接
+	 */
+	String KEY_LINK = "link";
+	
+	/**
 	 * 用于对字段指定段落文本内容添加超链接
 	 * 
 	 * @param field       字段

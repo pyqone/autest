@@ -21,6 +21,11 @@ package com.auxiliary.tool.file;
  */
 public interface MarkTextColor<T extends MarkTextColor<T>> {
 	/**
+	 * 标记对内容添加颜色
+	 */
+	String KEY_COLOR = "color";
+	
+	/**
 	 * 用于对指定文本内容的字体颜色进行更改
 	 * 
 	 * @param markColorsType 颜色枚举

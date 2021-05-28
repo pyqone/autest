@@ -2,6 +2,7 @@ package com.auxiliary.tool.file.excel;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -30,12 +31,19 @@ import com.auxiliary.tool.file.WriteFilePage;
 import com.auxiliary.tool.file.WriteTempletFile;
 
 /**
- * <p><b>文件名：</b>WriteExcelTempletFile.java</p>
- * <p><b>用途：</b>
- * 提供用于对excel数据型的内容进行编写的方法
+ * <p>
+ * <b>文件名：</b>WriteExcelTempletFile.java
  * </p>
- * <p><b>编码时间：</b>2021年5月27日上午8:09:29</p>
- * <p><b>修改时间：</b>2021年5月27日上午8:09:29</p>
+ * <p>
+ * <b>用途：</b> 提供用于对excel数据型的内容进行编写的方法
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2021年5月27日上午8:09:29
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2021年5月27日上午8:09:29
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -45,6 +53,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		extends WriteTempletFile<WriteExcelTempletFile<T>> implements MarkComment<WriteExcelTempletFile<T>>,
 		MarkFieldBackground<WriteExcelTempletFile<T>>, MarkTextColor<WriteExcelTempletFile<T>>,
 		MarkTextFont<WriteExcelTempletFile<T>>, MarkTextLink<WriteExcelTempletFile<T>>, WriteFilePage {
+
 	protected final String DEFAULT_NAME = "Sheet";
 
 	/**
@@ -194,7 +203,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 								.forEach(dataTextList::add);
 					}
 				});
-				
+
 				// 存储获得的数据选项
 				excel.addDataOption(dataListName, dataTextList);
 			}
@@ -225,49 +234,107 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		sheetTempletMap.put(name, templet);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> textLink(String field, int textIndex, String likeContent) {
-		return null;
+	public T textLink(String field, int textIndex, String likeContent) {
+		JSONObject textJson = getTextJson(field, textIndex);
+		if (textJson != null) {
+			textJson.put(KEY_LINK, likeContent);
+		}
+
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> fieldLink(String field, String likeContent) {
-		return null;
+	public T fieldLink(String field, String likeContent) {
+		if (caseJson.containsKey(field)) {
+			caseJson.getJSONObject(field).put(KEY_LINK, likeContent);
+		}
+
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> bold(String field, int... textIndexs) {
-		return null;
+	public T bold(String field, int... textIndexs) {
+		// 判断下标集是否为空
+		Arrays.stream(Optional.ofNullable(textIndexs).filter(arr -> arr.length != 0).orElse(new int[] {}))
+				// 将下标转换为文本json，并过滤为null的对象
+				.mapToObj(index -> getTextJson(field, index)).map(Optional::ofNullable).filter(Optional::isPresent)
+				// 向字段json中添加相应的内容
+				.map(Optional::get).forEach(json -> {
+					json.put(KEY_BOLD, true);
+				});
+
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> italic(String field, int... textIndexs) {
-		return null;
+	public T italic(String field, int... textIndexs) {
+		// 判断下标集是否为空
+		Arrays.stream(Optional.ofNullable(textIndexs).filter(arr -> arr.length != 0).orElse(new int[] {}))
+				// 将下标转换为文本json，并过滤为null的对象
+				.mapToObj(index -> getTextJson(field, index)).map(Optional::ofNullable).filter(Optional::isPresent)
+				// 向字段json中添加相应的内容
+				.map(Optional::get).forEach(json -> {
+					json.put(KEY_ITALIC, true);
+				});
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> underline(String field, int... textIndexs) {
-		return null;
+	public T underline(String field, int... textIndexs) {
+		// 判断下标集是否为空
+		Arrays.stream(Optional.ofNullable(textIndexs).filter(arr -> arr.length != 0).orElse(new int[] {}))
+				// 将下标转换为文本json，并过滤为null的对象
+				.mapToObj(index -> getTextJson(field, index)).map(Optional::ofNullable).filter(Optional::isPresent)
+				// 向字段json中添加相应的内容
+				.map(Optional::get).forEach(json -> {
+					json.put(KEY_UNDERLINE, true);
+				});
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> changeTextColor(MarkColorsType markColorsType, String field, int... textIndexs) {
-		return null;
+	public T changeTextColor(MarkColorsType markColorsType, String field, int... textIndexs) {
+		// 判断下标集是否为空
+		Arrays.stream(Optional.ofNullable(textIndexs).filter(arr -> arr.length != 0).orElse(new int[] {}))
+				// 将下标转换为文本json，并过滤为null的对象
+				.mapToObj(index -> getTextJson(field, index)).map(Optional::ofNullable).filter(Optional::isPresent)
+				// 向字段json中添加相应的内容
+				.map(Optional::get).forEach(json -> {
+					json.put(KEY_COLOR, markColorsType.getColorsValue());
+				});
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> changeCaseBackground(MarkColorsType markColorsType) {
-		return null;
+	public T changeCaseBackground(MarkColorsType markColorsType) {
+		caseJson.put(KEY_COLOR, markColorsType.getColorsValue());
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> changeFieldBackground(String field, MarkColorsType markColorsType) {
-		return null;
+	public T changeFieldBackground(String field, MarkColorsType markColorsType) {
+		if (caseJson.containsKey(field)) {
+			caseJson.getJSONObject(field).put(KEY_COLOR, markColorsType.getColorsValue());
+		}
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public WriteExcelTempletFile<T> fieldComment(String field, String commentText) {
-		return null;
+	public T fieldComment(String field, String commentText) {
+		if (caseJson.containsKey(field)) {
+			caseJson.getJSONObject(field).put(KEY_COMMENT, commentText);
+		}
+		return (T) this;
 	}
 
 	@Override

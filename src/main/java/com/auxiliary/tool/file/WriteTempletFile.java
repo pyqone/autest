@@ -48,6 +48,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	public static final String KEY_DEFAULT = "default";
 	public static final String KEY_CASE = "case";
 	public static final String KEY_TEMPLET = "templet";
+	public static final String KEY_DATA = "data";
 
 	/**
 	 * 存储模板文件的构造类
@@ -237,8 +238,10 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 			return fieldJson;
 		}).forEach(defaultListJson::add);
-
-		defaultCaseJson.put(field, defaultListJson);
+		
+		JSONObject fieldJson = new JSONObject();
+		fieldJson.put(KEY_DATA, defaultListJson);
+		defaultCaseJson.put(field, fieldJson);
 	}
 
 	/**
@@ -309,7 +312,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	/**
 	 * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下
 	 * <p>
-	 * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时， 则将内容写入到集合最后
+	 * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
 	 * </p>
 	 * 
 	 * @param field    字段id
@@ -330,14 +333,14 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		// 获取字段指向的用例内容
-		JSONArray contentListJson = Optional.ofNullable(caseJson.getJSONArray(field)).orElse(new JSONArray());
+		JSONObject fieldJson = Optional.ofNullable(caseJson.getJSONObject(field)).orElse(new JSONObject());
+		JSONArray contentListJson = Optional.ofNullable(fieldJson.getJSONArray(KEY_DATA)).orElse(new JSONArray());
 
 		// 查找特殊词语，并对词语进行替换，并将内容写入到字段中
 		Arrays.stream(contents).map(this::replaceWord).map(text -> {
-			JSONObject fieldJson = new JSONObject();
-			fieldJson.put(KEY_TEXT, text);
-
-			return fieldJson;
+			JSONObject fieldTextJson = new JSONObject();
+			fieldTextJson.put(KEY_TEXT, text);
+			return fieldTextJson;
 		}).forEach(json -> {
 			// 判断传入的下标是否符合当前内容集合的个数限制，不符合，则将内容写入到最后一行
 			if (index < 0 || index >= contentListJson.size()) {
@@ -348,7 +351,8 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		});
 
 		// 将内容写入到用例数据中
-		caseJson.put(field, contentListJson);
+		fieldJson.put(KEY_DATA, contentListJson);
+		caseJson.put(field, fieldJson);
 
 		return (T) this;
 	}
@@ -372,18 +376,24 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		// 获取字段指向的用例内容
-		JSONArray contentListJson = caseJson.getJSONArray(field);
-		// 判断字段内容是否为空
-		if (contentListJson != null && !contentListJson.isEmpty()) {
-			// 若指定的下标小于内容集合的个数，则移除相应的内容
-			if (index < contentListJson.size()) {
-				contentListJson.remove(index);
+		if (caseJson.containsKey(field)) {
+			JSONArray contentListJson = caseJson.getJSONObject(field).getJSONArray(KEY_DATA);
+			// 判断字段内容是否为空
+			if (contentListJson != null && !contentListJson.isEmpty()) {
+				// 若指定的下标小于内容集合的个数，则移除相应的内容
+				if (index < contentListJson.size()) {
+					contentListJson.remove(index);
+				}
 			}
 		}
 
 		return (T) this;
 	}
 
+	/**
+	 * 用于移除指定下标的一条用例
+	 * @param index 用例下标
+	 */
 	public void clearCase(int index) {
 		if (index < 0) {
 			return;
@@ -435,6 +445,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		// 判断当前用例下标是否为-1，为-1，则记录到内容中的最后一条；反之，则使用当前内容进行覆盖
 		if (caseIndex == -1) {
 			// 判断传入的内容下标是否正确，不正确，则对下标进行修正
+			// 由于fastjson无法直接存储caseJson（清空caseJson时，其存储的内容也被清除），故先转成字符串后再用json进行解析
 			if (contentIndex < 0) {
 				contentListJson.add(0, JSONObject.parse(caseJson.toJSONString()));
 			} else if (contentIndex >= 0 && contentIndex < contentListJson.size()) {
@@ -535,7 +546,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		// 遍历defaultCaseJson，判断是否存在caseJson中不存在的字段
 		for (String key : defaultCaseJson.keySet()) {
 			if (!caseJson.containsKey(key)) {
-				caseJson.put(key, defaultCaseJson.getJSONArray(key));
+				caseJson.put(key, defaultCaseJson.getJSONObject(key));
 			}
 		}
 	}
@@ -602,6 +613,48 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		return wordList;
+	}
+	
+	/**
+	 * 用于返回指定下标的文本json
+	 * <p>
+	 * 获取文本json支持反序遍历，当传入的内容为负数时，则表示反序遍历集合，找到指定下标的内容
+	 * </p>
+	 * @param field 字段
+	 * @param textIndex 文本下标
+	 * @return 文本json
+	 */
+	protected JSONObject getTextJson(String field, int textIndex) {
+		if (caseJson.containsKey(field)) {
+			JSONArray dataListJson = caseJson.getJSONObject(field).getJSONArray(KEY_DATA);
+			if (Optional.ofNullable(dataListJson).filter(arr -> !arr.isEmpty()).isPresent()) {
+				return dataListJson.getJSONObject(analysisIndex(dataListJson.size(), textIndex, true));
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 用于解析真实下标内容
+	 * <p>
+	 * 数字最大为下标允许的最大值，是可以达到的，在解析集合下标时，其最大限制一定为“集合长度 - 1”
+	 * </p>
+	 * @param maxNum 数字最大限制
+	 * @param index 下标
+	 * @param isReciprocal 是否允许反向遍历
+	 * @return 真实下标
+	 */
+	protected int analysisIndex(int maxNum, int index, boolean isReciprocal) {
+		if (index < 0) {
+			if (isReciprocal) {
+				return Math.abs(index) > maxNum ? 0 : (maxNum + index);
+			} else {
+				return 0;
+			}
+		} else {
+			return index > maxNum ? maxNum : index;
+		}
 	}
 	
 	/**
