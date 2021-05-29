@@ -32,6 +32,8 @@ public interface MarkTextFont<T extends MarkTextFont<T>> {
 	 * 标记对文本添加下划线的字段名
 	 */
 	String KEY_UNDERLINE = "underline";
+	String KEY_FONT_NAME = "fontName";
+	String KEY_FONT_SIZE = "fontSize";
 
 	/**
 	 * 用于对指定文本内容的字体进行加粗

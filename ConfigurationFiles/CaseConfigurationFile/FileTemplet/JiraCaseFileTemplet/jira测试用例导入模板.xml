@@ -46,7 +46,7 @@
 	</sheet>
 	
 	<!-- 测试程序时使用 -->
-	<sheet name='测试用例2' freeze='3'>
+	<sheet name='测试用例2' freeze='1'>
 		<column id='标题' name='Name' wide='30.88' align='center'/>
 		<column id='目的' name='Objective' wide='18.25' align='center'/>
 		<column id='前置条件' name='Precondition' wide='18.25' align='center'/>
