@@ -28,6 +28,7 @@ import com.alibaba.fastjson.JSONObject;
 public class FileTemplet {
 	public static final String KEY_SAVE = "save";
 	public static final String KEY_FIELD = "field";
+	public static final String KEY_INDEX = "index";
 
 	/**
 	 * 存储模板json串
@@ -75,7 +76,9 @@ public class FileTemplet {
 	public void addField(String field) {
 		// 判断文本内容是否为空
 		if (!isEmpty(field)) {
-			templetJson.getJSONObject(KEY_FIELD).put(field, new JSONObject());
+			JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
+			fieldJson.put(field, new JSONObject());
+			addFieldAttribute(field, KEY_INDEX, fieldJson.keySet().size() - 1);
 		}
 	}
 
@@ -91,9 +94,9 @@ public class FileTemplet {
 	 * 
 	 * @return 类本身
 	 */
-	public void addFieldAttribute(String field, String attName, String attValue) {
+	public void addFieldAttribute(String field, String attName, Object attValue) {
 		// 判断字段内容是否为空，任何一个内容为空时，则不进行存储
-		if (isEmpty(field) || isEmpty(attName) || isEmpty(attValue)) {
+		if (isEmpty(field) || isEmpty(attName)) {
 			return;
 		}
 

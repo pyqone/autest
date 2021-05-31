@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -80,7 +81,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 	/**
 	 * 存储每个Sheet对应的模板
 	 */
-	protected HashMap<String, FileTemplet> sheetTempletMap = new HashMap<>();
+	protected LinkedHashMap<String, FileTemplet> sheetTempletMap = new LinkedHashMap<>();
 	/**
 	 * 用于存储样式（key使用样式的json来编写）
 	 */
@@ -410,19 +411,18 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 
 			// 根据字段内容，创建单元格，写入单元格标题
 			JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
-			// 记录列数
-			AtomicInteger columnIndex = new AtomicInteger(0);
 			fieldJson.keySet().stream().map(fieldJson::getJSONObject)
-					.map(json -> getCell(sheet, 0, columnIndex.get(), json.getString(KEY_NAME))).forEach(cell -> {
+					.map(json -> getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX),
+							json.getString(KEY_NAME)))
+					.forEach(cell -> {
 						// 设置单元格样式
 						cell.getValue().setCellStyle(getStyle(excel, styleJson));
 						// 设置列宽，若不存在设置，则默认列宽
 						if (fieldJson.containsKey(ExcelFileTemplet.KEY_WIDE)) {
-							sheet.setColumnWidth(columnIndex.get(),
+							// 获取单元格坐标的列数，并转换为数字
+							sheet.setColumnWidth(Integer.valueOf(cell.getKey().split(COLUMN_SPLIT_SIGN)[1]),
 									(int) (fieldJson.getDouble(ExcelFileTemplet.KEY_WIDE) * 256));
 						}
-						
-						columnIndex.getAndAdd(1);
 					});
 
 			// 添加数据有效性（不存在则跳过添加）
@@ -436,7 +436,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 						// 添加标题
 						String cellPoint = getCell(dataSheet, 0, -1,
 								String.format("%s-%s", tempJson.getString(KEY_NAME), key)).getKey();
-						
+
 						// 计算列数，并写入数据有效性内容
 						int dataColumnIndex = Integer.valueOf(cellPoint.split(COLUMN_SPLIT_SIGN)[1]);
 						for (int i = 0; i < dataArrayJson.size(); i++) {
@@ -446,11 +446,16 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 				});
 			});
 			
+			// 若存在数据有效性sheet页，则设置该页展示在文档最后
+			if (excel.getSheet(DATA_SHEET_NAME) != null) {
+				excel.setSheetOrder(DATA_SHEET_NAME, excel.getNumberOfSheets() - 1);
+			}
+
 			// 定义输出流，用于向指定的Excel文件中写入内容
-			try(FileOutputStream fop = new FileOutputStream(templetFile)) {
+			try (FileOutputStream fop = new FileOutputStream(templetFile)) {
 				// 写入文件
 				excel.write(fop);
-				
+
 			} catch (Exception e) {
 				throw new WriteFileException("文件异常，无法创建模板：" + tempJson.getString(ExcelFileTemplet.KEY_SAVE), e);
 			} finally {
@@ -479,7 +484,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		// 获取行，若行不存在，则创建行对象
 		XSSFRow row = Optional.ofNullable(sheet.getRow(rowIndex)).orElseGet(() -> sheet.createRow(rowIndex));
 		// 若列下标为-1，则表示插入到最后一列上
-		int newColumnIndex = (columnIndex == -1 ? (row.getLastCellNum() == -1 ? 0 : row.getLastCellNum()) : columnIndex);
+		int newColumnIndex = (columnIndex == -1 ? (row.getLastCellNum() == -1 ? 0 : row.getLastCellNum())
+				: columnIndex);
 		XSSFCell cell = Optional.ofNullable(row.getCell(newColumnIndex))
 				.orElseGet(() -> row.createCell(newColumnIndex));
 		// 插入内容
@@ -590,7 +596,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		public static final String KEY_HORIZONTAL = "horizontal";
 		public static final String KEY_VERTICAL = "vertical";
 		public static final String KEY_ROW_TEXT = "rowText";
-		public static final String KEY_INDEX = "index";
+		public static final String KEY_AUTO_NUMBER = "autoIndex";
 		public static final String KEY_FREEZE_TOP = "freezeTop";
 		public static final String KEY_FREEZE_LEFT = "freezeLeft";
 		public static final String KEY_FILTRATE = "filtrate";
@@ -746,7 +752,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 		public ExcelFileTemplet setAutoSerialNumber(String field, boolean isAuto) {
 			// 判断字段是否存在
 			if (containsField(field)) {
-				addFieldAttribute(field, KEY_INDEX, String.valueOf(isAuto));
+				addFieldAttribute(field, KEY_AUTO_NUMBER, String.valueOf(isAuto));
 			}
 
 			return this;
