@@ -97,9 +97,8 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @param templet 模板类对象
 	 */
 	public WriteTempletFile(FileTemplet templet) {
+		this();
 		this.templet = templet;
-
-		contentJson.put(KEY_CONTENT, new JSONArray());
 	}
 
 	/**
@@ -124,6 +123,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 无参构造，方便子类进行特殊的构造方法
 	 */
 	protected WriteTempletFile() {
+		contentJson.put(KEY_CONTENT, new JSONArray());
 	}
 
 	/**
@@ -500,16 +500,26 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			startIndex = nowRowNum;
 		}
 
-		write(startIndex, contentJson.getJSONArray(KEY_CONTENT).size());
+		write(startIndex, -1);
 	}
 
 	/**
 	 * 用于将编写的部分内容写入到文件中
+	 * <p>
+	 * 方法支持反序遍历，即指定的下标为负数时，则表示反序遍历用例集，至指定位置的用例
+	 * </p>
 	 * 
 	 * @param caseStartIndex 写入文件开始下标
 	 * @param caseEndIndex   写入文件结束下标
 	 */
 	public abstract void write(int caseStartIndex, int caseEndIndex);
+	
+	/**
+	 * 将指定用例的内容，写入到模板中
+	 * @param caseStartIndex 写入文件开始下标
+	 * @param caseEndIndex   写入文件结束下标
+	 */
+	protected abstract void contentWriteTemplet(int caseStartIndex, int caseEndIndex);
 
 	/**
 	 * 用于根据当前实际的模板数量，返回拼接后的模板json内容
@@ -661,5 +671,5 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 用于创建模板文件
 	 * @return 模板文件对象
 	 */
-	protected abstract void createTempletFile();
+	protected abstract void createTempletFile(FileTemplet templet);
 }

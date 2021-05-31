@@ -7,12 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.poi.ss.usermodel.FontUnderline;
@@ -39,7 +37,7 @@ import com.auxiliary.tool.file.MarkTextFont;
 import com.auxiliary.tool.file.MarkTextLink;
 import com.auxiliary.tool.file.TableFileReadUtil;
 import com.auxiliary.tool.file.WriteFileException;
-import com.auxiliary.tool.file.WriteFilePage;
+import com.auxiliary.tool.file.WriteMultipleTempletFile;
 import com.auxiliary.tool.file.WriteTempletFile;
 
 /**
@@ -61,10 +59,8 @@ import com.auxiliary.tool.file.WriteTempletFile;
  * @since JDK 1.8
  * @param <T> 子类
  */
-public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
-		extends WriteTempletFile<WriteExcelTempletFile<T>> implements MarkComment<WriteExcelTempletFile<T>>,
-		MarkFieldBackground<WriteExcelTempletFile<T>>, MarkTextColor<WriteExcelTempletFile<T>>,
-		MarkTextFont<WriteExcelTempletFile<T>>, MarkTextLink<WriteExcelTempletFile<T>>, WriteFilePage {
+public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> extends WriteMultipleTempletFile<T>
+		implements MarkComment<T>, MarkFieldBackground<T>, MarkTextColor<T>, MarkTextFont<T>, MarkTextLink<T> {
 	public static final String KEY_WRAP_TEXT = "wrapText";
 	public static final String KEY_WORK = "work";
 	protected final String DEFAULT_NAME = "Sheet";
@@ -78,10 +74,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 	 */
 	public static final String DATA_SHEET_NAME = "数据有效性";
 
-	/**
-	 * 存储每个Sheet对应的模板
-	 */
-	protected LinkedHashMap<String, FileTemplet> sheetTempletMap = new LinkedHashMap<>();
 	/**
 	 * 用于存储样式（key使用样式的json来编写）
 	 */
@@ -120,18 +112,22 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 			if (!temp.containsAttribute(KEY_NAME)) {
 				String name = DEFAULT_NAME + (i + 1);
 				temp.addTempletAttribute(KEY_NAME, name);
-				sheetTempletMap.put(name, temp);
+				templetMap.put(name, temp);
 			} else {
 				Object obj = temp.getTempletAttribute(KEY_NAME);
 				if (obj instanceof String) {
-					sheetTempletMap.put(temp.getTempletAttribute(KEY_NAME).toString(), temp);
+					templetMap.put(temp.getTempletAttribute(KEY_NAME).toString(), temp);
 				} else {
 					String name = DEFAULT_NAME + (i + 1);
 					temp.addTempletAttribute(KEY_NAME, name);
-					sheetTempletMap.put(name, temp);
+					templetMap.put(name, temp);
 				}
 			}
 		}
+	}
+
+	protected WriteExcelTempletFile() {
+		super();
 	}
 
 	/**
@@ -238,14 +234,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 	}
 
 	@Override
-	public void write(int caseStartIndex, int caseEndIndex) {
-	}
-
-	@Override
 	public void switchPage(String name) {
 		// 判断名称是否为空、存在
-		if (Optional.ofNullable(name).filter(n -> !n.isEmpty()).filter(sheetTempletMap::containsKey).isPresent()) {
-			this.templet = sheetTempletMap.get(name);
+		if (Optional.ofNullable(name).filter(n -> !n.isEmpty()).filter(templetMap::containsKey).isPresent()) {
+			this.templet = templetMap.get(name);
 		}
 	}
 
@@ -257,8 +249,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 	 */
 	@Override
 	public void addTemplet(String name, FileTemplet templet) {
-		WriteFilePage.super.addTemplet(name, templet);
-		sheetTempletMap.put(name, new ExcelFileTemplet(templet.getTempletJson()));
+		super.addTemplet(name, templet);
+		templetMap.put(name, new ExcelFileTemplet(templet.getTempletJson()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -365,107 +357,104 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 	}
 
 	@Override
-	protected List<String> getAllTempletJson() {
-		return sheetTempletMap.values().stream().map(FileTemplet::getTempletJson).collect(Collectors.toList());
+	protected void createTempletFile(FileTemplet templet) {
+		JSONObject tempJson = JSONObject.parseObject(templet.getTempletJson());
+		// 判断文件是否已经存在，若文件存在，则读取原文件，若文件不存在，则添加一个新的对象
+		File templetFile = new File(tempJson.getString(ExcelFileTemplet.KEY_SAVE));
+		XSSFWorkbook excel;
+		if (templetFile.exists()) {
+			try (FileInputStream fip = new FileInputStream(templetFile)) {
+				// 通过输入流，使XSSFWorkbook对象指向模版文件
+				excel = new XSSFWorkbook(fip);
+			} catch (IOException e) {
+				throw new WriteFileException("文件异常，无法创建模板：" + tempJson.getString(ExcelFileTemplet.KEY_SAVE), e);
+			}
+		} else {
+			// 创建文件存储的路径文件夹
+			templetFile.getParentFile().mkdirs();
+			excel = new XSSFWorkbook();
+		}
+
+		// 读取指定的sheet，若sheet不存在，则根据名称创建一个新的sheet
+		XSSFSheet sheet = Optional.ofNullable(excel.getSheet(tempJson.getString(ExcelFileTemplet.KEY_NAME)))
+				.orElseGet(() -> excel.createSheet(tempJson.getString(ExcelFileTemplet.KEY_NAME)));
+		// 冻结表格
+		int freezeLeft = tempJson.getIntValue(ExcelFileTemplet.KEY_FREEZE_LEFT);
+		int freezeTop = tempJson.getIntValue(ExcelFileTemplet.KEY_FREEZE_TOP);
+		sheet.createFreezePane(freezeLeft, freezeTop, freezeLeft, freezeTop);
+
+		// 创建标题json
+		JSONObject styleJson = new JSONObject();
+		styleJson.put(ExcelFileTemplet.KEY_HORIZONTAL, (short) 2);
+		styleJson.put(ExcelFileTemplet.KEY_VERTICAL, (short) 5);
+		styleJson.put(KEY_WRAP_TEXT, true);
+		styleJson.put(KEY_FONT_NAME, "宋体");
+		styleJson.put(KEY_FONT_SIZE, (short) 12);
+		styleJson.put(KEY_BOLD, true);
+		styleJson.put(KEY_ITALIC, false);
+		styleJson.put(KEY_UNDERLINE, false);
+		styleJson.put(KEY_WORK, tempJson.getString(KEY_NAME));
+
+		// 根据字段内容，创建单元格，写入单元格标题
+		JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
+		fieldJson.keySet().stream().map(fieldJson::getJSONObject)
+				.map(json -> getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX), json.getString(KEY_NAME)))
+				.forEach(cell -> {
+					// 设置单元格样式
+					cell.getValue().setCellStyle(getStyle(excel, styleJson));
+					// 设置列宽，若不存在设置，则默认列宽
+					if (fieldJson.containsKey(ExcelFileTemplet.KEY_WIDE)) {
+						// 获取单元格坐标的列数，并转换为数字
+						sheet.setColumnWidth(Integer.valueOf(cell.getKey().split(COLUMN_SPLIT_SIGN)[1]),
+								(int) (fieldJson.getDouble(ExcelFileTemplet.KEY_WIDE) * 256));
+					}
+				});
+
+		// 添加数据有效性（不存在则跳过添加）
+		JSONObject dataJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_DATA);
+		Optional.ofNullable(dataJson).filter(json -> !json.keySet().isEmpty()).ifPresent(json -> {
+			XSSFSheet dataSheet = Optional.ofNullable(excel.getSheet(DATA_SHEET_NAME))
+					.orElseGet(() -> excel.createSheet(DATA_SHEET_NAME));
+			dataJson.keySet().forEach(key -> {
+				JSONArray dataArrayJson = dataJson.getJSONArray(key);
+				if (dataArrayJson.size() != 0) {
+					// 添加标题
+					String cellPoint = getCell(dataSheet, 0, -1,
+							String.format("%s-%s", tempJson.getString(KEY_NAME), key)).getKey();
+
+					// 计算列数，并写入数据有效性内容
+					int dataColumnIndex = Integer.valueOf(cellPoint.split(COLUMN_SPLIT_SIGN)[1]);
+					for (int i = 0; i < dataArrayJson.size(); i++) {
+						getCell(dataSheet, i + 1, dataColumnIndex, dataArrayJson.getString(i));
+					}
+				}
+			});
+		});
+
+		// 若存在数据有效性sheet页，则设置该页展示在文档最后
+		if (excel.getSheet(DATA_SHEET_NAME) != null) {
+			excel.setSheetOrder(DATA_SHEET_NAME, excel.getNumberOfSheets() - 1);
+		}
+
+		// 定义输出流，用于向指定的Excel文件中写入内容
+		try (FileOutputStream fop = new FileOutputStream(templetFile)) {
+			// 写入文件
+			excel.write(fop);
+
+		} catch (Exception e) {
+			throw new WriteFileException("文件异常，无法创建模板：" + tempJson.getString(ExcelFileTemplet.KEY_SAVE), e);
+		} finally {
+			try {
+				excel.close();
+			} catch (IOException e) {
+				throw new WriteFileException("文件异常，无法创建模板：" + tempJson.getString(ExcelFileTemplet.KEY_SAVE), e);
+			}
+		}
 	}
 
 	@Override
-	protected void createTempletFile() {
-		sheetTempletMap.forEach((name, templet) -> {
-			JSONObject tempJson = JSONObject.parseObject(templet.getTempletJson());
-			// 判断文件是否已经存在，若文件存在，则读取原文件，若文件不存在，则添加一个新的对象
-			File templetFile = new File(tempJson.getString(ExcelFileTemplet.KEY_SAVE));
-			XSSFWorkbook excel;
-			if (templetFile.exists()) {
-				try (FileInputStream fip = new FileInputStream(templetFile)) {
-					// 通过输入流，使XSSFWorkbook对象指向模版文件
-					excel = new XSSFWorkbook(fip);
-				} catch (IOException e) {
-					throw new WriteFileException("文件异常，无法创建模板：" + tempJson.getString(ExcelFileTemplet.KEY_SAVE), e);
-				}
-			} else {
-				// 创建文件存储的路径文件夹
-				templetFile.getParentFile().mkdirs();
-				excel = new XSSFWorkbook();
-			}
+	protected void contentWriteTemplet(int caseStartIndex, int caseEndIndex) {
 
-			// 读取指定的sheet，若sheet不存在，则根据名称创建一个新的sheet
-			XSSFSheet sheet = Optional.ofNullable(excel.getSheet(tempJson.getString(ExcelFileTemplet.KEY_NAME)))
-					.orElseGet(() -> excel.createSheet(tempJson.getString(ExcelFileTemplet.KEY_NAME)));
-			// 冻结表格
-			int freezeLeft = tempJson.getIntValue(ExcelFileTemplet.KEY_FREEZE_LEFT);
-			int freezeTop = tempJson.getIntValue(ExcelFileTemplet.KEY_FREEZE_TOP);
-			sheet.createFreezePane(freezeLeft, freezeTop, freezeLeft, freezeTop);
-
-			// 创建标题json
-			JSONObject styleJson = new JSONObject();
-			styleJson.put(ExcelFileTemplet.KEY_HORIZONTAL, (short) 2);
-			styleJson.put(ExcelFileTemplet.KEY_VERTICAL, (short) 5);
-			styleJson.put(KEY_WRAP_TEXT, true);
-			styleJson.put(KEY_FONT_NAME, "宋体");
-			styleJson.put(KEY_FONT_SIZE, (short) 12);
-			styleJson.put(KEY_BOLD, true);
-			styleJson.put(KEY_ITALIC, false);
-			styleJson.put(KEY_UNDERLINE, false);
-			styleJson.put(KEY_WORK, tempJson.getString(KEY_NAME));
-
-			// 根据字段内容，创建单元格，写入单元格标题
-			JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
-			fieldJson.keySet().stream().map(fieldJson::getJSONObject)
-					.map(json -> getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX),
-							json.getString(KEY_NAME)))
-					.forEach(cell -> {
-						// 设置单元格样式
-						cell.getValue().setCellStyle(getStyle(excel, styleJson));
-						// 设置列宽，若不存在设置，则默认列宽
-						if (fieldJson.containsKey(ExcelFileTemplet.KEY_WIDE)) {
-							// 获取单元格坐标的列数，并转换为数字
-							sheet.setColumnWidth(Integer.valueOf(cell.getKey().split(COLUMN_SPLIT_SIGN)[1]),
-									(int) (fieldJson.getDouble(ExcelFileTemplet.KEY_WIDE) * 256));
-						}
-					});
-
-			// 添加数据有效性（不存在则跳过添加）
-			JSONObject dataJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_DATA);
-			Optional.ofNullable(dataJson).filter(json -> !json.keySet().isEmpty()).ifPresent(json -> {
-				XSSFSheet dataSheet = Optional.ofNullable(excel.getSheet(DATA_SHEET_NAME))
-						.orElseGet(() -> excel.createSheet(DATA_SHEET_NAME));
-				dataJson.keySet().forEach(key -> {
-					JSONArray dataArrayJson = dataJson.getJSONArray(key);
-					if (dataArrayJson.size() != 0) {
-						// 添加标题
-						String cellPoint = getCell(dataSheet, 0, -1,
-								String.format("%s-%s", tempJson.getString(KEY_NAME), key)).getKey();
-
-						// 计算列数，并写入数据有效性内容
-						int dataColumnIndex = Integer.valueOf(cellPoint.split(COLUMN_SPLIT_SIGN)[1]);
-						for (int i = 0; i < dataArrayJson.size(); i++) {
-							getCell(dataSheet, i + 1, dataColumnIndex, dataArrayJson.getString(i));
-						}
-					}
-				});
-			});
-			
-			// 若存在数据有效性sheet页，则设置该页展示在文档最后
-			if (excel.getSheet(DATA_SHEET_NAME) != null) {
-				excel.setSheetOrder(DATA_SHEET_NAME, excel.getNumberOfSheets() - 1);
-			}
-
-			// 定义输出流，用于向指定的Excel文件中写入内容
-			try (FileOutputStream fop = new FileOutputStream(templetFile)) {
-				// 写入文件
-				excel.write(fop);
-
-			} catch (Exception e) {
-				throw new WriteFileException("文件异常，无法创建模板：" + tempJson.getString(ExcelFileTemplet.KEY_SAVE), e);
-			} finally {
-				try {
-					excel.close();
-				} catch (IOException e) {
-					throw new WriteFileException("文件异常，无法创建模板：" + tempJson.getString(ExcelFileTemplet.KEY_SAVE), e);
-				}
-			}
-		});
 	}
 
 	/**
@@ -488,8 +477,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>>
 				: columnIndex);
 		XSSFCell cell = Optional.ofNullable(row.getCell(newColumnIndex))
 				.orElseGet(() -> row.createCell(newColumnIndex));
-		// 插入内容
-		cell.setCellValue(content);
+		// 将指定内容插入到原内容后
+		cell.setCellValue(cell.getStringCellValue() + content);
 
 		// 将单元格转换成键值对的形式，key表示单元格坐标
 		Entry<String, XSSFCell> entry = new Entry<String, XSSFCell>() {
