@@ -241,6 +241,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		}
 	}
 
+	@Override
+	public FileTemplet getTemplet(String name) {
+		return templetMap.get(name);
+	}
+
 	/**
 	 * 添加Sheet页模板，并设置模板的名称
 	 * <p>
@@ -454,7 +459,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	@Override
 	protected void contentWriteTemplet(int caseStartIndex, int caseEndIndex) {
-		
 	}
 
 	/**

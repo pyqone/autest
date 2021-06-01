@@ -51,20 +51,15 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 				createTempletFile(templet);
 			}
 		});
-
-		// 计算真实的起始下标与结束下标
-		caseEndIndex = analysisIndex(contentJson.getJSONArray(KEY_CONTENT).size(), caseEndIndex, true);
-		caseStartIndex = analysisIndex(caseEndIndex, caseStartIndex, true);
-
-		// 将文件内容写入模板文件
-		contentWriteTemplet(caseStartIndex, caseEndIndex);
+		
+		super.write(caseStartIndex, caseEndIndex);
 	}
 
 	@Override
 	protected List<String> getAllTempletJson() {
 		return templetMap.values().stream().map(FileTemplet::getTempletJson).collect(Collectors.toList());
 	}
-
+	
 	/**
 	 * 用于判断当前模板是否存在于模板文件中
 	 * <p>

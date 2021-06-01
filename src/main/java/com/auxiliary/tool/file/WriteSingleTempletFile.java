@@ -31,17 +31,12 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 	
 	@Override
 	public void write(int caseStartIndex, int caseEndIndex) {
-		// 计算真实的起始下标与结束下标
-		caseEndIndex = analysisIndex(contentJson.getJSONArray(KEY_CONTENT).size(), caseEndIndex, true);
-		caseStartIndex = analysisIndex(caseEndIndex, caseStartIndex, true);
-		
 		//判断模板文件是否存在，若不存在，则创建模板文件
 		if (!new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString()).exists()) {
 			createTempletFile(templet);
 		}
 		
-		//将文件内容写入模板文件
-		contentWriteTemplet(caseStartIndex, caseEndIndex);
+		super.write(caseStartIndex, caseEndIndex);
 	}
 
 	@Override
