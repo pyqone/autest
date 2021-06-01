@@ -454,7 +454,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	@Override
 	protected void contentWriteTemplet(int caseStartIndex, int caseEndIndex) {
-
+		
 	}
 
 	/**
@@ -557,6 +557,21 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			return style;
 		} else {
 			return styleMap.get(styleJson);
+		}
+	}
+
+	@Override
+	protected boolean isExistTemplet(File templetFile, FileTemplet templet) {
+		// 判断文件是否存在，不存在则返回false
+		if (!templetFile.exists()) {
+			return false;
+		}
+
+		// 读取文件，若文件中存在与模板名称相同的Sheet，则表示模板存在
+		try (FileInputStream fip = new FileInputStream(templetFile); XSSFWorkbook excel = new XSSFWorkbook(fip)) {
+			return Optional.ofNullable(excel.getSheet(templet.getTempletAttribute(KEY_NAME).toString())).isPresent();
+		} catch (IOException e) {
+			return false;
 		}
 	}
 
