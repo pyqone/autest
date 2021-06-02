@@ -233,31 +233,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		}
 	}
 
-	@Override
-	public void switchPage(String name) {
-		// 判断名称是否为空、存在
-		if (Optional.ofNullable(name).filter(n -> !n.isEmpty()).filter(templetMap::containsKey).isPresent()) {
-			this.templet = templetMap.get(name);
-		}
-	}
-
-	@Override
-	public FileTemplet getTemplet(String name) {
-		return templetMap.get(name);
-	}
-
-	/**
-	 * 添加Sheet页模板，并设置模板的名称
-	 * <p>
-	 * 每一个模板表示写入Excel时的一个Sheet页，其模板的名称即为Sheet页的名称。若重复添加同一个名称，则会覆盖上一次设置的模板。
-	 * </p>
-	 */
-	@Override
-	public void addTemplet(String name, FileTemplet templet) {
-		super.addTemplet(name, templet);
-		templetMap.put(name, new ExcelFileTemplet(templet.getTempletJson()));
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public T textLink(String field, int textIndex, String likeContent) {
@@ -458,7 +433,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	@Override
-	protected void contentWriteTemplet(int caseStartIndex, int caseEndIndex) {
+	protected void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
+		
 	}
 
 	/**

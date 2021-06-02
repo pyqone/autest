@@ -29,6 +29,7 @@ public class FileTemplet {
 	public static final String KEY_SAVE = "save";
 	public static final String KEY_FIELD = "field";
 	public static final String KEY_INDEX = "index";
+	public static final String KEY_NAME = "name";
 
 	/**
 	 * 存储模板json串
@@ -79,6 +80,7 @@ public class FileTemplet {
 			JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
 			fieldJson.put(field, new JSONObject());
 			addFieldAttribute(field, KEY_INDEX, fieldJson.keySet().size() - 1);
+			addFieldAttribute(field, KEY_NAME, field);
 		}
 	}
 

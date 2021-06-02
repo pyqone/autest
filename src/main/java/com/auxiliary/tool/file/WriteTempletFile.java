@@ -506,29 +506,15 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	/**
 	 * 用于将编写的部分内容写入到文件中
 	 * <p>
-	 * 方法支持反序遍历，即指定的下标为负数时，则表示反序遍历用例集，至指定位置的用例
+	 * 方法支持反序遍历，即指定的下标为负数时，则表示反序遍历用例集，至指定位置的用例。若两个下标一致，则不处理数据
 	 * </p>
 	 * 
 	 * @param caseStartIndex 写入文件开始下标
 	 * @param caseEndIndex   写入文件结束下标
 	 */
-	public void write(int caseStartIndex, int caseEndIndex) {
-		// 计算真实的起始下标与结束下标
-		caseEndIndex = analysisIndex(contentJson.getJSONArray(KEY_CONTENT).size(), caseEndIndex, true);
-		caseStartIndex = analysisIndex(caseEndIndex, caseStartIndex, true);
-		
-		// 判断两个下标是否相等，相等，则结束下标 + 1
-		caseEndIndex += (caseEndIndex == caseStartIndex ? 1 : 0);
-		//将文件内容写入模板文件
-		contentWriteTemplet(caseStartIndex, caseEndIndex);
-	}
+	protected abstract void write(int caseStartIndex, int caseEndIndex);
 	
-	/**
-	 * 将指定用例的内容，写入到模板中
-	 * @param caseStartIndex 写入文件开始下标
-	 * @param caseEndIndex   写入文件结束下标
-	 */
-	protected abstract void contentWriteTemplet(int caseStartIndex, int caseEndIndex);
+	protected abstract void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex);
 
 	/**
 	 * 用于根据当前实际的模板数量，返回拼接后的模板json内容

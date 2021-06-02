@@ -36,7 +36,16 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 			createTempletFile(templet);
 		}
 		
-		super.write(caseStartIndex, caseEndIndex);
+		// 计算真实的起始下标与结束下标
+		caseEndIndex = analysisIndex(contentJson.getJSONArray(KEY_CONTENT).size(), caseEndIndex, true);
+		caseStartIndex = analysisIndex(caseEndIndex, caseStartIndex, true);
+		
+		// 判断两个下标是否相等，相等，则不进行处理
+		if (caseEndIndex == caseStartIndex) {
+			return;
+		}
+		//将文件内容写入模板文件
+		contentWriteTemplet(templet, caseStartIndex, caseEndIndex);
 	}
 
 	@Override
