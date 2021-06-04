@@ -123,7 +123,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 无参构造，方便子类进行特殊的构造方法
 	 */
 	protected WriteTempletFile() {
-		contentJson.put(KEY_CONTENT, new JSONArray());
+		contentJson.put(KEY_CASE, new JSONArray());
 	}
 
 	/**
@@ -281,7 +281,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		// 获取用例集合
-		JSONArray caseListJson = contentJson.getJSONArray(KEY_CONTENT);
+		JSONArray caseListJson = contentJson.getJSONArray(KEY_CASE);
 		// 判断下标指向的集合内容是否存在，不存在，则不进行获取
 		if (index >= caseListJson.size()) {
 			return (T) this;
@@ -400,7 +400,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		// 获取用例集合
-		JSONArray caseListJson = contentJson.getJSONArray(KEY_CONTENT);
+		JSONArray caseListJson = contentJson.getJSONArray(KEY_CASE);
 		// 判断下标指向的集合内容是否存在，不存在，则不进行获取
 		if (index >= caseListJson.size()) {
 			return;
@@ -439,7 +439,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		replenishDefaultContent();
 
 		// 获取内容字段的数组，并将用例写入到文本中
-		JSONArray contentListJson = Optional.ofNullable(contentJson.getJSONArray(KEY_CONTENT)).orElse(new JSONArray());
+		JSONArray contentListJson = Optional.ofNullable(contentJson.getJSONArray(KEY_CASE)).orElse(new JSONArray());
 		// 将caseJson中存储的内容重新放入到一个json中
 
 		// 判断当前用例下标是否为-1，为-1，则记录到内容中的最后一条；反之，则使用当前内容进行覆盖
@@ -458,7 +458,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		// 将用例集合重新添加至内容json中
-		contentJson.put(KEY_CONTENT, contentListJson);
+		contentJson.put(KEY_CASE, contentListJson);
 
 		// 若当前指定了分行写入文件，则判断当前行数是否需要分行写入文件
 		if (writeRowNum != 0 && contentListJson.size() % writeRowNum == 0) {
@@ -485,7 +485,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	public String toWriteFileJson() {
 		JSONObject mainjson = new JSONObject();
 		mainjson.put(KEY_DEFAULT, defaultCaseJson);
-		mainjson.put(KEY_CASE, contentJson);
+		mainjson.put(KEY_CONTENT, contentJson);
 
 		return mainjson.toJSONString();
 	}

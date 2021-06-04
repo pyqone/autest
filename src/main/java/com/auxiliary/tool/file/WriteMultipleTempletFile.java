@@ -39,9 +39,14 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	 * 存储模板名称对应的内容json
 	 */
 	protected LinkedHashMap<String, JSONObject> contentMap = new LinkedHashMap<>();
+	/**
+	 * 存储默认字段数据json
+	 */
+	protected LinkedHashMap<String, JSONObject> defaultMap = new LinkedHashMap<>();
 
-	public WriteMultipleTempletFile(FileTemplet templet) {
+	public WriteMultipleTempletFile(String templetName, FileTemplet templet) {
 		super(templet);
+		addTemplet(templetName, templet);
 	}
 
 	public WriteMultipleTempletFile(WriteTempletFile<?> writeTempletFile) {
@@ -58,6 +63,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 		if (Optional.ofNullable(name).filter(n -> !n.isEmpty()).filter(templetMap::containsKey).isPresent()) {
 			this.templet = templetMap.get(name);
 			this.contentJson = contentMap.get(name);
+			this.defaultCaseJson = defaultMap.get(name);
 		}
 	}
 
@@ -78,8 +84,10 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 		templetMap.put(name, new FileTemplet(templet.getTempletJson()));
 		
 		JSONObject contentJson = new JSONObject();
-		contentJson.put(KEY_CONTENT, new JSONArray());
+		contentJson.put(KEY_CASE, new JSONArray());
 		contentMap.put(name, contentJson);
+		
+		switchPage(name);
 	}
 
 	@Override
@@ -92,7 +100,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 			}
 			
 			// 计算真实的起始下标与结束下标
-			caseEndIndex = analysisIndex(contentJson.getJSONArray(KEY_CONTENT).size(), caseEndIndex, true);
+			caseEndIndex = analysisIndex(contentJson.getJSONArray(KEY_CASE).size(), caseEndIndex, true);
 			caseStartIndex = analysisIndex(caseEndIndex, caseStartIndex, true);
 			
 			// 判断两个下标是否相等，相等，则不进行处理

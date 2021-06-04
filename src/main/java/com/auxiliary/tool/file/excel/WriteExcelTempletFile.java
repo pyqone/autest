@@ -86,8 +86,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @param templet     模板类
 	 */
 	public WriteExcelTempletFile(String templetName, FileTemplet templet) {
-		super(templet);
-		addTemplet(templetName, new ExcelFileTemplet(templet.getTempletJson()));
+		super(templetName, templet);
+		templetMap.put(templetName, new ExcelFileTemplet(templetMap.get(templetName).getTempletJson()));
 	}
 
 	/**
@@ -377,18 +377,17 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		// 根据字段内容，创建单元格，写入单元格标题
 		JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
-		fieldJson.keySet().stream().map(fieldJson::getJSONObject)
-				.map(json -> getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX), json.getString(KEY_NAME)))
-				.forEach(cell -> {
-					// 设置单元格样式
-					cell.getValue().setCellStyle(getStyle(excel, styleJson));
-					// 设置列宽，若不存在设置，则默认列宽
-					if (fieldJson.containsKey(ExcelFileTemplet.KEY_WIDE)) {
-						// 获取单元格坐标的列数，并转换为数字
-						sheet.setColumnWidth(Integer.valueOf(cell.getKey().split(COLUMN_SPLIT_SIGN)[1]),
-								(int) (fieldJson.getDouble(ExcelFileTemplet.KEY_WIDE) * 256));
-					}
-				});
+		fieldJson.keySet().stream().map(fieldJson::getJSONObject).forEach(json -> {
+			Entry<String, XSSFCell> cellInfo = getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX), json.getString(KEY_NAME));
+			// 设置单元格样式
+			cellInfo.getValue().setCellStyle(getStyle(excel, styleJson));
+			// 设置列宽，若不存在设置，则默认列宽
+			if (json.containsKey(ExcelFileTemplet.KEY_WIDE)) {
+				// 获取单元格坐标的列数，并转换为数字
+				sheet.setColumnWidth(Integer.valueOf(cellInfo.getKey().split(COLUMN_SPLIT_SIGN)[1]),
+						(int) (json.getDouble(ExcelFileTemplet.KEY_WIDE) * 256));
+			}
+		});
 
 		// 添加数据有效性（不存在则跳过添加）
 		JSONObject dataJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_DATA);
@@ -434,7 +433,72 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	@Override
 	protected void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
-		
+		File templetFile = new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString());
+		if (!templetFile.exists()) {
+			throw new WriteFileException("文件模板路径不存在，无法写入数据：" + templetFile.getAbsolutePath());
+		}
+		XSSFWorkbook excel;
+		try (FileInputStream fip = new FileInputStream(templetFile)) {
+			// 通过输入流，使XSSFWorkbook对象指向模版文件
+			excel = new XSSFWorkbook(fip);
+		} catch (IOException e) {
+			throw new WriteFileException("文件异常，无法写入数据：" + templetFile.getAbsolutePath(), e);
+		}
+
+		// 获取模板json
+		JSONObject templetJson = JSONObject.parseObject(templet.getTempletJson());
+		// 获取模板名称，并根据模板名称，获取相应的sheet
+		String templetName = templetJson.getString(ExcelFileTemplet.KEY_NAME);
+		XSSFSheet templetSheet = Optional.ofNullable(excel.getSheet(templetJson.getString(ExcelFileTemplet.KEY_NAME)))
+				.orElseThrow(() -> new WriteFileException(String.format("Sheet名称在文件中不存在，无法写入内容。\nSheet名称：%s\n文件路径：%s",
+						templetName, templetFile.getAbsolutePath())));
+
+		// 根据模板名称，获取内容json
+		JSONArray contentListJson = contentMap.get(templetName).getJSONArray(KEY_CASE);
+		// 循环，遍历所有需要写入的内容
+		for (int index = 0; index < contentListJson.size(); index++) {
+			// 获取内容json
+			JSONObject contentJson = contentListJson.getJSONObject(index);
+			// 计算当前需要写入的行
+			int rowIndex = templetSheet.getLastRowNum() + 1;
+
+			// 遍历所有的字段
+			for (String field : templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD).keySet()) {
+				// 判断字段是否存在内容，不存在，则不进行处理
+				if (!contentJson.containsKey(field)) {
+					continue;
+				}
+				// 获取段落内容
+				JSONArray textListJson = contentJson.getJSONObject(field).getJSONArray(KEY_DATA);
+				// 遍历内容串
+				for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
+					JSONObject textJson = textListJson.getJSONObject(textIndex);
+					// TODO 添加文本样式未生效
+					// 获取模板中，单元格的位置
+					int columnIndex = templetJson.getJSONObject(FileTemplet.KEY_FIELD).getJSONObject(field)
+							.getIntValue(FileTemplet.KEY_INDEX);
+					// 创建内容单元格
+					Entry<String, XSSFCell> cellInfo = getCell(templetSheet, rowIndex, columnIndex,
+							textJson.getString(KEY_TEXT));
+					cellInfo.getValue().setCellStyle(getStyle(excel, fieldJson2StyleJson(templetName,
+							templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD).getJSONObject(field), contentJson)));
+				}
+			}
+		}
+
+		// 定义输出流，用于向指定的Excel文件中写入内容
+		try (FileOutputStream fop = new FileOutputStream(templetFile)) {
+			// 写入文件
+			excel.write(fop);
+		} catch (Exception e) {
+			throw new WriteFileException("文件异常，无法写入：" + templet.getTempletAttribute(FileTemplet.KEY_SAVE), e);
+		} finally {
+			try {
+				excel.close();
+			} catch (IOException e) {
+				throw new WriteFileException("文件异常，无法写入：" + templet.getTempletAttribute(FileTemplet.KEY_SAVE), e);
+			}
+		}
 	}
 
 	/**
@@ -458,7 +522,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		XSSFCell cell = Optional.ofNullable(row.getCell(newColumnIndex))
 				.orElseGet(() -> row.createCell(newColumnIndex));
 		// 将指定内容插入到原内容后
-		cell.setCellValue(cell.getStringCellValue() + content);
+		String cellContent = Optional.ofNullable(cell.getStringCellValue()).orElse("");
+		if (!cellContent.isEmpty()) {
+			content = "\n" + content;
+		}
+		cell.setCellValue(cellContent + content);
 
 		// 将单元格转换成键值对的形式，key表示单元格坐标
 		Entry<String, XSSFCell> entry = new Entry<String, XSSFCell>() {
@@ -487,9 +555,21 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @param fieldJson 字段json
 	 * @return 字段样式json
 	 */
-	protected JSONObject fieldJson2StyleJson(JSONObject fieldJson) {
-		// TODO 转换字段json为样式json
-		return null;
+	protected JSONObject fieldJson2StyleJson(String templetName, JSONObject fieldJson, JSONObject contentJson) {
+		JSONObject styleJson = new JSONObject();
+		styleJson.put(ExcelFileTemplet.KEY_HORIZONTAL,
+				Optional.ofNullable(fieldJson.getInteger(ExcelFileTemplet.KEY_HORIZONTAL)).orElse(0));
+		styleJson.put(KEY_FONT_NAME, "宋体");
+		styleJson.put(KEY_UNDERLINE, Optional.ofNullable(contentJson.getBoolean(KEY_UNDERLINE)).orElse(false));
+		styleJson.put(KEY_BOLD, Optional.ofNullable(contentJson.getBoolean(KEY_BOLD)).orElse(false));
+		styleJson.put(KEY_ITALIC, Optional.ofNullable(contentJson.getBoolean(KEY_ITALIC)).orElse(false));
+		styleJson.put(ExcelFileTemplet.KEY_VERTICAL,
+				Optional.ofNullable(fieldJson.getInteger(ExcelFileTemplet.KEY_VERTICAL)).orElse(5));
+		styleJson.put(KEY_FONT_SIZE, 12);
+		styleJson.put(KEY_WORK, templetName);
+		styleJson.put(KEY_WRAP_TEXT, true);
+
+		return styleJson;
 	}
 
 	/**
