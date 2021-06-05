@@ -651,6 +651,11 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @return 真实下标
 	 */
 	protected int analysisIndex(int maxNum, int index, boolean isReciprocal) {
+		// 若最大值为0，则直接返回0
+		if (maxNum == 0) {
+			return 0;
+		}
+		
 		if (index < 0) {
 			if (isReciprocal) {
 				return Math.abs(index) > maxNum ? 0 : (maxNum + index);
@@ -658,7 +663,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 				return 0;
 			}
 		} else {
-			return index > maxNum ? maxNum : index;
+			return index >= maxNum ? maxNum - 1 : index;
 		}
 	}
 	

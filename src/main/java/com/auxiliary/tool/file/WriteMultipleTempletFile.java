@@ -56,7 +56,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	protected WriteMultipleTempletFile() {
 		super();
 	}
-	
+
 	@Override
 	public void switchPage(String name) {
 		// 判断名称是否为空、存在
@@ -71,7 +71,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	public FileTemplet getTemplet(String name) {
 		return templetMap.get(name);
 	}
-	
+
 	/**
 	 * 添加Sheet页模板，并设置模板的名称
 	 * <p>
@@ -80,13 +80,19 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	 */
 	@Override
 	public void addTemplet(String name, FileTemplet templet) {
+		// 初始化模板信息
 		WriteFilePage.super.addTemplet(name, templet);
 		templetMap.put(name, new FileTemplet(templet.getTempletJson()));
-		
+
+		// 初始化内容json串
 		JSONObject contentJson = new JSONObject();
 		contentJson.put(KEY_CASE, new JSONArray());
 		contentMap.put(name, contentJson);
-		
+
+		// 初始化默认内容串
+		defaultMap.put(name, new JSONObject());
+
+		// 切换至当前模板
 		switchPage(name);
 	}
 
@@ -98,16 +104,18 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 			if (!isExistTemplet(new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString()), templet)) {
 				createTempletFile(templet);
 			}
-			
+
 			// 计算真实的起始下标与结束下标
-			caseEndIndex = analysisIndex(contentJson.getJSONArray(KEY_CASE).size(), caseEndIndex, true);
-			caseStartIndex = analysisIndex(caseEndIndex, caseStartIndex, true);
-			
-			// 判断两个下标是否相等，相等，则不进行处理
-			if (caseEndIndex == caseStartIndex) {
+			JSONArray contentListJson = contentMap.get(entry.getKey()).getJSONArray(KEY_CASE);
+			// 判断内容json是否为空，为空则不进行处理
+			if (contentListJson.isEmpty()) {
 				continue;
 			}
-			//将文件内容写入模板文件
+			
+			caseEndIndex = analysisIndex(contentListJson.size(), caseEndIndex, true);
+			caseStartIndex = analysisIndex(caseEndIndex, caseStartIndex, true);
+
+			// 将文件内容写入模板文件
 			contentWriteTemplet(templet, caseStartIndex, caseEndIndex);
 		}
 	}
@@ -116,7 +124,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	protected List<String> getAllTempletJson() {
 		return templetMap.values().stream().map(FileTemplet::getTempletJson).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * 用于判断当前模板是否存在于模板文件中
 	 * <p>
