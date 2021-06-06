@@ -26,16 +26,6 @@ public interface MarkTextLink<T extends MarkTextLink<T>> {
 	String KEY_LINK = "link";
 	
 	/**
-	 * 用于对字段指定段落文本内容添加超链接
-	 * 
-	 * @param field       字段
-	 * @param textIndex   内容下标
-	 * @param likeContent 超链接内容
-	 * @return 类本身
-	 */
-	T textLink(String field, int textIndex, String likeContent);
-
-	/**
 	 * 用于对在字段文本块上添加超链接
 	 * 
 	 * @param field       字段

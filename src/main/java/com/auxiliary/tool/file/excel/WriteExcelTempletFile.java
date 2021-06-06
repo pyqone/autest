@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
+import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -63,6 +65,7 @@ import com.auxiliary.tool.file.WriteTempletFile;
 public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> extends WriteMultipleTempletFile<T>
 		implements MarkComment<T>, MarkFieldBackground<T>, MarkTextColor<T>, MarkTextFont<T>, MarkTextLink<T> {
 	public static final String KEY_WRAP_TEXT = "wrapText";
+	public static final String KEY_BACKGROUND = "background";
 	public static final String KEY_WORK = "work";
 	protected final String DEFAULT_NAME = "Sheet";
 	/**
@@ -236,17 +239,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T textLink(String field, int textIndex, String likeContent) {
-		JSONObject textJson = getTextJson(field, textIndex);
-		if (textJson != null) {
-			textJson.put(KEY_LINK, likeContent);
-		}
-
-		return (T) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
 	public T fieldLink(String field, String likeContent) {
 		if (caseJson.containsKey(field)) {
 			caseJson.getJSONObject(field).put(KEY_LINK, likeContent);
@@ -313,17 +305,15 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public T changeCaseBackground(MarkColorsType markColorsType) {
-		caseJson.put(KEY_COLOR, markColorsType.getColorsValue());
+		caseJson.put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public T changeFieldBackground(String field, MarkColorsType markColorsType) {
 		if (caseJson.containsKey(field)) {
-			caseJson.getJSONObject(field).put(KEY_COLOR, markColorsType.getColorsValue());
+			caseJson.getJSONObject(field).put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		}
 		return (T) this;
 	}
@@ -445,6 +435,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			throw new WriteFileException("文件异常，无法写入数据：" + templetFile.getAbsolutePath(), e);
 		}
 
+		// 获取数据有效性标题
+		List<String> dataTitleList = readDataOptionTitle(excel);
+
 		// 获取模板json
 		JSONObject templetJson = JSONObject.parseObject(templet.getTempletJson());
 		// 获取模板名称，并根据模板名称，获取相应的sheet
@@ -460,30 +453,55 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 获取内容json
 			JSONObject contentJson = contentListJson.getJSONObject(index);
 			// 计算当前需要写入的行
-			int rowIndex = templetSheet.getLastRowNum() + 1;
+			int lastRowIndex = templetSheet.getLastRowNum() + 1;
 
 			// 遍历所有的字段
 			for (String field : templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD).keySet()) {
+				// 获取当前字段的模板json
+				JSONObject fieldTempletJson = templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD)
+						.getJSONObject(field);
+				JSONObject fieldContentJson = contentJson.getJSONObject(field);
+
 				// 判断字段是否存在内容，不存在，则不进行处理
 				if (!contentJson.containsKey(field)) {
 					continue;
 				}
 				// 获取段落内容
-				JSONArray textListJson = contentJson.getJSONObject(field).getJSONArray(KEY_DATA);
+				JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
 				// 遍历内容串
 				for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
 					JSONObject textJson = textListJson.getJSONObject(textIndex);
-					// TODO 添加文本样式未生效
 					// 获取模板中，单元格的位置
-					int columnIndex = templetJson.getJSONObject(FileTemplet.KEY_FIELD).getJSONObject(field)
-							.getIntValue(FileTemplet.KEY_INDEX);
+					int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
+
+					// 获取单元格内容，判断内容是否需要自动标号
+					String text = textJson.getString(KEY_TEXT);
+					if (fieldTempletJson.getBooleanValue(ExcelFileTemplet.KEY_AUTO_NUMBER)) {
+						text = String.format("%d.%s", (textIndex + 1), text);
+					}
+
+					// 根据当前字段是否分表格写入内容，计算当前写入单元格的行号
+					int rowIndex = lastRowIndex;
+					if (fieldTempletJson.containsKey(ExcelFileTemplet.KEY_ROW_TEXT)) {
+						int rowText = fieldTempletJson.getIntValue(ExcelFileTemplet.KEY_ROW_TEXT);
+						rowIndex += (textIndex / rowText);
+					}
+
+					// 获取单元格的背景色
+					short background = fieldContentJson.containsKey(KEY_BACKGROUND)
+							? fieldContentJson.getShortValue(KEY_BACKGROUND)
+							: (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND)
+									: -1);
+
 					// 创建内容单元格
-					Entry<String, XSSFCell> cellInfo = getCell(templetSheet, rowIndex, columnIndex,
-							textJson.getString(KEY_TEXT),
-							getStyle(excel,
-									fieldJson2StyleJson(templetName,
-											templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD).getJSONObject(field),
-											textJson)));
+					JSONObject styleJson = fieldJson2StyleJson(templetName, fieldTempletJson, textJson, background);
+					Entry<String, XSSFCell> cellInfo = getCell(templetSheet, rowIndex, columnIndex, text,
+							getStyle(excel, styleJson));
+
+					// 判断当前是否存在注解
+					if (fieldContentJson.containsKey(KEY_COMMENT)) {
+						addComment(excel, templetSheet, cellInfo.getValue(), fieldContentJson.getString(KEY_COMMENT));
+					}
 				}
 			}
 		}
@@ -524,13 +542,14 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				: columnIndex);
 		XSSFCell cell = Optional.ofNullable(row.getCell(newColumnIndex))
 				.orElseGet(() -> row.createCell(newColumnIndex));
-		
+
 		// 将指定内容插入到原内容后
-		XSSFRichTextString cellContent = Optional.ofNullable(cell.getRichStringCellValue()).orElse(new XSSFRichTextString(""));
+		XSSFRichTextString cellContent = Optional.ofNullable(cell.getRichStringCellValue())
+				.orElse(new XSSFRichTextString(""));
 		if (!cellContent.getString().isEmpty()) {
 			content = "\n" + content;
 		}
-		
+
 		// 若当前传入单元格样式，则对单元格样式进行设置
 		if (style != null) {
 			cell.setCellStyle(style);
@@ -568,19 +587,30 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @param fieldJson 字段json
 	 * @return 字段样式json
 	 */
-	protected JSONObject fieldJson2StyleJson(String templetName, JSONObject fieldJson, JSONObject textJson) {
+	protected JSONObject fieldJson2StyleJson(String templetName, JSONObject templetFieldJson, JSONObject textJson,
+			short background) {
 		JSONObject styleJson = new JSONObject();
 		styleJson.put(ExcelFileTemplet.KEY_HORIZONTAL,
-				Optional.ofNullable(fieldJson.getInteger(ExcelFileTemplet.KEY_HORIZONTAL)).orElse(0));
+				Optional.ofNullable(templetFieldJson.getInteger(ExcelFileTemplet.KEY_HORIZONTAL)).orElse(0));
 		styleJson.put(KEY_FONT_NAME, "宋体");
 		styleJson.put(KEY_UNDERLINE, Optional.ofNullable(textJson.getBoolean(KEY_UNDERLINE)).orElse(false));
 		styleJson.put(KEY_BOLD, Optional.ofNullable(textJson.getBoolean(KEY_BOLD)).orElse(false));
 		styleJson.put(KEY_ITALIC, Optional.ofNullable(textJson.getBoolean(KEY_ITALIC)).orElse(false));
 		styleJson.put(ExcelFileTemplet.KEY_VERTICAL,
-				Optional.ofNullable(fieldJson.getInteger(ExcelFileTemplet.KEY_VERTICAL)).orElse(5));
+				Optional.ofNullable(templetFieldJson.getInteger(ExcelFileTemplet.KEY_VERTICAL)).orElse(5));
 		styleJson.put(KEY_FONT_SIZE, 12);
 		styleJson.put(KEY_WORK, templetName);
 		styleJson.put(KEY_WRAP_TEXT, true);
+
+		// 判断是否需要设置字体颜色
+		if (textJson.containsKey(KEY_COLOR)) {
+			styleJson.put(KEY_COLOR, textJson.getShort(KEY_COLOR));
+		}
+
+		// 判断是否需要背景颜色
+		if (background != -1) {
+			styleJson.put(KEY_BACKGROUND, background);
+		}
 
 		return styleJson;
 	}
@@ -620,6 +650,18 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			if (styleJson.getBooleanValue(KEY_UNDERLINE)) {
 				font.setUnderline(FontUnderline.SINGLE);
 			}
+			// 设置字体颜色
+			if (styleJson.containsKey(KEY_COLOR)) {
+				font.setColor(styleJson.getShortValue(KEY_COLOR));
+			}
+
+			// 设置背景颜色
+			if (styleJson.containsKey(KEY_BACKGROUND)) {
+				// 为保证添加背景后仍能看清单元格中的文本，故背景采用细左斜线
+				style.setFillPattern(FillPatternType.THIN_FORWARD_DIAG);
+				style.setFillForegroundColor(styleJson.getShortValue(KEY_BACKGROUND));
+			}
+
 			// 设置字体的样式
 			style.setFont(font);
 			// 设置单元格自动换行
@@ -646,6 +688,109 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		} catch (IOException e) {
 			return false;
 		}
+	}
+
+	/**
+	 * 用于将列数字下标转换为英文下标，数字下标计数从0开始，即0为第一列
+	 * 
+	 * @param numberIndex 列数字下标
+	 * @return 列英文下标
+	 */
+	protected String num2CharIndex(int numberIndex) {
+		// 存储列文本信息
+		String indexText = "";
+		// 转换下标，使下标变为可计算的下标
+		numberIndex += 1;
+
+		// 循环，直至cellIndex被减为0为止
+		while (numberIndex != 0) {
+			// 计算当前字母的个数，用于计算幂数以及需要进行除法的次数
+			int textLength = indexText.length();
+
+			// 存储当前转换的下标，并根据textLength值计算最后可以求余的数字
+			int index = (int) (numberIndex / Math.pow(26, textLength));
+
+			// 计算数据的余数，若余数为0，则转换为26（英文字母比较特殊，其对应数字从1开始，故需要处理0）
+			int remainder = (index % 26 == 0) ? 26 : index % 26;
+			// 将余数转换为字母，并拼接至indexText上
+			indexText = String.valueOf((char) (65 + remainder - 1)) + indexText;
+			// cellIndex按照计算公式减去相应的数值
+			numberIndex -= remainder * Math.pow(26, textLength);
+		}
+
+		// 返回下标的文本
+		return indexText;
+	}
+
+	/**
+	 * 用于将英文下标转换为数字下标，转换的数字下标从0开始，即0为第一列，英文下标允许传入小写、大写字母
+	 * 
+	 * @param charIndex 列英文下标
+	 * @return 列数字下标
+	 * @throws IncorrectIndexException 当英文下标不正确时抛出的异常
+	 */
+	protected int char2NumIndex(String charIndex) {
+		// 判断传入的内容是否符合正则
+		if (!charIndex.matches("[a-zA-Z]+")) {
+			throw new IncorrectIndexException("错误的英文下标：" + charIndex);
+		}
+
+		// 将所有的字母转换为大写
+		charIndex = charIndex.toUpperCase();
+
+		// 将字符串下标转换为字符数组
+		char[] indexs = charIndex.toCharArray();
+		// 初始化数字下标
+		int numberIndex = 0;
+		// 遍历所有字符，计算相应的值
+		for (int i = 0; i < indexs.length; i++) {
+			// 按照“(字母对应数字) * 26 ^ (字母位下标)”的公式对计算的数字进行累加，得到对应的数字下标
+			numberIndex += ((indexs[i] - 'A' + 1) * Math.pow(26, indexs.length - i - 1));
+		}
+
+		return numberIndex;
+	}
+
+	/**
+	 * 用于读取数据有效性sheet页中所有数据有效性列的标题
+	 * 
+	 * @param excel 模板类对象
+	 * @return 数据有效性相关的标题
+	 */
+	protected List<String> readDataOptionTitle(XSSFWorkbook excel) {
+		List<String> dataOptionTitleList = new ArrayList<>();
+
+		Optional.ofNullable(excel.getSheet(DATA_SHEET_NAME)).map(sheet -> sheet.getRow(0)).ifPresent(row -> {
+			IntStream.range(0, row.getLastCellNum() + 1).mapToObj(row::getCell).filter(cell -> cell != null)
+					.map(XSSFCell::getStringCellValue).filter(text -> !text.isEmpty())
+					.forEach(dataOptionTitleList::add);
+		});
+
+		return dataOptionTitleList;
+	}
+
+	/**
+	 * 用于向单元格上添加Comment标注
+	 * 
+	 * @param excel       excel对象
+	 * @param sheet       sheet对象
+	 * @param cell        相应单元格对象
+	 * @param commentText 字段元素
+	 */
+	protected void addComment(XSSFWorkbook excel, XSSFSheet sheet, XSSFCell cell, String commentContent) {
+		// 判断内容是否存在，若不存在，则结束方法运行，不添加标注
+		if (commentContent == null) {
+			return;
+		}
+
+		// 创建一个标注，并确定其在一个单元格的左上角和右下角
+		Comment com = sheet.createDrawingPatriarch().createCellComment(excel.getCreationHelper().createClientAnchor());
+		// 创建标注的内容
+		com.setString(excel.getCreationHelper().createRichTextString(commentContent));
+		// 创建标注的作者(作者为计算机名称)
+		com.setAuthor(System.getenv().get("COMPUTERNAME"));
+		// 将标注附加到单元格上
+		cell.setCellComment(com);
 	}
 
 	/**
