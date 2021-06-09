@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.FontFamily;
 import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -369,12 +370,12 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		// 根据字段内容，创建单元格，写入单元格标题
 		JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
 		fieldJson.keySet().stream().map(fieldJson::getJSONObject).forEach(json -> {
-			Entry<String, XSSFCell> cellInfo = getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX),
-					json.getString(KEY_NAME), getStyle(excel, styleJson));
+			XSSFCell cell = getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX), new XSSFRichTextString(json.getString(KEY_NAME)),
+					getStyle(excel, styleJson));
 			// 设置列宽，若不存在设置，则默认列宽
 			if (json.containsKey(ExcelFileTemplet.KEY_WIDE)) {
 				// 获取单元格坐标的列数，并转换为数字
-				sheet.setColumnWidth(Integer.valueOf(cellInfo.getKey().split(COLUMN_SPLIT_SIGN)[1]),
+				sheet.setColumnWidth(cell.getAddress().getColumn(),
 						(int) (json.getDouble(ExcelFileTemplet.KEY_WIDE) * 256));
 			}
 		});
@@ -388,13 +389,12 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				JSONArray dataArrayJson = dataJson.getJSONArray(key);
 				if (dataArrayJson.size() != 0) {
 					// 添加标题
-					String cellPoint = getCell(dataSheet, 0, -1,
-							String.format("%s-%s", tempJson.getString(KEY_NAME), key), null).getKey();
+					XSSFCell cell = getCell(dataSheet, 0, -1, new XSSFRichTextString(String.format("%s-%s", tempJson.getString(KEY_NAME), key)),
+							null);
 
-					// 计算列数，并写入数据有效性内容
-					int dataColumnIndex = Integer.valueOf(cellPoint.split(COLUMN_SPLIT_SIGN)[1]);
+					// 写入数据有效性内容
 					for (int i = 0; i < dataArrayJson.size(); i++) {
-						getCell(dataSheet, i + 1, dataColumnIndex, dataArrayJson.getString(i), null);
+						getCell(dataSheet, i + 1, cell.getAddress().getColumn(), new XSSFRichTextString(dataArrayJson.getString(i)), null);
 					}
 				}
 			});
@@ -457,22 +457,28 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 			// 遍历所有的字段
 			for (String field : templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD).keySet()) {
+				// 判断字段是否存在内容，不存在，则不进行处理
+				if (!contentJson.containsKey(field)) {
+					continue;
+				}
+
 				// 获取当前字段的模板json
 				JSONObject fieldTempletJson = templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD)
 						.getJSONObject(field);
 				JSONObject fieldContentJson = contentJson.getJSONObject(field);
 
-				// 判断字段是否存在内容，不存在，则不进行处理
-				if (!contentJson.containsKey(field)) {
-					continue;
-				}
 				// 获取段落内容
 				JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
+				// 获取模板中，单元格的位置
+				int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
+
+				// 存储需要写入到文件的内容，以及内容的样式
+				ArrayList<XSSFRichTextString> contentList = new ArrayList<>();
+				XSSFCellStyle style = null;
+
 				// 遍历内容串
 				for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
 					JSONObject textJson = textListJson.getJSONObject(textIndex);
-					// 获取模板中，单元格的位置
-					int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
 
 					// 获取单元格内容，判断内容是否需要自动标号
 					String text = textJson.getString(KEY_TEXT);
@@ -481,11 +487,20 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					}
 
 					// 根据当前字段是否分表格写入内容，计算当前写入单元格的行号
-					int rowIndex = lastRowIndex;
 					if (fieldTempletJson.containsKey(ExcelFileTemplet.KEY_ROW_TEXT)) {
 						int rowText = fieldTempletJson.getIntValue(ExcelFileTemplet.KEY_ROW_TEXT);
-						rowIndex += (textIndex / rowText);
+						// 判断当前内容集合的元素个数，若个数与(textIndex / rowText)一致，则表示当前需要换行
+						if (contentList.size() == (textIndex / rowText)) {
+							contentList.add(new XSSFRichTextString(""));
+						}
+					} else {
+						if (contentList.size() == 0) {
+							contentList.add(new XSSFRichTextString(""));
+						}
 					}
+
+					// 获取最后一位数据
+					XSSFRichTextString content = contentList.get(contentList.size() - 1);
 
 					// 获取单元格的背景色
 					short background = fieldContentJson.containsKey(KEY_BACKGROUND)
@@ -493,15 +508,18 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 							: (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND)
 									: -1);
 
-					// 创建内容单元格
-					JSONObject styleJson = fieldJson2StyleJson(templetName, fieldTempletJson, textJson, background);
-					Entry<String, XSSFCell> cellInfo = getCell(templetSheet, rowIndex, columnIndex, text,
-							getStyle(excel, styleJson));
-
-					// 判断当前是否存在注解
-					if (fieldContentJson.containsKey(KEY_COMMENT)) {
-						addComment(excel, templetSheet, cellInfo.getValue(), fieldContentJson.getString(KEY_COMMENT));
-					}
+					// 根据当前字段的json，获取样式
+					style = getStyle(excel, fieldJson2StyleJson(templetName, fieldTempletJson, textJson, background));
+					// 判断当前文本前是否包含了文本，若存在文本，则添加换行
+					text = (content.length() == 0 ? "" : "\n") + text;
+					content.append(text, style.getFont());
+				}
+				
+				// 遍历需要写入的数据内容，根据内容下标，创建相应的单元格
+				int rowIndex = lastRowIndex;
+				for (int contentIndex = 0; contentIndex < contentList.size(); contentIndex++) {
+					XSSFCell cell = getCell(templetSheet, (rowIndex + contentIndex), columnIndex,
+							contentList.get(contentIndex), style);
 				}
 			}
 		}
@@ -533,7 +551,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @param content     需要写入单元格的内容
 	 * @return 单元格键值对
 	 */
-	protected Entry<String, XSSFCell> getCell(XSSFSheet sheet, int rowIndex, int columnIndex, String content,
+	protected XSSFCell getCell(XSSFSheet sheet, int rowIndex, int columnIndex, XSSFRichTextString content,
 			XSSFCellStyle style) {
 		// 获取行，若行不存在，则创建行对象
 		XSSFRow row = Optional.ofNullable(sheet.getRow(rowIndex)).orElseGet(() -> sheet.createRow(rowIndex));
@@ -544,41 +562,46 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				.orElseGet(() -> row.createCell(newColumnIndex));
 
 		// 将指定内容插入到原内容后
-		XSSFRichTextString cellContent = Optional.ofNullable(cell.getRichStringCellValue())
-				.orElse(new XSSFRichTextString(""));
-		if (!cellContent.getString().isEmpty()) {
-			content = "\n" + content;
-		}
+		// TODO 插入内容时存在问题，同一种格式的内容会自动插入，导致数据错误，改为以单元格为主的形式，否则容易出问题
+//		XSSFRichTextString cellContent = cell.getRichStringCellValue();
+//		
+//		if (!cellContent.getString().isEmpty()) {
+//			content = "\n" + content;
+//		}
 
 		// 若当前传入单元格样式，则对单元格样式进行设置
 		if (style != null) {
 			cell.setCellStyle(style);
-			cellContent.append(content, style.getFont());
-		} else {
-			cellContent.append(content);
+//			cellContent.append(content, style.getFont());
 		}
-		
-		cell.setCellValue(cellContent);
+//		else {
+//			cellContent.append(content);
+//		}
 
-		// 将单元格转换成键值对的形式，key表示单元格坐标
-		Entry<String, XSSFCell> entry = new Entry<String, XSSFCell>() {
-			@Override
-			public XSSFCell setValue(XSSFCell value) {
-				return null;
-			}
+		cell.setCellValue(content);
 
-			@Override
-			public XSSFCell getValue() {
-				return cell;
-			}
+		return cell;
+	}
 
-			@Override
-			public String getKey() {
-				return String.format("%d%s%d", rowIndex, COLUMN_SPLIT_SIGN, newColumnIndex);
-			}
-		};
+	/**
+	 * 用于拼接一个单元格中带样式的内容
+	 * 
+	 * @param contentList 文本集合
+	 * @param styleList   样式集合
+	 * @return 拼接后带样式的内容
+	 */
+	protected XSSFRichTextString setContent(XSSFRichTextString content, String text, XSSFCellStyle style) {
+		// 判断当前是否存储有内容，若无内容，则不添加换行
+		text = (content.length() == 0 ? "" : "\n") + text;
 
-		return entry;
+		// 判断当前是否需要设置样式，若不存在样式，则只设置内容
+		if (style == null) {
+			content.append(text);
+		} else {
+			content.append(text, style.getFont());
+		}
+
+		return content;
 	}
 
 	/**
