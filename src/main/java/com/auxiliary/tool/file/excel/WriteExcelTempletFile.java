@@ -328,7 +328,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			JSONObject linkJson = new JSONObject();
 			linkJson.put(KEY_TYPE, LinkType.URL.getCode());
 			linkJson.put(KEY_LINK_CONTENT, url.toURI().toASCIIString());
-			
+
 			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
 		} catch (URISyntaxException e) {
 			throw new WriteFileException("域名url错误", e);
@@ -344,17 +344,17 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			if (!RegexType.EMAIL.judgeString(email)) {
 				throw new WriteFileException("邮箱格式错误：" + email);
 			}
-			
+
 			// 记录当前链接json
 			JSONObject linkJson = new JSONObject();
 			linkJson.put(KEY_TYPE, LinkType.EMAIL.getCode());
-		
+
 			linkJson.put(KEY_LINK_CONTENT, new URI("mailto:" + email).toASCIIString());
 			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
 		} catch (URISyntaxException e) {
 			throw new WriteFileException("邮箱格式错误：" + email, e);
 		}
-		
+
 		return (T) this;
 	}
 
@@ -367,7 +367,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		linkJson.put(KEY_LINK_CONTENT, file.toURI().toString());
 
 		caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
-		
+
 		return (T) this;
 	}
 
@@ -493,7 +493,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		// 根据字段内容，创建单元格，写入单元格标题
 		JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
 		fieldJson.keySet().stream().map(fieldJson::getJSONObject).forEach(json -> {
-			XSSFCell cell = setCellContent(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX),
+			XSSFCell cell = setCellContent(getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX)),
 					new XSSFRichTextString(json.getString(KEY_NAME)), getStyle(excel, styleJson));
 			// 设置列宽，若不存在设置，则默认列宽
 			if (json.containsKey(ExcelFileTemplet.KEY_WIDE)) {
@@ -512,12 +512,12 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				JSONArray dataArrayJson = dataJson.getJSONArray(key);
 				if (dataArrayJson.size() != 0) {
 					// 添加标题
-					XSSFCell cell = setCellContent(dataSheet, 0, -1,
+					XSSFCell cell = setCellContent(getCell(dataSheet, 0, -1),
 							new XSSFRichTextString(String.format("%s-%s", tempJson.getString(KEY_NAME), key)), null);
 
 					// 写入数据有效性内容
 					for (int i = 0; i < dataArrayJson.size(); i++) {
-						setCellContent(dataSheet, i + 1, cell.getAddress().getColumn(),
+						setCellContent(getCell(dataSheet, i + 1, cell.getAddress().getColumn()),
 								new XSSFRichTextString(dataArrayJson.getString(i)), null);
 					}
 				}
@@ -645,7 +645,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				int rowIndex = lastRowIndex;
 				for (int contentIndex = 0; contentIndex < contentList.size(); contentIndex++) {
 					// 由于统一字段单元格样式一致，故此处取最后一个样式作为单元格的样式
-					cell = setCellContent(templetSheet, (rowIndex + contentIndex), columnIndex,
+					cell = setCellContent(getCell(templetSheet, (rowIndex + contentIndex), columnIndex),
 							contentList.get(contentIndex), style);
 				}
 
@@ -677,43 +677,35 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	/**
-	 * 用于创建一个单元格，并写入内容
-	 * <p>
-	 * 方法返回一个键值对，键表示单元格的坐标，以“行,列”的形式存储；值表示单元格对象
-	 * </p>
+	 * 用于获取指定的单元格对象，若对象不存在，则创建单元格
 	 * 
 	 * @param sheet       工作页
 	 * @param rowIndex    单元格所在下标
 	 * @param columnIndex 单元格所在列下标
-	 * @param content     需要写入单元格的内容
-	 * @return 单元格键值对
+	 * @return 单元格对象
 	 */
-	protected XSSFCell setCellContent(XSSFSheet sheet, int rowIndex, int columnIndex, XSSFRichTextString content,
-			XSSFCellStyle style) {
+	public XSSFCell getCell(XSSFSheet sheet, int rowIndex, int columnIndex) {
 		// 获取行，若行不存在，则创建行对象
 		XSSFRow row = Optional.ofNullable(sheet.getRow(rowIndex)).orElseGet(() -> sheet.createRow(rowIndex));
 		// 若列下标为-1，则表示插入到最后一列上
 		int newColumnIndex = (columnIndex == -1 ? (row.getLastCellNum() == -1 ? 0 : row.getLastCellNum())
 				: columnIndex);
-		XSSFCell cell = Optional.ofNullable(row.getCell(newColumnIndex))
-				.orElseGet(() -> row.createCell(newColumnIndex));
+		return Optional.ofNullable(row.getCell(newColumnIndex)).orElseGet(() -> row.createCell(newColumnIndex));
+	}
 
-		// 将指定内容插入到原内容后
-		// TODO 插入内容时存在问题，同一种格式的内容会自动插入，导致数据错误，改为以单元格为主的形式，否则容易出问题
-//		XSSFRichTextString cellContent = cell.getRichStringCellValue();
-//		
-//		if (!cellContent.getString().isEmpty()) {
-//			content = "\n" + content;
-//		}
-
+	/**
+	 * 用于在单元格设置样式，并写入内容
+	 * 
+	 * @param cell    单元格类
+	 * @param content 需要写入单元格的内容
+	 * @param style   需要写入单元格的样式，为空则不设置样式
+	 * @return 单元格对象
+	 */
+	protected XSSFCell setCellContent(XSSFCell cell, XSSFRichTextString content, XSSFCellStyle style) {
 		// 若当前传入单元格样式，则对单元格样式进行设置
 		if (style != null) {
 			cell.setCellStyle(style);
-//			cellContent.append(content, style.getFont());
 		}
-//		else {
-//			cellContent.append(content);
-//		}
 
 		cell.setCellValue(content);
 
