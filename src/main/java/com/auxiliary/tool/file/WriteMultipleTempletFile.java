@@ -1,6 +1,7 @@
 package com.auxiliary.tool.file;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -42,7 +43,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	/**
 	 * 存储默认字段数据json
 	 */
-	protected LinkedHashMap<String, JSONObject> defaultMap = new LinkedHashMap<>();
+	protected HashMap<String, JSONObject> defaultMap = new HashMap<>();
 
 	public WriteMultipleTempletFile(String templetName, FileTemplet templet) {
 		super(templet);

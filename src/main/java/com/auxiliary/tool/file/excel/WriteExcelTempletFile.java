@@ -16,13 +16,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -84,6 +87,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * 指定excel中，读取数据有效性的sheet页名称
 	 */
 	public static final String DATA_SHEET_NAME = "数据有效性";
+	/**
+	 * 指定数据有效性标题的格式
+	 */
+	public static final String DATA_TITLE_FORMAT = "%s-%s";
 
 	/**
 	 * 用于存储样式（key使用样式的json来编写）
@@ -513,7 +520,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				if (dataArrayJson.size() != 0) {
 					// 添加标题
 					XSSFCell cell = setCellContent(getCell(dataSheet, 0, -1),
-							new XSSFRichTextString(String.format("%s-%s", tempJson.getString(KEY_NAME), key)), null);
+							new XSSFRichTextString(String.format(DATA_TITLE_FORMAT, tempJson.getString(KEY_NAME), key)),
+							null);
 
 					// 写入数据有效性内容
 					for (int i = 0; i < dataArrayJson.size(); i++) {
@@ -558,9 +566,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		} catch (IOException e) {
 			throw new WriteFileException("文件异常，无法写入数据：" + templetFile.getAbsolutePath(), e);
 		}
-
-		// 获取数据有效性标题
-		List<String> dataTitleList = readDataOptionTitle(excel);
 
 		// 获取模板json
 		JSONObject templetJson = JSONObject.parseObject(templet.getTempletJson());
@@ -659,6 +664,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					addLink(excel, cell, fieldContentJson.getJSONObject(KEY_LINK));
 				}
 			}
+
+			// 获取数据有效性标题
+			List<String> dataTitleList = readDataOptionTitle(excel);
+			addDataOption(templetSheet, templetJson, dataTitleList, lastRowIndex);
 		}
 
 		// 定义输出流，用于向指定的Excel文件中写入内容
@@ -961,6 +970,58 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		// 在单元格上添加超链接
 		cell.setHyperlink(link);
+	}
+
+	/**
+	 * 用于在单元格上附加数据有效性下拉选项
+	 * 
+	 * @param sheet         工作页
+	 * @param dataJson      模板中数据选项Json
+	 * @param dataTitleList 数据有效性选项标题集合
+	 * @param rowIndex      行下标
+	 */
+	protected void addDataOption(XSSFSheet sheet, JSONObject templetJson, List<String> dataTitleList, int rowIndex) {
+		// 若模板不存在数据有效性选项，则不添加
+		if (!templetJson.containsKey(ExcelFileTemplet.KEY_DATA)) {
+			return;
+		}
+
+		// 获取字段json以及数据选项json
+		JSONObject dataJson = templetJson.getJSONObject(ExcelFileTemplet.KEY_DATA);
+		JSONObject fieldsJson = templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
+
+		// 遍历dataJson的内容
+		for (String field : dataJson.keySet()) {
+			if (!fieldsJson.containsKey(field)) {
+				continue;
+			}
+
+			JSONObject fieldJson = fieldsJson.getJSONObject(field);
+			// 拼接数据有效性标题
+			String dataTitle = String.format(DATA_TITLE_FORMAT, templetJson.getString(ExcelFileTemplet.KEY_NAME),
+					field);
+			// 判断当前标题是否在数据选项标题集合中
+			if (!dataTitleList.contains(dataTitle)) {
+				continue;
+			}
+
+			// 指定数据有效性选项公式
+			String dataChar = num2CharIndex(dataTitleList.indexOf(dataTitle));
+			String dataConstraint = String.format("=%s!$%s$2:$%s$%d", DATA_SHEET_NAME, dataChar, dataChar,
+					(dataJson.getJSONArray(field).size() + 1));
+
+			// 根据字段位置，获取指定行的单元格
+			int cellIndex = fieldJson.getIntValue(ExcelFileTemplet.KEY_INDEX);
+			// 创建公式约束
+			DataValidationConstraint constraint = new XSSFDataValidationHelper(sheet)
+					.createFormulaListConstraint(dataConstraint);
+
+			// 设置数据有效性加载在哪个单元格上,四个参数分别是：起始行、终止行、起始列、终止列
+			CellRangeAddressList regions = new CellRangeAddressList(rowIndex, rowIndex, cellIndex, cellIndex);
+
+			// 数据有效性对象
+			sheet.addValidationData(new XSSFDataValidationHelper(sheet).createValidation(constraint, regions));
+		}
 	}
 
 	/**
