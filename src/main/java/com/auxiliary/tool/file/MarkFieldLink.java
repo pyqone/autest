@@ -1,7 +1,7 @@
 package com.auxiliary.tool.file;
 
 import java.io.File;
-import java.net.URI;
+import java.net.URL;
 
 /**
  * <p>
@@ -33,9 +33,10 @@ public interface MarkFieldLink<T extends MarkFieldLink<T>> {
 	 * 
 	 * @param field       字段
 	 * @param likeContent 需要链接的字段
+	 * @param index 字段指定的下标
 	 * @return 类本身
 	 */
-	T linkField(String field, String linkField);
+	T linkField(String field, String linkContent, int index);
 	
 	/**
 	 * 用于在字段上添加url超链接
@@ -43,7 +44,7 @@ public interface MarkFieldLink<T extends MarkFieldLink<T>> {
 	 * @param url 站点url
 	 * @return 类本身
 	 */
-	T linkUrl(String field, URI url);
+	T linkUrl(String field, URL url);
 	
 	/**
 	 * 用于在字段上添加Email超链接

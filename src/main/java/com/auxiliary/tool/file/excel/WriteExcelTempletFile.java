@@ -5,20 +5,21 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.FontFamily;
 import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -37,13 +38,14 @@ import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.MarkColorsType;
 import com.auxiliary.tool.file.MarkComment;
 import com.auxiliary.tool.file.MarkFieldBackground;
+import com.auxiliary.tool.file.MarkFieldLink;
 import com.auxiliary.tool.file.MarkTextColor;
 import com.auxiliary.tool.file.MarkTextFont;
-import com.auxiliary.tool.file.MarkFieldLink;
 import com.auxiliary.tool.file.TableFileReadUtil;
 import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteMultipleTempletFile;
 import com.auxiliary.tool.file.WriteTempletFile;
+import com.auxiliary.tool.regex.RegexType;
 
 /**
  * <p>
@@ -69,6 +71,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	public static final String KEY_WRAP_TEXT = "wrapText";
 	public static final String KEY_BACKGROUND = "background";
 	public static final String KEY_WORK = "work";
+	public static final String KEY_TYPE = "type";
+	public static final String KEY_LINK_CONTENT = "linkContent";
+
 	protected final String DEFAULT_NAME = "Sheet";
 	/**
 	 * 单元格坐标分隔符
@@ -239,32 +244,131 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		}
 	}
 
+	/**
+	 * 用于在字段上添加文本内超链
+	 * <p>
+	 * 若超链接的字段在当前指向的模板中，则只需要传入字段名称；反之，则需要传入“模板名称|字段名称”。
+	 * 例如，类中存在“测试用例”、“测试数据”两个模板，当前正在向“测试用例”模板写入内容，则：
+	 * <ol>
+	 * <li>需要在“步骤”字段上链接到“测试用例”模板“标题”字段的第2行，则传参为{@code linkField("步骤", "标题", 2)}</li>
+	 * <li>需要在“步骤”字段上链接到“测试数据”模板“数据”字段的第2行，则传参为{@code linkField("步骤", "测试数据|数据", 2)}</li>
+	 * </ol>
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>
+	 * <ol>
+	 * <li>字段行数可传入负数，表示从后向前遍历</li>
+	 * <li>字段行标为真实的行标，当传入的下标为“2”时，则表示链接到文本的2行，而不是第1行</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @param field       字段
+	 * @param likeContent 需要链接的字段
+	 * @param index       字段指定的下标
+	 * @return 类本身
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public T linkField(String field, String likeContent) {
-		if (caseJson.containsKey(field)) {
-			caseJson.getJSONObject(field).put(KEY_LINK, likeContent);
+	public T linkField(String field, String linkContent, int index) {
+		// 判断字段是否存在
+		if (!caseJson.containsKey(field)) {
+			return (T) this;
+		}
+
+		String linkField = linkContent;
+		FileTemplet templet = this.templet;
+
+		// 判断当前是否存在切分符，并确定指定列的下标
+		if (linkField.contains("|")) {
+			// 存在分隔符，则按照分隔符进行拆分
+			String[] linkTexts = linkField.split("\\|");
+
+			// 判断模板是否存在
+			if (!templetMap.containsKey(linkTexts[0])) {
+				return (T) this;
+			}
+
+			// 获取得到的模板，以及切分后剩余的字段名称
+			templet = templetMap.get(linkTexts[0]);
+			linkField = linkTexts[1];
+		}
+
+		// 判断当前模板中是否存在指定的字段
+		if (!templet.containsField(linkField)) {
+			return (T) this;
+		}
+
+		// 获取字段指向的列下标，并计算得到excel中，数字列下标对应的字母
+		Optional<String> columnChar = Optional.ofNullable(templet.getFieldAttribute(linkField, FileTemplet.KEY_INDEX))
+				.map(Object::toString).map(Integer::valueOf).map(this::num2CharIndex);
+		if (columnChar.isPresent()) {
+			String templetName = templet.getTempletAttribute(FileTemplet.KEY_NAME).toString();
+			// 计算行数，由于存在标题，以及超链接的行号为真实行号，故需要在得到真实下标后，加上2
+			index = analysisIndex(contentMap.get(templetName).getJSONArray(KEY_CASE).size(), index, true) + 1 + 1;
+
+			// 拼接文本链接内容
+			String linkText = String.format("'%s'!%s%d", templetName, columnChar.get(), index);
+
+			// 记录当前链接json
+			JSONObject linkJson = new JSONObject();
+			linkJson.put(KEY_TYPE, LinkType.DOMCUMENT.getCode());
+			linkJson.put(KEY_LINK_CONTENT, linkText);
+
+			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
 		}
 
 		return (T) this;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
-	public T linkUrl(String field, URI url) {
-		// TODO Auto-generated method stub
-		return null;
+	public T linkUrl(String field, URL url) {
+		try {
+			// 记录当前链接json
+			JSONObject linkJson = new JSONObject();
+			linkJson.put(KEY_TYPE, LinkType.URL.getCode());
+			linkJson.put(KEY_LINK_CONTENT, url.toURI().toASCIIString());
+			
+			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+		} catch (URISyntaxException e) {
+			throw new WriteFileException("域名url错误", e);
+		}
+
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T linkEmail(String field, String email) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			if (!RegexType.EMAIL.judgeString(email)) {
+				throw new WriteFileException("邮箱格式错误：" + email);
+			}
+			
+			// 记录当前链接json
+			JSONObject linkJson = new JSONObject();
+			linkJson.put(KEY_TYPE, LinkType.EMAIL.getCode());
+		
+			linkJson.put(KEY_LINK_CONTENT, new URI("mailto:" + email).toASCIIString());
+			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+		} catch (URISyntaxException e) {
+			throw new WriteFileException("邮箱格式错误：" + email, e);
+		}
+		
+		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T linkFile(String field, File file) {
-		// TODO Auto-generated method stub
-		return null;
+		// 记录当前链接json
+		JSONObject linkJson = new JSONObject();
+		linkJson.put(KEY_TYPE, LinkType.FILE.getCode());
+		linkJson.put(KEY_LINK_CONTENT, file.toURI().toString());
+
+		caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+		
+		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -389,8 +493,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		// 根据字段内容，创建单元格，写入单元格标题
 		JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
 		fieldJson.keySet().stream().map(fieldJson::getJSONObject).forEach(json -> {
-			XSSFCell cell = SetCellContent(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX), new XSSFRichTextString(json.getString(KEY_NAME)),
-					getStyle(excel, styleJson));
+			XSSFCell cell = setCellContent(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX),
+					new XSSFRichTextString(json.getString(KEY_NAME)), getStyle(excel, styleJson));
 			// 设置列宽，若不存在设置，则默认列宽
 			if (json.containsKey(ExcelFileTemplet.KEY_WIDE)) {
 				// 获取单元格坐标的列数，并转换为数字
@@ -408,12 +512,13 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				JSONArray dataArrayJson = dataJson.getJSONArray(key);
 				if (dataArrayJson.size() != 0) {
 					// 添加标题
-					XSSFCell cell = SetCellContent(dataSheet, 0, -1, new XSSFRichTextString(String.format("%s-%s", tempJson.getString(KEY_NAME), key)),
-							null);
+					XSSFCell cell = setCellContent(dataSheet, 0, -1,
+							new XSSFRichTextString(String.format("%s-%s", tempJson.getString(KEY_NAME), key)), null);
 
 					// 写入数据有效性内容
 					for (int i = 0; i < dataArrayJson.size(); i++) {
-						SetCellContent(dataSheet, i + 1, cell.getAddress().getColumn(), new XSSFRichTextString(dataArrayJson.getString(i)), null);
+						setCellContent(dataSheet, i + 1, cell.getAddress().getColumn(),
+								new XSSFRichTextString(dataArrayJson.getString(i)), null);
 					}
 				}
 			});
@@ -533,25 +638,25 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					text = (content.length() == 0 ? "" : "\n") + text;
 					content.append(text, style.getFont());
 				}
-				
+
 				// 存储创建的最后一个单元格，用于添加与文本块相关的内容
 				XSSFCell cell = null;
 				// 遍历需要写入的数据内容，根据内容下标，创建相应的单元格
 				int rowIndex = lastRowIndex;
 				for (int contentIndex = 0; contentIndex < contentList.size(); contentIndex++) {
 					// 由于统一字段单元格样式一致，故此处取最后一个样式作为单元格的样式
-					cell = SetCellContent(templetSheet, (rowIndex + contentIndex), columnIndex,
+					cell = setCellContent(templetSheet, (rowIndex + contentIndex), columnIndex,
 							contentList.get(contentIndex), style);
 				}
-				
+
 				// 判断当前是否存在注解
 				if (fieldContentJson.containsKey(KEY_COMMENT)) {
 					addComment(excel, templetSheet, cell, fieldContentJson.getString(KEY_COMMENT));
-				} 
-				
+				}
+
 				// 判断当前是否存在超链接
 				if (fieldContentJson.containsKey(KEY_LINK)) {
-					
+					addLink(excel, cell, fieldContentJson.getJSONObject(KEY_LINK));
 				}
 			}
 		}
@@ -583,7 +688,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @param content     需要写入单元格的内容
 	 * @return 单元格键值对
 	 */
-	protected XSSFCell SetCellContent(XSSFSheet sheet, int rowIndex, int columnIndex, XSSFRichTextString content,
+	protected XSSFCell setCellContent(XSSFSheet sheet, int rowIndex, int columnIndex, XSSFRichTextString content,
 			XSSFCellStyle style) {
 		// 获取行，若行不存在，则创建行对象
 		XSSFRow row = Optional.ofNullable(sheet.getRow(rowIndex)).orElseGet(() -> sheet.createRow(rowIndex));
@@ -846,6 +951,24 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		com.setAuthor(System.getenv().get("COMPUTERNAME"));
 		// 将标注附加到单元格上
 		cell.setCellComment(com);
+	}
+
+	/**
+	 * 用于向单元格上添加超链接
+	 * 
+	 * @param excel    excel对象
+	 * @param cell     相应单元格对象
+	 * @param linkJson 链接内容json
+	 */
+	protected void addLink(XSSFWorkbook excel, XSSFCell cell, JSONObject linkJson) {
+		// 添加本地文件链接
+		Hyperlink link = excel.getCreationHelper()
+				.createHyperlink(LinkType.getLinkType(linkJson.getShortValue(KEY_TYPE)).getHyperlinkType());
+		// 添加超链接
+		link.setAddress(linkJson.getString(KEY_LINK_CONTENT));
+
+		// 在单元格上添加超链接
+		cell.setHyperlink(link);
 	}
 
 	/**

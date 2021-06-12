@@ -87,7 +87,7 @@ public enum LinkType {
 	 * @param code 枚举值
 	 * @return 连接类型枚举
 	 */
-	public static LinkType getMarkColorsType(short code) {
+	public static LinkType getLinkType(short code) {
 		for (LinkType type : values()) {
 			if (type.code == code) {
 				return type;

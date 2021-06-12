@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONObject;
  * <b>编码时间：</b>2021年5月10日上午8:26:10
  * </p>
  * <p>
- * <b>修改时间：</b>2021年5月10日上午8:26:10
+ * <b>修改时间：</b>2021年6月12日下午3:21:29
  * </p>
  * 
  * @author 彭宇琦
@@ -45,7 +45,7 @@ public class FileTemplet {
 		templetJson.put(KEY_SAVE, saveFile.getAbsolutePath());
 		templetJson.put(KEY_FIELD, new JSONObject());
 	}
-	
+
 	public FileTemplet(String templetJsonText) {
 		// 将传入的json字符串转换成JSONObject类，并判断其是否包含必要字段，若不存在，则抛出异常
 		this.templetJson = Optional.ofNullable(templetJsonText).filter(t -> !t.isEmpty()).map(t -> {
@@ -110,6 +110,28 @@ public class FileTemplet {
 	}
 
 	/**
+	 * 用于返回字段的属性内容
+	 * 
+	 * @param field   字段名称
+	 * @param attName 属性名称
+	 * @return 属性对应的内容
+	 */
+	public Object getFieldAttribute(String field, String attName) {
+		// 判断字段内容是否为空，任何一个内容为空时，则不进行存储
+		if (isEmpty(field) || isEmpty(attName)) {
+			return null;
+		}
+
+		JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
+		// 判断字段是否存在
+		if (!fieldJson.containsKey(field)) {
+			return null;
+		}
+
+		return fieldJson.getJSONObject(field).get(attName);
+	}
+
+	/**
 	 * 用于添加模板属性
 	 * <p>
 	 * 该属性为模板中的属性，对于不同的模板文件而言，可能存在不同的处理方式，故可通过添加该属性来执行处理的方式。
@@ -133,16 +155,17 @@ public class FileTemplet {
 
 		templetJson.put(attName, attValue);
 	}
-	
+
 	/**
 	 * 用于返回模板的属性
-	 * @param attName 
+	 * 
+	 * @param attName
 	 * @return
 	 */
 	public Object getTempletAttribute(String attName) {
 		return templetJson.get(attName);
 	}
-	
+
 	/**
 	 * 用于返回创建的模板json串
 	 * 
@@ -161,9 +184,10 @@ public class FileTemplet {
 	public boolean containsField(String field) {
 		return templetJson.getJSONObject(KEY_FIELD).containsKey(field);
 	}
-	
+
 	/**
 	 * 判断模板中是否存在指定的属性
+	 * 
 	 * @param attribute 属性
 	 * @return 模板中是否存在指定的属性
 	 */
