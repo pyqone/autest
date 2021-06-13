@@ -117,18 +117,16 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @param writeTempletFile 文件写入类对象
 	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
 	 */
-	public WriteExcelTempletFile(WriteTempletFile<? extends WriteTempletFile<?>> writeTempletFile) {
+	public WriteExcelTempletFile(WriteTempletFile<?> writeTempletFile) {
 		super(writeTempletFile);
 
-		// 拉取WriteTempletFile类的模板内容
-		JSONArray tempJsonList = JSONObject.parseObject(writeTempletFile.toTempletJson()).getJSONArray(KEY_TEMPLET);
-		// 循环，读取所有的模板，并对模板进行转换
-		for (int i = 0; i < tempJsonList.size(); i++) {
-			ExcelFileTemplet temp = new ExcelFileTemplet(tempJsonList.getJSONObject(i).toJSONString());
+		AtomicInteger sheetIndex = new AtomicInteger(1);
+		templetMap.forEach((key, templet) -> {
+			ExcelFileTemplet temp = new ExcelFileTemplet(templet.getTempletJson());
 
 			// 判断模板是否包含"name"属性，不包含，则加入默认名称
 			if (!temp.containsAttribute(KEY_NAME)) {
-				String name = DEFAULT_NAME + (i + 1);
+				String name = DEFAULT_NAME + sheetIndex.get();
 				temp.addTempletAttribute(KEY_NAME, name);
 				templetMap.put(name, temp);
 			} else {
@@ -136,12 +134,14 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				if (obj instanceof String) {
 					templetMap.put(temp.getTempletAttribute(KEY_NAME).toString(), temp);
 				} else {
-					String name = DEFAULT_NAME + (i + 1);
+					String name = DEFAULT_NAME + sheetIndex.get();
 					temp.addTempletAttribute(KEY_NAME, name);
 					templetMap.put(name, temp);
 				}
 			}
-		}
+
+			sheetIndex.addAndGet(1);
+		});
 	}
 
 	protected WriteExcelTempletFile() {
@@ -596,62 +596,15 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 						.getJSONObject(field);
 				JSONObject fieldContentJson = contentJson.getJSONObject(field);
 
-				// 获取段落内容
-				JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
-				// 获取模板中，单元格的位置
-				int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
-
-				// 存储需要写入到文件的内容，以及内容的样式
-				ArrayList<XSSFRichTextString> contentList = new ArrayList<>();
-				XSSFCellStyle style = null;
-
-				// 遍历内容串，拼接需要写入到单元格的内容
-				for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
-					JSONObject textJson = textListJson.getJSONObject(textIndex);
-
-					// 获取单元格内容，判断内容是否需要自动标号
-					String text = textJson.getString(KEY_TEXT);
-					if (fieldTempletJson.getBooleanValue(ExcelFileTemplet.KEY_AUTO_NUMBER)) {
-						text = String.format("%d.%s", (textIndex + 1), text);
-					}
-
-					// 根据当前字段是否分表格写入内容，计算当前写入单元格的行号
-					if (fieldTempletJson.containsKey(ExcelFileTemplet.KEY_ROW_TEXT)) {
-						int rowText = fieldTempletJson.getIntValue(ExcelFileTemplet.KEY_ROW_TEXT);
-						// 判断当前内容集合的元素个数，若个数与(textIndex / rowText)一致，则表示当前需要换行
-						if (contentList.size() == (textIndex / rowText)) {
-							contentList.add(new XSSFRichTextString(""));
-						}
-					} else {
-						if (contentList.size() == 0) {
-							contentList.add(new XSSFRichTextString(""));
-						}
-					}
-
-					// 获取最后一位数据
-					XSSFRichTextString content = contentList.get(contentList.size() - 1);
-
-					// 获取单元格的背景色
-					short background = fieldContentJson.containsKey(KEY_BACKGROUND)
-							? fieldContentJson.getShortValue(KEY_BACKGROUND)
-							: (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND)
-									: -1);
-
-					// 根据当前字段的json，获取样式
-					style = getStyle(excel, fieldJson2StyleJson(templetName, fieldTempletJson, textJson, background));
-					// 判断当前文本前是否包含了文本，若存在文本，则添加换行
-					text = (content.length() == 0 ? "" : "\n") + text;
-					content.append(text, style.getFont());
-				}
-
 				// 存储创建的最后一个单元格，用于添加与文本块相关的内容
 				XSSFCell cell = null;
-				// 遍历需要写入的数据内容，根据内容下标，创建相应的单元格
-				int rowIndex = lastRowIndex;
-				for (int contentIndex = 0; contentIndex < contentList.size(); contentIndex++) {
-					// 由于统一字段单元格样式一致，故此处取最后一个样式作为单元格的样式
-					cell = setCellContent(getCell(templetSheet, (rowIndex + contentIndex), columnIndex),
-							contentList.get(contentIndex), style);
+				// 根据当前字段是否分表格写入内容，计算当前写入单元格的行号
+				if (fieldTempletJson.containsKey(ExcelFileTemplet.KEY_ROW_TEXT)) {
+					cell = writeMultipleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
+							lastRowIndex);
+				} else {
+					cell = writeSingleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
+							lastRowIndex);
 				}
 
 				// 判断当前是否存在注解
@@ -682,7 +635,137 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			} catch (IOException e) {
 				throw new WriteFileException("文件异常，无法写入：" + templet.getTempletAttribute(FileTemplet.KEY_SAVE), e);
 			}
+			
+			// 完成编写后，清理当前存储的样式，以便于后续编写
+			styleMap.clear();
 		}
+	}
+
+	/**
+	 * 用于写入单个单元格内容
+	 * 
+	 * @param excel            excel文件对象
+	 * @param templetSheet     工作页
+	 * @param fieldContentJson 字段内容json
+	 * @param fieldTempletJson 字段模板json
+	 * @param lastRowIndex     需要写入的行号
+	 * @return 写入数据的单元格
+	 */
+	protected XSSFCell writeSingleCellContent(XSSFWorkbook excel, XSSFSheet templetSheet, JSONObject fieldContentJson,
+			JSONObject fieldTempletJson, int lastRowIndex) {
+		XSSFRichTextString content = new XSSFRichTextString("");
+		XSSFCellStyle style = null;
+		int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
+
+		// 获取段落内容
+		JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
+		// 遍历内容串，拼接需要写入到单元格的内容
+		for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
+			JSONObject textJson = textListJson.getJSONObject(textIndex);
+
+			// 获取单元格的背景色
+			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
+					? fieldContentJson.getShortValue(KEY_BACKGROUND)
+					: (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND) : -1);
+
+			// 根据当前字段的json，获取样式
+			style = getStyle(excel,
+					fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, background));
+
+			// 根据样式与内容，拼接文本
+			appendContent(content, style, textJson.getString(KEY_TEXT),
+					fieldTempletJson.getBooleanValue(ExcelFileTemplet.KEY_AUTO_NUMBER), textIndex);
+		}
+
+		// 由于统一字段单元格样式一致，故此处取最后一个样式作为单元格的样式
+		return setCellContent(getCell(templetSheet, lastRowIndex, columnIndex), content, style);
+
+	}
+
+	/**
+	 * 用于写入多个单元格内容
+	 * 
+	 * @param excel            excel文件对象
+	 * @param templetSheet     工作页
+	 * @param fieldContentJson 字段内容json
+	 * @param fieldTempletJson 字段模板json
+	 * @param lastRowIndex     需要写入的行号
+	 * @return 写入数据的第一个单元格
+	 */
+	protected XSSFCell writeMultipleCellContent(XSSFWorkbook excel, XSSFSheet templetSheet, JSONObject fieldContentJson,
+			JSONObject fieldTempletJson, int lastRowIndex) {
+		ArrayList<XSSFRichTextString> contentList = new ArrayList<>();
+		XSSFCellStyle style = null;
+		int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
+
+		// 获取段落内容
+		JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
+		// 遍历内容串，拼接需要写入到单元格的内容
+		for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
+			JSONObject textJson = textListJson.getJSONObject(textIndex);
+
+			// 根据当前字段是否分表格写入内容，计算当前写入单元格的行号
+			int rowText = fieldTempletJson.getIntValue(ExcelFileTemplet.KEY_ROW_TEXT);
+			// 判断当前内容集合的元素个数，若个数与(textIndex / rowText)一致，则表示当前需要换行
+			/*
+			 * 思路：当textIndex正好被rowText整除时，表示当前的内容需要重新开启一个单元格进行编写，
+			 * 而由于下标是从0开始计算，使得第一个单元格开始写入的内容为 0 / rowText = 0 = contentList.size()
+			 * 故可以推算出，当contentList集合元素个数正好等于(textIndex / rowText)整除时的商时，表示其需要换行
+			 */
+			if (contentList.size() == (textIndex / rowText)) {
+				contentList.add(new XSSFRichTextString(""));
+			}
+
+			// 获取最后一位数据
+			XSSFRichTextString content = contentList.get(contentList.size() - 1);
+			// 获取单元格的背景色
+			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
+					? fieldContentJson.getShortValue(KEY_BACKGROUND)
+					: (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND) : -1);
+			// 根据当前字段的json，获取样式
+			style = getStyle(excel,
+					fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, background));
+
+			// 根据样式与内容，拼接文本
+			appendContent(content, style, textJson.getString(KEY_TEXT),
+					fieldTempletJson.getBooleanValue(ExcelFileTemplet.KEY_AUTO_NUMBER), textIndex);
+
+		}
+
+		// 遍历需要写入的数据内容，根据内容下标，创建相应的单元格
+		int rowIndex = lastRowIndex;
+		for (int contentIndex = 0; contentIndex < contentList.size(); contentIndex++) {
+			// 由于统一字段单元格样式一致，故此处取最后一个样式作为单元格的样式
+			setCellContent(getCell(templetSheet, (rowIndex + contentIndex), columnIndex), contentList.get(contentIndex),
+					style);
+		}
+
+		// 返回创建的第一个单元格
+		return getCell(templetSheet, rowIndex, columnIndex);
+	}
+
+	/**
+	 * 用于对需要写入单元格的文本进行拼接
+	 * 
+	 * @param content      需要拼接的富文本内容
+	 * @param style        样式
+	 * @param text         文本内容
+	 * @param isAutoNumber 是否自动编号
+	 * @param textIndex    文本下标
+	 * @return 拼接后的富文本对象
+	 */
+	protected XSSFRichTextString appendContent(XSSFRichTextString content, XSSFCellStyle style, String text,
+			boolean isAutoNumber, int textIndex) {
+		// 获取单元格内容，判断内容是否需要自动标号
+		if (isAutoNumber) {
+			text = String.format("%d.%s", (textIndex + 1), text);
+		}
+
+		// 判断当前文本前是否包含了文本，若存在文本，则添加换行
+		text = (content.length() == 0 ? "" : "\n") + text;
+		content.append(text, style.getFont());
+
+		return content;
 	}
 
 	/**
@@ -693,7 +776,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @param columnIndex 单元格所在列下标
 	 * @return 单元格对象
 	 */
-	public XSSFCell getCell(XSSFSheet sheet, int rowIndex, int columnIndex) {
+	protected XSSFCell getCell(XSSFSheet sheet, int rowIndex, int columnIndex) {
 		// 获取行，若行不存在，则创建行对象
 		XSSFRow row = Optional.ofNullable(sheet.getRow(rowIndex)).orElseGet(() -> sheet.createRow(rowIndex));
 		// 若列下标为-1，则表示插入到最后一列上
@@ -1021,247 +1104,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 			// 数据有效性对象
 			sheet.addValidationData(new XSSFDataValidationHelper(sheet).createValidation(constraint, regions));
-		}
-	}
-
-	/**
-	 * <p>
-	 * <b>文件名：</b>WriteExcelTempletFile.java
-	 * </p>
-	 * <p>
-	 * <b>用途：</b> 定义写入Excel专用的模板
-	 * </p>
-	 * <p>
-	 * <b>编码时间：</b>2021年5月22日下午3:02:44
-	 * </p>
-	 * <p>
-	 * <b>修改时间：</b>2021年5月22日下午3:02:44
-	 * </p>
-	 * 
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 * @since JDK 1.8
-	 */
-	public class ExcelFileTemplet extends FileTemplet {
-		public static final String KEY_NAME = "name";
-		public static final String KEY_WIDE = "wide";
-		public static final String KEY_HIGH = "high";
-		public static final String KEY_HORIZONTAL = "horizontal";
-		public static final String KEY_VERTICAL = "vertical";
-		public static final String KEY_ROW_TEXT = "rowText";
-		public static final String KEY_AUTO_NUMBER = "autoIndex";
-		public static final String KEY_FREEZE_TOP = "freezeTop";
-		public static final String KEY_FREEZE_LEFT = "freezeLeft";
-		public static final String KEY_FILTRATE = "filtrate";
-		public static final String KEY_DATA = "data";
-
-		public ExcelFileTemplet(File saveFile) {
-			super(saveFile);
-
-			// 设置默认属性
-			setFreeze(1, 0);
-			// 设置打开筛选
-			setFiltrate(true);
-
-			// 初始化数据有效性内容
-			addTempletAttribute(KEY_DATA, new JSONObject());
-		}
-
-		public ExcelFileTemplet(String templetJsonText) {
-			super(templetJsonText);
-			// 判断模板是否包含冻结表格信息
-			setFreeze(Optional.ofNullable(templetJson.getInteger(KEY_FREEZE_TOP)).orElse(1),
-					Optional.ofNullable(templetJson.getInteger(KEY_FREEZE_LEFT)).orElse(0));
-			// 判断模板是否存在筛选信息
-			setFiltrate(Optional.ofNullable(templetJson.getBooleanValue(KEY_FILTRATE)).orElse(true));
-			// 判断模板是否包含存储数据有效性的字段
-			if (!containsAttribute(KEY_DATA)) {
-				addTempletAttribute(KEY_DATA, new JSONObject());
-			}
-
-			// 检查字段是否有名称，不存在名称，则默认以字段名称命名
-			JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
-			fieldJson.keySet().forEach(key -> {
-				JSONObject json = fieldJson.getJSONObject(key);
-				if (!json.containsKey(KEY_NAME)) {
-					json.put(KEY_NAME, key);
-				}
-			});
-		}
-
-		/**
-		 * 用于在模板中添加标题以及写入到excel中标题的名称
-		 * <p>
-		 * <b>注意：</b>调用该方法后，若字段不存在，则向模板中添加指定的字段；若标题名称为空，则已字段名称进行命名
-		 * </p>
-		 * 
-		 * @param field 字段
-		 * @param name  对应字段写入到模板中的名称
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet addTitle(String field, String name) {
-			if (!containsField(field)) {
-				addField(field);
-			}
-
-			addFieldAttribute(field, KEY_NAME, Optional.ofNullable(name).filter(n -> !n.isEmpty()).orElse(field));
-			return this;
-		}
-
-		/**
-		 * 用于在模板中添加字段指向的单元格的宽度
-		 * 
-		 * @param field 字段
-		 * @param wide  宽度
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet setWide(String field, double wide) {
-			if (wide > 0 && containsField(field)) {
-				addFieldAttribute(field, KEY_WIDE, String.valueOf(wide));
-			}
-
-			return this;
-		}
-
-		/**
-		 * 用于设置全局单元格的高度
-		 * 
-		 * @param field 字段
-		 * @param high  高度
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet setHigh(double high) {
-			if (high > 0) {
-				addTempletAttribute(KEY_HIGH, high);
-			}
-
-			return this;
-		}
-
-		/**
-		 * 用于存储字段指向的单元格的对齐方式
-		 * <p>
-		 * 对齐方式包括水平对齐与垂直对齐，通过{@link AlignmentType}枚举可兼容两者的设置，但相同的对齐方式只存在一种。例如：
-		 * <code><pre>
-		 * test.addHorizontalAlignment("title", AlignmentType.HORIZONTAL_CENTER);
-		 * test.addHorizontalAlignment("title", AlignmentType.VERTICAL_CENTER)
-		 * </pre></code> 以上代码表示设置“title”字段的对齐方式为水平居中和垂直居中对齐；而以下代码： <code><pre>
-		 * test.addHorizontalAlignment("title", AlignmentType.HORIZONTAL_CENTER);
-		 * test.addHorizontalAlignment("title", AlignmentType.HORIZONTAL_LEFT)
-		 * </pre></code> 表示设置“title”字段的对齐方式为水平左对齐（取最后一次设置的内容）
-		 * </p>
-		 * 
-		 * @param field         字段
-		 * @param alignmentType 对齐方式枚举
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet setAlignment(String field, AlignmentType alignmentType) {
-			// 判断字段是否存在，且是否传入指定的枚举
-			if (!containsField(field) || alignmentType == null) {
-				return this;
-			}
-
-			// 判断当前传入的对齐方式
-			String key = "";
-			if (alignmentType.getHorizontal() != null) {
-				key = KEY_HORIZONTAL;
-			} else {
-				key = KEY_VERTICAL;
-			}
-
-			addFieldAttribute(field, key, String.valueOf(alignmentType.code));
-			return this;
-		}
-
-		/**
-		 * 用于设置字段内容分行写入的段落数
-		 * <p>
-		 * 当添加的内容段落达到指定的段落数时，则分成多个单元格写入。
-		 * </p>
-		 * 
-		 * @param field        字段
-		 * @param paragraphNum 分行段落数
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet setContentBranch(String field, int paragraphNum) {
-			// 判断字段是否存在
-			if (paragraphNum > 0 && containsField(field)) {
-				addFieldAttribute(field, KEY_ROW_TEXT, String.valueOf(paragraphNum));
-			}
-
-			return this;
-		}
-
-		/**
-		 * 用于设置字段段落内容是否自动编号
-		 * <p>
-		 * 设置自动编号后，当写入文件时，将在每段内容前，加上“序号 + .”的内容
-		 * </p>
-		 * 
-		 * @param field  字段
-		 * @param isAuto 是否自动编号
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet setAutoSerialNumber(String field, boolean isAuto) {
-			// 判断字段是否存在
-			if (containsField(field)) {
-				addFieldAttribute(field, KEY_AUTO_NUMBER, String.valueOf(isAuto));
-			}
-
-			return this;
-		}
-
-		/**
-		 * 用于设置需要冻结的单元格
-		 * <p>
-		 * 可设置自顶部开始以及自左边开始需要冻结的表格行（列）数，当值设置为0时，则表示不冻结。默认情况下，顶部冻结1行，左边不冻结
-		 * </p>
-		 * 
-		 * @param topIndex  顶部冻结行数
-		 * @param leftIndex 左边冻结列数
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet setFreeze(int topIndex, int leftIndex) {
-			addTempletAttribute(KEY_FREEZE_TOP, topIndex > 0 ? topIndex : 0);
-			addTempletAttribute(KEY_FREEZE_LEFT, leftIndex > 0 ? leftIndex : 0);
-
-			return this;
-		}
-
-		/**
-		 * 用于设置是否在标题上加入筛选按钮，默认则存在筛选按钮
-		 * 
-		 * @param isFiltrate 是否添加筛选
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet setFiltrate(boolean isFiltrate) {
-			addTempletAttribute(KEY_FILTRATE, isFiltrate);
-			return this;
-		}
-
-		/**
-		 * 用于添加数据选项
-		 * 
-		 * @param optionList 数据集
-		 * @return 类本身
-		 */
-		public ExcelFileTemplet addDataOption(String name, List<String> optionList) {
-			// 判空
-			if (!Optional.ofNullable(name).filter(n -> !n.isEmpty()).isPresent()) {
-				return this;
-			}
-			if (!Optional.ofNullable(optionList).filter(l -> !l.isEmpty()).isPresent()) {
-				return this;
-			}
-
-			// 获取指定名称的数据选项json，若不存在，则添加空json
-			JSONArray optionListJson = Optional.ofNullable(templetJson.getJSONObject(KEY_DATA).getJSONArray(name))
-					.orElse(new JSONArray());
-			optionListJson.addAll(optionList);
-
-			// 将数据选项附加到模板json上
-			templetJson.getJSONObject(KEY_DATA).put(name, optionListJson);
-			return this;
 		}
 	}
 

@@ -113,12 +113,12 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			throw new WriteFileException("未指定文件写入类对象，无法进行构造");
 		}
 
-		this.templet = writeTempletFile.templet;
-		this.contentJson = writeTempletFile.contentJson;
-		this.defaultCaseJson = writeTempletFile.defaultCaseJson;
-		this.replaceWordMap = writeTempletFile.replaceWordMap;
+		this.templet = new FileTemplet(writeTempletFile.templet.getTempletJson());
+		this.contentJson = JSONObject.parseObject(writeTempletFile.contentJson.toJSONString());
+		this.defaultCaseJson = JSONObject.parseObject(writeTempletFile.defaultCaseJson.toJSONString());
+		writeTempletFile.replaceWordMap.forEach(this.replaceWordMap::put);
 	}
-	
+
 	/**
 	 * 无参构造，方便子类进行特殊的构造方法
 	 */
@@ -238,16 +238,23 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 			return fieldJson;
 		}).forEach(defaultListJson::add);
-		
+
 		JSONObject fieldJson = new JSONObject();
 		fieldJson.put(KEY_DATA, defaultListJson);
 		defaultCaseJson.put(field, fieldJson);
 	}
 
 	/**
-	 * 用于设置
+	 * 用于设置自动写入文件的极限用例数量
+	 * <p>
+	 * 设置该值后，则开启自动写入文件功能，当用例数达到指定数量时，则会自动调用写入文件的方法，将缓存的内容写入到文件中
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>自动写入文件并非会将所有的内容写入到文件中，例如，设置值为5，用例存在11条，则前10条用例会被自动写入到文件，而最后一条数据，
+	 * 由于未达到设定值，则不会写入到文件中，需要手动调用{@link #write()}方法
+	 * </p>
 	 * 
-	 * @param writeRowNum
+	 * @param writeRowNum 自动写入到文件的极限用例数量
 	 */
 	public void setWriteRowNum(int writeRowNum) {
 		this.writeRowNum = writeRowNum < 0 ? 0 : writeRowNum;
@@ -392,6 +399,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 	/**
 	 * 用于移除指定下标的一条用例
+	 * 
 	 * @param index 用例下标
 	 */
 	public void clearCase(int index) {
@@ -462,7 +470,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 		// 若当前指定了分行写入文件，则判断当前行数是否需要分行写入文件
 		if (writeRowNum != 0 && contentListJson.size() % writeRowNum == 0) {
-			write();
+			write(templet, nowRowNum, -1);
 			// 指定当前写入的行为当前内容的行数
 			nowRowNum = contentListJson.size();
 		}
@@ -493,15 +501,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	/**
 	 * 用于将编写的所有内容写入到文件中
 	 */
-	public void write() {
-		// 若分页行数不为0，则获取当前行数作为编写的起始行数
-		int startIndex = 0;
-		if (writeRowNum != 0) {
-			startIndex = nowRowNum;
-		}
-
-		write(startIndex, -1);
-	}
+	public abstract void write();
 
 	/**
 	 * 用于将编写的部分内容写入到文件中
@@ -512,8 +512,15 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @param caseStartIndex 写入文件开始下标
 	 * @param caseEndIndex   写入文件结束下标
 	 */
-	protected abstract void write(int caseStartIndex, int caseEndIndex);
-	
+	protected abstract void write(FileTemplet templet, int caseStartIndex, int caseEndIndex);
+
+	/**
+	 * 用于将缓存的数据内容，写入到模板中
+	 * 
+	 * @param templet        模板类
+	 * @param caseStartIndex 用例起始行
+	 * @param caseEndIndex   用例结束行
+	 */
 	protected abstract void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex);
 
 	/**
@@ -619,13 +626,14 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 		return wordList;
 	}
-	
+
 	/**
 	 * 用于返回指定下标的文本json
 	 * <p>
 	 * 获取文本json支持反序遍历，当传入的内容为负数时，则表示反序遍历集合，找到指定下标的内容
 	 * </p>
-	 * @param field 字段
+	 * 
+	 * @param field     字段
 	 * @param textIndex 文本下标
 	 * @return 文本json
 	 */
@@ -636,17 +644,18 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 				return dataListJson.getJSONObject(analysisIndex(dataListJson.size(), textIndex, true));
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * 用于解析真实下标内容
 	 * <p>
 	 * 数字最大为下标允许的最大值，是可以达到的，在解析集合下标时，其最大限制一定为“集合长度 - 1”
 	 * </p>
-	 * @param maxNum 数字最大限制
-	 * @param index 下标
+	 * 
+	 * @param maxNum       数字最大限制
+	 * @param index        下标
 	 * @param isReciprocal 是否允许反向遍历
 	 * @return 真实下标
 	 */
@@ -655,7 +664,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		if (maxNum == 0) {
 			return 0;
 		}
-		
+
 		if (index < 0) {
 			if (isReciprocal) {
 				return Math.abs(index) > maxNum ? 0 : (maxNum + index);
@@ -666,10 +675,11 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			return index >= maxNum ? maxNum - 1 : index;
 		}
 	}
-	
+
 	/**
 	 * 用于创建模板文件
-	 * @return 模板文件对象
+	 * 
+	 * @param templet 模板文件对象
 	 */
 	protected abstract void createTempletFile(FileTemplet templet);
 }

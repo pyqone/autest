@@ -9,7 +9,7 @@ import java.util.List;
  * <b>文件名：</b>WriteSingleTempletFile.java
  * </p>
  * <p>
- * <b>用途：</b>
+ * <b>用途：</b> 提供对单模板内容数据写入的方法，详细内容可参见父类{@link WriteTempletFile}说明
  * </p>
  * <p>
  * <b>编码时间：</b>2021年5月31日下午8:50:42
@@ -18,10 +18,10 @@ import java.util.List;
  * <b>修改时间：</b>2021年5月31日下午8:50:42
  * </p>
  * 
- * @author
+ * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- * @param <T>
+ * @param <T> 子类
  */
 public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>> extends WriteTempletFile<T> {
 
@@ -37,8 +37,20 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 		super();
 	}
 
+	
 	@Override
-	public void write(int caseStartIndex, int caseEndIndex) {
+	public void write() {
+		// 若分页行数不为0，则获取当前行数作为编写的起始行数
+		int startIndex = 0;
+		if (writeRowNum != 0) {
+			startIndex = nowRowNum;
+		}
+		
+		write(templet, startIndex, -1);
+	}
+
+	@Override
+	public void write(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
 		// 判断模板文件是否存在，若不存在，则创建模板文件
 		if (!new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString()).exists()) {
 			createTempletFile(templet);
