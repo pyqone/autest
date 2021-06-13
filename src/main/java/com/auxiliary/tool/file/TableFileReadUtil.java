@@ -220,8 +220,6 @@ public class TableFileReadUtil {
 	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
 	 */
 	public static TableData<String> readExcel(File file, String sheetName, boolean isFirstTitle) {
-		TableData<String> wordTable = new TableData<>();
-
 		// 用于读取excel
 		Optional<Workbook> excelOptional = Optional.empty();
 		try (FileInputStream fip = new FileInputStream(
@@ -237,44 +235,59 @@ public class TableFileReadUtil {
 		} catch (IOException e) {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
-
+		
 		try (Workbook excel = excelOptional.orElseThrow(() -> new UnsupportedFileException("Excel文件读取类未构造"))) {
-			// 读取excel中的内容，若未存储读取的sheet名称，则读取第一个sheet
-			Sheet sheet = Optional
-					.ofNullable(Optional.ofNullable(sheetName).orElse("").isEmpty() ? excel.getSheetAt(0)
-							: excel.getSheet(sheetName))
-					.orElseThrow(() -> new UnsupportedFileException(String.format("“%s”工作表不存在", sheetName)));
-
-			// 获取第一行内容
-			Optional<Row> row = Optional.ofNullable(sheet.getRow(0));
-			// 存储第一行指向的列个数，以此为总列数的参考标准
-			int cellLength = row
-					.orElseThrow(
-							() -> new UnsupportedFileException(String.format("“%s”中无首行内容，无法读取", sheet.getSheetName())))
-					.getLastCellNum();
-
-			// 判断首行是否为标题行，若为标题行，则读取标题并进行存储；若不是，则存储默认的标题，并存储初始读取行的下标
-			int startIndex = 0;
-			if (isFirstTitle) {
-				// 存储第一行数据
-				wordTable.addTitle(readExcelLineData(row));
-				// 设置行起始读取下标为第2行
-				startIndex = 1;
-			} else {
-				// 存储第一行数据
-				wordTable.addTitle(createDefaultColumnName(cellLength));
-				// 设置行起始读取下标为第1行
-				startIndex = 0;
-			}
-
-			IntStream.range(startIndex, sheet.getLastRowNum() + 1)
-					// 转换下标为行对象
-					.mapToObj(index -> Optional.ofNullable(sheet.getRow(index)))
-					// 读取行中的单元格内容，将其转换为字符串集合
-					.map(TableFileReadUtil::readExcelLineData).forEach(wordTable::addRow);
-		} catch (IOException e) {
+			return readExcel(excel, sheetName, isFirstTitle);
+		} catch (UnsupportedFileException | IOException e) {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
+	}
+	
+	/**
+	 * 该方法用于读取并处理excel文件，根据传入的sheet名称来读取不同的sheet
+	 * 
+	 * @param excel         excel类{@link Workbook}对象
+	 * @param sheetName    需要读取的sheet名称
+	 * @param isFirstTitle 首行是否为标题行
+	 * @return 数据表类对象
+	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
+	 */
+	public static TableData<String> readExcel(Workbook excel, String sheetName, boolean isFirstTitle) {
+		TableData<String> wordTable = new TableData<>();
+		
+		// 读取excel中的内容，若未存储读取的sheet名称，则读取第一个sheet
+		Sheet sheet = Optional
+				.ofNullable(Optional.ofNullable(sheetName).orElse("").isEmpty() ? excel.getSheetAt(0)
+						: excel.getSheet(sheetName))
+				.orElseThrow(() -> new UnsupportedFileException(String.format("“%s”工作表不存在", sheetName)));
+
+		// 获取第一行内容
+		Optional<Row> row = Optional.ofNullable(sheet.getRow(0));
+		// 存储第一行指向的列个数，以此为总列数的参考标准
+		int cellLength = row
+				.orElseThrow(
+						() -> new UnsupportedFileException(String.format("“%s”中无首行内容，无法读取", sheet.getSheetName())))
+				.getLastCellNum();
+
+		// 判断首行是否为标题行，若为标题行，则读取标题并进行存储；若不是，则存储默认的标题，并存储初始读取行的下标
+		int startIndex = 0;
+		if (isFirstTitle) {
+			// 存储第一行数据
+			wordTable.addTitle(readExcelLineData(row));
+			// 设置行起始读取下标为第2行
+			startIndex = 1;
+		} else {
+			// 存储第一行数据
+			wordTable.addTitle(createDefaultColumnName(cellLength));
+			// 设置行起始读取下标为第1行
+			startIndex = 0;
+		}
+
+		IntStream.range(startIndex, sheet.getLastRowNum() + 1)
+				// 转换下标为行对象
+				.mapToObj(index -> Optional.ofNullable(sheet.getRow(index)))
+				// 读取行中的单元格内容，将其转换为字符串集合
+				.map(TableFileReadUtil::readExcelLineData).forEach(wordTable::addRow);
 
 		return wordTable;
 	}

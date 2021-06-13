@@ -51,5 +51,22 @@ public enum MarkColorsType {
 		return colorsValue;
 	}
 	
-	
+	/**
+	 * 用于根据枚举名称，识别枚举，并进行返回
+	 * <p>
+	 * 若无法查到与之匹配的编码，则返回null
+	 * </p>
+	 * 
+	 * @param colorsValue 枚举名称
+	 * @return 颜色枚举
+	 */
+	public static MarkColorsType getMarkColorsType(short colorsValue) {
+		for (MarkColorsType type : values()) {
+			if (type.colorsValue == colorsValue) {
+				return type;
+			}
+		}
+
+		return null;
+	}
 }
