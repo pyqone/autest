@@ -270,6 +270,59 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	}
 
 	/**
+	 * 用于接收一个内容json串来替换当前写入的内容
+	 * <p>
+	 * 该方法可用于在更换内容但不替换当前模板时使用。可通过其他写入类的{@link #toWriteFileJson()}方法，获取到内容json串后，来替换当前类对象的内容json串
+	 * </p>
+	 * <p>
+	 * <b>注意：</b>设置内容json串后，当前写入的内容将被覆盖
+	 * </p>
+	 * 
+	 * @param writeJsonText 指定的内容json串
+	 */
+	public void setContentJson(String writeJsonText) {
+		JSONObject writeJson = null;
+		try {
+			writeJson = JSONObject.parseObject(writeJsonText);
+		} catch (Exception e) {
+			throw new WriteFileException("json格式不正确，无法转换", e);
+		}
+
+		// 判断json中是否包含必要参数
+		judgeJson(writeJson, KEY_DEFAULT, true);
+		judgeJson(writeJson, KEY_CONTENT, true);
+		judgeJson(writeJson.getJSONObject(KEY_CONTENT), KEY_CASE, false);
+		
+		// 通过判断后，将内容写入到类中
+		// TODO 多模板需要重写该方法，将当前数据回写到相应的模板中
+		this.defaultCaseJson = writeJson.getJSONObject(KEY_DEFAULT);
+		this.contentJson = writeJson.getJSONObject(KEY_CONTENT);
+	}
+	
+	private void judgeJson(JSONObject contentJson, String field, boolean isJsonObject) {
+		if (contentJson.containsKey(field)) {
+			if (isJsonObject) {
+				try {
+					contentJson.getJSONObject(field);
+				} catch (Exception e) {
+					throw new WriteFileException(
+							String.format("“%s”字段非json类型：%s", field, contentJson.getString(field)), e);
+				}
+			} else {
+				try {
+					contentJson.getJSONArray(field);
+				} catch (Exception e) {
+					throw new WriteFileException(
+							String.format("“%s”字段非json数组类型：%s", field, contentJson.getString(field)), e);
+				}
+			}
+			
+		} else {
+			throw new WriteFileException("json缺少必要字段：" + field);
+		}
+	}
+
+	/**
 	 * 用于获取指定下标的用例内容，并对内容进行重写
 	 * <p>
 	 * 调用该方法后，当前编写的用例将指向为指定下标的用例。若当前正在编写用例，调用该方法后，将覆盖当前编写的用例。
