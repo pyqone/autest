@@ -18,3 +18,4 @@
 .settings/org.testng.eclipse.maven.prefs
 .gitignore
 /bin/
+/Result/
