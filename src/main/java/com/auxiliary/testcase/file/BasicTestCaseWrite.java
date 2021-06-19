@@ -13,6 +13,7 @@ import org.dom4j.DocumentException;
  * @version Ver1.0
  * @since JDK 1.8
  */
+@Deprecated
 public class BasicTestCaseWrite extends AbstractTestCaseWrite<BasicTestCaseWrite> {
 	/**
 	 * 通过测试文件模板xml配置文件和测试用例文件来构造AbstractTestCaseWrite类。当配置文件中

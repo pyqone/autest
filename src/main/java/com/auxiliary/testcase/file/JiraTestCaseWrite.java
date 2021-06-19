@@ -18,6 +18,7 @@ import com.auxiliary.testcase.templet.LabelType;
  * @since JDK 1.8
  *
  */
+@Deprecated
 public class JiraTestCaseWrite extends CommonTestCaseWrite<JiraTestCaseWrite> {
 	/**
 	 * 通过测试文件模板xml配置文件和测试用例文件来构造JiraTestCaseWrite类。当配置文件中
