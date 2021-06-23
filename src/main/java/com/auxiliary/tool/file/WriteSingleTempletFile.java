@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONArray;
+
 /**
  * <p>
  * <b>文件名：</b>WriteSingleTempletFile.java
@@ -55,13 +57,20 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 		if (!new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString()).exists()) {
 			createTempletFile(templet);
 		}
+		
+		// 计算真实的起始下标与结束下标
+		JSONArray contentListJson = contentJson.getJSONArray(KEY_CASE);
+		// 判断内容json是否为空，为空则不进行处理
+		if (contentListJson.isEmpty()) {
+			return;
+		}
 
 		// 计算真实的起始下标与结束下标
-		caseEndIndex = analysisIndex(contentJson.getJSONArray(KEY_CASE).size(), caseEndIndex, true) + 1;
-		caseStartIndex = analysisIndex(caseEndIndex, caseStartIndex, true);
+		int newCaseEndIndex = analysisIndex(contentListJson.size(), caseEndIndex, true);
+		int newCaseStartIndex = analysisIndex(newCaseEndIndex, caseStartIndex, true);
 
 		// 将文件内容写入模板文件
-		contentWriteTemplet(templet, caseStartIndex, caseEndIndex);
+		contentWriteTemplet(templet, newCaseStartIndex, newCaseEndIndex);
 	}
 
 	@Override
