@@ -15,6 +15,7 @@ import org.dom4j.DocumentException;
  * @version Ver1.0
  * @since JDK 8
  */
+@Deprecated
 public abstract class CommonTestCaseWrite<T extends CommonTestCaseWrite<T>> extends AbstractTestCaseWrite<CommonTestCaseWrite<T>> {
 	/**
 	 * 通过测试文件模板xml配置文件和测试用例文件来构造JiraTestCaseWrite类。当配置文件中

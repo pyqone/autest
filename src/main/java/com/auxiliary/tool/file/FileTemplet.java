@@ -64,6 +64,14 @@ public class FileTemplet {
 			}
 		}).orElseThrow(() -> new WriteFileException("缺少模板必须字段，无法将文本转换为模板类"));
 	}
+	
+	/**
+	 * 用于变更模板的保存路径
+	 * @param saveFile 模板文件保存路径
+	 */
+	public void setSaveFile(File saveFile) {
+		templetJson.put(KEY_SAVE, saveFile.getAbsolutePath());
+	}
 
 	/**
 	 * 用于向模板中添加字段ID信息
@@ -130,7 +138,7 @@ public class FileTemplet {
 
 		return fieldJson.getJSONObject(field).get(attName);
 	}
-
+	
 	/**
 	 * 用于添加模板属性
 	 * <p>

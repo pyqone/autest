@@ -47,10 +47,6 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	/**
 	 * 存储每个模板中自动写入文件的用例数
 	 */
-//	protected HashMap<String, Integer> writeRowNumMap = new HashMap<>();
-	/**
-	 * 存储每个模板中自动写入文件的用例数
-	 */
 	protected HashMap<String, Integer> nowRowNumMap = new HashMap<>();
 
 	/**
@@ -96,6 +92,16 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	}
 
 	@Override
+	public void setContentJson(String writeJsonText) {
+		super.setContentJson(writeJsonText);
+		
+		// 将数据回写到相应的内容中
+		JSONObject writeJson = JSONObject.parseObject(writeJsonText);
+		contentMap.put(this.templet.getTempletAttribute(KEY_NAME).toString(), writeJson.getJSONObject(KEY_DEFAULT));
+		defaultMap.put(this.templet.getTempletAttribute(KEY_NAME).toString(), writeJson.getJSONObject(KEY_CONTENT));
+	}
+
+	@Override
 	public FileTemplet getTemplet(String name) {
 		return templetMap.get(name);
 	}
@@ -119,15 +125,14 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 
 		// 初始化默认内容串
 		defaultMap.put(name, new JSONObject());
-		
+
 		// 初始化自动写入文件的数据
 		nowRowNumMap.put(name, 0);
 
 		// 切换至当前模板
 		switchPage(name);
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public T end(int contentIndex) {
@@ -144,11 +149,11 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 			if (writeRowNum != 0) {
 				startIndex = nowRowNumMap.get(name);
 			}
-			
+
 			write(templet, startIndex, -1);
 		});
 	}
-	
+
 	@Override
 	public void write(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
 		if (!isExistTemplet(new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString()), templet)) {

@@ -16,12 +16,14 @@ import com.auxiliary.tool.file.excel.AbstractWriteExcel;
  * 根据配置文件中的字段，向生成的Excel文件中添加内容
  * </p>
  * <p><b>编码时间：</b>2020年8月12日上午8:54:10</p>
- * <p><b>修改时间：</b>2020年8月12日上午8:54:10</p>
+ * <p><b>修改时间：</b>2021年6月17日上午8:12:10</p>
  * @author 彭宇琦
  * @version Ver1.0
+ * @deprecated 该类不便于扩展，以被{@link WriteExcelTestCase}类代替
  *
  * @param <T> 继承自AbstractTestCaseWrite的类
  */
+@Deprecated
 public abstract class AbstractTestCaseWrite<T extends AbstractTestCaseWrite<T>> extends AbstractWriteExcel<AbstractTestCaseWrite<T>> {
 	/**
 	 * 用于存储与测试用例生成类关联的字段，参数1为用例文件中的字段，参数2为测试用例生成方法中的字段
