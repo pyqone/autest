@@ -7,6 +7,7 @@ import org.openqa.selenium.TimeoutException;
 
 import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.selenium.element.Element;
+import com.auxiliary.tool.asserts.AssertStringUtil;
 
 /**
  * <p>
@@ -237,7 +238,8 @@ public class AssertEvent extends AbstractEvent {
 		String text = "";
 		if (keys != null && keys.length != 0) {
 			text = dispose.apply(element);
-			result = judgetText(text, isJudgeAllKey, false, keys);	
+//			result = judgetText(text, isJudgeAllKey, false, keys);	
+			result = AssertStringUtil.assertTextContainKey(text, isJudgeAllKey, keys);	
 		}
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素处理后的文本内容（" + text +"）包含"
@@ -266,7 +268,8 @@ public class AssertEvent extends AbstractEvent {
 		String text = "";
 		if (keys != null && keys.length != 0) {
 			text = dispose.apply(element);
-			result = judgetText(text, isJudgeAllKey, true, keys);	
+//			result = judgetText(text, isJudgeAllKey, true, keys);	
+			result = AssertStringUtil.assertTextNotContainKey(text, isJudgeAllKey, keys);
 		}
 		
 		logText = "断言“" + element.getElementData().getName() + "”元素处理后的文本内容（" + text +"）包含"
@@ -412,85 +415,8 @@ public class AssertEvent extends AbstractEvent {
 	 */
 	public boolean assertNumber(Element element, CompareNumberType compareNumberType, double compareNumber) {
 		logText = "断言“" + element.getElementData().getName() + "”元素数字内容" + compareNumberType.getLogText() + compareNumber;
-		boolean result = false;
-		
-		try {
-			double elementNumber = Double.valueOf(textEvent.getText(element));
-			//根据枚举内容，返回对比结果
-			switch (compareNumberType) {
-			case EQUAL:
-				result = elementNumber == compareNumber;
-				break;
-			case GREATER:
-				result = elementNumber > compareNumber;
-				break;
-			case LESS:
-				result = elementNumber < compareNumber;
-				break;
-			case GREATER_OR_EQUAL:
-				result = elementNumber >= compareNumber;
-				break;
-			case LESS_OR_EQUAL:
-				result = elementNumber <= compareNumber;
-				break;
-			default:
-				break;
-			}
-		} catch (NumberFormatException e) {
-		}
-		
-		resultText = String.valueOf(result);
+		boolean result = AssertStringUtil.assertNumber(textEvent.getText(element), compareNumberType, compareNumber);
+ 		resultText = String.valueOf(result);
 		return result;
-	}
-	
-	/**
-	 * 用于对文本信息与关键词进行对比
-	 * @param text 需要判断的文本
-	 * @param isJudgeAllKey 是否需要完全判断关键词
-	 * @param isNot 是否为不包含关键词
-	 * @param keys 关键词组
-	 * @return 断言结果
-	 */
-	private boolean judgetText(String text, boolean isJudgeAllKey, boolean isNot, String... keys) {
-		boolean result = false;
-        // 循环，判断keys中所有的内容
-		for (String key : keys) {
-			// 判断当前关键词是否包含于text中
-            if (text.contains(key)) {
-            	// 若包含文本且不需要关键词完全包含，且判断条件为需要包含文本，则记录当前结果为True，并结束循环
-                if (!isJudgeAllKey && !isNot) {
-                	result = true;
-                	break;
-                } else if (isJudgeAllKey && isNot) {
-                	// 若包含文本且需要关键词完全包含，且判断条件为不需要包含文本，则记录当前结果为False，并结束循环
-                	result = false;
-                	break;
-                } else if (!isJudgeAllKey && isNot) {
-                	result = false;
-                	continue;
-                } else {
-                	result = true;
-                	continue;
-                }
-            } else {
-            	// 若不包含且需要关键词完全包含，且判断条件为需要包含文本，则记录当前结果为False，并结束循环
-                if (isJudgeAllKey && !isNot) {
-                	result = false;
-                	break;
-                } else if (!isJudgeAllKey && isNot) {
-                	// 若包含文本且需要关键词完全包含，且判断条件为不需要包含文本，则记录当前结果为False，并结束循环
-                	result = true;
-                	break;
-                } else if (isJudgeAllKey && isNot) {
-                	result = true;
-                	continue;
-                } else {
-                	result = false;
-                	continue;
-                }
-            }
-		}
-		
-	    return result;
 	}
 }
