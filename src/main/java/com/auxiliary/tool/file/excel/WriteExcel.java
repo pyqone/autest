@@ -25,8 +25,9 @@ import com.auxiliary.testcase.file.IncorrectFileException;
  * <p><b>修改时间：</b>2020年8月12日上午8:53:55</p>
  * @author 彭宇琦
  * @version Ver1.0
- *
+ * @deprecated 已对类进行重构，可用{@link WriteBasicExcelTempletFile}类代替
  */
+@Deprecated
 public class WriteExcel extends AbstractWriteExcel<WriteExcel> {
 	/**
 	 * 通过测试文件模板xml配置文件和测试用例文件进行构造。当配置文件中

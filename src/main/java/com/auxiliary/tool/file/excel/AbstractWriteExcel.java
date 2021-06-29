@@ -63,7 +63,9 @@ import com.auxiliary.tool.regex.RegexType;
  * @version Ver1.0
  * @since JDK 1.8
  * @since POI 3.15
+ * @deprecated 已对类进行重构，可用{@link WriteExcelTempletFile}类代替
  */
+@Deprecated
 public abstract class AbstractWriteExcel<T extends AbstractWriteExcel<T>> {
 	/**
 	 * 用于指向用例的XSSFWorkbook对象

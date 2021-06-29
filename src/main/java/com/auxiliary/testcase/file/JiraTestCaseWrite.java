@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.dom4j.DocumentException;
 
+import com.auxiliary.testcase.file.extend.WriteJiraExcelTestCase;
 import com.auxiliary.testcase.templet.LabelType;
 
 /**
@@ -16,8 +17,9 @@ import com.auxiliary.testcase.templet.LabelType;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- *
+ * @deprecated 该类可由{@link WriteJiraExcelTestCase}代替
  */
+@Deprecated
 public class JiraTestCaseWrite extends CommonTestCaseWrite<JiraTestCaseWrite> {
 	/**
 	 * 通过测试文件模板xml配置文件和测试用例文件来构造JiraTestCaseWrite类。当配置文件中
