@@ -16,7 +16,7 @@ import com.auxiliary.testcase.templet.LabelType;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- *
+ * @deprecated 该类可由{@link WriteJiraExcelTestCase}代替
  */
 @Deprecated
 public class JiraTestCaseWrite extends CommonTestCaseWrite<JiraTestCaseWrite> {

@@ -94,7 +94,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 	/**
 	 * 构造用例写入类，并重新设置模板
 	 * 
-	 * @param templet  模板类对象
+	 * @param templet 模板类对象
 	 */
 	public WriteJiraExcelTestCase(FileTemplet templet) {
 		this();
@@ -197,6 +197,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 
 	/**
 	 * 用于生成默认的jira测试用例模板类对象
+	 * 
 	 * @return jira测试用例模板类对象
 	 */
 	public static ExcelFileTemplet getJiraCaseExcelTemplet() {

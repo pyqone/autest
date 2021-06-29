@@ -19,6 +19,24 @@ import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteSingleTempletFile;
 import com.auxiliary.tool.file.WriteTempletFile;
 
+/**
+ * <p>
+ * <b>文件名：</b>WriteMarkdownTestCase.java
+ * </p>
+ * <p>
+ * <b>用途：</b> 用于生成markdown类型的用例，目前该类属于实验阶段
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2021年6月29日下午8:19:19
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2021年6月29日下午8:19:19
+ * </p>
+ * 
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 1.8
+ */
 public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownTestCase>
 		implements BasicTsetCase<WriteMarkdownTestCase>, RelevanceTestCaseTemplet<WriteMarkdownTestCase> {
 	/**
