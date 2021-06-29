@@ -9,6 +9,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.excel.WriteExcelTempletFile.AlignmentType;
 
+/**
+ * <p>
+ * <b>文件名：</b>ExcelFileTemplet.java
+ * </p>
+ * <p>
+ * <b>用途：</b> 指定Excel相关的模板
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2021年6月29日下午8:32:09
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2021年6月29日下午8:32:09
+ * </p>
+ * 
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 1.8
+ */
 public class ExcelFileTemplet extends FileTemplet {
 	public static final String KEY_NAME = "name";
 	public static final String KEY_WIDE = "wide";
@@ -93,8 +111,7 @@ public class ExcelFileTemplet extends FileTemplet {
 	/**
 	 * 用于设置全局单元格的高度
 	 * 
-	 * @param field 字段
-	 * @param high  高度
+	 * @param high 高度
 	 * @return 类本身
 	 */
 	public ExcelFileTemplet setHigh(double high) {
@@ -205,11 +222,11 @@ public class ExcelFileTemplet extends FileTemplet {
 		addTempletAttribute(KEY_FILTRATE, isFiltrate);
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置模板的名称
 	 * 
-	 * @param name 是否添加筛选
+	 * @param name 模板名称
 	 * @return 类本身
 	 */
 	public ExcelFileTemplet setName(String name) {
@@ -220,12 +237,13 @@ public class ExcelFileTemplet extends FileTemplet {
 	/**
 	 * 用于添加数据选项
 	 * 
+	 * @param field      字段名称
 	 * @param optionList 数据集
 	 * @return 类本身
 	 */
-	public ExcelFileTemplet addDataOption(String name, List<String> optionList) {
+	public ExcelFileTemplet addDataOption(String field, List<String> optionList) {
 		// 判空
-		if (!Optional.ofNullable(name).filter(n -> !n.isEmpty()).isPresent()) {
+		if (!Optional.ofNullable(field).filter(n -> !n.isEmpty()).isPresent()) {
 			return this;
 		}
 		if (!Optional.ofNullable(optionList).filter(l -> !l.isEmpty()).isPresent()) {
@@ -233,12 +251,12 @@ public class ExcelFileTemplet extends FileTemplet {
 		}
 
 		// 获取指定名称的数据选项json，若不存在，则添加空json
-		JSONArray optionListJson = Optional.ofNullable(templetJson.getJSONObject(KEY_DATA).getJSONArray(name))
+		JSONArray optionListJson = Optional.ofNullable(templetJson.getJSONObject(KEY_DATA).getJSONArray(field))
 				.orElse(new JSONArray());
 		optionListJson.addAll(optionList);
 
 		// 将数据选项附加到模板json上
-		templetJson.getJSONObject(KEY_DATA).put(name, optionListJson);
+		templetJson.getJSONObject(KEY_DATA).put(field, optionListJson);
 		return this;
 	}
 }

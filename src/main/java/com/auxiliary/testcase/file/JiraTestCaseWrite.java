@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.dom4j.DocumentException;
 
+import com.auxiliary.testcase.file.extend.WriteJiraExcelTestCase;
 import com.auxiliary.testcase.templet.LabelType;
 
 /**

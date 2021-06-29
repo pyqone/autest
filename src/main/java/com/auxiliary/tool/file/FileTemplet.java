@@ -64,9 +64,10 @@ public class FileTemplet {
 			}
 		}).orElseThrow(() -> new WriteFileException("缺少模板必须字段，无法将文本转换为模板类"));
 	}
-	
+
 	/**
 	 * 用于变更模板的保存路径
+	 * 
 	 * @param saveFile 模板文件保存路径
 	 */
 	public void setSaveFile(File saveFile) {
@@ -80,7 +81,6 @@ public class FileTemplet {
 	 * </p>
 	 * 
 	 * @param field 字段ID
-	 * @return 类本身
 	 */
 	public void addField(String field) {
 		// 判断文本内容是否为空
@@ -101,8 +101,6 @@ public class FileTemplet {
 	 * @param field    字段ID
 	 * @param attName  属性名称
 	 * @param attValue 属性值
-	 * 
-	 * @return 类本身
 	 */
 	public void addFieldAttribute(String field, String attName, Object attValue) {
 		// 判断字段内容是否为空，任何一个内容为空时，则不进行存储
@@ -138,7 +136,7 @@ public class FileTemplet {
 
 		return fieldJson.getJSONObject(field).get(attName);
 	}
-	
+
 	/**
 	 * 用于添加模板属性
 	 * <p>
@@ -147,8 +145,6 @@ public class FileTemplet {
 	 * 
 	 * @param attName  属性名称
 	 * @param attValue 属性值
-	 * 
-	 * @return 类本身
 	 */
 	public void addTempletAttribute(String attName, Object attValue) {
 		// 判断字段内容是否为空，任何一个内容为空时，则不进行存储
@@ -167,8 +163,8 @@ public class FileTemplet {
 	/**
 	 * 用于返回模板的属性
 	 * 
-	 * @param attName
-	 * @return
+	 * @param attName 属性名
+	 * @return 属性值
 	 */
 	public Object getTempletAttribute(String attName) {
 		return templetJson.get(attName);
@@ -215,7 +211,7 @@ public class FileTemplet {
 	/**
 	 * 用于返回模板中的属性集合
 	 * 
-	 * @return
+	 * @return 属性集合
 	 */
 	public Set<String> getTempletAttributeList() {
 		return templetJson.keySet();

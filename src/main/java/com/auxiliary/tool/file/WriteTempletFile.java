@@ -146,8 +146,8 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * <b>注意：</b>当未传入关键词，或关键词为空，或处理方式为null时，则不存储替换方式
 	 * </p>
 	 * 
-	 * @param word            需要替换的词语
-	 * @param replactFunction 替换规则
+	 * @param word      需要替换的词语
+	 * @param functions 替换规则
 	 * @throws FunctionExceptional 未指定替换词语或替换内容时抛出的异常
 	 * @deprecated 该方法已被{@link #setReplactWord(DataDriverFunction)}方法代替，可将方法改为
 	 *             {@code setReplactWord(new DataDriverFunction(word, functions))}。该方法将在后续两个版本中删除
@@ -292,21 +292,21 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		judgeJson(writeJson, KEY_DEFAULT, true);
 		judgeJson(writeJson, KEY_CONTENT, true);
 		judgeJson(writeJson.getJSONObject(KEY_CONTENT), KEY_CASE, false);
-		
+
 		// 通过判断后，将内容写入到类中
 		// TODO 多模板需要重写该方法，将当前数据回写到相应的模板中
 		this.defaultCaseJson = writeJson.getJSONObject(KEY_DEFAULT);
 		this.contentJson = writeJson.getJSONObject(KEY_CONTENT);
 	}
-	
+
 	private void judgeJson(JSONObject contentJson, String field, boolean isJsonObject) {
 		if (contentJson.containsKey(field)) {
 			if (isJsonObject) {
 				try {
 					contentJson.getJSONObject(field);
 				} catch (Exception e) {
-					throw new WriteFileException(
-							String.format("“%s”字段非json类型：%s", field, contentJson.getString(field)), e);
+					throw new WriteFileException(String.format("“%s”字段非json类型：%s", field, contentJson.getString(field)),
+							e);
 				}
 			} else {
 				try {
@@ -316,7 +316,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 							String.format("“%s”字段非json数组类型：%s", field, contentJson.getString(field)), e);
 				}
 			}
-			
+
 		} else {
 			throw new WriteFileException("json缺少必要字段：" + field);
 		}

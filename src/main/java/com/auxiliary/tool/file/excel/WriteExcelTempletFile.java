@@ -270,7 +270,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * </p>
 	 * 
 	 * @param field       字段
-	 * @param likeContent 需要链接的字段
+	 * @param linkContent 需要链接的字段
 	 * @param index       字段指定的下标
 	 * @return 类本身
 	 */
@@ -635,7 +635,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			} catch (IOException e) {
 				throw new WriteFileException("文件异常，无法写入：" + templet.getTempletAttribute(FileTemplet.KEY_SAVE), e);
 			}
-			
+
 			// 完成编写后，清理当前存储的样式，以便于后续编写
 			styleMap.clear();
 		}
@@ -807,8 +807,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	/**
 	 * 用于拼接一个单元格中带样式的内容
 	 * 
-	 * @param contentList 文本集合
-	 * @param styleList   样式集合
+	 * @param content 富文本
+	 * @param text    文本内容
+	 * @param style   样式
 	 * @return 拼接后带样式的内容
 	 */
 	protected XSSFRichTextString setContent(XSSFRichTextString content, String text, XSSFCellStyle style) {
@@ -828,7 +829,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	/**
 	 * 用于将字段的json转换为字段样式json
 	 * 
-	 * @param fieldJson 字段json
+	 * @param templetName      模板名称
+	 * @param templetFieldJson 模板字段json
+	 * @param textJson         文本json
+	 * @param background       背景颜色
 	 * @return 字段样式json
 	 */
 	protected JSONObject fieldJson2StyleJson(String templetName, JSONObject templetFieldJson, JSONObject textJson,
@@ -1016,10 +1020,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	/**
 	 * 用于向单元格上添加Comment标注
 	 * 
-	 * @param excel       excel对象
-	 * @param sheet       sheet对象
-	 * @param cell        相应单元格对象
-	 * @param commentText 字段元素
+	 * @param excel          excel对象
+	 * @param sheet          sheet对象
+	 * @param cell           相应单元格对象
+	 * @param commentContent 字段元素
 	 */
 	protected void addComment(XSSFWorkbook excel, XSSFSheet sheet, XSSFCell cell, String commentContent) {
 		// 判断内容是否存在，若不存在，则结束方法运行，不添加标注
@@ -1059,7 +1063,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * 用于在单元格上附加数据有效性下拉选项
 	 * 
 	 * @param sheet         工作页
-	 * @param dataJson      模板中数据选项Json
+	 * @param templetJson   模板json
 	 * @param dataTitleList 数据有效性选项标题集合
 	 * @param rowIndex      行下标
 	 */
@@ -1249,7 +1253,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		 * 若无法查到与之匹配的编码，则返回null
 		 * </p>
 		 * 
-		 * @param code 枚举名称
+		 * @param name 枚举名称
 		 * @return 对齐方式枚举
 		 */
 		public static AlignmentType getAlignmentType(String name) {

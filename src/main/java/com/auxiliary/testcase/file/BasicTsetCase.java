@@ -114,7 +114,7 @@ public interface BasicTsetCase<T extends BasicTsetCase<T>> {
 	 * <p>
 	 * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
 	 * </p>
-	 * @param module 优先级
+	 * @param priority 优先级
 	 * @return 类本身
 	 */
 	T addPriority(String priority);
