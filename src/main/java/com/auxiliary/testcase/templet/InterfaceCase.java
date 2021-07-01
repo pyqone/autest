@@ -51,6 +51,11 @@ public class InterfaceCase extends Case {
 	public InterfaceCase(File configXmlFile) {
 		super(configXmlFile);
 	}
+	
+	public InterfaceCase() {
+		super(new File(InformationCase.class.getClassLoader()
+				.getResource("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/InterfaceCase.xml").getFile()));
+	}
 
 	/**
 	 * 用于设置接口名称
