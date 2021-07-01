@@ -16,7 +16,7 @@ import java.util.List;
  * <b>编码时间：</b>2020年3月5日上午8:30:12
  * </p>
  * <p>
- * <b>修改时间：</b>2020年3月5日上午8:30:12
+ * <b>修改时间：</b>2021年7月2日上午7:27:13
  * </p>
  * 
  * @author 彭宇琦
@@ -68,7 +68,7 @@ public class InformationCase extends Case {
 	private final String OPERATION_EDIT = "编辑";
 
 	/**
-	 * 通过测试用例模板库的xml配置文件来构造InformationCase对象
+	 * 通过测试用例模板库的xml配置文件来构造对象
 	 * 
 	 * @param configXmlFile 用例模板库的xml文件对象
 	 */
@@ -76,9 +76,12 @@ public class InformationCase extends Case {
 		super(configXmlFile);
 	}
 
+	/**
+	 * 通过默认的用例模板库来构造对象
+	 */
 	public InformationCase() {
 		super(new File(InformationCase.class.getClassLoader()
-				.getResource("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/InformationCase.xml").getFile()));
+				.getResource("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/AddInformation.xml").getFile()));
 	}
 
 	@Override

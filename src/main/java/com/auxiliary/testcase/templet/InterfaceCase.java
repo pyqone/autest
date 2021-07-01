@@ -18,7 +18,7 @@ import com.auxiliary.testcase.templet.InformationCase.PhoneType;
  * <b>编码时间：</b>2021年6月29日下午7:55:01
  * </p>
  * <p>
- * <b>修改时间：</b>2021年6月29日下午7:55:01
+ * <b>修改时间：</b>2021年7月2日上午7:25:01
  * </p>
  * 
  * @author 彭宇琦
@@ -48,10 +48,18 @@ public class InterfaceCase extends Case {
 	 */
 	private ArrayList<String> attestationFieldList = new ArrayList<>();
 
+	/**
+	 * 通过测试用例模板库的xml配置文件来构造对象
+	 * 
+	 * @param configXmlFile 用例模板库的xml文件对象
+	 */
 	public InterfaceCase(File configXmlFile) {
 		super(configXmlFile);
 	}
-	
+
+	/**
+	 * 通过默认的用例模板库来构造对象
+	 */
 	public InterfaceCase() {
 		super(new File(InformationCase.class.getClassLoader()
 				.getResource("ConfigurationFiles/CaseConfigurationFile/CaseTemplet/InterfaceCase.xml").getFile()));
@@ -169,7 +177,7 @@ public class InterfaceCase extends Case {
 		// 存储case标签的name属性内容
 		String basicCaseName = "字段基础用例";
 		String constraintCaseName = "字段条件约束";
-		
+
 		// 存储字段名称
 		wordMap.put(FIELD_NAME, fieldName);
 
