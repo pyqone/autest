@@ -124,7 +124,7 @@ public enum OperateType {
 	/**
 	 * 断言元素文本与指定数字比较
 	 */
-	ASSERT_NUMBER("assertNumber", (short) 25),;
+	ASSERT_NUMBER("assertNumber", (short) 25);
 
 	/**
 	 * 记录事件名称

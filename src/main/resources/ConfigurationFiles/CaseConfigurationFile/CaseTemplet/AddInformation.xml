@@ -44,8 +44,10 @@
 		</excepts>
 		<script_by_excepts>
 			<script_by_except id='1'>
+				<script element = ''  operate='todo' input='*{成功预期前文}*'/>
 				<script element = '*{控件名称}*'  operate='clear' input=''/>
 				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
+				<script element = ''  operate='todo' input='*{成功预期前文}*'/>
 			</script_by_except>
 			<script_by_except id='2'>
 				<script element = '*{控件名称}*'  operate='clear' input=''/>
