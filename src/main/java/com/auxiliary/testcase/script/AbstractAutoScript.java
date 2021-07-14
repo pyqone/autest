@@ -35,6 +35,7 @@ public class AbstractAutoScript {
 		JSONObject caseTempletJson = analysisJson(caseJsonText);
 		
 		// 存储元素信息
+		
 		JSONArray elementListJson = caseJson.getJSONArray(GetAutoScript.KEY_ELEMENT);
 		JSONArray templetElementListJson = caseTempletJson.getJSONArray(GetAutoScript.KEY_ELEMENT);
 		for (int i = 0; i < templetElementListJson.size(); i++) {
