@@ -7,34 +7,38 @@ package com.auxiliary.testcase.templet;
  * </p>
  * <code><pre>
  * {
- *   "element":["XXXX", "XXXX", "XXXX"], 
- *   "case":[
- *     {
- *       "caseTitleText":"XXXX",
- *       "step":[
+ *     "templetType": 1,
+ *     "element": [
+ *         "XXXX",
+ *         "XXXX",
+ *         "XXXX"
+ *     ],
+ *     "case": [
  *         {
- *           "record":{
- *             "methodName":"step_1",  
- *             "caseStepText":"XXXX", 
- *             "caseExceptText":"XXXX"
- *           }, 
- *           "operateStep":[
- *             {
- *               "elementName":"XXX", 
- *               "operate":"click", 
- *               "input":""
- *             }
- *           ], 
- *           "operateExcept":[
- *             {
- *               "assertType":"", 
- *               "assertData":""
- *             }
- *           ]
+ *             "caseTitleText": "XXXX",
+ *             "step": [
+ *                 {
+ *                     "record": {
+ *                         "methodName": "step_1",
+ *                         "caseStepText": "XXXX",
+ *                         "caseExceptText": "XXXX"
+ *                     },
+ *                     "operateStep": [
+ *                         {
+ *                             "elementName": "XXXX",
+ *                             "operate": "click",
+ *                             "input": ""
+ *                         },
+ *                         {
+ *                             "elementName": "XXXX",
+ *                             "operate": "input",
+ *                             "input": "Test"
+ *                         }
+ *                     ]
+ *                 }
+ *             ]
  *         }
- *       ]
- *     }
- *   ]
+ *     ]
  * }
  * </pre></code>
  * <p><b>编码时间：</b>2021年7月7日上午8:09:26</p>
@@ -92,18 +96,6 @@ public interface GetAutoScript {
 	 * 字段存储当前操mk作的输入内容，String
 	 */
 	String KEY_INPUT = "input";
-	/**
-	 * 字段存储当前预期操作的内容，Array
-	 */
-	String KEY_OPERATE_EXCEPT = "operateExcept";
-	/**
-	 * 字段存储当前断言的类型，int
-	 */
-	String KEY_ASSERT_TYPE = "assertType";
-	/**
-	 * 字段存储当前断言的内容，String
-	 */
-	String KEY_ASSERT_DATA = "assertData";
 	
 	/**
 	 * 用于以json的形式返回当前测试用例模板中存储的内容
