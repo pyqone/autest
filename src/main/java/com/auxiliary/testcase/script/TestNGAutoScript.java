@@ -93,7 +93,12 @@ public class TestNGAutoScript extends AbstractAutoScript {
 		// TODO Auto-generated method stub
 	}
 
-	protected void saveCaseFrameTemplet(File saveFile) {
+	/**
+	 * 用于替换并存储测试用例脚本文件
+	 * 
+	 * @param saveFile 脚本存储路径
+	 */
+	private void saveCaseFrameTemplet(File saveFile) {
 		// 读取并存储用例框架模板中的内容
 		StringJoiner caseTempletScript = new StringJoiner("\r\n");
 		try (BufferedReader br = new BufferedReader(
@@ -113,14 +118,14 @@ public class TestNGAutoScript extends AbstractAutoScript {
 			// 记录测试用例步骤以及预期
 			StringJoiner stepText = new StringJoiner("\r\n");
 			StringJoiner exceptText = new StringJoiner("\r\n");
-			ArrayList<String> operateScriptList = new ArrayList<>();
+			StringJoiner operateScript = new StringJoiner("\r\n\r\n");
 
 			// 转换文本，由于一个json中包含多条case，故需要为每一个case附带一份模板
 			String content = caseTempletScript.toString();
 
 			// 获取用例json
 			JSONObject caseJson = caseListJson.getJSONObject(caseIndex);
-			
+
 			// 获取操作步骤信息
 			JSONArray stepListJson = caseJson.getJSONArray(GetAutoScript.KEY_STEP);
 			for (int stepIndex = 0; stepIndex < stepListJson.size(); stepIndex++) {
@@ -132,6 +137,11 @@ public class TestNGAutoScript extends AbstractAutoScript {
 				stepText.add(String.format(REPLACE_STEP_WORD, recordJson.getString(GetAutoScript.KEY_CASE_STEP_TEXT)));
 				exceptText.add(
 						String.format(REPLACE_STEP_WORD, recordJson.getString(GetAutoScript.KEY_CASE_EXCEPT_TEXT)));
+
+				// 存储步骤脚本
+				operateScript.add(readStepTemplet(stepIndex + 1, recordJson.getString(GetAutoScript.KEY_CASE_STEP_TEXT),
+						recordJson.getString(GetAutoScript.KEY_CASE_EXCEPT_TEXT),
+						stepJson.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)));
 			}
 
 			// 替换标题
@@ -143,8 +153,10 @@ public class TestNGAutoScript extends AbstractAutoScript {
 			content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_TOTAL_STEP), stepText.toString());
 			content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_TOTAL_EXCEPT), exceptText.toString());
 			// 替换脚本类编号
-			content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CLASS_INDEX), String.valueOf(caseIndex + 1 ));
-			
+			content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CLASS_INDEX), String.valueOf(caseIndex + 1));
+			// 替换用例步骤脚本
+			content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_STEP), operateScript.toString());
+
 			System.out.println(content);
 		}
 	}
@@ -154,9 +166,9 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 * 
 	 * @return 文件内容
 	 */
-	private String readStepTemplet() {
+	private String readStepTemplet(int index, String step, String except, JSONArray operateListJson) {
 		// 读取并存储用例框架模板中的内容
-		StringJoiner stepTempletScript = new StringJoiner("\r\n");
+		StringJoiner stepTempletScript = new StringJoiner("\r\n\t", "\t", "");
 		try (BufferedReader br = new BufferedReader(new FileReader(new File(templetFileFolder, STEP_TERMPLET_NAME)))) {
 			String text = "";
 			while ((text = br.readLine()) != null) {
@@ -166,7 +178,25 @@ public class TestNGAutoScript extends AbstractAutoScript {
 			throw new IncorrectContentException(
 					"模板文件读取异常：" + new File(templetFileFolder, STEP_TERMPLET_NAME).getAbsolutePath());
 		}
+		
+		// TODO 解析操作
 
-		return stepTempletScript.toString();
+		String content = stepTempletScript.toString();
+		// 替换步骤数
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_STEP_INDEX), String.valueOf(index));
+		// 替换步骤与预期
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_SIGN_STEP), step);
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_SIGN_EXCEPT), except);
+
+		return content;
+	}
+	
+	/**
+	 * 用于分析操作json，将其解析为脚本，并返回
+	 * @param operateJson 操作json
+	 * @return 操作脚本
+	 */
+	private String analysisOperate(JSONObject operateJson) {
+		return "";
 	}
 }
