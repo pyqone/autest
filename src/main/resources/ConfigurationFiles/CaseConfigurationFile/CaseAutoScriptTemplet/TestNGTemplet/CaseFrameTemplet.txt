@@ -1,0 +1,76 @@
+/**
+ * <p>
+ * <b>文件名：</b>Test_01_#{脚本类编号}.java
+ * </p>
+ * <p>
+ * <b>用途：</b>用于测试编号为Test_01_#{脚本类编号}的测试用例
+ * </p>
+ * <p>
+ * <b>标题：</b>#{用例标题}
+ * </p>
+ * <p>
+ * <b>步骤：</b>
+ * <ol>
+#{用例步骤}
+ * </ol>
+ * </p>
+ * <p>
+ * <b>预期：</b><br>
+ * <ol>
+#{用例预期}
+ * </ol>
+ * </p>
+ * <p>
+ * <b>编码时间：</b>#{编码时间}
+ * </p>
+ * <p>
+ * <b>修改时间：</b>#{编码时间}
+ * </p>
+ * 
+ * @author 
+ * @version Ver1.0
+ * @since JDK 8
+ */
+@Feature(description = "回归测试")
+// TODO 类名与继承的模块类名需自行更改
+public class Test_01_#{脚本类编号} extends Test_01 {
+	/**
+	 * 记录用例信息
+	 */
+	@BeforeClass(alwaysRun = true)
+	public void recordCaseInfo() {
+		// Record.recordCaseTitle("#{用例标题}");
+		// Record.excelRecord.caseId("Test_01_#{脚本类编号}");
+		
+		#{BeforeClass}
+	}
+
+	/**
+	 * 后置处理，确保界面恢复到进入类时的状态
+	 */
+	@AfterClass(alwaysRun = true)
+	public void initPage() {
+		#{AfterClass}
+	}
+
+	/**
+	 * 方法前置条件
+	 */
+	@BeforeMethod(alwaysRun = true)
+	public void stepBeforeOperate() {
+		// 记录操作步骤
+		// Record.index = 1;
+		
+		#{BeforeMethod}
+	}
+
+	/**
+	 * 方法后置条件，退出方法并结束日志记录
+	 */
+	@AfterMethod(alwaysRun = true)
+	public void stepAfterOperate() {
+		#{AfterMethod}
+	}
+
+	#{用例步骤脚本}
+}

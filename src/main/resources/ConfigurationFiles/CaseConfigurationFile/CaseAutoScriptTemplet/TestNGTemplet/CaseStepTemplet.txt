@@ -1,0 +1,14 @@
+/**
+ * <b>步骤：</b>#{单条用例步骤}<br>
+ * <b>预期：</b>#{单条用例预期}
+ */
+@Test
+public void step_#{步骤数目}() {
+	// Record.excelRecord.switchSheet("运行记录").addContent("id", "#{步骤数目}");
+	// 记录用例
+	// Record.recordCaseStep("#{单条用例步骤}");
+	// Record.recordCaseExpectText("#{单条用例预期}");
+
+	// Record.recordCommonContent("实际步骤：");
+	#{操作脚本}
+}
