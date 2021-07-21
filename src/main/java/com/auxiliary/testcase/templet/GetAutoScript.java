@@ -26,13 +26,10 @@ package com.auxiliary.testcase.templet;
  *                     "operateStep": [
  *                         {
  *                             "elementName": "XXXX",
+ *                             "index":0, 
+ *                             "elementType":0, 
  *                             "operate": "click",
  *                             "input": ""
- *                         },
- *                         {
- *                             "elementName": "XXXX",
- *                             "operate": "input",
- *                             "input": "Test"
  *                         }
  *                     ]
  *                 }
@@ -89,13 +86,25 @@ public interface GetAutoScript {
 	 */
 	String KEY_ELEMENT_NAME = "elementName";
 	/**
+	 * 存储当前操作元素的下标，int
+	 */
+	String KEY_INDEX = "index";
+	/**
+	 * 存错当前操作元素的元素类型，int
+	 */
+	String KEY_ELEMENT_TYPE = "elementType";
+	/**
 	 * 字段存储当前操作的类型，int
 	 */
 	String KEY_OPERATE = "operate";
 	/**
-	 * 字段存储当前操mk作的输入内容，String
+	 * 字段存储当前操作的输入内容，String
 	 */
 	String KEY_INPUT = "input";
+	/**
+	 * 存储当前操作的输出的内容至某个变量，String
+	 */
+	String KEY_OUTPUT = "output";
 	
 	/**
 	 * 用于以json的形式返回当前测试用例模板中存储的内容

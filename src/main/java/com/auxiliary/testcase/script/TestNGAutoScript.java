@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import com.alibaba.fastjson.JSONArray;
@@ -178,7 +179,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 			throw new IncorrectContentException(
 					"模板文件读取异常：" + new File(templetFileFolder, STEP_TERMPLET_NAME).getAbsolutePath());
 		}
-		
+
 		// TODO 解析操作
 
 		String content = stepTempletScript.toString();
@@ -190,13 +191,22 @@ public class TestNGAutoScript extends AbstractAutoScript {
 
 		return content;
 	}
-	
+
 	/**
 	 * 用于分析操作json，将其解析为脚本，并返回
 	 * @param operateJson 操作json
 	 * @return 操作脚本
 	 */
 	private String analysisOperate(JSONObject operateJson) {
-		return "";
+		StringBuilder operateScript = new StringBuilder();
+		
+		//判断当前返回值是否需要存储
+		Optional.ofNullable(operateJson.getString(GetAutoScript.KEY_OUTPUT)).filter(text -> !text.isEmpty()).ifPresent(text -> {
+			String script = "String %s = String.value(%s);";
+			operateScript.append(String.format(script, text));
+		});
+		
+		
+		return operateScript.toString();
 	}
 }
