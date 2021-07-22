@@ -212,7 +212,7 @@ public enum OperateType {
 	 * @param code 枚举名称
 	 * @return 枚举值
 	 */
-	public static OperateType getMarkColorsType(String name) {
+	public static OperateType getOperateType(String name) {
 		for (OperateType type : values()) {
 			if (Objects.equals(type.name, name)) {
 				return type;
