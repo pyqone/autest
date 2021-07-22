@@ -35,6 +35,23 @@ import com.auxiliary.tool.date.Time;
  * @since JDK 1.8
  */
 public class TestNGAutoScript extends AbstractAutoScript {
+	/**
+	 * 生成脚本中点击事件类对象名称
+	 */
+	public final static String CLASS_CLICK_EVENT = "clickEvent";
+	/**
+	 * 生成脚本中输入事件类对象名称
+	 */
+	public final static String CLASS_INPUT_EVENT = "inputEvent";
+	/**
+	 * 生成脚本中等待事件类对象名称
+	 */
+	public final static String CLASS_WAIT_EVENT = "waitEvent";
+	/**
+	 * 生成脚本中断言事件类对象名称
+	 */
+	public final static String CLASS_ASSERT_EVENT = "assertEvent";
+	
 	private final String TEMP_CLASS_INDEX = "脚本类编号";
 	private final String TEMP_CASE_TITLE = "用例标题";
 	private final String TEMP_CASE_TOTAL_STEP = "用例步骤";
