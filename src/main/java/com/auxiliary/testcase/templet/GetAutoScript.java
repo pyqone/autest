@@ -107,6 +107,15 @@ public interface GetAutoScript {
 	String KEY_OUTPUT = "output";
 	
 	/**
+	 * 用于获取所有元素的标志
+	 */
+	String ELEMENT_INDEX_All_SIGN = "all";
+	/**
+	 * 用于分隔元素下标的标志
+	 */
+	String ELEMENT_INDEX_SPLIT_SIGN = ",";
+	
+	/**
 	 * 用于以json的形式返回当前测试用例模板中存储的内容
 	 * @return 测试用例模板操作json
 	 */

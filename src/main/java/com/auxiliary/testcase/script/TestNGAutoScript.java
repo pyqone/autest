@@ -4,12 +4,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.selenium.brower.ChromeBrower;
+import com.auxiliary.selenium.element.ElementType;
+import com.auxiliary.selenium.element.FindDataListElement;
+import com.auxiliary.selenium.event.OperateType;
 import com.auxiliary.selenium.location.ByType;
 import com.auxiliary.testcase.file.IncorrectContentException;
 import com.auxiliary.testcase.templet.GetAutoScript;
@@ -51,7 +58,20 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 * 生成脚本中断言事件类对象名称
 	 */
 	public final static String CLASS_ASSERT_EVENT = "assertEvent";
-	
+
+	/**
+	 * 生成脚本中普通元素类对象名称
+	 */
+	public final static String CLASS_COMMON_ELEMENT = "commonElement";
+	/**
+	 * 生成脚本中列表元素类对象名称
+	 */
+	public final static String CLASS_DATA_LIST_ELEMENT = "listElement";
+	/**
+	 * 生成脚本中选择型元素类对象名称
+	 */
+	public final static String CLASS_SELECT_ELEMENT = "selectElement";
+
 	private final String TEMP_CLASS_INDEX = "脚本类编号";
 	private final String TEMP_CASE_TITLE = "用例标题";
 	private final String TEMP_CASE_TOTAL_STEP = "用例步骤";
@@ -70,15 +90,15 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	/**
 	 * 用于拼接待替换的词语
 	 */
-	protected final String REPLACE_WORD = "\\#\\{%s\\}";
+	private final String REPLACE_WORD = "\\#\\{%s\\}";
 	/**
 	 * 用于替换类说明中的步骤与预期的格式
 	 */
-	protected final String REPLACE_STEP_WORD = " * <li>%s</li>";
+	private final String REPLACE_STEP_WORD = " * <li>%s</li>";
 	/**
 	 * 用于替换的类名
 	 */
-	protected final String REPLACE_CLASS_NAME = "Test_01";
+	private final String REPLACE_CLASS_NAME = "Test_01";
 
 	/**
 	 * 指向用例步骤模板文件名称
@@ -211,19 +231,107 @@ public class TestNGAutoScript extends AbstractAutoScript {
 
 	/**
 	 * 用于分析操作json，将其解析为脚本，并返回
+	 * 
 	 * @param operateJson 操作json
 	 * @return 操作脚本
 	 */
 	private String analysisOperate(JSONObject operateJson) {
-		StringBuilder operateScript = new StringBuilder();
-		
-		//判断当前返回值是否需要存储
-		Optional.ofNullable(operateJson.getString(GetAutoScript.KEY_OUTPUT)).filter(text -> !text.isEmpty()).ifPresent(text -> {
-			String script = "String %s = String.value(%s);";
-			operateScript.append(String.format(script, text));
-		});
-		
-		
+		// 获取操作枚举，并存储操作相关的脚本
+		OperateType operateType = OperateType.getOperateType(operateJson.getString(GetAutoScript.KEY_OPERATE));
+		String operateScript = String.format("%s.%s", getClassObject(operateType.getClassCode()),
+				operateType.getName());
+
+		// 获取元素枚举，并存储元素相关的脚本
+		ElementType elementType = ElementType.getElementType(operateJson.getShortValue(GetAutoScript.KEY_ELEMENT_TYPE));
+
+		// 判断当前返回值是否需要存储
+		Optional.ofNullable(operateJson.getString(GetAutoScript.KEY_OUTPUT)).filter(text -> !text.isEmpty())
+				.ifPresent(text -> {
+					String script = "String %s = String.value(%s);";
+					operateScript.append(String.format(script, text));
+				});
+
 		return operateScript.toString();
+	}
+
+	/**
+	 * 用于根据操作枚举所属的事件类编码，返回对应的类对象名称
+	 * 
+	 * @param classCode 事件类编码
+	 * @return 事件类对象名称
+	 */
+	private String getClassObject(short classCode) {
+		switch (classCode) {
+		case 0:
+			return CLASS_CLICK_EVENT;
+		case 1:
+			return CLASS_INPUT_EVENT;
+		case 2:
+			return CLASS_WAIT_EVENT;
+		case 3:
+			return CLASS_ASSERT_EVENT;
+		default:
+			throw new IncorrectContentException("不支持的类对象编码：" + classCode);
+		}
+	}
+
+	private String getElementObject(short elementTypeCode, String elementName, String indexText, String operateScript) {
+		// 切分元素下标文本，并将文本内容转换为整形类型
+		List<Integer> indexList = Arrays.stream(indexText.split(REPLACE_MULTIPLE_VALUE_WORD)).map(Integer::valueOf)
+				.collect(Collectors.toList());
+
+		// 判断当前下标个数且第一个元素大于0
+		if (indexList.size() == 1 && indexList.get(0) > 1) {
+
+		}
+
+		switch (ElementType.getElementType(elementTypeCode)) {
+		case COMMON_ELEMENT:
+			script = CLASS_COMMON_ELEMENT + ".getElement(\"" + elementName + "\")";
+		case DATA_LIST_ELEMENT:
+			script = CLASS_DATA_LIST_ELEMENT + ".find()";
+
+		default:
+			throw new IncorrectContentException("不支持的元素类型编码：" + elementTypeCode);
+		}
+
+		return script;
+	}
+
+	/**
+	 * 用于返回单一元素的脚本
+	 * @param elementName 元素名称
+	 * @param indexText 下标文本
+	 * @return 单一元素获取相关的脚本
+	 */
+	private String getCommonElementScript(String elementName, String indexText, String operateScript) {
+		// 由于单一元素获取方法不支持多下标获取，故判断下标文本是否为单一下标，不是则抛出异常
+		if (indexText.matches("-?\\d+")) {
+			return String.format("%s(%s.getElement(\"%s\", %s)#{输入});\r\n", operateScript, CLASS_COMMON_ELEMENT, elementName, indexText);
+		} else {
+			throw new IncorrectContentException("单元素不支持多值获取：" + indexText);
+		}
+	}
+	
+	private String getListElementScript(String elementName, String indexText, String operateScript) {
+		FindDataListElement f = new FindDataListElement(new ChromeBrower(new File("")));
+		
+		// 按照相关的规则，分隔下标文本
+		String[] indexs = indexText.split(GetAutoScript.ELEMENT_INDEX_SPLIT_SIGN);
+		// 判断下标是否只包含一个元素
+		if (indexs.length == 1) {
+			// 若下标只有一个，且为获取所有元素的标志，则按照获取所有元素进行获取
+			if (Objects.equals(GetAutoScript.ELEMENT_INDEX_All_SIGN, indexs[0])) {
+				return String.format("%s.find(%s).getAllElement().forEach(element -> %s(element#{输入}));\r\n", CLASS_DATA_LIST_ELEMENT, elementName, operateScript);
+			} else {
+				return String.format("%s(%s.getElement(\"%s\", %s)#{输入});\r\n", operateScript, CLASS_COMMON_ELEMENT, elementName, indexText);
+			}
+		} else {
+			// 获取所有的下标，将下标转换为
+			for (String index : indexs) {
+				String script = String.format("%s.find(%s);\r\n", CLASS_DATA_LIST_ELEMENT, elementName);
+				
+			}
+		}
 	}
 }
