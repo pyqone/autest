@@ -10,5 +10,6 @@ public void step_#{步骤数目}() {
 	// Record.recordCaseExpectText("#{单条用例预期}");
 
 	// Record.recordCommonContent("实际步骤：");
+	
 	#{操作脚本}
 }

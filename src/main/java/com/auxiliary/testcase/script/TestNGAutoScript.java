@@ -5,17 +5,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.auxiliary.selenium.brower.ChromeBrower;
 import com.auxiliary.selenium.element.ElementType;
-import com.auxiliary.selenium.element.FindDataListElement;
 import com.auxiliary.selenium.event.OperateType;
 import com.auxiliary.selenium.location.ByType;
 import com.auxiliary.testcase.file.IncorrectContentException;
@@ -86,6 +82,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	private final String TEMP_SCRIPT_STEP = "用例步骤脚本";
 	private final String TEMP_SCRIPT_STEP_INDEX = "步骤数目";
 	private final String TEMP_SCRIPT_STEP_OPERATE = "操作脚本";
+	private final String TEMP_SCRIPT_OPERATE_INPUT = "输入";
 
 	/**
 	 * 用于拼接待替换的词语
@@ -99,6 +96,10 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 * 用于替换的类名
 	 */
 	private final String REPLACE_CLASS_NAME = "Test_01";
+	/**
+	 * 用于每个操作步骤脚本后的换行符号
+	 */
+	private final String REPLACE_OPERATE_LINE_SIGN = "\r\n\t\t";
 
 	/**
 	 * 指向用例步骤模板文件名称
@@ -217,7 +218,11 @@ public class TestNGAutoScript extends AbstractAutoScript {
 					"模板文件读取异常：" + new File(templetFileFolder, STEP_TERMPLET_NAME).getAbsolutePath());
 		}
 
-		// TODO 解析操作
+		// 解析操作
+		StringBuilder operateScrtpt = new StringBuilder();
+		for (int operateIndex = 0; operateIndex < operateListJson.size(); operateIndex++) {
+			operateScrtpt.append(analysisOperate(operateListJson.getJSONObject(operateIndex)));
+		}
 
 		String content = stepTempletScript.toString();
 		// 替换步骤数
@@ -225,7 +230,9 @@ public class TestNGAutoScript extends AbstractAutoScript {
 		// 替换步骤与预期
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_SIGN_STEP), step);
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_SIGN_EXCEPT), except);
-
+		// 替换操作脚本
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_STEP_OPERATE), operateScrtpt.toString());
+		
 		return content;
 	}
 
@@ -240,18 +247,15 @@ public class TestNGAutoScript extends AbstractAutoScript {
 		OperateType operateType = OperateType.getOperateType(operateJson.getString(GetAutoScript.KEY_OPERATE));
 		String operateScript = String.format("%s.%s", getClassObject(operateType.getClassCode()),
 				operateType.getName());
-
-		// 获取元素枚举，并存储元素相关的脚本
-		ElementType elementType = ElementType.getElementType(operateJson.getShortValue(GetAutoScript.KEY_ELEMENT_TYPE));
-
-		// 判断当前返回值是否需要存储
-		Optional.ofNullable(operateJson.getString(GetAutoScript.KEY_OUTPUT)).filter(text -> !text.isEmpty())
-				.ifPresent(text -> {
-					String script = "String %s = String.value(%s);";
-					operateScript.append(String.format(script, text));
-				});
-
-		return operateScript.toString();
+		
+		// 处理元素相关的脚本
+		operateScript = getElementObject(operateJson.getShortValue(GetAutoScript.KEY_ELEMENT_TYPE),
+				operateJson.getString(GetAutoScript.KEY_ELEMENT_NAME), operateJson.getString(GetAutoScript.KEY_INDEX),
+				operateScript);
+		// 处理输入内容
+		operateScript = operateScript.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_OPERATE_INPUT), getInputText(operateJson.getString(GetAutoScript.KEY_INPUT)));
+				
+		return operateScript;
 	}
 
 	/**
@@ -275,63 +279,161 @@ public class TestNGAutoScript extends AbstractAutoScript {
 		}
 	}
 
+	/**
+	 * 用于添加元素相关的脚本
+	 * 
+	 * @param elementTypeCode 元素类型编码
+	 * @param elementName     元素名称
+	 * @param indexText       下标文本
+	 * @param operateScript   操作脚本
+	 * @return 加工后包含元素相关的脚本
+	 */
 	private String getElementObject(short elementTypeCode, String elementName, String indexText, String operateScript) {
-		// 切分元素下标文本，并将文本内容转换为整形类型
-		List<Integer> indexList = Arrays.stream(indexText.split(REPLACE_MULTIPLE_VALUE_WORD)).map(Integer::valueOf)
-				.collect(Collectors.toList());
-
-		// 判断当前下标个数且第一个元素大于0
-		if (indexList.size() == 1 && indexList.get(0) > 1) {
-
-		}
-
+		// 根据元素类型编码，查找指定的枚举，并根据枚举，选择相应的脚本生成方法
 		switch (ElementType.getElementType(elementTypeCode)) {
 		case COMMON_ELEMENT:
-			script = CLASS_COMMON_ELEMENT + ".getElement(\"" + elementName + "\")";
+			return getCommonElementScript(elementName, indexText, operateScript);
 		case DATA_LIST_ELEMENT:
-			script = CLASS_DATA_LIST_ELEMENT + ".find()";
-
+			return getDataListElementScript(elementName, indexText, operateScript);
+		case SELECT_DATAS_ELEMENT:
+		case SELECT_OPTION_ELEMENT:
+			return getSelectElemntScript(elementName, indexText, operateScript);
 		default:
 			throw new IncorrectContentException("不支持的元素类型编码：" + elementTypeCode);
 		}
-
-		return script;
 	}
 
 	/**
-	 * 用于返回单一元素的脚本
-	 * @param elementName 元素名称
-	 * @param indexText 下标文本
+	 * 用于返回单一型元素的脚本
+	 * 
+	 * @param elementName   元素名称
+	 * @param indexText     下标文本
+	 * @param operateScript 操作脚本
 	 * @return 单一元素获取相关的脚本
 	 */
 	private String getCommonElementScript(String elementName, String indexText, String operateScript) {
-		// 由于单一元素获取方法不支持多下标获取，故判断下标文本是否为单一下标，不是则抛出异常
-		if (indexText.matches("-?\\d+")) {
-			return String.format("%s(%s.getElement(\"%s\", %s)#{输入});\r\n", operateScript, CLASS_COMMON_ELEMENT, elementName, indexText);
+		if (!Optional.ofNullable(indexText).filter(text -> !text.isEmpty()).isPresent()) {
+			return String.format("%s(%s.getElement(\"%s\")#{输入});%s", operateScript, CLASS_COMMON_ELEMENT, elementName,
+					REPLACE_OPERATE_LINE_SIGN);
 		} else {
-			throw new IncorrectContentException("单元素不支持多值获取：" + indexText);
+			// 由于单一元素获取方法不支持多下标获取，故判断下标文本是否为单一下标，不是则抛出异常
+			if (indexText.matches("-?\\d+")) {
+				return String.format("%s(%s.getElement(\"%s\", %s)#{输入});%s", operateScript, CLASS_COMMON_ELEMENT,
+						elementName, indexText, REPLACE_OPERATE_LINE_SIGN);
+			} else {
+				throw new IncorrectContentException("单元素不支持多值获取：" + indexText);
+			}
 		}
 	}
-	
-	private String getListElementScript(String elementName, String indexText, String operateScript) {
-		FindDataListElement f = new FindDataListElement(new ChromeBrower(new File("")));
-		
-		// 按照相关的规则，分隔下标文本
-		String[] indexs = indexText.split(GetAutoScript.ELEMENT_INDEX_SPLIT_SIGN);
-		// 判断下标是否只包含一个元素
-		if (indexs.length == 1) {
-			// 若下标只有一个，且为获取所有元素的标志，则按照获取所有元素进行获取
-			if (Objects.equals(GetAutoScript.ELEMENT_INDEX_All_SIGN, indexs[0])) {
-				return String.format("%s.find(%s).getAllElement().forEach(element -> %s(element#{输入}));\r\n", CLASS_DATA_LIST_ELEMENT, elementName, operateScript);
+
+	/**
+	 * 用于返回集合型元素的脚本
+	 * 
+	 * @param elementName   元素名称
+	 * @param indexText     下标文本
+	 * @param operateScript 操作脚本
+	 * @return 集合型元素相关的脚本
+	 */
+	private String getDataListElementScript(String elementName, String indexText, String operateScript) {
+		if (Optional.ofNullable(indexText).filter(text -> !text.isEmpty()).isPresent()) {
+			// 按照相关的规则，分隔下标文本
+			String[] indexs = indexText.split(GetAutoScript.ELEMENT_INDEX_SPLIT_SIGN);
+			// 判断下标是否只包含一个元素
+			if (indexs.length == 1) {
+				// 若下标只有一个，且为获取所有元素的标志，则按照获取所有元素进行获取
+				if (Objects.equals(GetAutoScript.ELEMENT_INDEX_All_SIGN, indexs[0])) {
+					return String.format("%s.find(%s).getAllElement().forEach(element -> %s(element#{输入}));%s",
+							CLASS_DATA_LIST_ELEMENT, elementName, operateScript, REPLACE_OPERATE_LINE_SIGN);
+				} else {
+					return String.format("%s(%s.getElement(\"%s\", %s)#{输入});%s", operateScript, CLASS_COMMON_ELEMENT,
+							elementName, indexText, REPLACE_OPERATE_LINE_SIGN);
+				}
 			} else {
-				return String.format("%s(%s.getElement(\"%s\", %s)#{输入});\r\n", operateScript, CLASS_COMMON_ELEMENT, elementName, indexText);
+				String script = String.format("%s.find(%s);%s", CLASS_DATA_LIST_ELEMENT, elementName,
+						REPLACE_OPERATE_LINE_SIGN);
+				// 获取所有的下标，将下标转换为
+				for (String index : indexs) {
+					index = index.trim();
+					// 判断下标是否为数字
+					if (index.matches("-?\\d+")) {
+						script += String.format("%s(%s.getElement(%s)#{输入});%s", operateScript, CLASS_DATA_LIST_ELEMENT,
+								index, REPLACE_OPERATE_LINE_SIGN);
+					} else {
+						throw new IncorrectContentException("集合元素不支持的下标：" + index);
+					}
+				}
+	
+				return script;
 			}
 		} else {
-			// 获取所有的下标，将下标转换为
-			for (String index : indexs) {
-				String script = String.format("%s.find(%s);\r\n", CLASS_DATA_LIST_ELEMENT, elementName);
-				
-			}
+			throw new IncorrectContentException("集合元素不支持无下标获取元素（下标为空）");
 		}
+	}
+
+	/**
+	 * 用于返回下拉型元素的脚本
+	 * 
+	 * @param elementName   元素名称
+	 * @param indexText     下标文本
+	 * @param operateScript 操作脚本
+	 * @return 下拉型元素相关的脚本
+	 */
+	private String getSelectElemntScript(String elementName, String indexText, String operateScript) {
+		if (Optional.ofNullable(indexText).filter(text -> !text.isEmpty()).isPresent()) {
+			String annotation = "// TODO 非标准下拉选项需要使用点击事件打开下拉框";
+	
+			StringJoiner script = new StringJoiner(REPLACE_OPERATE_LINE_SIGN, "", REPLACE_OPERATE_LINE_SIGN);
+			script.add(annotation);
+			script.add(String.format("%s.find(%s);", CLASS_SELECT_ELEMENT, elementName));
+	
+			// 按照相关的规则，分隔下标文本
+			String[] indexs = indexText.split(GetAutoScript.ELEMENT_INDEX_SPLIT_SIGN);
+			// 判断下标是否只包含一个元素
+			if (indexs.length == 1) {
+				// 若下标只有一个，且为获取所有元素的标志，则按照获取所有元素进行获取
+				if (Objects.equals(GetAutoScript.ELEMENT_INDEX_All_SIGN, indexs[0])) {
+					script.add(String.format("%s.getAllElement().forEach(element -> %s(element#{输入}));",
+							CLASS_SELECT_ELEMENT, elementName, operateScript));
+				} else {
+					script.add(
+							String.format("%s(%s.getElement(%s)#{输入});", operateScript, CLASS_SELECT_ELEMENT, indexText));
+				}
+			} else {
+				// 获取所有的下标，将下标转换为
+				for (String index : indexs) {
+					// 判断下标是否为数字，根据传参不同，其脚本将存在变化
+					if (index.matches("-?\\d+")) {
+						script.add(annotation);
+						script.add(
+								String.format("%s(%s.getElement(%s)#{输入});", operateScript, CLASS_SELECT_ELEMENT, index));
+					} else {
+						script.add(annotation);
+						script.add(
+								String.format("%s(%s.getElement(\"%s\")#{输入});", operateScript, CLASS_SELECT_ELEMENT, index));
+					}
+				}
+			}
+	
+			return script.toString();
+		} else {
+			throw new IncorrectContentException("下拉型元素不支持无下标获取（下标为空）");
+		}
+	}
+
+	/**
+	 * 用于生成输入相关的脚本内容
+	 * @param inputText 输入内容
+	 * @return 输入相关的脚本内容
+	 */
+	private String getInputText(String inputText) {
+		if (Optional.ofNullable(inputText).filter(text -> !text.isEmpty()).isPresent()) {
+			StringJoiner script = new StringJoiner(", ");
+			Arrays.stream(inputText.trim().split(GetAutoScript.ELEMENT_INDEX_SPLIT_SIGN)).filter(text -> !text.isEmpty())
+					.map(text -> "\"" + text + "\"").forEach(script::add);
+			
+			return ", " + script.toString();
+		}
+		
+		return "";
 	}
 }
