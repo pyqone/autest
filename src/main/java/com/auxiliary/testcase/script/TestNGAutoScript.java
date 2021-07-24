@@ -9,6 +9,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.selenium.element.ElementType;
@@ -129,7 +133,29 @@ public class TestNGAutoScript extends AbstractAutoScript {
 
 	@Override
 	public void writeElementFile(File saveFile, ByType... byTypes) {
-		// TODO Auto-generated method stub
+		Document dom = DocumentHelper.createDocument();
+		Element root = dom.addElement("project");
+		
+		// 读取用例json，获取element中的所有内容
+		JSONArray caseListJson = caseJson.getJSONArray(GetAutoScript.KEY_ELEMENT);
+		for (int index = 0; index < caseListJson.size(); index++) {
+			try {
+				String elementName = caseListJson.getString(index);
+				
+				// 添加element节点
+				Element elementNode = root.addElement("element").addAttribute("name", elementName);
+				
+				// 根据启用的by标签，来添加相应的内容
+				for (ByType byType : byTypes) {
+					elementNode.addElement(byType.getValue()).addAttribute("is_use", "true").addText("");
+				}
+			} catch (Exception e) {
+				throw new IncorrectContentException("元素数组中，第" + index + "个元素无法转换为字符串");
+			}
+		}
+		
+		// TODO 调试使用
+		System.out.println(dom.asXML());
 	}
 
 	/**
@@ -196,6 +222,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 			// 替换用例步骤脚本
 			content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_STEP), operateScript.toString());
 
+			// TODO 调试使用
 			System.out.println(content);
 		}
 	}
