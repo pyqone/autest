@@ -1,9 +1,12 @@
 package com.auxiliary.testcase.script;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Optional;
+import java.util.StringJoiner;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.selenium.location.ByType;
 import com.auxiliary.testcase.file.IncorrectContentException;
@@ -20,7 +23,7 @@ import com.auxiliary.testcase.templet.GetAutoScript;
  * <b>编码时间：</b>2021年7月16日 上午10:36:49
  * </p>
  * <p>
- * <b>修改时间：</b>2021年7月16日 上午10:36:49
+ * <b>修改时间：</b>2021年7月26日 上午8:09:49
  * </p>
  * 
  * @author 彭宇琦
@@ -31,23 +34,16 @@ public abstract class AbstractAutoScript {
 	/**
 	 * 用于存储用例Json
 	 */
-	JSONObject caseJson;
-
-	public AbstractAutoScript() {
-		// 初始化json
-		caseJson = new JSONObject();
-		caseJson.put(GetAutoScript.KEY_ELEMENT, new JSONArray());
-		caseJson.put(GetAutoScript.KEY_CASE, new JSONArray());
-	}
+	JSONObject scriptJson;
 
 	/**
-	 * 用于添加模板中返回的自动化脚本
+	 * 根据{@link GetAutoScript}类对象返回的内容，初始化脚本生成方法
 	 * 
-	 * @param caseTemplet 模板类对象
+	 * @param caseTemplet 用例模板类对象
 	 */
-	public void addCase(GetAutoScript caseTemplet) {
+	public AbstractAutoScript(GetAutoScript caseTemplet) {
 		// 获取并解析相关的脚本
-		caseJson = analysisJson(Optional.ofNullable(caseTemplet).map(GetAutoScript::getAutoScriptJson).orElse(""));
+		scriptJson = analysisJson(Optional.ofNullable(caseTemplet).map(GetAutoScript::getAutoScriptJson).orElse(""));
 	}
 
 	/**
@@ -106,5 +102,37 @@ public abstract class AbstractAutoScript {
 		}
 
 		return caseJson;
+	}
+
+	/**
+	 * 用于读取模板文件内容，并将内容进行返回
+	 * <p>
+	 * <b>注意：</b>拼接字符的写法类似于{@link StringJoiner#StringJoiner(CharSequence, CharSequence, CharSequence)}的写法：
+	 * <ul>
+	 * <li>line对应StringJoiner中的delimiter形参</li>
+	 * <li>before对应StringJoiner中的prefix形参</li>
+	 * <li>after对应StringJoiner中的suffix形参</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @param scriptTempleatFile 模板文件对象
+	 * @param line               在读取到的每行元素后添加内容
+	 * @param before             在读取到的内容前拼接内容
+	 * @param after              在读取到的内容后拼接内容
+	 * @return 文件内容
+	 */
+	protected String readScriptTempleatFile(File scriptTempleatFile, String line, String before, String after) {
+		// 读取并存储用例框架模板中的内容
+		StringJoiner caseTempletScript = new StringJoiner(line, before, after);
+		try (BufferedReader br = new BufferedReader(new FileReader(scriptTempleatFile))) {
+			String text = "";
+			while ((text = br.readLine()) != null) {
+				caseTempletScript.add(text);
+			}
+		} catch (IOException e) {
+			throw new IncorrectContentException("模板文件读取异常：" + scriptTempleatFile.getAbsolutePath());
+		}
+
+		return caseTempletScript.toString();
 	}
 }
