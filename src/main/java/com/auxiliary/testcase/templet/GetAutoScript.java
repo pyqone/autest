@@ -105,6 +105,22 @@ public interface GetAutoScript {
 	 * 存储当前操作的输出的内容至某个变量，String
 	 */
 	String KEY_OUTPUT = "output";
+	/**
+	 * 存储执行步骤脚本前的初始化工作，内部包含operateStep字段，其结构与case.step.operateStep一致
+	 */
+	String KEY_BEFORE_CLASS = "beforeClass";
+	/**
+	 * 存储执行步骤脚本后的处理工作，内部包含operateStep字段，其结构与case.step.operateStep一致
+	 */
+	String KEY_AFTER_CLASS = "afterClass";
+	/**
+	 * 存储执行每个步骤脚本前的初始化工作，内部包含operateStep字段，其结构与case.step.operateStep一致
+	 */
+	String KEY_BEFORE_METHOD = "beforeMethod";
+	/**
+	 * 存储执行每个步骤脚本后的处理工作，内部包含operateStep字段，其结构与case.step.operateStep一致kn    
+	 */
+	String KEY_AFTER_METHOD = "afterMethod";
 	
 	/**
 	 * 用于获取所有元素的标志

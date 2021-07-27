@@ -1,9 +1,6 @@
 package com.auxiliary.testcase.script;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,7 +9,6 @@ import java.util.StringJoiner;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -116,6 +112,11 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 */
 	File templetFileFolder;
 
+	/**
+	 * 根据{@link GetAutoScript}类对象返回的内容，初始化脚本生成方法
+	 * 
+	 * @param caseTemplet 用例模板类对象
+	 */
 	public TestNGAutoScript(GetAutoScript caseTemplet) {
 		super(caseTemplet);
 		templetFileFolder = new File(InformationCase.class.getClassLoader()
@@ -197,9 +198,24 @@ public class TestNGAutoScript extends AbstractAutoScript {
 			// 存储步骤脚本
 			operateScript.add(readStepTemplet(stepIndex + 1, recordJson.getString(GetAutoScript.KEY_CASE_STEP_TEXT),
 					recordJson.getString(GetAutoScript.KEY_CASE_EXCEPT_TEXT),
-					stepJson.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)));
+					analysisOperate(stepJson.getJSONArray(GetAutoScript.KEY_OPERATE_STEP))));
 		}
 
+		// 获取beforeMethod脚本
+		String beforemethod = Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_BEFORE_METHOD))
+				.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate).orElse("");
+		// 获取afterMethod脚本
+		String afterMethod = Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_AFTER_METHOD))
+				.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate).orElse("");
+		// 获取beforeClass脚本
+		String beforeClass = Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_BEFORE_CLASS))
+				.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate).orElse("");
+		// 获取beforeMethod脚本
+		String afterClass = Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_AFTER_CLASS))
+				.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate).orElse("");
+
+		
+		
 		// 替换标题
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_TITLE),
 				caseJson.getString(GetAutoScript.KEY_CASE_TITLE_TEXT));
@@ -210,7 +226,12 @@ public class TestNGAutoScript extends AbstractAutoScript {
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_TOTAL_EXCEPT), exceptText.toString());
 		// 替换用例步骤脚本
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_STEP), operateScript.toString());
-
+		// 替换beforeClass等脚本
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_BEFORE_CLASS), beforeClass);
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_AFTER_CLASS), afterClass);
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_BEFORE_METHOD), beforemethod);
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_AFTER_METHOD), afterMethod);
+		
 		return content;
 	}
 
@@ -219,15 +240,10 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 * 
 	 * @return 文件内容
 	 */
-	private String readStepTemplet(int index, String step, String except, JSONArray operateListJson) {
+	private String readStepTemplet(int index, String step, String except, String operateScrtpt) {
 		// 读取并存储用例框架模板中的内容
-		String stepTempletScript = readScriptTempleatFile(new File(templetFileFolder, STEP_TERMPLET_NAME), "\r\n\t", "\t", "");
-
-		// 解析操作
-		StringBuilder operateScrtpt = new StringBuilder();
-		for (int operateIndex = 0; operateIndex < operateListJson.size(); operateIndex++) {
-			operateScrtpt.append(analysisOperate(operateListJson.getJSONObject(operateIndex)));
-		}
+		String stepTempletScript = readScriptTempleatFile(new File(templetFileFolder, STEP_TERMPLET_NAME), "\r\n\t",
+				"\t", "");
 
 		String content = stepTempletScript.toString();
 		// 替换步骤数
@@ -247,21 +263,29 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 * @param operateJson 操作json
 	 * @return 操作脚本
 	 */
-	private String analysisOperate(JSONObject operateJson) {
-		// 获取操作枚举，并存储操作相关的脚本
-		OperateType operateType = OperateType.getOperateType(operateJson.getString(GetAutoScript.KEY_OPERATE));
-		String operateScript = String.format("%s.%s", getClassObject(operateType.getClassCode()),
-				operateType.getName());
+	private String analysisOperate(JSONArray operateListJson) {
+		// 解析操作
+		StringBuilder operateScrtpt = new StringBuilder();
+		for (int operateIndex = 0; operateIndex < operateListJson.size(); operateIndex++) {
+			JSONObject operateJson = operateListJson.getJSONObject(operateIndex);
+			
+			// 获取操作枚举，并存储操作相关的脚本
+			OperateType operateType = OperateType.getOperateType(operateJson.getString(GetAutoScript.KEY_OPERATE));
+			String operateScript = String.format("%s.%s", getClassObject(operateType.getClassCode()),
+					operateType.getName());
 
-		// 处理元素相关的脚本
-		operateScript = getElementObject(operateJson.getShortValue(GetAutoScript.KEY_ELEMENT_TYPE),
-				operateJson.getString(GetAutoScript.KEY_ELEMENT_NAME), operateJson.getString(GetAutoScript.KEY_INDEX),
-				operateScript);
-		// 处理输入内容
-		operateScript = operateScript.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_OPERATE_INPUT),
-				getInputText(operateJson.getString(GetAutoScript.KEY_INPUT)));
-
-		return operateScript;
+			// 处理元素相关的脚本
+			operateScript = getElementObject(operateJson.getShortValue(GetAutoScript.KEY_ELEMENT_TYPE),
+					operateJson.getString(GetAutoScript.KEY_ELEMENT_NAME), operateJson.getString(GetAutoScript.KEY_INDEX),
+					operateScript);
+			// 处理输入内容
+			operateScript = operateScript.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_OPERATE_INPUT),
+					getInputText(operateJson.getString(GetAutoScript.KEY_INPUT)));
+			
+			operateScrtpt.append(operateScript);
+		}
+		
+		return operateScrtpt.toString();
 	}
 
 	/**
