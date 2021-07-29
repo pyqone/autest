@@ -22,6 +22,7 @@ import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -530,6 +531,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					}
 				}
 			});
+		});
+		
+		// 添加数据筛选按钮
+		Optional.ofNullable(tempJson.getBoolean(ExcelFileTemplet.KEY_FILTRATE)).filter(is -> is == true).ifPresent(is -> {
+			sheet.setAutoFilter(CellRangeAddress.valueOf(String.format("A1:%s1", num2CharIndex(sheet.getRow(0).getLastCellNum()))));
 		});
 
 		// 若存在数据有效性sheet页，则设置该页展示在文档最后
