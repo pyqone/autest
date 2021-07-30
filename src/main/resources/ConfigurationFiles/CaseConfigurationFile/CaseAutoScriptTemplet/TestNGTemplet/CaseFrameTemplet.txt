@@ -39,6 +39,8 @@ import org.testng.annotations.Test;
  */
 // TODO 类名与继承的模块类名需自行更改
 public class Test_01_#{脚本类编号} extends Test_01 {
+	#{属性}
+
 	/**
 	 * 记录用例信息
 	 */
@@ -78,4 +80,6 @@ public class Test_01_#{脚本类编号} extends Test_01 {
 	}
 
 #{用例步骤脚本}
+
+#{其他方法}
 }

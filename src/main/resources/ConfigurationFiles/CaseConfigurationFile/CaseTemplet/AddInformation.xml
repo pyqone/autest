@@ -10,30 +10,24 @@
 		</steps>
 		<script_by_steps>
 			<script_by_step id='1'>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
+				<script operate = 'clear' />
 			</script_by_step>
 			<script_by_step id='2'>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = '*{控件名称}*'  operate='input' input='&lt;input /&gt;'/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
+				<script operate = 'clear' />
+				<script operate = 'input' input = '&gt;input /&lt;' />
 			</script_by_step>
 			<script_by_step id='3'>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = '*{控件名称}*'  operate='input' input='*{rs(*{非输入限制}*,*{最短长度限制}*,*{最长长度限制}*)}'/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
+				<script operate = 'clear' />
+				<script operate = 'input' input = '*{非输入限制}*' />
 			</script_by_step>
 			<script_by_step id='12'>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = ''  operate='todo' input='重复数据添加测试，填写已存在于数据库中的内容'/>
-				<script element = '*{控件名称}*'  operate='input' input='*{重复内容}*'/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
+				<script operate = 'clear' />
+				<script operate = 'todo' input = '输入同名内容，无法生成' />
 			</script_by_step>
 			<script_by_step id='13'>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = '*{控件名称}*'  operate='input' input='*{rs(*{非输入限制}*,*{最短长度限制}*,*{最长长度限制}*)}'/>
-				<script element = '*{清空按钮}*'  operate='click' input=''/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
+				<script operate = 'clear' />				
+				<script operate = 'input' input = '*{输入限制}*' />
+				<script operate = 'clear' />	
 			</script_by_step>
 		</script_by_steps>
 		<excepts>
@@ -42,30 +36,6 @@
 			<except id='3' value='点击清空按钮后，填写的内容被清空，点击“*{保存按钮名称}*”按钮后，*{成功预期前文}**{信息}*创建成功，界面返回到列表页，其*{信息}*列表上显示*{操作类型}*的信息*{成功预期后文}*'/>
 			<except id='4' value='点击清空按钮后，填写的内容被清空，点击“*{保存按钮名称}*”按钮后，*{失败预期前文}**{信息}*创建失败，并给出相应的提示*{失败预期后文}*'/>
 		</excepts>
-		<script_by_excepts>
-			<script_by_except id='1'>
-				<script element = ''  operate='todo' input='*{成功预期前文}*'/>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
-				<script element = ''  operate='todo' input='*{成功预期前文}*'/>
-			</script_by_except>
-			<script_by_except id='2'>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = '*{控件名称}*'  operate='input' input='&lt;input /&gt;'/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
-			</script_by_except>
-			<script_by_except id='3'>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = '*{控件名称}*'  operate='input' input='*{rs(*{非输入限制}*)}'/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
-			</script_by_except>
-			<script_by_except id='4'>
-				<script element = '*{控件名称}*'  operate='clear' input=''/>
-				<script element = ''  operate='todo' input='重复数据添加测试，填写已存在于数据库中的内容'/>
-				<script element = '*{控件名称}*'  operate='input' input='*{重复内容}*'/>
-				<script element = '*{保存按钮名称}*'  operate='click' input=''/>
-			</script_by_except>
-		</script_by_excepts>
 		<titles>
 			<title id='1' value='对*{操作类型}**{信息}*界面的*{控件名称}*进行测试' />
 		</titles>

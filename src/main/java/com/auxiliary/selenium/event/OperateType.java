@@ -124,7 +124,11 @@ public enum OperateType {
 	/**
 	 * 断言元素文本与指定数字比较
 	 */
-	ASSERT_NUMBER("assertNumber", (short) 3, (short) 25);
+	ASSERT_NUMBER("assertNumber", (short) 3, (short) 25), 
+	/**
+	 * 提醒注释
+	 */
+	TODO("todo", (short) -1, (short) 26);
 
 	/**
 	 * 记录事件名称
@@ -172,6 +176,7 @@ public enum OperateType {
 	 * 返回枚举的所属类的编码
 	 * <p>
 	 * <ul>
+	 * <li>其他内容编码：-1</li>
 	 * <li>点击事件类（{@link ClickEvent}）编码：0</li>
 	 * <li>文本事件类（{@link TextEvent}）编码：1</li>
 	 * <li>等待事件类（{@link WaitEvent}）编码：2</li>

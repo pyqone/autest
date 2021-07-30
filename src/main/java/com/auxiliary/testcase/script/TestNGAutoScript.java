@@ -201,21 +201,6 @@ public class TestNGAutoScript extends AbstractAutoScript {
 					analysisOperate(stepJson.getJSONArray(GetAutoScript.KEY_OPERATE_STEP))));
 		}
 
-		// 获取beforeMethod脚本
-		String beforemethod = Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_BEFORE_METHOD))
-				.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate).orElse("");
-		// 获取afterMethod脚本
-		String afterMethod = Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_AFTER_METHOD))
-				.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate).orElse("");
-		// 获取beforeClass脚本
-		String beforeClass = Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_BEFORE_CLASS))
-				.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate).orElse("");
-		// 获取beforeMethod脚本
-		String afterClass = Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_AFTER_CLASS))
-				.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate).orElse("");
-
-		
-		
 		// 替换标题
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_TITLE),
 				caseJson.getString(GetAutoScript.KEY_CASE_TITLE_TEXT));
@@ -226,13 +211,34 @@ public class TestNGAutoScript extends AbstractAutoScript {
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_TOTAL_EXCEPT), exceptText.toString());
 		// 替换用例步骤脚本
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_STEP), operateScript.toString());
-		// 替换beforeClass等脚本
-		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_BEFORE_CLASS), beforeClass);
-		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_AFTER_CLASS), afterClass);
-		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_BEFORE_METHOD), beforemethod);
-		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_AFTER_METHOD), afterMethod);
 		
+		// 替换beforeClass等脚本
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_BEFORE_CLASS),
+				Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_BEFORE_CLASS))
+						.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate)
+						.orElse(""));
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_AFTER_CLASS),
+				Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_AFTER_CLASS))
+						.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate)
+						.orElse(""));
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_BEFORE_METHOD),
+				Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_BEFORE_METHOD))
+						.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate)
+						.orElse(""));
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_AFTER_METHOD),
+				Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_AFTER_METHOD))
+						.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate)
+						.orElse(""));
+
 		return content;
+	}
+	
+	private String getOtherMethodScript(JSONArray otherMethodListJson) {
+		StringJoiner script = new StringJoiner(REPLACE_OPERATE_LINE_SIGN, "\tpublic void %s() {" + REPLACE_OPERATE_LINE_SIGN, "\t}");
+		
+		for (int index = 0; index < otherMethodListJson.size(); index++) {
+			JSONObject methodJson = otherMethodListJson.getJSONObject(index);
+		}
 	}
 
 	/**
@@ -265,27 +271,32 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 */
 	private String analysisOperate(JSONArray operateListJson) {
 		// 解析操作
-		StringBuilder operateScrtpt = new StringBuilder();
+		StringBuilder script = new StringBuilder();
 		for (int operateIndex = 0; operateIndex < operateListJson.size(); operateIndex++) {
 			JSONObject operateJson = operateListJson.getJSONObject(operateIndex);
-			
+
 			// 获取操作枚举，并存储操作相关的脚本
 			OperateType operateType = OperateType.getOperateType(operateJson.getString(GetAutoScript.KEY_OPERATE));
-			String operateScript = String.format("%s.%s", getClassObject(operateType.getClassCode()),
-					operateType.getName());
+			String operateScript = "";
+			if (operateType.getClassCode() > -1) {
+				operateScript = String.format("%s.%s", getClassObject(operateType.getClassCode()),
+						operateType.getName());
+				// 处理元素相关的脚本
+				operateScript = getElementObject(operateJson.getShortValue(GetAutoScript.KEY_ELEMENT_TYPE),
+						operateJson.getString(GetAutoScript.KEY_ELEMENT_NAME),
+						operateJson.getString(GetAutoScript.KEY_INDEX), operateScript);
+				// 处理输入内容
+				operateScript = operateScript.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_OPERATE_INPUT),
+						getInputText(operateJson.getString(GetAutoScript.KEY_INPUT)));
+			} else {
+				operateScript = getOtherContent(operateType.getClassCode(),
+						operateJson.getString(GetAutoScript.KEY_INPUT));
+			}
 
-			// 处理元素相关的脚本
-			operateScript = getElementObject(operateJson.getShortValue(GetAutoScript.KEY_ELEMENT_TYPE),
-					operateJson.getString(GetAutoScript.KEY_ELEMENT_NAME), operateJson.getString(GetAutoScript.KEY_INDEX),
-					operateScript);
-			// 处理输入内容
-			operateScript = operateScript.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_OPERATE_INPUT),
-					getInputText(operateJson.getString(GetAutoScript.KEY_INPUT)));
-			
-			operateScrtpt.append(operateScript);
+			script.append(operateScript);
 		}
-		
-		return operateScrtpt.toString();
+
+		return script.toString();
 	}
 
 	/**
@@ -306,6 +317,22 @@ public class TestNGAutoScript extends AbstractAutoScript {
 			return CLASS_ASSERT_EVENT;
 		default:
 			throw new IncorrectContentException("不支持的类对象编码：" + classCode);
+		}
+	}
+
+	/**
+	 * 用于生成非类对象形式的内容
+	 * 
+	 * @param code  类型编码
+	 * @param input 输入的内容
+	 * @return 生成的代码
+	 */
+	private String getOtherContent(short code, String input) {
+		switch (code) {
+		case -1:
+			return "// TODO " + input;
+		default:
+			throw new IncorrectContentException("不支持的类型编码：" + code);
 		}
 	}
 
