@@ -1,6 +1,7 @@
 package com.auxiliary.testcase.script;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -84,6 +85,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	private final String TEMP_SCRIPT_STEP_INDEX = "步骤数目";
 	private final String TEMP_SCRIPT_STEP_OPERATE = "操作脚本";
 	private final String TEMP_SCRIPT_OPERATE_INPUT = "输入";
+	private final String TEMP_SCRIPT_METHOD = "其他方法";
 
 	/**
 	 * 用于拼接待替换的词语
@@ -96,7 +98,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	/**
 	 * 用于每个操作步骤脚本后的换行符号
 	 */
-	private final String REPLACE_OPERATE_LINE_SIGN = "\r\n\t\t";
+	private final String REPLACE_OPERATE_LINE_SIGN = "\r\n";
 
 	/**
 	 * 指向用例步骤模板文件名称
@@ -211,7 +213,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_CASE_TOTAL_EXCEPT), exceptText.toString());
 		// 替换用例步骤脚本
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_STEP), operateScript.toString());
-		
+
 		// 替换beforeClass等脚本
 		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_BEFORE_CLASS),
 				Optional.ofNullable(caseJson.getJSONObject(GetAutoScript.KEY_BEFORE_CLASS))
@@ -230,15 +232,36 @@ public class TestNGAutoScript extends AbstractAutoScript {
 						.map(json -> json.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)).map(this::analysisOperate)
 						.orElse(""));
 
+		// 替换其他方法的脚本
+		content = content.replaceAll(String.format(REPLACE_WORD, TEMP_SCRIPT_METHOD),
+				getOtherMethodScript(caseJson.getJSONArray(GetAutoScript.KEY_OTHER_METHOD)));
+
 		return content;
 	}
-	
+
+	/**
+	 * 拼接并返回自定义方法的脚本
+	 * 
+	 * @param otherMethodListJson 自定义方法集合json
+	 * @return 自定义方法的脚本
+	 */
 	private String getOtherMethodScript(JSONArray otherMethodListJson) {
-		StringJoiner script = new StringJoiner(REPLACE_OPERATE_LINE_SIGN, "\tpublic void %s() {" + REPLACE_OPERATE_LINE_SIGN, "\t}");
-		
+		// 存储所有的脚本
+		StringBuilder script = new StringBuilder();
+
+		// 循环，遍历方法集合json，拼接与方法相关的脚本
 		for (int index = 0; index < otherMethodListJson.size(); index++) {
 			JSONObject methodJson = otherMethodListJson.getJSONObject(index);
+
+			// 拼接方法脚本，限定脚本的格式
+			StringJoiner methodScript = new StringJoiner("", "\tpublic void %s() {" + REPLACE_OPERATE_LINE_SIGN,
+					"\t}\r\n\r\n");
+			methodScript.add(analysisOperate(methodJson.getJSONArray(GetAutoScript.KEY_OPERATE_STEP)));
+
+			script.append(String.format(methodScript.toString(), methodJson.getString(GetAutoScript.KEY_NAME)));
 		}
+
+		return script.toString();
 	}
 
 	/**
@@ -269,9 +292,9 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 * @param operateJson 操作json
 	 * @return 操作脚本
 	 */
-	private String analysisOperate(JSONArray operateListJson) {
+	private ArrayList<String> analysisOperate(JSONArray operateListJson) {
 		// 解析操作
-		StringBuilder script = new StringBuilder();
+		ArrayList<String> scriptList = new ArrayList<String>();
 		for (int operateIndex = 0; operateIndex < operateListJson.size(); operateIndex++) {
 			JSONObject operateJson = operateListJson.getJSONObject(operateIndex);
 
@@ -293,10 +316,10 @@ public class TestNGAutoScript extends AbstractAutoScript {
 						operateJson.getString(GetAutoScript.KEY_INPUT));
 			}
 
-			script.append(operateScript);
+			scriptList.add(operateScript);
 		}
 
-		return script.toString();
+		return scriptList;
 	}
 
 	/**
@@ -330,7 +353,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	private String getOtherContent(short code, String input) {
 		switch (code) {
 		case -1:
-			return "// TODO " + input;
+			return "// TODO " + input + REPLACE_OPERATE_LINE_SIGN;
 		default:
 			throw new IncorrectContentException("不支持的类型编码：" + code);
 		}
@@ -370,13 +393,12 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 */
 	private String getCommonElementScript(String elementName, String indexText, String operateScript) {
 		if (!Optional.ofNullable(indexText).filter(text -> !text.isEmpty()).isPresent()) {
-			return String.format("%s(%s.getElement(\"%s\")#{输入});%s", operateScript, CLASS_COMMON_ELEMENT, elementName,
-					REPLACE_OPERATE_LINE_SIGN);
+			return String.format("%s(%s.getElement(\"%s\")#{输入});", operateScript, CLASS_COMMON_ELEMENT, elementName);
 		} else {
 			// 由于单一元素获取方法不支持多下标获取，故判断下标文本是否为单一下标，不是则抛出异常
 			if (indexText.matches("-?\\d+")) {
-				return String.format("%s(%s.getElement(\"%s\", %s)#{输入});%s", operateScript, CLASS_COMMON_ELEMENT,
-						elementName, indexText, REPLACE_OPERATE_LINE_SIGN);
+				return String.format("%s(%s.getElement(\"%s\", %s)#{输入});", operateScript, CLASS_COMMON_ELEMENT,
+						elementName, indexText);
 			} else {
 				throw new IncorrectContentException("单元素不支持多值获取：" + indexText);
 			}
@@ -399,22 +421,21 @@ public class TestNGAutoScript extends AbstractAutoScript {
 			if (indexs.length == 1) {
 				// 若下标只有一个，且为获取所有元素的标志，则按照获取所有元素进行获取
 				if (Objects.equals(GetAutoScript.ELEMENT_INDEX_All_SIGN, indexs[0])) {
-					return String.format("%s.find(%s).getAllElement().forEach(element -> %s(element#{输入}));%s",
-							CLASS_DATA_LIST_ELEMENT, elementName, operateScript, REPLACE_OPERATE_LINE_SIGN);
+					return String.format("%s.find(%s).getAllElement().forEach(element -> %s(element#{输入}));",
+							CLASS_DATA_LIST_ELEMENT, elementName, operateScript);
 				} else {
-					return String.format("%s(%s.getElement(\"%s\", %s)#{输入});%s", operateScript, CLASS_COMMON_ELEMENT,
-							elementName, indexText, REPLACE_OPERATE_LINE_SIGN);
+					return String.format("%s(%s.getElement(\"%s\", %s)#{输入});", operateScript, CLASS_COMMON_ELEMENT,
+							elementName, indexText);
 				}
 			} else {
-				String script = String.format("%s.find(%s);%s", CLASS_DATA_LIST_ELEMENT, elementName,
-						REPLACE_OPERATE_LINE_SIGN);
+				String script = String.format("%s.find(%s);", CLASS_DATA_LIST_ELEMENT, elementName);
 				// 获取所有的下标，将下标转换为
 				for (String index : indexs) {
 					index = index.trim();
 					// 判断下标是否为数字
 					if (index.matches("-?\\d+")) {
-						script += String.format("%s(%s.getElement(%s)#{输入});%s", operateScript, CLASS_DATA_LIST_ELEMENT,
-								index, REPLACE_OPERATE_LINE_SIGN);
+						script += String.format("%s(%s.getElement(%s)#{输入});", operateScript, CLASS_DATA_LIST_ELEMENT,
+								index);
 					} else {
 						throw new IncorrectContentException("集合元素不支持的下标：" + index);
 					}
@@ -436,6 +457,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 * @return 下拉型元素相关的脚本
 	 */
 	private String getSelectElemntScript(String elementName, String indexText, String operateScript) {
+		//TODO 想办法单一一行写完
 		if (Optional.ofNullable(indexText).filter(text -> !text.isEmpty()).isPresent()) {
 			String annotation = "// TODO 非标准下拉选项需要使用点击事件打开下拉框";
 

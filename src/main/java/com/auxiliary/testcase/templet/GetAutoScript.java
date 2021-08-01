@@ -118,9 +118,17 @@ public interface GetAutoScript {
 	 */
 	String KEY_BEFORE_METHOD = "beforeMethod";
 	/**
-	 * 存储执行每个步骤脚本后的处理工作，内部包含operateStep字段，其结构与case.step.operateStep一致kn    
+	 * 存储执行每个步骤脚本后的处理工作，内部包含operateStep字段，其结构与case.step.operateStep一致    
 	 */
 	String KEY_AFTER_METHOD = "afterMethod";
+	/**
+	 * 存储其他需要写入到文件中的方法，内部每一个元素都包含operateStep字段，其结构与case.step.operateStep一致
+	 */
+	String KEY_OTHER_METHOD = "otherMethod";
+	/**
+	 * 存储方法的名称
+	 */
+	String KEY_NAME = "name";
 	
 	/**
 	 * 用于获取所有元素的标志

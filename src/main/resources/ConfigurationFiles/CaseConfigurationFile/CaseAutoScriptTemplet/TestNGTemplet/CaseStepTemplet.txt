@@ -11,5 +11,5 @@ public void step_#{步骤数目}() {
 
 	// Record.recordCommonContent("实际步骤：");
 	
-	#{操作脚本}
+#{操作脚本}
 }
