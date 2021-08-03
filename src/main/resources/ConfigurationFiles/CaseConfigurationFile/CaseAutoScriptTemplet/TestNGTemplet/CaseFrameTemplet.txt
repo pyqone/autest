@@ -49,7 +49,7 @@ public class Test_01_#{脚本类编号} extends Test_01 {
 		// Record.recordCaseTitle("#{用例标题}");
 		// Record.excelRecord.caseId("Test_01_#{脚本类编号}");
 		
-#{BeforeClass}
+		#{BeforeClass}
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class Test_01_#{脚本类编号} extends Test_01 {
 	 */
 	@AfterClass(alwaysRun = true)
 	public void initPage() {
-#{AfterClass}
+		#{AfterClass}
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class Test_01_#{脚本类编号} extends Test_01 {
 		// 记录操作步骤
 		// Record.index = 1;
 		
-#{BeforeMethod}
+		#{BeforeMethod}
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class Test_01_#{脚本类编号} extends Test_01 {
 	 */
 	@AfterMethod(alwaysRun = true)
 	public void stepAfterOperate() {
-#{AfterMethod}
+		#{AfterMethod}
 	}
 
 #{用例步骤脚本}
