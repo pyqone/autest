@@ -25,7 +25,7 @@
 				<script operate = 'todo' input = '输入同名内容，无法生成' />
 			</script_by_step>
 			<script_by_step id='13'>
-				<script operate = 'clear' />				
+				<script operate = 'clear' />
 				<script operate = 'input' input = '*{输入限制}*' />
 				<script operate = 'clear' />	
 			</script_by_step>

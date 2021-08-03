@@ -1,14 +1,16 @@
 package com.auxiliary.testcase.templet;
 
+import org.dom4j.Element;
+
 import com.alibaba.fastjson.JSONObject;
 
 public abstract class AbstractAdapter {
 	/**
+	 * 
 	 * @param elementName
-	 * @param condition
-	 * @param conditionValue
+	 * @param operateElement
 	 */
-	public void addCondition(String elementName, String condition, String conditionValue) { 
+	public void addCondition(String elementName, Element operateElement) { 
 		
 	}
 	
