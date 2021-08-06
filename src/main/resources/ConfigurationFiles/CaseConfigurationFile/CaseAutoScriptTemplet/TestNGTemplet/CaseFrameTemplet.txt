@@ -49,6 +49,13 @@ public class Test_01_#{脚本类编号} extends Test_01 {
 		// Record.recordCaseTitle("#{用例标题}");
 		// Record.excelRecord.caseId("Test_01_#{脚本类编号}");
 		
+		// 定义类需要使用的事件类对象
+		// ClickEvent clickEvent = new ClickEvent(brower);
+		// TextEvent textEvent = new TextEvent(brower);
+		// WaitEvent waitEvent = new WaitEvent(brower);
+		// AssertEvent assertEvent = new AssertEvent(brower);
+		// JsEvent jsEvent = new JsEvent(brower);
+		
 		#{BeforeClass}
 	}
 
