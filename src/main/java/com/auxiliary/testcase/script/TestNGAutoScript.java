@@ -18,7 +18,6 @@ import com.auxiliary.selenium.element.ElementType;
 import com.auxiliary.selenium.event.OperateType;
 import com.auxiliary.selenium.location.ByType;
 import com.auxiliary.testcase.file.IncorrectContentException;
-import com.auxiliary.testcase.templet.GetAutoScript;
 import com.auxiliary.testcase.templet.InformationCase;
 import com.auxiliary.tool.date.Time;
 

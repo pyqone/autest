@@ -5,6 +5,7 @@ import java.io.File;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.testcase.file.IncorrectFileException;
+import com.auxiliary.testcase.script.GetAutoScript;
 
 /**
  * <p><b>文件名：</b>CreateAutoSriptCase.java</p>

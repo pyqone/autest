@@ -1,4 +1,4 @@
-package com.auxiliary.testcase.templet;
+package com.auxiliary.testcase.script;
 
 /**
  * <p><b>文件名：</b>GetAutoScript.java</p>

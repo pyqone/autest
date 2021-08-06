@@ -10,7 +10,6 @@ import java.util.StringJoiner;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.selenium.location.ByType;
 import com.auxiliary.testcase.file.IncorrectContentException;
-import com.auxiliary.testcase.templet.GetAutoScript;
 
 /**
  * <p>
