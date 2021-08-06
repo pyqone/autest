@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import com.auxiliary.tool.data.StringMode;
+
 /**
  * <p>
  * <b>文件名：</b>InformationCase.java
@@ -1719,49 +1721,63 @@ public class InformationCase extends Case {
 		/**
 		 * 中文
 		 */
-		CH("中文"),
+		CH("中文", StringMode.CH.getSeed()),
 		/**
 		 * 英文
 		 */
-		EN("英文"),
+		EN("英文", StringMode.LOW.getSeed()),
 		/**
 		 * 数字
 		 */
-		NUM("数字"),
+		NUM("数字", StringMode.NUM.getSeed()),
 		/**
 		 * 特殊字符
 		 */
-		SPE("特殊字符"),
+		SPE("特殊字符", "!#$%^&*()_+{}:;\"'\\|,./<>?"),
 		/**
 		 * 小写字母
 		 */
-		LOW("小写字母"),
+		LOW("小写字母", StringMode.LOW.getSeed()),
 		/**
 		 * 大写字母
 		 */
-		CAP("大写字母");
+		CAP("大写字母", StringMode.CAP.getSeed());
 
 		/**
 		 * 枚举名称
 		 */
 		private String name;
+		/**
+		 * 枚举限定的字符串生成范围
+		 */
+		private String seed;
 
 		/**
 		 * 初始化枚举名称
 		 * 
 		 * @param name 枚举名称
+		 * @param seed 字符串生成范围
 		 */
-		private InputRuleType(String name) {
+		private InputRuleType(String name, String seed) {
 			this.name = name;
+			this.seed = seed;
 		}
 
 		/**
-		 * 返回枚举名称
+		 * 返回枚举名称 
 		 * 
 		 * @return 枚举名称
 		 */
 		public String getName() {
 			return name;
+		}
+		
+		/**
+		 * 返回枚举限定的字符串生成范围
+		 * @return 字符串生成范围
+		 */
+		public String getSeed() {
+			return seed;
 		}
 	}
 

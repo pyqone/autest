@@ -175,7 +175,9 @@ public class PresetString {
 	/**
 	 * 生成手机号码
 	 * @return 手机号码
+	 * @deprecated 生成手机号码由{@link #mobleNumber(MobleNumberType)}方法代替
 	 */
+	@Deprecated
 	public static String phoneID(PhoneType phoneType) {
 		if (phoneType == PhoneType.MOBLE) {
 			return "139" + new RandomString(StringMode.NUM).toString(8);
@@ -186,6 +188,7 @@ public class PresetString {
 			s += rs.toString(1);
 			
 			rs.clear();
+			
 			rs.addMode("23456789");
 			s += rs.toString(7);
 			
@@ -207,5 +210,4 @@ public class PresetString {
 		//再根据号段的长度，生成相应位数的尾号
 		return regex + rs.toString(11 - regex.length());
 	}
-
 }

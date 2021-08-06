@@ -87,6 +87,10 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	private final String TEMP_SCRIPT_STEP_OPERATE = "操作脚本";
 	private final String TEMP_SCRIPT_OPERATE_INPUT = "输入";
 	private final String TEMP_SCRIPT_METHOD = "其他方法";
+	/**
+	 * 用于标记当前的输入是否需要加上双引号
+	 */
+	private final String TEMP_SCRIPT_INPUT_SIGN = "@";
 
 	/**
 	 * 用于拼接待替换的词语
@@ -96,7 +100,7 @@ public class TestNGAutoScript extends AbstractAutoScript {
 	 * 用于替换类说明中的步骤与预期的格式
 	 */
 	private final String REPLACE_STEP_WORD = " * <li>%s</li>";
-
+	
 	/**
 	 * 指向用例步骤模板文件名称
 	 */
@@ -538,7 +542,13 @@ public class TestNGAutoScript extends AbstractAutoScript {
 		if (Optional.ofNullable(inputText).filter(text -> !text.isEmpty()).isPresent()) {
 			StringJoiner script = new StringJoiner(", ");
 			Arrays.stream(inputText.trim().split(GetAutoScript.ELEMENT_INDEX_SPLIT_SIGN))
-					.filter(text -> !text.isEmpty()).map(text -> "\"" + text + "\"").forEach(script::add);
+					.filter(text -> !text.isEmpty()).map(text -> {
+						if (text.indexOf(TEMP_SCRIPT_INPUT_SIGN) != 0) {
+							return "\"" + text + "\"";
+						} else {
+							return text.substring(1);
+						}
+					}).forEach(script::add);
 
 			return ", " + script.toString();
 		}
