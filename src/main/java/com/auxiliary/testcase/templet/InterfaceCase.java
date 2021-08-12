@@ -51,6 +51,14 @@ public class InterfaceCase extends Case {
 	public InterfaceCase(File configXmlFile) {
 		super(configXmlFile);
 	}
+	
+	/**
+	 * 通过默认的用例模板库来构造对象
+	 */
+	public InterfaceCase() {
+		super(new File(InformationCase.class.getClassLoader()
+				.getResource("com/auxiliary/testcase/templet/InterfaceCase.xml").getFile()));
+	}
 
 	/**
 	 * 用于设置接口名称

@@ -173,6 +173,17 @@
 	</developers>
 
 	<build>
+		<!-- 添加打包路径 -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+			</resource>
+		</resources>
+		
 		<plugins>
 			<!-- 生成javadoc -->
 			<plugin>
