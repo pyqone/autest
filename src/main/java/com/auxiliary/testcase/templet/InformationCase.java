@@ -63,11 +63,11 @@ public class InformationCase extends Case {
 	/**
 	 * 新增操作类型文本
 	 */
-	private final String OPERATION_ADD = "新增";
+	protected final String OPERATION_ADD = "新增";
 	/**
 	 * 编辑操作类型文本
 	 */
-	private final String OPERATION_EDIT = "编辑";
+	protected final String OPERATION_EDIT = "编辑";
 
 	/**
 	 * 通过测试用例模板库的xml配置文件来构造对象
@@ -1586,7 +1586,7 @@ public class InformationCase extends Case {
 	 * @since JDK 1.8
 	 *
 	 */
-	private enum WordType {
+	protected enum WordType {
 		/**
 		 * 提交按钮名称
 		 */

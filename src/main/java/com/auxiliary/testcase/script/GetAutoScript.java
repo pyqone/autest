@@ -1,5 +1,7 @@
 package com.auxiliary.testcase.script;
 
+import com.auxiliary.testcase.script.AutoScriptUtil.MethodType;
+
 /**
  * <p><b>文件名：</b>GetAutoScript.java</p>
  * <p><b>用途：</b>
@@ -106,29 +108,29 @@ public interface GetAutoScript {
 	 */
 	String KEY_OUTPUT = "output";
 	/**
-	 * 存储执行步骤脚本前的初始化工作，内部包含operateStep字段，其结构与case.step.operateStep一致
-	 */
-	String KEY_BEFORE_CLASS = "beforeClass";
-	/**
-	 * 存储执行步骤脚本后的处理工作，内部包含operateStep字段，其结构与case.step.operateStep一致
-	 */
-	String KEY_AFTER_CLASS = "afterClass";
-	/**
-	 * 存储执行每个步骤脚本前的初始化工作，内部包含operateStep字段，其结构与case.step.operateStep一致
-	 */
-	String KEY_BEFORE_METHOD = "beforeMethod";
-	/**
-	 * 存储执行每个步骤脚本后的处理工作，内部包含operateStep字段，其结构与case.step.operateStep一致    
-	 */
-	String KEY_AFTER_METHOD = "afterMethod";
-	/**
 	 * 存储其他需要写入到文件中的方法，内部每一个元素都包含operateStep字段，其结构与case.step.operateStep一致
 	 */
-	String KEY_OTHER_METHOD = "otherMethod";
+	public static String KEY_OTHER_METHOD = "otherMethod";
 	/**
 	 * 存储方法的名称
 	 */
-	String KEY_NAME = "name";
+	public static String KEY_NAME = "name";
+	/**
+	 * 存储执行步骤脚本前的初始化工作，内部包含operateStep字段，其结构与case.step.operateStep一致
+	 */
+	public static String KEY_BEFORE_CLASS = MethodType.BEFORE_CLASS.getName();
+	/**
+	 * 存储执行步骤脚本后的处理工作，内部包含operateStep字段，其结构与case.step.operateStep一致
+	 */
+	public static String KEY_AFTER_CLASS = MethodType.AFTER_CLASS.getName();
+	/**
+	 * 存储执行每个步骤脚本前的初始化工作，内部包含operateStep字段，其结构与case.step.operateStep一致
+	 */
+	public static String KEY_BEFORE_METHOD = MethodType.BEFORE_METHOD.getName();
+	/**
+	 * 存储执行每个步骤脚本后的处理工作，内部包含operateStep字段，其结构与case.step.operateStep一致
+	 */
+	public static String KEY_AFTER_METHOD = MethodType.AFTER_METHOD.getName();
 	
 	/**
 	 * 用于获取所有元素的标志
