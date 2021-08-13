@@ -207,5 +207,46 @@ public class PresetString {
 		//再根据号段的长度，生成相应位数的尾号
 		return regex + rs.toString(11 - regex.length());
 	}
-
+	
+	/**
+	 * 用于生成一个指定范围内的数字，并根据条件进行前位数补0
+	 * <p>
+	 * 例如，生成的数字为1，传入的最大值为12，并设置需要补0，则最终返回的结果为：01
+	 * </p>
+	 * @param minNum 范围最小值
+	 * @param maxNum 范围最大值
+	 * @param isZeroize 是否需要高位补0
+	 * @return 生成的随机数字
+	 */
+	public static String randomNumber(int minNum, int maxNum, boolean isZeroize) {
+		// 若最大值比最小值小，则调换两个值
+		if (maxNum < minNum) {
+			int tempNum = minNum;
+			minNum = maxNum;
+			maxNum = tempNum;
+		}
+		
+		// 生成随机数字
+		int randomNum = new Random().nextInt(maxNum - minNum + 1) + minNum;
+		
+		// 判断是否需要补0，若需要补0，则根据最大值的位数对生成的随机数字补0
+		if (isZeroize) {
+			// 获取最小值与最大值的位数（由于存在负数的情况，故不能直接单纯从最大值判断位数）
+			int minLength = String.valueOf(Math.abs(minNum)).length();
+			int maxLength = String.valueOf(Math.abs(maxNum)).length();
+			int length = minLength < maxLength ? maxLength : minLength;
+			
+			// 计算补0的个数
+			int zeroLength = length - String.valueOf(Math.abs(randomNum)).length();
+			String zeroText = "";
+			for (int i = 0; i < zeroLength; i++) {
+				zeroText += "0";
+			}
+			
+			// 判断生成的随机数字是否小于0，若小于0，则在负号后面补0
+			return String.format("%s%s%d", randomNum < 0 ? "-" : "", zeroText, Math.abs(randomNum));
+		} else {
+			return String.valueOf(randomNum);
+		}
+	}
 }
