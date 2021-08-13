@@ -67,6 +67,14 @@ public class InformationCase extends Case {
 		super(configXmlFile);
 	}
 	
+	/**
+	 * 通过默认的用例模板库来构造对象
+	 */
+	public InformationCase() {
+		super(new File(InformationCase.class.getClassLoader()
+				.getResource("com/auxiliary/testcase/templet/AddInformation.xml").getFile()));
+	}
+	
 	@Override
 	public void setReplaceWord(String word, String text) {
 		String sign = "，";

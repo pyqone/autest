@@ -28,6 +28,14 @@ public class VideoCase extends Case {
 	}
 	
 	/**
+	 * 通过默认的用例模板库来构造对象
+	 */
+	public VideoCase() {
+		super(new File(InformationCase.class.getClassLoader()
+				.getResource("com/auxiliary/testcase/templet/Video.xml").getFile()));
+	}
+	
+	/**
 	 * 该方法用于生成视频播放相关的测试用例
 	 * @param isSpace 是否允许按下空格暂停/播放
 	 * @return 类本身

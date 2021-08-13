@@ -27,6 +27,14 @@ public class DataListCase extends Case {
 	}
 	
 	/**
+	 * 通过默认的用例模板库来构造对象
+	 */
+	public DataListCase() {
+		super(new File(InformationCase.class.getClassLoader()
+				.getResource("com/auxiliary/testcase/templet/BrowseList.xml").getFile()));
+	}
+	
+	/**
 	 * 用于生成app上浏览列表的测试用例
 	 * @return 类本身
 	 */
