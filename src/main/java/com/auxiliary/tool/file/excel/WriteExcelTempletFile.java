@@ -459,6 +459,25 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	@Override
+	public T addContent(String field, int index, String... contents) {
+		// 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
+		for (int i = 0; i < contents.length; i++) {
+			try {
+				// 尝试将传入的内容转换为数字，以获取数据有效性的内容
+				int optionIndex = Integer.valueOf(contents[i]);
+				// 获取模板中的数据有效性内容
+				contents[i] = Optional.ofNullable(templet.getTempletAttribute(ExcelFileTemplet.KEY_DATA))
+						.map(o -> (JSONObject) o).map(json -> json.getJSONArray(field))
+						.map(list -> list.getString(analysisIndex(list.size(), optionIndex, true))).orElse(String.valueOf(optionIndex));
+			} catch (Exception e) {
+				continue;
+			}
+		}
+		
+		return super.addContent(field, index, contents);
+	}
+
+	@Override
 	protected void createTempletFile(FileTemplet templet) {
 		JSONObject tempJson = JSONObject.parseObject(templet.getTempletJson());
 		// 判断文件是否已经存在，若文件存在，则读取原文件，若文件不存在，则添加一个新的对象

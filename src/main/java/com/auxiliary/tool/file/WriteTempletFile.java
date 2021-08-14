@@ -562,6 +562,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 方法支持反序遍历，即指定的下标为负数时，则表示反序遍历用例集，至指定位置的用例。若两个下标一致，则不处理数据
 	 * </p>
 	 * 
+	 * @param templet        需要写入的模板类对象
 	 * @param caseStartIndex 写入文件开始下标
 	 * @param caseEndIndex   写入文件结束下标
 	 */
