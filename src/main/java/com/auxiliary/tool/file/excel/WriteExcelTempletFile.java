@@ -76,6 +76,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	public static final String KEY_WORK = "work";
 	public static final String KEY_TYPE = "type";
 	public static final String KEY_LINK_CONTENT = "linkContent";
+	/**
+	 * 当前用例的相对行数
+	 */
+	public static final String KEY_RELATIVE_ROW = "relativeRow";
 
 	protected final String DEFAULT_NAME = "Sheet";
 	/**
@@ -270,19 +274,19 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * </p>
 	 * 
 	 * @param field       字段
-	 * @param linkContent 需要链接的字段
+	 * @param linkField   需要链接的字段
 	 * @param index       字段指定的下标
 	 * @return 类本身
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public T linkField(String field, String linkContent, int index) {
+	public T linkField(String field, String linkField, int index) {
 		// 判断字段是否存在
 		if (!caseJson.containsKey(field)) {
 			return (T) this;
 		}
 
-		String linkField = linkContent;
+//		String linkField = linkContent;
 		FileTemplet templet = this.templet;
 
 		// 判断当前是否存在切分符，并确定指定列的下标
@@ -304,7 +308,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		if (!templet.containsField(linkField)) {
 			return (T) this;
 		}
-
+		
 		// 获取字段指向的列下标，并计算得到excel中，数字列下标对应的字母
 		Optional<String> columnChar = Optional.ofNullable(templet.getFieldAttribute(linkField, FileTemplet.KEY_INDEX))
 				.map(Object::toString).map(Integer::valueOf).map(this::num2CharIndex);
@@ -625,6 +629,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					cell = writeSingleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
 							lastRowIndex);
 				}
+				
+				// 记录当前内容json的位置 TODO 用于超链接
+				contentJson.put(KEY_RELATIVE_ROW, lastRowIndex);
 
 				// 判断当前是否存在注解
 				if (fieldContentJson.containsKey(KEY_COMMENT)) {
