@@ -148,10 +148,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		});
 	}
 
-	protected WriteExcelTempletFile() {
-		super();
-	}
-
 	/**
 	 * 通过模板配置xml文件对文件写入类进行构造
 	 * <p>

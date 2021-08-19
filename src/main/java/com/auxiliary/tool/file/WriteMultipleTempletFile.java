@@ -35,19 +35,23 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	/**
 	 * 存储所有的模板
 	 */
-	protected LinkedHashMap<String, FileTemplet> templetMap = new LinkedHashMap<>();
+//	protected LinkedHashMap<String, FileTemplet> templetMap = new LinkedHashMap<>();
 	/**
 	 * 存储模板名称对应的内容json
 	 */
-	protected LinkedHashMap<String, JSONObject> contentMap = new LinkedHashMap<>();
+//	protected LinkedHashMap<String, JSONObject> contentMap = new LinkedHashMap<>();
 	/**
 	 * 存储默认字段数据json
 	 */
-	protected HashMap<String, JSONObject> defaultMap = new HashMap<>();
+//	protected HashMap<String, JSONObject> defaultMap = new HashMap<>();
 	/**
 	 * 存储每个模板中自动写入文件的用例数
 	 */
-	protected HashMap<String, Integer> nowRowNumMap = new HashMap<>();
+//	protected HashMap<String, Integer> nowRowNumMap = new HashMap<>();
+	/**
+	 * 存储每个模板的数据
+	 */
+	protected HashMap<String, WriteFileData> dataMap = new HashMap<>();
 
 	/**
 	 * 构造对象，初始化创建文件的模板
@@ -70,9 +74,10 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 		super(writeTempletFile);
 		// 若模板写入类继承自多模板类，则再记录其多模板相关的内容
 		if (writeTempletFile instanceof WriteMultipleTempletFile) {
-			((WriteMultipleTempletFile<?>) writeTempletFile).templetMap.forEach(this.templetMap::put);
-			((WriteMultipleTempletFile<?>) writeTempletFile).contentMap.forEach(this.contentMap::put);
-			((WriteMultipleTempletFile<?>) writeTempletFile).defaultMap.forEach(this.defaultMap::put);
+//			((WriteMultipleTempletFile<?>) writeTempletFile).templetMap.forEach(this.templetMap::put);
+//			((WriteMultipleTempletFile<?>) writeTempletFile).contentMap.forEach(this.contentMap::put);
+//			((WriteMultipleTempletFile<?>) writeTempletFile).defaultMap.forEach(this.defaultMap::put);
+			HashMap<String, WriteFileData> dataMap = ((WriteMultipleTempletFile<?>) writeTempletFile).getDataMap();
 		}
 	}
 
@@ -191,4 +196,8 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	 * @return 模板对象是否存在于模板文件中
 	 */
 	protected abstract boolean isExistTemplet(File templetFile, FileTemplet templet);
+	
+	private HashMap<String, WriteFileData> getDataMap() {
+		return dataMap;
+	}
 }
