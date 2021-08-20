@@ -77,7 +77,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 //			((WriteMultipleTempletFile<?>) writeTempletFile).templetMap.forEach(this.templetMap::put);
 //			((WriteMultipleTempletFile<?>) writeTempletFile).contentMap.forEach(this.contentMap::put);
 //			((WriteMultipleTempletFile<?>) writeTempletFile).defaultMap.forEach(this.defaultMap::put);
-			HashMap<String, WriteFileData> dataMap = ((WriteMultipleTempletFile<?>) writeTempletFile).getDataMap();
+			((WriteMultipleTempletFile<?>) writeTempletFile).dataMap.forEach(this.dataMap::put);
 		}
 	}
 
@@ -88,11 +88,12 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	@Override
 	public void switchPage(String name) {
 		// 判断名称是否为空、存在
-		if (Optional.ofNullable(name).filter(n -> !n.isEmpty()).filter(templetMap::containsKey).isPresent()) {
-			this.templet = templetMap.get(name);
-			this.contentJson = contentMap.get(name);
-			this.defaultCaseJson = defaultMap.get(name);
-			this.nowRowNum = nowRowNumMap.get(name);
+		if (Optional.ofNullable(name).filter(n -> !n.isEmpty()).filter(dataMap::containsKey).isPresent()) {
+//			this.templet = templetMap.get(name);
+//			this.contentJson = contentMap.get(name);
+//			this.defaultCaseJson = defaultMap.get(name);
+//			this.nowRowNum = nowRowNumMap.get(name);
+			this.data = dataMap.get(name);
 		}
 	}
 
@@ -104,6 +105,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 		JSONObject writeJson = JSONObject.parseObject(writeJsonText);
 		contentMap.put(this.templet.getTempletAttribute(KEY_NAME).toString(), writeJson.getJSONObject(KEY_DEFAULT));
 		defaultMap.put(this.templet.getTempletAttribute(KEY_NAME).toString(), writeJson.getJSONObject(KEY_CONTENT));
+		
 	}
 
 	@Override
