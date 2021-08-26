@@ -38,7 +38,7 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 	protected WriteSingleTempletFile() {
 		super();
 	}
-	
+
 	@Override
 	public void write() {
 		// 若分页行数不为0，则获取当前行数作为编写的起始行数
@@ -46,7 +46,7 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 		if (writeRowNum != 0) {
 			startIndex = data.getNowCaseNum();
 		}
-		
+
 		write(data.getTemplet(), startIndex, -1);
 	}
 
@@ -56,7 +56,7 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 		if (!new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString()).exists()) {
 			createTempletFile(templet);
 		}
-		
+
 		// 计算真实的起始下标与结束下标
 		JSONArray contentListJson = data.getContentJson().getJSONArray(KEY_CASE);
 		// 判断内容json是否为空，为空则不进行处理
@@ -66,7 +66,8 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 
 		// 计算真实的起始下标与结束下标
 		int newCaseEndIndex = analysisIndex(contentListJson.size(), caseEndIndex, true);
-		int newCaseStartIndex = analysisIndex(newCaseEndIndex, caseStartIndex, true);
+		int newCaseStartIndex = writeRowNum == 0 ? analysisIndex(newCaseEndIndex, caseStartIndex, true)
+				: data.getNowCaseNum();
 
 		// 将文件内容写入模板文件
 		contentWriteTemplet(templet, newCaseStartIndex, newCaseEndIndex);

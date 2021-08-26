@@ -221,7 +221,8 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 		}
 
 		int newCaseEndIndex = analysisIndex(contentListJson.size(), caseEndIndex, true);
-		int newCaseStartIndex = analysisIndex(newCaseEndIndex, caseStartIndex, true);
+		int newCaseStartIndex = writeRowNum == 0 ? analysisIndex(newCaseEndIndex, caseStartIndex, true)
+				: dataMap.get(templet.getTempletAttribute(ExcelFileTemplet.KEY_NAME)).getNowCaseNum();
 
 		// 将文件内容写入模板文件
 		contentWriteTemplet(templet, newCaseStartIndex, newCaseEndIndex);
@@ -245,9 +246,10 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	 * @return 模板对象是否存在于模板文件中
 	 */
 	protected abstract boolean isExistTemplet(File templetFile, FileTemplet templet);
-	
+
 	/**
 	 * 用于返回当前的数据集合
+	 * 
 	 * @return 数据集合
 	 */
 	protected HashMap<String, WriteFileData> getDataMap() {
