@@ -88,7 +88,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 	public WriteJiraExcelTestCase(File saveFile) {
 		this();
 		// 重新设置保存路径
-		templetMap.get(DEFAULT_CASE_NAME).setSaveFile(saveFile);
+		dataMap.get(DEFAULT_CASE_NAME).getTemplet().setSaveFile(saveFile);
 	}
 
 	/**

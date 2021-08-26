@@ -66,7 +66,7 @@ public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownT
 	public WriteMarkdownTestCase(File saveFile) {
 		this();
 		// 重新设置保存路径
-		templet.setSaveFile(saveFile);
+		data.getTemplet().setSaveFile(saveFile);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownT
 	@Override
 	protected void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
 		// 获取所有的用例
-		JSONArray caseListJson = contentJson.getJSONArray(KEY_CASE);
+		JSONArray caseListJson = data.getContentJson().getJSONArray(KEY_CASE);
 		ArrayList<String> contentList = new ArrayList<>();
 		// 循环，遍历所有需要写入的内容
 		for (int index = caseStartIndex; index < caseEndIndex + 1; index++) {

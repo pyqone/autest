@@ -2,6 +2,7 @@ package com.auxiliary.tool.file;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.tool.file.excel.ExcelFileTemplet;
 
 /**
  * <p><b>文件名：</b>WriteFileData.java</p>
@@ -153,5 +154,13 @@ public class WriteFileData {
 	 */
 	public int getNowCaseNum() {
 		return nowCaseNum;
+	}
+	
+	/**
+	 * 用于返回当前模板的名称
+	 * @return 模板名称
+	 */
+	public String getTempName() {
+		return templet.getTempletAttribute(ExcelFileTemplet.KEY_NAME).toString();
 	}
 }
