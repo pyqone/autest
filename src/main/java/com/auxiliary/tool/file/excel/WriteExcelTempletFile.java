@@ -47,7 +47,6 @@ import com.auxiliary.tool.file.MarkTextFont;
 import com.auxiliary.tool.file.TableFileReadUtil;
 import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteMultipleTempletFile;
-import com.auxiliary.tool.file.WriteTempletFile;
 import com.auxiliary.tool.regex.RegexType;
 
 /**
@@ -61,7 +60,7 @@ import com.auxiliary.tool.regex.RegexType;
  * <b>编码时间：</b>2021年5月27日上午8:09:29
  * </p>
  * <p>
- * <b>修改时间：</b>2021年5月27日上午8:09:29
+ * <b>修改时间：</b>2021年8月27日下午7:42:30
  * </p>
  * 
  * @author 彭宇琦
@@ -77,7 +76,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	public static final String KEY_TYPE = "type";
 	public static final String KEY_LINK_CONTENT = "linkContent";
 
-	protected final String DEFAULT_NAME = "Sheet";
 	/**
 	 * 单元格坐标分隔符
 	 */
@@ -104,48 +102,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @param templet     模板类
 	 */
 	public WriteExcelTempletFile(String templetName, FileTemplet templet) {
-		super(templetName, templet);
-		templetMap.put(templetName, new ExcelFileTemplet(templetMap.get(templetName).getTempletJson()));
-	}
-
-	/**
-	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
-	 * <p>
-	 * <b>注意：</b>在转换模板时，若模板的name字段为对象，则以默认名称“Sheet + 序号”来命名，并修改其中的name字段值
-	 * </p>
-	 * 
-	 * @param writeTempletFile 文件写入类对象
-	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
-	 */
-	public WriteExcelTempletFile(WriteTempletFile<?> writeTempletFile) {
-		super(writeTempletFile);
-
-		AtomicInteger sheetIndex = new AtomicInteger(1);
-		templetMap.forEach((key, templet) -> {
-			ExcelFileTemplet temp = new ExcelFileTemplet(templet.getTempletJson());
-
-			// 判断模板是否包含"name"属性，不包含，则加入默认名称
-			if (!temp.containsAttribute(KEY_NAME)) {
-				String name = DEFAULT_NAME + sheetIndex.get();
-				temp.addTempletAttribute(KEY_NAME, name);
-				templetMap.put(name, temp);
-			} else {
-				Object obj = temp.getTempletAttribute(KEY_NAME);
-				if (obj instanceof String) {
-					templetMap.put(temp.getTempletAttribute(KEY_NAME).toString(), temp);
-				} else {
-					String name = DEFAULT_NAME + sheetIndex.get();
-					temp.addTempletAttribute(KEY_NAME, name);
-					templetMap.put(name, temp);
-				}
-			}
-
-			sheetIndex.addAndGet(1);
-		});
-	}
-
-	protected WriteExcelTempletFile() {
-		super();
+		super(templetName, new ExcelFileTemplet(templet.getTempletJson()));
 	}
 
 	/**
@@ -270,20 +227,19 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * </p>
 	 * 
 	 * @param field       字段
-	 * @param linkContent 需要链接的字段
+	 * @param linkField   需要链接的字段
 	 * @param index       字段指定的下标
 	 * @return 类本身
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public T linkField(String field, String linkContent, int index) {
+	public T linkField(String field, String linkField, int index) {
 		// 判断字段是否存在
 		if (!caseJson.containsKey(field)) {
 			return (T) this;
 		}
 
-		String linkField = linkContent;
-		FileTemplet templet = this.templet;
+		FileTemplet templet = this.data.getTemplet();
 
 		// 判断当前是否存在切分符，并确定指定列的下标
 		if (linkField.contains("|")) {
@@ -291,12 +247,12 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			String[] linkTexts = linkField.split("\\|");
 
 			// 判断模板是否存在
-			if (!templetMap.containsKey(linkTexts[0])) {
+			if (!dataMap.containsKey(linkTexts[0])) {
 				return (T) this;
 			}
 
 			// 获取得到的模板，以及切分后剩余的字段名称
-			templet = templetMap.get(linkTexts[0]);
+			templet = dataMap.get(linkTexts[0]).getTemplet();
 			linkField = linkTexts[1];
 		}
 
@@ -304,14 +260,14 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		if (!templet.containsField(linkField)) {
 			return (T) this;
 		}
-
+		
 		// 获取字段指向的列下标，并计算得到excel中，数字列下标对应的字母
 		Optional<String> columnChar = Optional.ofNullable(templet.getFieldAttribute(linkField, FileTemplet.KEY_INDEX))
 				.map(Object::toString).map(Integer::valueOf).map(this::num2CharIndex);
 		if (columnChar.isPresent()) {
 			String templetName = templet.getTempletAttribute(FileTemplet.KEY_NAME).toString();
 			// 计算行数，由于存在标题，以及超链接的行号为真实行号，故需要在得到真实下标后，加上2
-			index = analysisIndex(contentMap.get(templetName).getJSONArray(KEY_CASE).size(), index, true) + 1 + 1;
+			index = analysisIndex(dataMap.get(templetName).getContentJson().getJSONArray(KEY_CASE).size(), index, true) + 1 + 1;
 
 			// 拼接文本链接内容
 			String linkText = String.format("'%s'!%s%d", templetName, columnChar.get(), index);
@@ -459,6 +415,25 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	@Override
+	public T addContent(String field, int index, String... contents) {
+		// 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
+		for (int i = 0; i < contents.length; i++) {
+			try {
+				// 尝试将传入的内容转换为数字，以获取数据有效性的内容
+				int optionIndex = Integer.valueOf(contents[i]);
+				// 获取模板中的数据有效性内容
+				contents[i] = Optional.ofNullable(data.getTemplet().getTempletAttribute(ExcelFileTemplet.KEY_DATA))
+						.map(o -> (JSONObject) o).map(json -> json.getJSONArray(field))
+						.map(list -> list.getString(analysisIndex(list.size(), optionIndex, true))).orElse(String.valueOf(optionIndex));
+			} catch (Exception e) {
+				continue;
+			}
+		}
+		
+		return super.addContent(field, index, contents);
+	}
+
+	@Override
 	protected void createTempletFile(FileTemplet templet) {
 		JSONObject tempJson = JSONObject.parseObject(templet.getTempletJson());
 		// 判断文件是否已经存在，若文件存在，则读取原文件，若文件不存在，则添加一个新的对象
@@ -576,7 +551,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 						templetName, templetFile.getAbsolutePath())));
 
 		// 根据模板名称，获取内容json
-		JSONArray contentListJson = contentMap.get(templetName).getJSONArray(KEY_CASE);
+		JSONArray contentListJson = dataMap.get(templetName).getContentJson().getJSONArray(KEY_CASE);
 		// 循环，遍历所有需要写入的内容
 		for (int index = caseStartIndex; index < caseEndIndex + 1; index++) {
 			// 获取内容json
@@ -606,6 +581,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					cell = writeSingleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
 							lastRowIndex);
 				}
+				
+				// 记录当前内容json的位置 TODO 用于超链接
+//				contentJson.put(KEY_RELATIVE_ROW, lastRowIndex);
 
 				// 判断当前是否存在注解
 				if (fieldContentJson.containsKey(KEY_COMMENT)) {
@@ -666,7 +644,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 获取单元格的背景色
 			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
 					? fieldContentJson.getShortValue(KEY_BACKGROUND)
-					: (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND) : -1);
+					: (data.getContentJson().containsKey(KEY_BACKGROUND) ? data.getContentJson().getShortValue(KEY_BACKGROUND) : -1);
 
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
@@ -721,7 +699,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 获取单元格的背景色
 			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
 					? fieldContentJson.getShortValue(KEY_BACKGROUND)
-					: (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND) : -1);
+					: (data.getContentJson().containsKey(KEY_BACKGROUND) ? data.getContentJson().getShortValue(KEY_BACKGROUND) : -1);
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
 					fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, background));

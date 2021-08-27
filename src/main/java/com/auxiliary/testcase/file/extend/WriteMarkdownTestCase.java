@@ -17,7 +17,6 @@ import com.auxiliary.testcase.templet.Case;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteSingleTempletFile;
-import com.auxiliary.tool.file.WriteTempletFile;
 
 /**
  * <p>
@@ -66,7 +65,7 @@ public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownT
 	public WriteMarkdownTestCase(File saveFile) {
 		this();
 		// 重新设置保存路径
-		templet.setSaveFile(saveFile);
+		data.getTemplet().setSaveFile(saveFile);
 	}
 
 	/**
@@ -80,20 +79,6 @@ public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownT
 	}
 
 	/**
-	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
-	 * <p>
-	 * <b>注意：</b>在转换模板时，若模板的name字段为对象，则以默认名称“Sheet + 序号”来命名，并修改其中的name字段值
-	 * </p>
-	 * 
-	 * @param writeTempletFile 文件写入类对象
-	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
-	 */
-	public WriteMarkdownTestCase(WriteTempletFile<?> writeTempletFile) {
-		super(writeTempletFile);
-		initField();
-	}
-
-	/**
 	 * 用于初始化字段的链接
 	 */
 	protected void initField() {
@@ -103,7 +88,7 @@ public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownT
 	@Override
 	protected void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
 		// 获取所有的用例
-		JSONArray caseListJson = contentJson.getJSONArray(KEY_CASE);
+		JSONArray caseListJson = data.getContentJson().getJSONArray(KEY_CASE);
 		ArrayList<String> contentList = new ArrayList<>();
 		// 循环，遍历所有需要写入的内容
 		for (int index = caseStartIndex; index < caseEndIndex + 1; index++) {
