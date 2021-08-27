@@ -45,10 +45,8 @@ import com.auxiliary.tool.file.MarkFieldLink;
 import com.auxiliary.tool.file.MarkTextColor;
 import com.auxiliary.tool.file.MarkTextFont;
 import com.auxiliary.tool.file.TableFileReadUtil;
-import com.auxiliary.tool.file.WriteFileData;
 import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteMultipleTempletFile;
-import com.auxiliary.tool.file.WriteTempletFile;
 import com.auxiliary.tool.regex.RegexType;
 
 /**
@@ -62,7 +60,7 @@ import com.auxiliary.tool.regex.RegexType;
  * <b>编码时间：</b>2021年5月27日上午8:09:29
  * </p>
  * <p>
- * <b>修改时间：</b>2021年5月27日上午8:09:29
+ * <b>修改时间：</b>2021年8月27日下午7:42:30
  * </p>
  * 
  * @author 彭宇琦
@@ -105,46 +103,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 */
 	public WriteExcelTempletFile(String templetName, FileTemplet templet) {
 		super(templetName, new ExcelFileTemplet(templet.getTempletJson()));
-//		templetMap.put(templetName, new ExcelFileTemplet(templetMap.get(templetName).getTempletJson()));
-	}
-
-	/**
-	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
-	 * <p>
-	 * <b>注意：</b>在转换模板时，若模板的name字段为对象，则以默认名称“Sheet + 序号”来命名，并修改其中的name字段值
-	 * </p>
-	 * 
-	 * @param writeTempletFile 文件写入类对象
-	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
-	 */
-	public WriteExcelTempletFile(WriteTempletFile<?> writeTempletFile) {
-		super(writeTempletFile);
-		// 转换模板为excel模板
-		for (String name : dataMap.keySet()) {
-			dataMap.put(name, new WriteFileData(new ExcelFileTemplet(dataMap.get(name).getTempletJsonText())));
-		}
-
-//		templetMap.forEach((key, templet) -> {
-//			ExcelFileTemplet temp = new ExcelFileTemplet(templet.getTempletJson());
-//
-//			// 判断模板是否包含"name"属性，不包含，则加入默认名称
-//			if (!temp.containsAttribute(KEY_NAME)) {
-//				String name = DEFAULT_NAME + sheetIndex.get();
-//				temp.addTempletAttribute(KEY_NAME, name);
-//				templetMap.put(name, temp);
-//			} else {
-//				Object obj = temp.getTempletAttribute(KEY_NAME);
-//				if (obj instanceof String) {
-//					templetMap.put(temp.getTempletAttribute(KEY_NAME).toString(), temp);
-//				} else {
-//					String name = DEFAULT_NAME + sheetIndex.get();
-//					temp.addTempletAttribute(KEY_NAME, name);
-//					templetMap.put(name, temp);
-//				}
-//			}
-//
-//			sheetIndex.addAndGet(1);
-//		});
 	}
 
 	/**
@@ -281,7 +239,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			return (T) this;
 		}
 
-//		String linkField = linkContent;
 		FileTemplet templet = this.data.getTemplet();
 
 		// 判断当前是否存在切分符，并确定指定列的下标

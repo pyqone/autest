@@ -7,8 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONArray;
-import com.auxiliary.tool.data.RandomString;
-import com.auxiliary.tool.data.StringMode;
 import com.auxiliary.tool.file.excel.ExcelFileTemplet;
 
 /**
@@ -22,7 +20,7 @@ import com.auxiliary.tool.file.excel.ExcelFileTemplet;
  * <b>编码时间：</b>2021年5月31日下午8:50:35
  * </p>
  * <p>
- * <b>修改时间：</b>2021年5月31日下午8:50:35
+ * <b>修改时间：</b>2021年8月27日下午7:43:03
  * </p>
  * 
  * @author 彭宇琦
@@ -32,22 +30,6 @@ import com.auxiliary.tool.file.excel.ExcelFileTemplet;
  */
 public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFile<T>> extends WriteTempletFile<T>
 		implements WriteFilePage {
-	/**
-	 * 存储所有的模板
-	 */
-//	protected LinkedHashMap<String, FileTemplet> templetMap = new LinkedHashMap<>();
-	/**
-	 * 存储模板名称对应的内容json
-	 */
-//	protected LinkedHashMap<String, JSONObject> contentMap = new LinkedHashMap<>();
-	/**
-	 * 存储默认字段数据json
-	 */
-//	protected HashMap<String, JSONObject> defaultMap = new HashMap<>();
-	/**
-	 * 存储每个模板中自动写入文件的用例数
-	 */
-//	protected HashMap<String, Integer> nowRowNumMap = new HashMap<>();
 	/**
 	 * 存储每个模板的数据
 	 */
@@ -65,44 +47,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	 * @param templet     模板类对象
 	 */
 	public WriteMultipleTempletFile(String templetName, FileTemplet templet) {
-		super(templet);
 		addTemplet(templetName, templet);
-	}
-
-	/**
-	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
-	 * 
-	 * @param writeTempletFile 文件写入类对象
-	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
-	 */
-	public WriteMultipleTempletFile(WriteTempletFile<?> writeTempletFile) {
-		// TODO 原有数据未被保留
-		super(writeTempletFile);
-		// 若模板写入类继承自多模板类，则再记录其多模板相关的内容
-		if (writeTempletFile instanceof WriteMultipleTempletFile) {
-//			((WriteMultipleTempletFile<?>) writeTempletFile).templetMap.forEach(this.templetMap::put);
-//			((WriteMultipleTempletFile<?>) writeTempletFile).contentMap.forEach(this.contentMap::put);
-//			((WriteMultipleTempletFile<?>) writeTempletFile).defaultMap.forEach(this.defaultMap::put);
-			((WriteMultipleTempletFile<?>) writeTempletFile).getDataMap().forEach(dataMap::put);
-		} else {
-			// 获取模板
-			FileTemplet temp = writeTempletFile.data.getTemplet();
-			String name = "";
-			// 判断模板是否包含"name"属性，不包含，则加入默认名称
-			if (!temp.containsAttribute(KEY_NAME)) {
-				name = DEFAULT_NAME + RandomString.randomString(3, 6, StringMode.ALL);
-				temp.addTempletAttribute(KEY_NAME, name);
-			} else {
-				// 若模板包含name属性，则判断属性的值是否为字符串，若不是字符串，则同样随机命名
-				Object obj = temp.getTempletAttribute(KEY_NAME);
-				if (obj instanceof String) {
-					name = temp.getTempletAttribute(KEY_NAME).toString();
-				} else {
-					name = DEFAULT_NAME + RandomString.randomString(3, 6, StringMode.ALL);
-				}
-			}
-			dataMap.put(name, new WriteFileData(temp));
-		}
 	}
 
 	protected WriteMultipleTempletFile() {
@@ -113,33 +58,23 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	public void switchPage(String name) {
 		// 判断名称是否为空、存在
 		if (Optional.ofNullable(name).filter(n -> !n.isEmpty()).filter(dataMap::containsKey).isPresent()) {
-//			this.templet = templetMap.get(name);
-//			this.contentJson = contentMap.get(name);
-//			this.defaultCaseJson = defaultMap.get(name);
-//			this.nowRowNum = nowRowNumMap.get(name);
 			this.data = dataMap.get(name);
 		}
 	}
 
 	@Override
-	public void setContentJson(String writeJsonText) {
-		super.setContentJson(writeJsonText);
-
-		// 将数据回写到相应的内容中
-		WriteFileData nowData = new WriteFileData(data.getTemplet());
-		nowData.setContentJson(data.getContentJsonText());
-		nowData.setDefaultCaseJson(data.getDefaultCaseJsonText());
-		dataMap.put(data.getTempName(), nowData);
-//		JSONObject writeJson = JSONObject.parseObject(writeJsonText);
-//		contentMap.put(this.templet.getTempletAttribute(KEY_NAME).toString(), writeJson.getJSONObject(KEY_DEFAULT));
-//		defaultMap.put(this.templet.getTempletAttribute(KEY_NAME).toString(), writeJson.getJSONObject(KEY_CONTENT));
-
+	public void setWriteData(WriteFileData data) {
+		super.setWriteData(data);
 	}
 
 	@Override
 	public FileTemplet getTemplet(String name) {
-//		return templetMap.get(name);
 		return dataMap.get(name).getTemplet();
+	}
+	
+	@Override
+	public WriteFileData getWriteFileData(String name) {
+		return dataMap.get(name);
 	}
 
 	/**
@@ -152,19 +87,6 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	public void addTemplet(String name, FileTemplet templet) {
 		// 初始化模板信息
 		WriteFilePage.super.addTemplet(name, templet);
-//		templetMap.put(name, new FileTemplet(templet.getTempletJson()));
-//
-//		// 初始化内容json串
-//		JSONObject contentJson = new JSONObject();
-//		contentJson.put(KEY_CASE, new JSONArray());
-//		contentMap.put(name, contentJson);
-//
-//		// 初始化默认内容串
-//		defaultMap.put(name, new JSONObject());
-//
-//		// 初始化自动写入文件的数据
-//		nowRowNumMap.put(name, 0);
-
 		dataMap.put(name, new WriteFileData(templet));
 
 		// 切换至当前模板
@@ -175,7 +97,6 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	@Override
 	public T end(int contentIndex) {
 		super.end(contentIndex);
-//		nowRowNumMap.put(templet.getTempletAttribute(KEY_NAME).toString(), nowRowNum);
 		// TODO 该行代码可能冗余，但我暂时无法测试
 		dataMap.get(data.getTempName()).setNowCaseNum(data.getNowCaseNum());
 		return (T) this;
@@ -183,15 +104,6 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 
 	@Override
 	public void write() {
-//		templetMap.forEach((name, templet) -> {
-//			// 若分页行数不为0，则获取当前行数作为编写的起始行数
-//			int startIndex = 0;
-//			if (writeRowNum != 0) {
-//				startIndex = nowRowNumMap.get(name);
-//			}
-//
-//			write(templet, startIndex, -1);
-//		});
 		dataMap.forEach((name, data) -> {
 			// 若分页行数不为0，则获取当前行数作为编写的起始行数
 			int startIndex = 0;
@@ -210,8 +122,6 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 		}
 
 		// 计算真实的起始下标与结束下标
-//		JSONArray contentListJson = contentMap.get(templet.getTempletAttribute(ExcelFileTemplet.KEY_NAME))
-//				.getJSONArray(KEY_CASE);
 		JSONArray contentListJson = dataMap.get(templet.getTempletAttribute(ExcelFileTemplet.KEY_NAME)).getContentJson()
 				.getJSONArray(KEY_CASE);
 
@@ -230,7 +140,6 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 
 	@Override
 	protected List<String> getAllTempletJson() {
-//		return templetMap.values().stream().map(FileTemplet::getTempletJson).collect(Collectors.toList());
 		return dataMap.values().stream().map(WriteFileData::getTemplet).map(FileTemplet::getTempletJson)
 				.collect(Collectors.toList());
 	}

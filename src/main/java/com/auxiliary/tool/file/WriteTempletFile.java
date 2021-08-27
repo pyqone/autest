@@ -2,7 +2,6 @@ package com.auxiliary.tool.file;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -11,7 +10,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
-import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
 
 /**
@@ -51,36 +49,18 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	public static final String KEY_DATA = "data";
 
 	/**
-	 * 存储模板文件的构造类
-	 */
-//	protected FileTemplet templet;
-
-	/**
 	 * 待替换词语的标记
 	 */
 	protected final String WORD_SIGN = "#";
 
 	/**
-	 * 存储当前需要写入到文件的内容json串
-	 */
-//	protected JSONObject contentJson = new JSONObject();
-	/**
 	 * 存储单条内容写入到内容json串中的内容
 	 */
 	protected JSONObject caseJson = new JSONObject();
 	/**
-	 * 存储字段默认内容
-	 */
-//	protected JSONObject defaultCaseJson = new JSONObject();
-	/**
 	 * 存储需要写入到文件中的数据
 	 */
 	protected WriteFileData data;
-
-	/**
-	 * 存储待替换的词语以及被替换的词语
-	 */
-	protected HashMap<String, DataFunction> replaceWordMap = new HashMap<>(16);
 
 	/**
 	 * 指向当前需要编写的用例下标
@@ -90,10 +70,6 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 存储需要分页的行数
 	 */
 	protected int writeRowNum = 0;
-	/**
-	 * 存储当前已写入的行数
-	 */
-//	protected int nowRowNum = 0;
 
 	/**
 	 * 构造对象，初始化创建文件的模板
@@ -102,28 +78,6 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 */
 	protected WriteTempletFile(FileTemplet templet) {
 		data = new WriteFileData(templet);
-//		this();
-//		this.templet = templet;
-	}
-
-	/**
-	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
-	 * 
-	 * @param writeTempletFile 文件写入类对象
-	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
-	 */
-	protected WriteTempletFile(WriteTempletFile<?> writeTempletFile) {
-		// 若传入的文件写入类为空，则抛出异常
-		if (writeTempletFile == null) {
-			throw new WriteFileException("未指定文件写入类对象，无法进行构造");
-		}
-
-//		this.templet = new FileTemplet(writeTempletFile.templet.getTempletJson());
-//		this.contentJson = JSONObject.parseObject(writeTempletFile.contentJson.toJSONString());
-//		this.defaultCaseJson = JSONObject.parseObject(writeTempletFile.defaultCaseJson.toJSONString());
-		data = new WriteFileData(writeTempletFile.data.getTempletJsonText(),
-				writeTempletFile.data.getContentJsonText(), writeTempletFile.data.getDefaultCaseJsonText());
-		writeTempletFile.replaceWordMap.forEach(this.replaceWordMap::put);
 	}
 
 	/**
@@ -144,31 +98,6 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 */
 	public void setReplactWord(String word, String replactWord) {
 		setReplactWord(new DataDriverFunction(word, text -> replactWord));
-	}
-
-	/**
-	 * 用于根据需要替换的词语，设置需要动态写入到文本的内容。添加词语时无需添加特殊字符
-	 * <p>
-	 * <b>注意：</b>当未传入关键词，或关键词为空，或处理方式为null时，则不存储替换方式
-	 * </p>
-	 * 
-	 * @param word      需要替换的词语
-	 * @param functions 替换规则
-	 * @throws FunctionExceptional 未指定替换词语或替换内容时抛出的异常
-	 * @deprecated 该方法已被{@link #setReplactWord(DataDriverFunction)}方法代替，可将方法改为
-	 *             {@code setReplactWord(new DataDriverFunction(word, functions))}。该方法将在后续两个版本中删除
-	 */
-	@Deprecated
-	public void setReplactWord(String word, DataFunction functions) {
-		if (!Optional.ofNullable(word).filter(t -> !t.isEmpty()).isPresent()) {
-			return;
-		}
-
-		if (functions == null) {
-			return;
-		}
-
-		replaceWordMap.put(word, functions);
 	}
 
 	/**
@@ -204,11 +133,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @throws FunctionExceptional 未指定替换词语或替换内容时抛出的异常
 	 */
 	public void setReplactWord(DataDriverFunction functions) {
-		if (functions == null) {
-			return;
-		}
-
-		replaceWordMap.put(functions.getRegex(), functions.getFunction());
+		data.addReplaceWord(functions);
 	}
 
 	/**
@@ -274,6 +199,14 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	public void clearFieldValue(String field) {
 		data.removeFieldDefault(field);
 	}
+	
+	/**
+	 * 用于重置当前的写入模板
+	 * @param templet 模板类对象
+	 */
+	public void setFileTemplet(FileTemplet templet) {
+		data.setTemplet(templet.toString());
+	}
 
 	/**
 	 * 用于接收一个内容json串来替换当前写入的内容
@@ -303,10 +236,36 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		// TODO 多模板需要重写该方法，将当前数据回写到相应的模板中
 		data.setDefaultCaseJson(writeJson.getJSONObject(KEY_DEFAULT).toJSONString());
 		data.setContentJson(writeJson.getJSONObject(KEY_CONTENT).toJSONString());
-//		this.defaultCaseJson = writeJson.getJSONObject(KEY_DEFAULT);
-//		this.contentJson = writeJson.getJSONObject(KEY_CONTENT);
+	}
+	
+	/**
+	 * 用于将其他写入类对象的待写入信息设置到当前类对象中
+	 * <p>
+	 * 调用该方法后，会将传入的{@link WriteFileData}类对象中，除模板外的信息覆盖到当前的模板类中，等同于进行数据的复制
+	 * </p>
+	 * @param data 待写入信息类对象，可通过{@link #getWriteData()}方法获取
+	 */
+	public void setWriteData(WriteFileData data) {
+		this.data.setDefaultCaseJson(data.getDefaultCaseJsonText());
+		this.data.setContentJson(data.getContentJsonText());
+		this.data.setNowCaseNum(data.getNowCaseNum());
+		data.getReplaceWordMap().forEach((name, fun) -> this.data.addReplaceWord(new DataDriverFunction(name, fun)));
+	}
+	
+	/**
+	 * 用于返回当前待写入模板的信息类对象
+	 * @return 信息类对象
+	 */
+	public WriteFileData getWriteData() {
+		return data;
 	}
 
+	/**
+	 * 用于对指定的内容json串进行判断的方法
+	 * @param contentJson 内容json
+	 * @param field 字段
+	 * @param isJsonObject 是否为json串（不是json串则判定为json数组串）
+	 */
 	private void judgeJson(JSONObject contentJson, String field, boolean isJsonObject) {
 		if (contentJson.containsKey(field)) {
 			if (isJsonObject) {
@@ -637,13 +596,13 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		// 循环，遍历待替换词语，并对内容进行替换
 		for (String word : wordList) {
 			// 将词语与每一个规则进行匹配
-			for (String key : replaceWordMap.keySet()) {
+			for (String key : data.getReplaceWordMap().keySet()) {
 				// 若传入的内容与正则匹配，则将数据进行处理，并返回处理结果
 				if (Pattern.compile(key).matcher(word).matches()) {
 					// 将待替换的词语进行拼装
 					String oldWord = WORD_SIGN + word + WORD_SIGN;
 					// 获取替换的词语
-					String newWord = replaceWordMap.get(key).apply(word);
+					String newWord = data.getReplaceWordMap().get(key).apply(word);
 					// 循环，替换所有与oldWord相同的内容
 					// 由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
 					while (content.contains(oldWord)) {

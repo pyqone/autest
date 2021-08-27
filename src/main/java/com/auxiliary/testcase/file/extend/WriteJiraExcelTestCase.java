@@ -7,8 +7,6 @@ import org.dom4j.Document;
 
 import com.auxiliary.testcase.file.WriteExcelTestCase;
 import com.auxiliary.tool.file.FileTemplet;
-import com.auxiliary.tool.file.WriteFileException;
-import com.auxiliary.tool.file.WriteTempletFile;
 import com.auxiliary.tool.file.excel.ExcelFileTemplet;
 
 /**
@@ -31,7 +29,7 @@ import com.auxiliary.tool.file.excel.ExcelFileTemplet;
  * @since JDK 1.8
  */
 public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTestCase> {
-	protected static final String DEFAULT_CASE_NAME = "测试用例";
+	public static final String DEFAULT_CASE_NAME = "测试用例";
 
 	/**
 	 * 用例标题目的
@@ -100,19 +98,6 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 		this();
 		// 重新设置模板
 		addTemplet(DEFAULT_CASE_NAME, templet);
-	}
-
-	/**
-	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
-	 * <p>
-	 * <b>注意：</b>在转换模板时，若模板的name字段为对象，则以默认名称“Sheet + 序号”来命名，并修改其中的name字段值
-	 * </p>
-	 * 
-	 * @param writeTempletFile 文件写入类对象
-	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
-	 */
-	public WriteJiraExcelTestCase(WriteTempletFile<?> writeTempletFile) {
-		super(writeTempletFile);
 	}
 
 	@Override

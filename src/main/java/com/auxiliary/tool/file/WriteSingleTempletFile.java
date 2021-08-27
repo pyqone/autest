@@ -31,10 +31,6 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 		super(templet);
 	}
 
-	public WriteSingleTempletFile(WriteTempletFile<?> writeTempletFile) {
-		super(writeTempletFile);
-	}
-
 	protected WriteSingleTempletFile() {
 		super();
 	}
