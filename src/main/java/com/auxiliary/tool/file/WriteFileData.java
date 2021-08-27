@@ -81,7 +81,7 @@ public class WriteFileData {
 	/**
 	 * 用于根据模板json对当前模板进行设置，调用该方法会覆盖当前的模板
 	 * 
-	 * @param 模板json
+	 * @param templetJsonText 模板json
 	 */
 	public void setTemplet(String templetJsonText) {
 		this.templet = new FileTemplet(templetJsonText);
@@ -93,7 +93,7 @@ public class WriteFileData {
 	/**
 	 * 用于根据内容json对当前内容进行设置，调用该方法会覆盖当前的内容
 	 * 
-	 * @param 内容json
+	 * @param contentJsonText 内容json
 	 */
 	public void setContentJson(String contentJsonText) {
 		this.contentJson = JSONObject.parseObject(contentJsonText);
@@ -102,7 +102,7 @@ public class WriteFileData {
 	/**
 	 * 用于根据字段默认内容json对当前字段默认内容进行设置，调用该方法会覆盖当前的字段默认内容
 	 * 
-	 * @param 字段默认内容json
+	 * @param defaultCaseJsonText 字段默认内容json
 	 */
 	public void setDefaultCaseJson(String defaultCaseJsonText) {
 		this.defaultCaseJson = JSONObject.parseObject(defaultCaseJsonText);
@@ -111,7 +111,7 @@ public class WriteFileData {
 	/**
 	 * 设置当前内容的行数
 	 * 
-	 * @param 当前内容的行数
+	 * @param nowCaseNum 当前内容的行数
 	 */
 	public void setNowCaseNum(int nowCaseNum) {
 		this.nowCaseNum = nowCaseNum;
