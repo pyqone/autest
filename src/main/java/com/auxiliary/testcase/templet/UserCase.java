@@ -23,6 +23,14 @@ public class UserCase extends Case {
 	}
 	
 	/**
+	 * 通过默认的用例模板库来构造对象
+	 */
+	public UserCase() {
+		super(new File(InformationCase.class.getClassLoader()
+				.getResource("com/auxiliary/testcase/templet/Username.xml").getFile()));
+	}
+	
+	/**
 	 * 用于生成正常登录相关的测试用例
 	 * @return 类本身
 	 */

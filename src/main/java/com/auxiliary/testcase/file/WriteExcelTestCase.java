@@ -8,8 +8,6 @@ import org.dom4j.Document;
 
 import com.auxiliary.testcase.templet.Case;
 import com.auxiliary.tool.file.FileTemplet;
-import com.auxiliary.tool.file.WriteFileException;
-import com.auxiliary.tool.file.WriteTempletFile;
 import com.auxiliary.tool.file.excel.WriteExcelTempletFile;
 
 /**
@@ -23,7 +21,7 @@ import com.auxiliary.tool.file.excel.WriteExcelTempletFile;
  * <b>编码时间：</b>2021年6月17日上午8:15:56
  * </p>
  * <p>
- * <b>修改时间：</b>2021年6月17日上午8:15:56
+ * <b>修改时间：</b>2021年8月27日下午7:42:16
  * </p>
  * 
  * @author 彭宇琦
@@ -60,20 +58,6 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 	 */
 	public WriteExcelTestCase(String templetName, FileTemplet templet) {
 		super(templetName, templet);
-		initField();
-	}
-
-	/**
-	 * 根据已有的写入类对象，构造新的写入类对象，并保存原写入类对象中的模板、内容、字段默认内容以及词语替换内容
-	 * <p>
-	 * <b>注意：</b>在转换模板时，若模板的name字段为对象，则以默认名称“Sheet + 序号”来命名，并修改其中的name字段值
-	 * </p>
-	 * 
-	 * @param writeTempletFile 文件写入类对象
-	 * @throws WriteFileException 文件写入类对象为空时，抛出的异常
-	 */
-	public WriteExcelTestCase(WriteTempletFile<?> writeTempletFile) {
-		super(writeTempletFile);
 		initField();
 	}
 

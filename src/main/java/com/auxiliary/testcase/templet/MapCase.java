@@ -25,6 +25,14 @@ public class MapCase extends Case {
 	}
 	
 	/**
+	 * 通过默认的用例模板库来构造对象
+	 */
+	public MapCase() {
+		super(new File(InformationCase.class.getClassLoader()
+				.getResource("com/auxiliary/testcase/templet/Map.xml").getFile()));
+	}
+	
+	/**
 	 * 用于生成地图测距相关的测试用例
 	 * @return 类本身
 	 */

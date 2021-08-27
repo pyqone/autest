@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cases project="Video">
+	<case name="addPlayVideoCase">
+		<titles>
+			<title id='1' value="播放/暂停*{视频类型}*" />
+		</titles>
+		<keys> 
+			<key id='1' value="播放/暂停" />
+		</keys> 
+		<ranks>
+			<rank id='1' value="1" />
+		</ranks>
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{视频类型}*播放状态下点击播放按钮" />
+			<step id="2" value="在*{视频类型}*播放状态下点击暂停按钮或单击*{视频类型}*画面，再点击播放按钮" />
+			<step id="3" value="在*{视频类型}*播放状态下点击停止按钮，再点击播放按钮" />
+			<step id="4" value="在*{视频类型}*播放状态下点击暂停按钮，再点击停止按钮" />
+			<step id="5" value="在*{视频类型}*播放状态下一直按住键盘上的空格按键" />
+			<step id="6" value="在*{视频类型}*未播放状态下点击暂停、停止按钮" />
+		</steps>
+		<excepts>
+			<except id="1" value="*{视频类型}*播放不受影响"/>
+			<except id="2" value="*{视频类型}*暂停，*{视频类型}*画面定格在按下按钮的瞬间，再次按下播放时*{视频类型}*会从暂停的位置继续播放"/>
+			<except id="3" value="*{视频类型}*停止，*{视频类型}*画面定格在按下按钮的瞬间或画面消失，再次按下播放时*{视频类型}*会重新播放"/>
+			<except id="4" value="*{视频类型}*停止，*{视频类型}*画面定格在按下按钮的瞬间或画面消失，再次按下播放时*{视频类型}*会重新播放"/>
+			<except id="5" value="系统只执行一次按下空格按键的操作，或*{视频类型}*在不断地暂停/播放，但页面不会崩溃"/>
+			<except id="6" value="*{视频类型}*不会播放"/>
+		</excepts>
+	</case>
+	
+	<case name="addVideoScreenshotCase">
+		<titles>
+			<title id='1' value="对*{视频类型}*进行截图" />
+		</titles>
+		<keys> 
+			<key id='1' value="*{视频类型}*,截图" />
+		</keys>
+		<ranks>
+			<rank id='1' value="2" />
+		</ranks>
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{视频类型}*播放状态下点击截图按钮" />
+			<step id="2" value="在*{视频类型}*暂停状态下点击截图按钮" />
+			<step id="3" value="在*{视频类型}*停止状态下点击截图按钮" />
+			<step id="4" value="在*{视频类型}*未播放状态下点击截图按钮" />
+		</steps>
+		<excepts>
+			<except id="1" value="弹出截图成功提示，截图的画面是按下截图按钮瞬间的画面"/>
+			<except id="2" value="弹出截图成功提示，截图的画面是按下当前*{视频类型}*的画面"/>
+			<except id="3" value="截图失败，弹出未保存或*{视频类型}*未播放的提示"/>
+			<except id="4" value="截图失败，弹出未保存或*{视频类型}*未播放的提示"/>
+		</excepts>
+	</case>
+	
+	<case name="addVideoAdvanceCase">
+		<titles>
+			<title id='1' value="快进/快退*{视频类型}*" />
+		</titles>
+		<keys> 
+			<key id='1' value="*{视频类型}*,快进,快退" />
+		</keys>
+		<ranks>
+			<rank id='1' value="2" />
+		</ranks>
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{视频类型}*播放状态下点击快进或快退按钮" />
+			<step id="2" value="在*{视频类型}*暂停状态下点击快进或快退按钮" />
+			<step id="3" value="在*{视频类型}*刚开始播放时（只播放1-2秒）点击快退按钮" />
+			<step id="4" value="在*{视频类型}*快结束时（剩余1-2秒）点击快进按钮" />
+			<step id="5" value="在*{视频类型}*未播放状态下点击快进或快退按钮" />
+			<step id="6" value="一直按住键盘的右或左方向键" />
+			<step id="7" value="正常修改默认的跳跃秒数后点击快进或快退按钮" />
+			<step id="8" value="修改秒数为小于1的数字后点击快进或快退按钮" />
+			<step id="9" value="修改秒数为大于*{视频类型}*剩余播放时间的数字后点击快进按钮" />
+			<step id="10" value="不输入秒数或输入非数字字符后点击快进或快退按钮" />
+		</steps>
+		<excepts>
+			<except id="1" value="*{视频类型}*进度条向前或向后跳跃，*{视频类型}*画面前进或后退对应的时间后继续播放"/>
+			<except id="2" value="*{视频类型}*进度条向前或向后跳跃，*{视频类型}*画面前进或后退对应的时间后仍暂停播放"/>
+			<except id="3" value="*{视频类型}*重新播放"/>
+			<except id="4" value="*{视频类型}*停止播放"/>
+			<except id="5" value="快进或快退无效"/>
+			<except id="6" value="进度条一直向前或向后跳跃，直至进度条到达端点时按住方向键将无效"/>
+			<except id="7" value="*{视频类型}*跳跃相应的秒数"/>
+			<except id="8" value="提示跳跃秒数不允许小于1，或者*{视频类型}*不跳跃"/>
+			<except id="9" value="提示跳跃秒数不允许超过*{视频类型}*的播放时间，或者*{视频类型}*停止播放"/>
+			<except id="10" value="提示输入正确的数字，或者*{视频类型}*不跳跃"/>
+		</excepts>
+	</case>
+	
+	<case name="addVideoSpeedCase">
+		<titles>
+			<title id='1' value="快放/慢放*{视频类型}*" />
+		</titles>
+		<keys> 
+			<key id='1' value="*{视频类型}*,快放,慢放" />
+		</keys>
+		<ranks>
+			<rank id='1' value="2" />
+		</ranks>
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{视频类型}*播放状态下点击快放或慢放按钮" />
+			<step id="2" value="在*{视频类型}*暂停状态下点击快放或慢放按钮" />
+			<step id="3" value="在*{视频类型}*未播放状态下点击快放或慢放按钮" />
+			<step id="4" value="依次选择不同的倍率后，点击快放或慢放按钮" />
+		</steps>
+		<excepts>
+			<except id="1" value="*{视频类型}*播放仍在播放，但其播放速度明显比默认播放速度快或慢"/>
+			<except id="2" value="*{视频类型}*播放开始播放，但其播放速度明显比默认播放速度快或慢"/>
+			<except id="3" value="按钮点击无效"/>
+			<except id="4" value="*{视频类型}*的播放速度较点击前的播放速度有明显的变化"/>
+		</excepts>
+	</case>
+	
+	<case name="addVideoProgressBarCase">
+		<titles>
+			<title id='1' value="拖动进度条" />
+		</titles>
+		<keys> 
+			<key id='1' value="进度条" />
+		</keys>
+		<ranks>
+			<rank id='1' value="2" />
+		</ranks>
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="在*{视频类型}*播放状态下向前或向后拖动进度条" />
+			<step id="2" value="在*{视频类型}*暂停状态下向前或向后拖动进度条" />
+			<step id="3" value="在*{视频类型}*未播放状态下点击快放或慢放按" />
+			<step id="4" value="将进度条拉至端点后继续向同方向拉动" />
+		</steps>
+		<excepts>
+			<except id="1" value="*{视频类型}*跳跃到进度条相对应的时间上继续播放"/>
+			<except id="2" value="*{视频类型}*跳跃到进度条相对应的时间上仍暂停播放"/>
+			<except id="3" value="*{视频类型}*跳从进度条相对应的时间上开始播放"/>
+			<except id="4" value="进度条不会超出端点"/>
+		</excepts>
+	</case>
+	
+	<case name="addFullScreenPlayCase">
+		<titles>
+			<title id='1' value="全屏播放*{视频类型}*" />
+		</titles>
+		<keys> 
+			<key id='1' value="全屏*{视频类型}*" />
+		</keys>
+		<ranks>
+			<rank id='1' value="2" />
+		</ranks>
+		<preconditions>
+		</preconditions>
+		<steps>
+			<step id="1" value="点击全屏播放按钮" />
+			<step id="2" value="双击*{视频类型}*画面" />
+			<step id="3" value="再次双击*{视频类型}*画面" />
+			<step id="4" value="点击退出全屏播放按钮" />
+		</steps>
+		<excepts>
+			<except id="1" value="*{视频类型}*全屏播放"/>
+			<except id="2" value="*{视频类型}*退出全屏播放"/>
+			<except id="3" value="*{视频类型}*全屏播放"/>
+			<except id="4" value="*{视频类型}*退出全屏播放"/>
+		</excepts>
+	</case>
+</cases>
