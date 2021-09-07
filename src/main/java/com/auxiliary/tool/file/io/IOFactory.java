@@ -3,20 +3,27 @@ package com.auxiliary.tool.file.io;
 import java.io.File;
 
 /**
- * <p><b>文件名：</b>IOFactory.java</p>
- * <p><b>用途：</b>
- * 定义构造文件读取/写入类的超级工厂
+ * <p>
+ * <b>文件名：</b>IOFactory.java
  * </p>
- * <p><b>编码时间：</b>2021年9月6日下午8:09:26</p>
- * <p><b>修改时间：</b>2021年9月6日下午8:09:26</p>
- * @author 
+ * <p>
+ * <b>用途：</b> 定义构造文件读取/写入类的超级工厂
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2021年9月6日下午8:09:26
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2021年9月6日下午8:09:26
+ * </p>
+ * 
+ * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
  */
 public class IOFactory {
 	private IOFactory() {
 	}
-	
+
 	/**
 	 * 根据文本文件自动判断相应的文件读取方式，并进行返回文件读取类对象
 	 * 
@@ -37,7 +44,7 @@ public class IOFactory {
 	public static AbstractFileRead createRead(File file, FileType fileTye) {
 		return FileReadFactory.createRead(file, fileTye);
 	}
-	
+
 	/**
 	 * 根据文本文件自动判断相应的文件写入方式，并进行返回文件写入类对象
 	 * 

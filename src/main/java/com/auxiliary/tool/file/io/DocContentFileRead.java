@@ -26,7 +26,7 @@ import org.apache.poi.hwpf.HWPFDocument;
 public class DocContentFileRead extends AbstractContentFileRead {
 	HWPFDocument read;
 
-	public DocContentFileRead(File writeFile) {
+	public DocContentFileRead(File readFile) {
 		// TODO Auto-generated constructor stub
 	}
 

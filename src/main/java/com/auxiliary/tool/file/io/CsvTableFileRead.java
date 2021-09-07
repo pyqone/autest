@@ -21,7 +21,7 @@ import com.opencsv.CSVReader;
 public class CsvTableFileRead extends AbstractTableFileRead {
 	CSVReader read;
 	
-	public CsvTableFileRead(File writeFile) {
+	public CsvTableFileRead(File readFile) {
 		// TODO Auto-generated constructor stub
 	}
 

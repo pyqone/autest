@@ -25,7 +25,7 @@ import java.util.List;
 public class TxtContentFileRead extends AbstractContentFileRead {
 	BufferedReader read;
 
-	public TxtContentFileRead(File contentFile) {
+	public TxtContentFileRead(File readFile) {
 	}
 
 	@Override

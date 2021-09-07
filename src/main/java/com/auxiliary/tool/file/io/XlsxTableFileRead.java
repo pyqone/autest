@@ -22,7 +22,7 @@ import com.auxiliary.tool.data.TableData;
 public class XlsxTableFileRead extends AbstractTableFileRead {
 	XSSFWorkbook read;
 	
-	public XlsxTableFileRead(File writeFile) {
+	public XlsxTableFileRead(File readFile) {
 		// TODO Auto-generated constructor stub
 	}
 

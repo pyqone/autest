@@ -26,7 +26,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 public class DocxContentFileRead extends AbstractContentFileRead {
 	XWPFDocument read;
 
-	public DocxContentFileRead(File writeFile) {
+	public DocxContentFileRead(File readFile) {
 		// TODO Auto-generated constructor stub
 	}
 

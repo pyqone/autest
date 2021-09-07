@@ -29,7 +29,7 @@ import com.auxiliary.tool.data.TableData;
 public class XlsTableFileRead extends AbstractTableFileRead {
 	HSSFWorkbook read;
 
-	public XlsTableFileRead(File writeFile) {
+	public XlsTableFileRead(File readFile) {
 		// TODO Auto-generated constructor stub
 	}
 
