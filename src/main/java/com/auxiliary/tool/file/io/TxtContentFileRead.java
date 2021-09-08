@@ -2,6 +2,8 @@ package com.auxiliary.tool.file.io;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.List;
 
 /**
@@ -23,20 +25,26 @@ import java.util.List;
  * @since JDK 1.8
  */
 public class TxtContentFileRead extends AbstractContentFileRead {
+	/**
+	 * 存放文件读取类
+	 */
 	BufferedReader read;
+	/**
+	 * 存储当前指向的文件
+	 */
+	File readFile;
 
+	/**
+	 * 根据文件类对象，打开相应的文件
+	 * @param readFile 文件对象
+	 * @throws FileException 当文件打开出错时抛出的异常
+	 */
 	public TxtContentFileRead(File readFile) {
-	}
-
-	@Override
-	public boolean hasNextLine() {
-		// TODO Auto-generated method stub
-		return false;
+		this.readFile = openStream(readFile);
 	}
 
 	@Override
 	public String nextLine() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -63,5 +71,19 @@ public class TxtContentFileRead extends AbstractContentFileRead {
 	 */
 	public BufferedReader getReadClass() {
 		return read;
+	}
+	
+	/**
+	 * 用于打开文件读取流
+	 * @param readFile 文件对象
+	 */
+	private File openStream(File readFile) {
+		try {
+			read = new BufferedReader(new FileReader(readFile));
+		} catch (FileNotFoundException e) {
+			throw new FileException("文件打开异常", readFile);
+		}
+		
+		return readFile;
 	}
 }

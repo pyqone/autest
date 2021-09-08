@@ -22,13 +22,6 @@ import java.util.List;
  */
 public abstract class AbstractFileRead {
 	/**
-	 * 判断当前文本是否存在下一行内容
-	 * 
-	 * @return 是否存在下一行内容
-	 */
-	public abstract boolean hasNextLine();
-
-	/**
 	 * 返回当前文本的下一行内容
 	 * 
 	 * @return 文本下一行内容
