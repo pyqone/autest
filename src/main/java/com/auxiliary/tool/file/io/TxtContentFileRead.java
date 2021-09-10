@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,64 +27,43 @@ import java.util.List;
  */
 public class TxtContentFileRead extends AbstractContentFileRead {
 	/**
-	 * 存放文件读取类
+	 * 存储读取成功的文件类对象
 	 */
-	BufferedReader read;
-	/**
-	 * 存储当前指向的文件
-	 */
-	File readFile;
-
+	private File readFile;
+	
 	/**
 	 * 根据文件类对象，打开相应的文件
 	 * @param readFile 文件对象
 	 * @throws FileException 当文件打开出错时抛出的异常
 	 */
 	public TxtContentFileRead(File readFile) {
-		this.readFile = openStream(readFile);
-	}
-
-	@Override
-	public String nextLine() {
-		return null;
-	}
-
-	@Override
-	public List<String> nextLine(String splitSign) {
-		// TODO Auto-generated method stub
-		return null;
+		// 读取文件中的内容，并存储至文本数据集合中
+		try(BufferedReader read = new BufferedReader(new FileReader(readFile))) {
+			String text = "";
+			while((text = read.readLine()) != null) {
+				textList.add(text);
+			}
+			
+			this.readFile = readFile;
+		} catch (IOException e) {
+			throw new FileException("文件读取异常", readFile);
+		}
 	}
 
 	@Override
 	public List<String> readAllContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void close() {
-		// TODO Auto-generated method stub
-
+		return textList;
 	}
 
 	/**
-	 * @return the read
+	 * 返回文件读取类对象，其流为新的流，即未进行过文件读取的流
+	 * @return 文件读取流
 	 */
 	public BufferedReader getReadClass() {
-		return read;
-	}
-	
-	/**
-	 * 用于打开文件读取流
-	 * @param readFile 文件对象
-	 */
-	private File openStream(File readFile) {
 		try {
-			read = new BufferedReader(new FileReader(readFile));
+			return new BufferedReader(new FileReader(readFile));
 		} catch (FileNotFoundException e) {
 			throw new FileException("文件打开异常", readFile);
 		}
-		
-		return readFile;
 	}
 }

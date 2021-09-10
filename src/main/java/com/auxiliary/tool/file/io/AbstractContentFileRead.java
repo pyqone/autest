@@ -1,5 +1,8 @@
 package com.auxiliary.tool.file.io;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <p>
  * <b>文件名：</b>AbstractContentFileRead.java
@@ -19,4 +22,8 @@ package com.auxiliary.tool.file.io;
  * @since JDK 1.8
  */
 public abstract class AbstractContentFileRead extends AbstractFileRead {
+	/**
+	 * 用于存储预读的数据
+	 */
+	protected List<String> textList = new ArrayList<>();
 }

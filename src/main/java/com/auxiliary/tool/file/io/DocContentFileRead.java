@@ -1,9 +1,15 @@
 package com.auxiliary.tool.file.io;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.usermodel.Paragraph;
+import org.apache.poi.hwpf.usermodel.Range;
 
 /**
  * <p>
@@ -24,46 +30,57 @@ import org.apache.poi.hwpf.HWPFDocument;
  * @since JDK 1.8
  */
 public class DocContentFileRead extends AbstractContentFileRead {
-	HWPFDocument read;
-
+	/**
+	 * 存储读取成功的文件类对象
+	 */
+	private File readFile;
+	
 	public DocContentFileRead(File readFile) {
-		// TODO Auto-generated constructor stub
-	}
+		// 读取word
+		Optional<HWPFDocument> wordOptional = Optional.empty();
+		try (FileInputStream fip = new FileInputStream(
+				Optional.ofNullable(readFile).orElseThrow(() -> new FileException("未传入文件对象", readFile)))) {
+			wordOptional = Optional.ofNullable(new HWPFDocument(fip));
+			
+			this.readFile = readFile;
+		} catch (IOException e) {
+			throw new FileException("文件打开异常" , readFile, e);
+		}
 
-	@Override
-	public boolean hasNextLine() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String nextLine() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> nextLine(String splitSign) {
-		// TODO Auto-generated method stub
-		return null;
+		try (HWPFDocument word = wordOptional.orElseThrow(() -> new FileException("Word文件读取类未构造"))) {
+			// 获取word中的所有内容
+			Range wordFileRange = word.getRange();
+			// 生成段落下标，遍历word文档中的所有段落
+			IntStream.range(0, wordFileRange.numParagraphs())
+					// 将下标转换为段落类对象
+					.mapToObj(wordFileRange::getParagraph)
+					.filter(para -> para != null)
+					// 读取段落的内容，对内容进行封装
+					.map(Paragraph::text)
+					// 去除换行符，并过滤掉空行
+					.map(text -> text.replaceAll("\\r", ""))
+					// 按行存储至列表对象中
+					.forEach(textList::add);
+		} catch (IOException e) {
+			throw new FileException("文件读取异常", readFile, e);
+		}
 	}
 
 	@Override
 	public List<String> readAllContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void close() {
-		// TODO Auto-generated method stub
-
+		return textList;
 	}
 
 	/**
-	 * @return the read
+	 * 用于返回07版word的读取类对象（poi）
+	 * @return 文件读取类对象
 	 */
 	public HWPFDocument getReadClass() {
-		return read;
+		try (FileInputStream fip = new FileInputStream(
+				Optional.ofNullable(readFile).orElseThrow(() -> new FileException("文件读取异常", readFile)))) {
+			return  new HWPFDocument(fip);
+		} catch (IOException e) {
+			throw new FileException("文件打开异常" , readFile, e);
+		}
 	}
 }

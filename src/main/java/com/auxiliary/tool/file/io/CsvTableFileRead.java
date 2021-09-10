@@ -26,12 +26,6 @@ public class CsvTableFileRead extends AbstractTableFileRead {
 	}
 
 	@Override
-	public boolean hasNextLine() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public String nextLine() {
 		// TODO Auto-generated method stub
 		return null;
@@ -66,5 +60,11 @@ public class CsvTableFileRead extends AbstractTableFileRead {
 	 */
 	public CSVReader getReadClass() {
 		return read;
+	}
+
+	@Override
+	public void againRead() {
+		// TODO Auto-generated method stub
+		
 	}
 }

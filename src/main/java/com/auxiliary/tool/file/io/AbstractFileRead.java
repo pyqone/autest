@@ -22,29 +22,9 @@ import java.util.List;
  */
 public abstract class AbstractFileRead {
 	/**
-	 * 返回当前文本的下一行内容
-	 * 
-	 * @return 文本下一行内容
-	 */
-	public abstract String nextLine();
-
-	/**
-	 * 读取当前文本的下一行内容，并对内容进行切分，返回切分后的内容集合
-	 * 
-	 * @param splitSign 切分符号
-	 * @return 切分后的内容集合
-	 */
-	public abstract List<String> nextLine(String splitSign);
-
-	/**
 	 * 读取当前文本的所有内容，并按行的形式存储，返回相应的内容集合
 	 * 
 	 * @return
 	 */
 	public abstract List<String> readAllContext();
-
-	/**
-	 * 关闭文件读取流
-	 */
-	public abstract void close();
 }

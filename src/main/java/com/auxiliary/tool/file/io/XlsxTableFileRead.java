@@ -27,12 +27,6 @@ public class XlsxTableFileRead extends AbstractTableFileRead {
 	}
 
 	@Override
-	public boolean hasNextLine() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public String nextLine() {
 		// TODO Auto-generated method stub
 		return null;
@@ -67,5 +61,11 @@ public class XlsxTableFileRead extends AbstractTableFileRead {
 	 */
 	public XSSFWorkbook getReadClass() {
 		return read;
+	}
+
+	@Override
+	public void againRead() {
+		// TODO Auto-generated method stub
+		
 	}
 }

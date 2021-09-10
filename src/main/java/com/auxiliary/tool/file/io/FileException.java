@@ -24,9 +24,6 @@ import java.util.Optional;
 public class FileException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
-	public FileException() {
-	}
-
 	public FileException(String message) {
 		super(message);
 	}
@@ -61,5 +58,26 @@ public class FileException extends RuntimeException {
 
 			return String.format("文件路径为“%s”", f.getAbsolutePath());
 		}).orElse("文件类对象为null"));
+	}
+
+	/**
+	 * 文件异常时，则根据文件是否为空，给出文件内容的提示语
+	 * 
+	 * @param message       主要消息
+	 * @param exceptionFile 异常文件类对象
+	 * @param e             原异常
+	 */
+	public FileException(String message, File exceptionFile, Exception e) {
+		this(message + "：" + Optional.ofNullable(exceptionFile).map(f -> {
+			if (!f.exists()) {
+				return String.format("不存在的文件路径“%s”", f.getAbsolutePath());
+			}
+
+			if (!f.isFile()) {
+				return String.format("文件类对象指向非文件路径“%s”", f.getAbsolutePath());
+			}
+
+			return String.format("文件路径为“%s”", f.getAbsolutePath());
+		}).orElse("文件类对象为null"), e);
 	}
 }
