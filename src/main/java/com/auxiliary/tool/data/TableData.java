@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  * <b>编码时间：</b>2020年12月17日上午8:24:47
  * </p>
  * <p>
- * <b>修改时间：</b>2021年2月19日下午6:39:48
+ * <b>修改时间：</b>2021年9月14日 下午5:27:16
  * </p>
  * 
  * @author 彭宇琦
@@ -53,6 +53,11 @@ public class TableData<T> {
 	private boolean isExamine = true;
 
 	/**
+	 * 定义默认的列名称
+	 */
+	public static final String DEFAULT_TITLE_NAME = "默认列";
+
+	/**
 	 * 构造对象
 	 */
 	public TableData() {
@@ -66,10 +71,10 @@ public class TableData<T> {
 	public TableData(Map<String, ? extends List<T>> tableMap) {
 		tableMap.forEach(this::addColumn);
 	}
-	
+
 	public TableData(TableData<T> tableData) {
 		this.addTable(tableData);
-	} 
+	}
 
 	/**
 	 * 用于设置是否对传入的数据列表的个数进行严格校验，即在调用{@link #getData(int, int, List)}等获取数据的方法时，
@@ -89,17 +94,19 @@ public class TableData<T> {
 	public boolean isExamine() {
 		return isExamine;
 	}
-	
+
 	/**
 	 * 用于判断当前表中是否包含数据，若表中只有标题，无相应的内容，也视为无数据
+	 * 
 	 * @return 当前表中是否包含数据
 	 */
 	public boolean isEmpty() {
 		return longColumnSize < 1;
 	}
-	
+
 	/**
 	 * 用于判断当前表中是否存在指定的列名
+	 * 
 	 * @param columnName 列名称
 	 * @return 当前表中是否存在该列
 	 */
@@ -203,9 +210,10 @@ public class TableData<T> {
 	 * @throws IllegalDataException 未存储列名时或添加的元素超出列数量时抛出的异常
 	 */
 	public TableData<T> addRow(List<T> rowDataList) {
-		// 判断是否存储数据
+		// 判断是否存储数据，若不存在数据，则添加默认的列名
 		if (tableMap.isEmpty()) {
-			throw new IllegalDataException("未存储列名，无法按行添加元素");
+//			throw new IllegalDataException("未存储列名，无法按行添加元素");
+			addDefaultColumn(rowDataList.size());
 		}
 
 		List<T> rowList = Optional.ofNullable(rowDataList).filter(list -> !list.isEmpty()).orElse(new ArrayList<T>());
@@ -213,8 +221,13 @@ public class TableData<T> {
 		if (rowList.size() != 0) {
 			// 判断传入的行元素个数是否超出当前表中存储的列数，超出，则抛出异常
 			if (rowList.size() > tableMap.size()) {
-				throw new IllegalDataException(
-						String.format("指定的行元素超出标题个数。当前传入数据个数：%d，表中列个数：%d", rowDataList.size(), tableMap.size()));
+				// 判断是否需要进行严格检查，若不需要，则添加默认列
+				if (isExamine) {
+					throw new IllegalDataException(
+							String.format("指定的行元素超出标题个数。当前传入数据个数：%d，表中列个数：%d", rowDataList.size(), tableMap.size()));
+				} else {
+					addDefaultColumn(rowDataList.size() - tableMap.size());
+				}
 			}
 
 			// 按照列添加数据，补全的列，按照空元素进行存储
@@ -233,6 +246,23 @@ public class TableData<T> {
 		}
 
 		return this;
+	}
+
+	/**
+	 * 用于添加默认的列数据
+	 * @param lengthDiff 需要添加默认列的数量
+	 */
+	private void addDefaultColumn(int lengthDiff) {
+		// 根据列个数的差值，定义默认列名
+		IntStream.range(0, lengthDiff).mapToObj(index -> DEFAULT_TITLE_NAME + (tableMap.size() + index + 1))
+				.forEach(name -> {
+					// 添加空数据，为默认的列根据最长列的元素数量，使用空数据补全
+					List<Optional<T>> columnList = new ArrayList<> ();
+					IntStream.range(0, getLongColumnSize()).forEach(index -> columnList.add(Optional.empty()));
+					
+					// 添加列
+					tableMap.put(name, columnList);
+				});
 	}
 
 	/**
@@ -326,7 +356,7 @@ public class TableData<T> {
 
 		return getColumnName().get(index);
 	}
-	
+
 	/**
 	 * 根据列名称返回列下标，若列名不存在，则返回-1
 	 * 
@@ -337,9 +367,10 @@ public class TableData<T> {
 		return Optional.ofNullable(fieldName).filter(tableMap::containsKey).map(this.getColumnName()::indexOf)
 				.orElse(-1);
 	}
-	
+
 	/**
 	 * 返回传入的列下标是否存在于当前表中，其列下标从0开始计算
+	 * 
 	 * @param index 列下标
 	 * @return 下标是否存在于表中
 	 */
@@ -350,16 +381,17 @@ public class TableData<T> {
 			return !(index > getColumnName().size() - 1);
 		}
 	}
-	
+
 	/**
 	 * 返回传入列名称是否存在与当前表中
+	 * 
 	 * @param fieldName 列名称
 	 * @return 列名是否存在
 	 */
 	public boolean isFieldName(String fieldName) {
 		return getColumnName().indexOf(fieldName) > -1;
 	}
-	
+
 	/**
 	 * 用于返回指定列的所有数据
 	 * 
@@ -393,7 +425,7 @@ public class TableData<T> {
 	public Optional<T> getFirstData() {
 		return getFirstColumn().get(0);
 	}
-	
+
 	/**
 	 * 用于获取指定列与指定列的数据，并以传入的字段顺序，将获取到的每列数据进行存储
 	 * <p>
@@ -445,9 +477,9 @@ public class TableData<T> {
 	 * 存储数据，及传入起始下标为2，结束下标为4时，表示获取指定列2-4行的数据
 	 * </p>
 	 * 
-	 * @param startRowIndex 起始下标
-	 * @param endRowIndex   结束下标
-	 * @param columnNameList   列名称集合
+	 * @param startRowIndex  起始下标
+	 * @param endRowIndex    结束下标
+	 * @param columnNameList 列名称集合
 	 * @return 按照字段顺序获取的列数据
 	 * @throws IllegalDataException 需要严格检查且存在列数据不同时抛出的异常
 	 */
@@ -467,15 +499,15 @@ public class TableData<T> {
 		Optional.ofNullable(columnNameList).orElseThrow(() -> new IllegalDataException("未传入数据列")).stream()
 				.filter(tableMap::containsKey).forEach(columnName -> {
 					ArrayList<Optional<T>> columnDataList = new ArrayList<>();
-					//若当前表数据不为空，则进行数据处理
+					// 若当前表数据不为空，则进行数据处理
 					if (!isEmpty()) {
 						// 遍历列表，存储数据，若当前列无此行元素（即抛出数组越界异常），则存储空值
 						IntStream.range(startRowIndexA.get(), endRowIndexA.get() + 1).forEach(index -> {
 							try {
 								columnDataList.add(tableMap.get(columnName).get(index - 1));
 							} catch (IndexOutOfBoundsException e) {
-								//为保证数据完整，若数组越界则存储空值
-								columnDataList.add(Optional.empty()); 
+								// 为保证数据完整，若数组越界则存储空值
+								columnDataList.add(Optional.empty());
 							}
 
 						});
@@ -499,7 +531,7 @@ public class TableData<T> {
 	 * 用于根据行下标，获取多行数据。其下标传入规则可参考{@link #getData(int, int, List)}
 	 * 
 	 * @param startIndex 起始行下标
-	 * @param endIndex 结束行下标
+	 * @param endIndex   结束行下标
 	 * @return 对应行下标的数据集合
 	 * @throws IllegalDataException 需要严格检查且存在列数据不同时抛出的异常
 	 */
@@ -553,7 +585,7 @@ public class TableData<T> {
 	public void columnForEach(BiConsumer<String, List<Optional<T>>> action) {
 		tableMap.forEach(action);
 	}
-	
+
 	/**
 	 * 刷新表中最长与最短列的元素个数，用于清空或删除表时的计算
 	 */
