@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -27,24 +28,17 @@ import java.util.List;
  */
 public class TxtContentFileRead extends AbstractContentFileRead {
 	/**
-	 * 存储读取成功的文件类对象
-	 */
-	private File readFile;
-	
-	/**
 	 * 根据文件类对象，打开相应的文件
 	 * @param readFile 文件对象
 	 * @throws FileException 当文件打开出错时抛出的异常
 	 */
 	public TxtContentFileRead(File readFile) {
+		super(readFile);
 		// 读取文件中的内容，并存储至文本数据集合中
-		try(BufferedReader read = new BufferedReader(new FileReader(readFile))) {
-			String text = "";
-			while((text = read.readLine()) != null) {
-				textList.add(text);
-			}
-			
-			this.readFile = readFile;
+		try (BufferedReader br = new BufferedReader(
+				new FileReader(Optional.ofNullable(readFile).orElseThrow(() -> new FileException("未传入文件对象", readFile))))) {
+			// 按行遍历文件内容
+			br.lines().forEach(textList::add);
 		} catch (IOException e) {
 			throw new FileException("文件读取异常", readFile);
 		}

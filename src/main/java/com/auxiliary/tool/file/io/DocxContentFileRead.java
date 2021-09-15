@@ -31,11 +31,12 @@ import com.auxiliary.tool.file.UnsupportedFileException;
  */
 public class DocxContentFileRead extends AbstractContentFileRead {
 	/**
-	 * 存储读取成功的文件类对象
+	 * 根据文件类对象，打开相应的文件
+	 * @param readFile 文件对象
+	 * @throws FileException 当文件打开出错时抛出的异常
 	 */
-	private File readFile;
-
 	public DocxContentFileRead(File readFile) {
+		super(readFile);
 		// 读取word
 		Optional<XWPFDocument> wordOptional = Optional.empty();
 		try (FileInputStream fip = new FileInputStream(

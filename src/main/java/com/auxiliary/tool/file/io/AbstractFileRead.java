@@ -1,5 +1,7 @@
 package com.auxiliary.tool.file.io;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,9 +24,25 @@ import java.util.List;
  */
 public abstract class AbstractFileRead {
 	/**
+	 * 用于存储预读的数据
+	 */
+	protected List<String> textList = new ArrayList<>();
+	
+	/**
+	 * 存储读取成功的文件类对象
+	 */
+	protected File readFile;
+	
+	public AbstractFileRead(File readFile) {
+		this.readFile = readFile;
+	}
+	
+	/**
 	 * 读取当前文本的所有内容，并按行的形式存储，返回相应的内容集合
 	 * 
-	 * @return
+	 * @return 相应的内容集合
 	 */
-	public abstract List<String> readAllContext();
+	public List<String> readAllContext() {
+		return textList;
+	}
 }
