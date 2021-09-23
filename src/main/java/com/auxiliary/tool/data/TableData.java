@@ -506,6 +506,34 @@ public class TableData<T> {
 	public List<List<Optional<T>>> getRowData(int startIndex, int endIndex) {
 		return ListUtil.transposition(ListUtil.toNoTitleTable(getData(startIndex, endIndex, getColumnName())));
 	}
+	
+	/**
+	 * 用于根据列名称和所在行数，返回单个数据
+	 * @param columnName 列名称
+	 * @param rowIndex 行下标
+	 * @return 指定的数据
+	 */
+	public Optional<T> getSingleData(String columnName, int rowIndex) {
+		try {
+			return getColumnList(columnName).get(rowIndex);
+		} catch (IndexOutOfBoundsException | IllegalDataException e) {
+			return Optional.empty();
+		}
+	}
+	
+	/**
+	 * 用于根据列列和所在行数，返回单个数据
+	 * @param columnIndex 列下标
+	 * @param rowIndex 行下标
+	 * @return 指定的数据
+	 */
+	public Optional<T> getSingleData(int columnIndex, int rowIndex) {
+		try {
+			return getColumnList(getFieldName(columnIndex)).get(rowIndex);
+		} catch (IndexOutOfBoundsException | IllegalDataException e) {
+			return Optional.empty();
+		}
+	}
 
 	/**
 	 * 用于根据指定的行下标，以流的形式，按行返回数据。
