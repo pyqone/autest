@@ -24,7 +24,7 @@
 	</properties>
 
 	<dependencies>
-		<!-- selenium 自动化测试工具 -->
+		<!-- selenium 自动化测试工具  -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
