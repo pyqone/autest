@@ -1,9 +1,11 @@
 package com.auxiliary.tool.file.excel;
 
 import java.io.File;
+import java.util.List;
 
 import org.dom4j.Document;
 
+import com.auxiliary.tool.data.TableData;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.WriteTempletFile;
 
@@ -47,5 +49,34 @@ public class WriteBasicExcelTempletFile extends WriteExcelTempletFile<WriteBasic
 	 */
 	public WriteBasicExcelTempletFile(String templetName, FileTemplet templet) {
 		super(templetName, templet);
+	}
+	
+	/**
+	 * 
+	 * @param saveFile
+	 * @param data
+	 * @return
+	 */
+	public static File writeTabelData(File saveFile, TableData<String> data) {
+		// 设置模板
+		ExcelFileTemplet templet = new ExcelFileTemplet(saveFile);
+		// 读取表格数据中的字段并写入到模板的字段中，作为模板中的标题
+		List<String> titleList = data.getColumnName();
+		titleList.forEach(templet::addField);
+		
+		// 构造模板
+		WriteBasicExcelTempletFile excel = new WriteBasicExcelTempletFile("默认模板", templet);
+		// 获取行下标
+		data.setExamine(false);
+		for (int index = 0; index < data.getLongColumnSize(); index++) {
+			// 读取列名称，根据列名称，写入数据
+			for (String name : titleList) {
+				excel.addContent(name, data.getSingleData(name, index).orElse(""));
+			}
+			excel.end();
+		}
+		
+		excel.write();
+		return saveFile;
 	}
 }
