@@ -416,21 +416,22 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	@Override
 	public T addContent(String field, int index, String... contents) {
+		String[] newContents = new String[contents.length];
 		// 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
 		for (int i = 0; i < contents.length; i++) {
 			try {
 				// 尝试将传入的内容转换为数字，以获取数据有效性的内容
 				int optionIndex = Integer.valueOf(contents[i]);
 				// 获取模板中的数据有效性内容
-				contents[i] = Optional.ofNullable(data.getTemplet().getTempletAttribute(ExcelFileTemplet.KEY_DATA))
+				newContents[i] = Optional.ofNullable(data.getTemplet().getTempletAttribute(ExcelFileTemplet.KEY_DATA))
 						.map(o -> (JSONObject) o).map(json -> json.getJSONArray(field))
-						.map(list -> list.getString(analysisIndex(list.size(), optionIndex, true))).orElse(String.valueOf(optionIndex));
+						.map(list -> list.getString(analysisIndex(list.size(), optionIndex, true))).orElse(contents[i]);
 			} catch (Exception e) {
-				continue;
+				newContents[i] = contents[i];
 			}
 		}
 		
-		return super.addContent(field, index, contents);
+		return super.addContent(field, index, newContents);
 	}
 
 	@Override
