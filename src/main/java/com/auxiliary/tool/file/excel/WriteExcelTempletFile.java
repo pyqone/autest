@@ -226,9 +226,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * </ol>
 	 * </p>
 	 * 
-	 * @param field       字段
-	 * @param linkField   需要链接的字段
-	 * @param index       字段指定的下标
+	 * @param field     字段
+	 * @param linkField 需要链接的字段
+	 * @param index     字段指定的下标
 	 * @return 类本身
 	 */
 	@SuppressWarnings("unchecked")
@@ -260,14 +260,15 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		if (!templet.containsField(linkField)) {
 			return (T) this;
 		}
-		
+
 		// 获取字段指向的列下标，并计算得到excel中，数字列下标对应的字母
 		Optional<String> columnChar = Optional.ofNullable(templet.getFieldAttribute(linkField, FileTemplet.KEY_INDEX))
 				.map(Object::toString).map(Integer::valueOf).map(this::num2CharIndex);
 		if (columnChar.isPresent()) {
 			String templetName = templet.getTempletAttribute(FileTemplet.KEY_NAME).toString();
 			// 计算行数，由于存在标题，以及超链接的行号为真实行号，故需要在得到真实下标后，加上2
-			index = analysisIndex(dataMap.get(templetName).getContentJson().getJSONArray(KEY_CASE).size(), index, true) + 1 + 1;
+			index = analysisIndex(dataMap.get(templetName).getContentJson().getJSONArray(KEY_CASE).size(), index, true)
+					+ 1 + 1;
 
 			// 拼接文本链接内容
 			String linkText = String.format("'%s'!%s%d", templetName, columnChar.get(), index);
@@ -430,7 +431,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				newContents[i] = contents[i];
 			}
 		}
-		
+
 		return super.addContent(field, index, newContents);
 	}
 
@@ -582,7 +583,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					cell = writeSingleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
 							lastRowIndex);
 				}
-				
+
 				// 记录当前内容json的位置 TODO 用于超链接
 //				contentJson.put(KEY_RELATIVE_ROW, lastRowIndex);
 
@@ -645,7 +646,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 获取单元格的背景色
 			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
 					? fieldContentJson.getShortValue(KEY_BACKGROUND)
-					: (data.getContentJson().containsKey(KEY_BACKGROUND) ? data.getContentJson().getShortValue(KEY_BACKGROUND) : -1);
+					: (data.getContentJson().containsKey(KEY_BACKGROUND)
+							? data.getContentJson().getShortValue(KEY_BACKGROUND)
+							: -1);
 
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
@@ -700,7 +703,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 获取单元格的背景色
 			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
 					? fieldContentJson.getShortValue(KEY_BACKGROUND)
-					: (data.getContentJson().containsKey(KEY_BACKGROUND) ? data.getContentJson().getShortValue(KEY_BACKGROUND) : -1);
+					: (data.getContentJson().containsKey(KEY_BACKGROUND)
+							? data.getContentJson().getShortValue(KEY_BACKGROUND)
+							: -1);
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
 					fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, background));
