@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templet>
+	<sheet name="测试用例" freeze="2">
+		<column id="case_id" name="用例编号" wide="17" align="center"/>
+		<column id="title" name="用例标题" wide="30" align="left"/>
+		<column id="step" name="步骤" wide="45" align="left"/>
+		<column id="expect" name="预期" wide="45" align="left"/>
+		<column id="condition" name="前置条件" wide="30" align="left" index='true'/>
+	</sheet>
+	<sheet name="运行记录" freeze="5" >
+		<column id="id" name="运行记录编号" wide="8" align="center"/>
+		<column id="case_id" name="用例编号" wide="17" align="center"/>
+		<column id="class_name" name="类名" wide="25" align="left"/>
+		<column id="method_name" name="方法名" wide="15" align="left"/>
+		<column id="state" name="执行状态" wide="10" align="center"/>
+		<column id="step" name="执行步骤" wide="25" align="left" index='true'/>
+		<column id="result" name="执行结果" wide="25" align="left" index='true'/>
+		<column id="bug_number" name="Bug数量" wide="10" align="center"/>
+		<column id="screenshot_position" name="截图位置" wide="25" align="center"/>
+		<column id="use_time" name="执行耗时" wide="15" align="center"/>
+		<column id="active_person" name="执行者" wide="20" align="center"/>
+		<column id="active_time" name="执行时间" wide="12" align="center"/>
+		<column id="brower" name="浏览器" wide="12" align="center"/>
+		<column id="version" name="版本" wide="12" align="center"/>
+		<column id="system" name="操作系统" wide="12" align="center"/>
+		<column id="mark" name="备注" wide="25" align="left"/>
+		
+		<datas id='state'>
+			<data name='正常' />
+			<data name='异常' />
+		</datas>
+	</sheet>
+	
+	<sheet name="错误记录" freeze="4">
+		<column id="id" name="运行记录编号" wide="8" align="center"/>
+		<column id="class_name" name="类名" wide="25" align="left"/>
+		<column id="method_name" name="方法名" wide="15" align="left"/>
+		<column id="error_step" name="错误步骤" wide="25" align="left" index='true'/>
+		<column id="error_class" name="异常类" wide="25" align="left" index='true'/>
+		<column id="error_information" name="异常信息" wide="25" align="left" index='true'/>
+		<column id="screenshot_position" name="截图位置" wide="25" align="left" index='true'/>
+	</sheet>
+</templet>
