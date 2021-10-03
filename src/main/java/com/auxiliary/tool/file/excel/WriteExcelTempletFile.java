@@ -235,7 +235,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	@Override
 	public T linkField(String field, String linkField, int index) {
 		// 判断字段是否存在
-		if (!caseJson.containsKey(field)) {
+		if (!data.getTemplet().containsField(field)) {
 			return (T) this;
 		}
 
@@ -266,10 +266,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				.map(Object::toString).map(Integer::valueOf).map(this::num2CharIndex);
 		if (columnChar.isPresent()) {
 			String templetName = templet.getTempletAttribute(FileTemplet.KEY_NAME).toString();
-			// 计算行数，由于存在标题，以及超链接的行号为真实行号，故需要在得到真实下标后，加上2
-			index = analysisIndex(dataMap.get(templetName).getContentJson().getJSONArray(KEY_CASE).size(), index, true)
-					+ 1 + 1;
-
 			// 拼接文本链接内容
 			String linkText = String.format("'%s'!%s%d", templetName, columnChar.get(), index);
 
@@ -277,8 +273,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			JSONObject linkJson = new JSONObject();
 			linkJson.put(KEY_TYPE, LinkType.DOMCUMENT.getCode());
 			linkJson.put(KEY_LINK_CONTENT, linkText);
-
-			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+			
+			if (!data.getCaseJson().containsKey(field)) {
+				data.getCaseJson().put(field, new JSONObject());
+			}
+			data.getCaseJson().getJSONObject(field).put(KEY_LINK, linkJson);
 		}
 
 		return (T) this;
@@ -293,7 +292,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			linkJson.put(KEY_TYPE, LinkType.URL.getCode());
 			linkJson.put(KEY_LINK_CONTENT, url.toURI().toASCIIString());
 
-			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+			data.getCaseJson().getJSONObject(field).put(KEY_LINK, linkJson);
 		} catch (URISyntaxException e) {
 			throw new WriteFileException("域名url错误", e);
 		}
@@ -314,7 +313,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			linkJson.put(KEY_TYPE, LinkType.EMAIL.getCode());
 
 			linkJson.put(KEY_LINK_CONTENT, new URI("mailto:" + email).toASCIIString());
-			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+			data.getCaseJson().getJSONObject(field).put(KEY_LINK, linkJson);
 		} catch (URISyntaxException e) {
 			throw new WriteFileException("邮箱格式错误：" + email, e);
 		}
@@ -330,7 +329,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		linkJson.put(KEY_TYPE, LinkType.FILE.getCode());
 		linkJson.put(KEY_LINK_CONTENT, file.toURI().toString());
 
-		caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+		data.getCaseJson().getJSONObject(field).put(KEY_LINK, linkJson);
 
 		return (T) this;
 	}
@@ -394,14 +393,14 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	@SuppressWarnings("unchecked")
 	public T changeCaseBackground(MarkColorsType markColorsType) {
-		caseJson.put(KEY_BACKGROUND, markColorsType.getColorsValue());
+		data.getCaseJson().put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	public T changeFieldBackground(String field, MarkColorsType markColorsType) {
-		if (caseJson.containsKey(field)) {
-			caseJson.getJSONObject(field).put(KEY_BACKGROUND, markColorsType.getColorsValue());
+		if (data.getCaseJson().containsKey(field)) {
+			data.getCaseJson().getJSONObject(field).put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		}
 		return (T) this;
 	}
@@ -409,8 +408,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T fieldComment(String field, String commentText) {
-		if (caseJson.containsKey(field)) {
-			caseJson.getJSONObject(field).put(KEY_COMMENT, commentText);
+		if (data.getCaseJson().containsKey(field)) {
+			data.getCaseJson().getJSONObject(field).put(KEY_COMMENT, commentText);
 		}
 		return (T) this;
 	}
@@ -638,7 +637,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
 
 		// 获取段落内容
-		JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
+		JSONArray textListJson = Optional.ofNullable(fieldContentJson.getJSONArray(KEY_DATA)).orElse(new JSONArray());
 		// 遍历内容串，拼接需要写入到单元格的内容
 		for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
 			JSONObject textJson = textListJson.getJSONObject(textIndex);
@@ -681,7 +680,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
 
 		// 获取段落内容
-		JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
+		JSONArray textListJson = Optional.ofNullable(fieldContentJson.getJSONArray(KEY_DATA)).orElse(new JSONArray());
 		// 遍历内容串，拼接需要写入到单元格的内容
 		for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
 			JSONObject textJson = textListJson.getJSONObject(textIndex);
@@ -713,7 +712,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 根据样式与内容，拼接文本
 			appendContent(content, style, textJson.getString(KEY_TEXT),
 					fieldTempletJson.getBooleanValue(ExcelFileTemplet.KEY_AUTO_NUMBER), textIndex);
-
 		}
 
 		// 遍历需要写入的数据内容，根据内容下标，创建相应的单元格
