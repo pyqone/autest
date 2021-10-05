@@ -398,7 +398,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 通过“姓名”对列表进行搜索，并断言搜索后在列表字段上，“姓名”列的每一行是否搜索 的关键词 <code><pre>
 	 * DataTableEvent test = new DataTableEvent(brower);
 	 * test.addList(new FindDataListElement("姓名列"))
-	 * test.searchList("姓名列", "测试", () -> {
+	 * test.searchList("姓名列", "测试", () -&gt; {
 	 *		textEvent.input(common.getElement("姓名搜索框"), "测试");
 	 *		return true;
 	 *	});

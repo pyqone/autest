@@ -192,6 +192,8 @@
 				<configuration>
 					<aggregate>true</aggregate>
 					<doclint>none</doclint>
+					<additionalOption>-Xdoclint:none</additionalOption>
+					<failOnError>false</failOnError>
 				</configuration>
 				<executions>
 					<execution>

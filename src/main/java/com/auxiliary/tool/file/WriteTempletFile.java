@@ -110,7 +110,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 	// 定义词语匹配规则和处理方式，当匹配到正则后，将获取“随机：”后的字母
 	 *	// 若字母为“N”，则随机生成两位数字字符串
 	 * 	// 若字母为“Y”，则随机生成两位中文字符串
-	 *	test.setReplactWord(new DataDriverFunction("随机：[NC]", text -> {
+	 *	test.setReplactWord(new DataDriverFunction("随机：[NC]", text -&gt; {
 	 *		return "N".equals(text.split("：")[1]) ? RandomString.randomString(2, 2, StringMode.NUM)
 	 *				: RandomString.randomString(2, 2, StringMode.CH);
 	 *	}));
