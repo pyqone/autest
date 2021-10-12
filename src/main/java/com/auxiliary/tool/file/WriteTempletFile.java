@@ -56,7 +56,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	/**
 	 * 存储单条内容写入到内容json串中的内容
 	 */
-	protected JSONObject caseJson = new JSONObject();
+//	protected JSONObject caseJson = new JSONObject();
 	/**
 	 * 存储需要写入到文件中的数据
 	 */
@@ -110,7 +110,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 	// 定义词语匹配规则和处理方式，当匹配到正则后，将获取“随机：”后的字母
 	 *	// 若字母为“N”，则随机生成两位数字字符串
 	 * 	// 若字母为“Y”，则随机生成两位中文字符串
-	 *	test.setReplactWord(new DataDriverFunction("随机：[NC]", text -> {
+	 *	test.setReplactWord(new DataDriverFunction("随机：[NC]", text -&gt; {
 	 *		return "N".equals(text.split("：")[1]) ? RandomString.randomString(2, 2, StringMode.NUM)
 	 *				: RandomString.randomString(2, 2, StringMode.CH);
 	 *	}));
@@ -317,7 +317,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		// 设置当前用例下标为指定的下标
 		caseIndex = index;
 		// 获取下标对应的用例内容
-		caseJson = caseListJson.getJSONObject(caseIndex);
+		data.setCaseJson(caseListJson.getJSONObject(caseIndex));
 
 		return (T) this;
 	}
@@ -360,7 +360,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 		
 		// 获取字段指向的用例内容
-		JSONObject fieldJson = Optional.ofNullable(caseJson.getJSONObject(field)).orElse(new JSONObject());
+		JSONObject fieldJson = Optional.ofNullable(data.getCaseJson().getJSONObject(field)).orElse(new JSONObject());
 		JSONArray contentListJson = Optional.ofNullable(fieldJson.getJSONArray(WriteTempletFile.KEY_DATA)).orElse(new JSONArray());
 
 		// 查找特殊词语，并对词语进行替换，并将内容写入到字段中
@@ -379,7 +379,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 
 		// 将内容写入到用例数据中
 		fieldJson.put(WriteTempletFile.KEY_DATA, contentListJson);
-		caseJson.put(field, fieldJson);
+		data.getCaseJson().put(field, fieldJson);
 		return (T) this;
 	}
 
@@ -402,6 +402,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		// 获取字段指向的用例内容
+		JSONObject caseJson = data.getCaseJson();
 		if (caseJson.containsKey(field)) {
 			JSONArray contentListJson = caseJson.getJSONObject(field).getJSONArray(KEY_DATA);
 			// 判断字段内容是否为空
@@ -474,14 +475,14 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 			// 判断传入的内容下标是否正确，不正确，则对下标进行修正
 			// 由于fastjson无法直接存储caseJson（清空caseJson时，其存储的内容也被清除），故先转成字符串后再用json进行解析
 			if (contentIndex < 0) {
-				contentListJson.add(0, JSONObject.parse(caseJson.toJSONString()));
+				contentListJson.add(0, JSONObject.parse(data.getCaseJsonText()));
 			} else if (contentIndex >= 0 && contentIndex < contentListJson.size()) {
-				contentListJson.add(contentIndex, JSONObject.parse(caseJson.toJSONString()));
+				contentListJson.add(contentIndex, JSONObject.parse(data.getCaseJsonText()));
 			} else {
-				contentListJson.add(JSONObject.parse(caseJson.toJSONString()));
+				contentListJson.add(JSONObject.parse(data.getCaseJsonText()));
 			}
 		} else {
-			contentListJson.set(caseIndex, JSONObject.parse(caseJson.toJSONString()));
+			contentListJson.set(caseIndex, JSONObject.parse(data.getCaseJsonText()));
 		}
 
 		// 将用例集合重新添加至内容json中
@@ -495,7 +496,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 		}
 
 		// 清除用例json中的内容，并指定用例下标为-1
-		caseJson.clear();
+		data.clearCaseJson();
 		caseIndex = -1;
 
 		return (T) this;
@@ -575,10 +576,20 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * 用于在用例中补充默认的字段内容，若用例存在内容，则不添加默认值
 	 */
 	protected void replenishDefaultContent() {
+		JSONObject caseJson = data.getCaseJson();
 		// 遍历defaultCaseJson，判断是否存在caseJson中不存在的字段
 		for (String key : data.getDefaultCaseJson().keySet()) {
-			if (!caseJson.containsKey(key)) {
+			if (!caseJson.containsKey(key)) { // 若文本中不包含该字段，则将默认内容添加至字段
 				caseJson.put(key, data.getDefaultCaseJson().getJSONObject(key));
+			} else { // 若字段存在，则判断默认值内容的字段中是否有字段在内容串不存在的内容，并附加至内容串中
+				JSONObject defaultFieldJson = data.getDefaultCaseJson().getJSONObject(key);
+				JSONObject caseFildJson = data.getCaseJson().getJSONObject(key);
+				
+				for (String fieldName : defaultFieldJson.keySet()) {
+					if (!caseFildJson.containsKey(fieldName)) {
+						caseFildJson.put(fieldName, defaultFieldJson.get(fieldName));
+					}
+				}
 			}
 		}
 	}
@@ -658,6 +669,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
 	 * @return 文本json
 	 */
 	protected JSONObject getTextJson(String field, int textIndex) {
+		JSONObject caseJson = data.getCaseJson();
 		if (caseJson.containsKey(field)) {
 			JSONArray dataListJson = caseJson.getJSONObject(field).getJSONArray(KEY_DATA);
 			if (Optional.ofNullable(dataListJson).filter(arr -> !arr.isEmpty()).isPresent()) {

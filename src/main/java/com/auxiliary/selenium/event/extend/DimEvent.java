@@ -88,7 +88,7 @@ public class DimEvent extends AbstractEvent {
 	 * 用于添加自定义的公式到类中，应用于对公式型的默认值进行转译
 	 * <p>
 	 * 方法支持传入正则表达式，当默认值满足传入的正则时，则会将其按照在公式中定义 的处理方式对数据进行处理，生成对应的数据。例如： <code><pre>
-	 * addFunction(new DataDriverFunction("Wo.*", text -> "Hello " + text + "!"));
+	 * addFunction(new DataDriverFunction("Wo.*", text -&gt; "Hello " + text + "!"));
 	 * </pre></code>
 	 * 当元素默认值为“${World}”时，其字符串“World”与正则表达式“Wo.*”匹配，故在事件的操作中，该字符串将被解析为“Hello World!”
 	 * </p>

@@ -41,6 +41,10 @@ public class WriteFileData {
 	 */
 	private JSONObject defaultCaseJson = new JSONObject();
 	/**
+	 * 存储模板当前正在编写的内容
+	 */
+	private JSONObject caseJson = new JSONObject();
+	/**
 	 * 存储当前已写入的内容条数
 	 */
 	private int nowCaseNum = 0;
@@ -181,6 +185,39 @@ public class WriteFileData {
 	 */
 	public String getDefaultCaseJsonText() {
 		return defaultCaseJson.toJSONString();
+	}
+	
+	/**
+	 * 返回模板当前正在编写的内容json类对象
+	 * 
+	 * @return 模板当前正在编写的内容json类对象
+	 */
+	public JSONObject getCaseJson() {
+		return caseJson;
+	}
+
+	/**
+	 * 返回模板当前正在编写的内容json类内容
+	 * 
+	 * @return 模板当前正在编写的内容json类内容
+	 */
+	public String getCaseJsonText() {
+		return caseJson.toJSONString();
+	}
+	
+	/**
+	 * 用于对当前写入的内容进行
+	 * @param caseJson
+	 */
+	public void setCaseJson(JSONObject caseJson) {
+		caseJson = JSONObject.parseObject(caseJson.toJSONString());
+	}
+	
+	/**
+	 * 用于清除当前的用例内容
+	 */
+	public void clearCaseJson() {
+		caseJson.clear();
 	}
 
 	/**

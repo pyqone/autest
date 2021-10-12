@@ -5,7 +5,7 @@
 
 	<groupId>com.gitee.pyqone</groupId>
 	<artifactId>autest</artifactId>
-	<version>2.5.0</version>
+	<version>2.6.0</version>
 	<packaging>jar</packaging>
 
 	<url>https://gitee.com/pyqone/autest</url>
@@ -24,7 +24,7 @@
 	</properties>
 
 	<dependencies>
-		<!-- selenium 自动化测试工具 -->
+		<!-- selenium 自动化测试工具  -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
@@ -192,6 +192,8 @@
 				<configuration>
 					<aggregate>true</aggregate>
 					<doclint>none</doclint>
+					<additionalOption>-Xdoclint:none</additionalOption>
+					<failOnError>false</failOnError>
 				</configuration>
 				<executions>
 					<execution>

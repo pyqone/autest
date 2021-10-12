@@ -64,7 +64,7 @@ public class GroupEvent {
 	 * 需要传入到执行方法中的参数，无需使用{@link Optional}类进行封装。例如，假设类的对象为test，则调用方法 时可以写为：
 	 * <code><pre>
 	 * test.addEvent("测试", 1, 
-	 * 	text -> Optional.ofNullable("当前参数：" + text.map(t -> (Integer) t).orElse(-1)));
+	 * 	text -&gt; Optional.ofNullable("当前参数：" + text.map(t -&gt; (Integer) t).orElse(-1)));
 	 * System.out.println(test.actionEvent("测试").orElse("错误"));//输出：当前参数：1
 	 * </pre></code>
 	 * </p>

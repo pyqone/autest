@@ -226,16 +226,16 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * </ol>
 	 * </p>
 	 * 
-	 * @param field       字段
-	 * @param linkField   需要链接的字段
-	 * @param index       字段指定的下标
+	 * @param field     字段
+	 * @param linkField 需要链接的字段
+	 * @param index     字段指定的下标
 	 * @return 类本身
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public T linkField(String field, String linkField, int index) {
 		// 判断字段是否存在
-		if (!caseJson.containsKey(field)) {
+		if (!data.getTemplet().containsField(field)) {
 			return (T) this;
 		}
 
@@ -260,15 +260,12 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		if (!templet.containsField(linkField)) {
 			return (T) this;
 		}
-		
+
 		// 获取字段指向的列下标，并计算得到excel中，数字列下标对应的字母
 		Optional<String> columnChar = Optional.ofNullable(templet.getFieldAttribute(linkField, FileTemplet.KEY_INDEX))
 				.map(Object::toString).map(Integer::valueOf).map(this::num2CharIndex);
 		if (columnChar.isPresent()) {
 			String templetName = templet.getTempletAttribute(FileTemplet.KEY_NAME).toString();
-			// 计算行数，由于存在标题，以及超链接的行号为真实行号，故需要在得到真实下标后，加上2
-			index = analysisIndex(dataMap.get(templetName).getContentJson().getJSONArray(KEY_CASE).size(), index, true) + 1 + 1;
-
 			// 拼接文本链接内容
 			String linkText = String.format("'%s'!%s%d", templetName, columnChar.get(), index);
 
@@ -276,8 +273,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			JSONObject linkJson = new JSONObject();
 			linkJson.put(KEY_TYPE, LinkType.DOMCUMENT.getCode());
 			linkJson.put(KEY_LINK_CONTENT, linkText);
-
-			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+			
+			if (!data.getCaseJson().containsKey(field)) {
+				data.getCaseJson().put(field, new JSONObject());
+			}
+			data.getCaseJson().getJSONObject(field).put(KEY_LINK, linkJson);
 		}
 
 		return (T) this;
@@ -292,7 +292,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			linkJson.put(KEY_TYPE, LinkType.URL.getCode());
 			linkJson.put(KEY_LINK_CONTENT, url.toURI().toASCIIString());
 
-			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+			data.getCaseJson().getJSONObject(field).put(KEY_LINK, linkJson);
 		} catch (URISyntaxException e) {
 			throw new WriteFileException("域名url错误", e);
 		}
@@ -313,7 +313,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			linkJson.put(KEY_TYPE, LinkType.EMAIL.getCode());
 
 			linkJson.put(KEY_LINK_CONTENT, new URI("mailto:" + email).toASCIIString());
-			caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+			data.getCaseJson().getJSONObject(field).put(KEY_LINK, linkJson);
 		} catch (URISyntaxException e) {
 			throw new WriteFileException("邮箱格式错误：" + email, e);
 		}
@@ -329,7 +329,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		linkJson.put(KEY_TYPE, LinkType.FILE.getCode());
 		linkJson.put(KEY_LINK_CONTENT, file.toURI().toString());
 
-		caseJson.getJSONObject(field).put(KEY_LINK, linkJson);
+		data.getCaseJson().getJSONObject(field).put(KEY_LINK, linkJson);
 
 		return (T) this;
 	}
@@ -393,14 +393,14 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	@SuppressWarnings("unchecked")
 	public T changeCaseBackground(MarkColorsType markColorsType) {
-		caseJson.put(KEY_BACKGROUND, markColorsType.getColorsValue());
+		data.getCaseJson().put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	public T changeFieldBackground(String field, MarkColorsType markColorsType) {
-		if (caseJson.containsKey(field)) {
-			caseJson.getJSONObject(field).put(KEY_BACKGROUND, markColorsType.getColorsValue());
+		if (data.getCaseJson().containsKey(field)) {
+			data.getCaseJson().getJSONObject(field).put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		}
 		return (T) this;
 	}
@@ -408,29 +408,30 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T fieldComment(String field, String commentText) {
-		if (caseJson.containsKey(field)) {
-			caseJson.getJSONObject(field).put(KEY_COMMENT, commentText);
+		if (data.getCaseJson().containsKey(field)) {
+			data.getCaseJson().getJSONObject(field).put(KEY_COMMENT, commentText);
 		}
 		return (T) this;
 	}
 
 	@Override
 	public T addContent(String field, int index, String... contents) {
+		String[] newContents = new String[contents.length];
 		// 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
 		for (int i = 0; i < contents.length; i++) {
 			try {
 				// 尝试将传入的内容转换为数字，以获取数据有效性的内容
 				int optionIndex = Integer.valueOf(contents[i]);
 				// 获取模板中的数据有效性内容
-				contents[i] = Optional.ofNullable(data.getTemplet().getTempletAttribute(ExcelFileTemplet.KEY_DATA))
+				newContents[i] = Optional.ofNullable(data.getTemplet().getTempletAttribute(ExcelFileTemplet.KEY_DATA))
 						.map(o -> (JSONObject) o).map(json -> json.getJSONArray(field))
-						.map(list -> list.getString(analysisIndex(list.size(), optionIndex, true))).orElse(String.valueOf(optionIndex));
+						.map(list -> list.getString(analysisIndex(list.size(), optionIndex, true))).orElse(contents[i]);
 			} catch (Exception e) {
-				continue;
+				newContents[i] = contents[i];
 			}
 		}
-		
-		return super.addContent(field, index, contents);
+
+		return super.addContent(field, index, newContents);
 	}
 
 	@Override
@@ -581,7 +582,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					cell = writeSingleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
 							lastRowIndex);
 				}
-				
+
 				// 记录当前内容json的位置 TODO 用于超链接
 //				contentJson.put(KEY_RELATIVE_ROW, lastRowIndex);
 
@@ -636,7 +637,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
 
 		// 获取段落内容
-		JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
+		JSONArray textListJson = Optional.ofNullable(fieldContentJson.getJSONArray(KEY_DATA)).orElse(new JSONArray());
 		// 遍历内容串，拼接需要写入到单元格的内容
 		for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
 			JSONObject textJson = textListJson.getJSONObject(textIndex);
@@ -644,7 +645,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 获取单元格的背景色
 			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
 					? fieldContentJson.getShortValue(KEY_BACKGROUND)
-					: (data.getContentJson().containsKey(KEY_BACKGROUND) ? data.getContentJson().getShortValue(KEY_BACKGROUND) : -1);
+					: (data.getContentJson().containsKey(KEY_BACKGROUND)
+							? data.getContentJson().getShortValue(KEY_BACKGROUND)
+							: -1);
 
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
@@ -677,7 +680,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
 
 		// 获取段落内容
-		JSONArray textListJson = fieldContentJson.getJSONArray(KEY_DATA);
+		JSONArray textListJson = Optional.ofNullable(fieldContentJson.getJSONArray(KEY_DATA)).orElse(new JSONArray());
 		// 遍历内容串，拼接需要写入到单元格的内容
 		for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
 			JSONObject textJson = textListJson.getJSONObject(textIndex);
@@ -699,7 +702,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 获取单元格的背景色
 			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
 					? fieldContentJson.getShortValue(KEY_BACKGROUND)
-					: (data.getContentJson().containsKey(KEY_BACKGROUND) ? data.getContentJson().getShortValue(KEY_BACKGROUND) : -1);
+					: (data.getContentJson().containsKey(KEY_BACKGROUND)
+							? data.getContentJson().getShortValue(KEY_BACKGROUND)
+							: -1);
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
 					fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, background));
@@ -707,7 +712,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 根据样式与内容，拼接文本
 			appendContent(content, style, textJson.getString(KEY_TEXT),
 					fieldTempletJson.getBooleanValue(ExcelFileTemplet.KEY_AUTO_NUMBER), textIndex);
-
 		}
 
 		// 遍历需要写入的数据内容，根据内容下标，创建相应的单元格
