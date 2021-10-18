@@ -104,24 +104,6 @@ public abstract class AbstractEvent {
 	}
 
 	/**
-	 * 返回操作的日志
-	 * 
-	 * @return 操作日志
-	 */
-//	public static String getLogText() {
-//		return logText;
-//	}
-
-	/**
-	 * 返回操作的返回值，若操作无返回值时，则返回空串
-	 * 
-	 * @return 操作返回值
-	 */
-//	public static String getResultText() {
-//		return resultText;
-//	}
-
-	/**
 	 * 用于返回当前在执行等待时被捕获的异常信息集合
 	 * 
 	 * @return 异常信息集合
@@ -179,14 +161,6 @@ public abstract class AbstractEvent {
 			return "[]";
 		}
 
-//		StringBuilder text = new StringBuilder("[");
-//		Arrays.asList(keys).forEach(key -> {
-//			text.append(key);
-//			text.append(", ");
-//		});
-//
-//		return text.substring(0, text.lastIndexOf(", "));
-		
 		StringJoiner text = new StringJoiner(", ", "[", "]");
 		Arrays.asList(keys).forEach(text::add);
 		return text.toString();
