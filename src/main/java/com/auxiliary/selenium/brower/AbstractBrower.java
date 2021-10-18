@@ -111,6 +111,30 @@ public abstract class AbstractBrower {
 		public void recordLog(String logText) {
 			Optional.ofNullable(logText).filter(t -> !t.isEmpty()).ifPresent(logList::add);
 		}
+		
+		/**
+		 * 用于清空日志中记录的内容
+		 */
+		public void clearLog() {
+			logList.clear();
+		}
+		
+		/**
+		 * 用于从后向前删除指定条数的日志
+		 * <p>例如：集合["1", "2", "3", "4"]，传参为2，则删除后的集合为["1", "2"]</p>
+		 * @param num 需要删除的条数
+		 */
+		public void removeLog(int num) {
+			// 若大于等于日志最大值，则直接调用clear方法
+			if (num >= logList.size()) {
+				clearLog();
+				return;
+			}
+			
+			for(int index = 0; index < num; index++) {
+				logList.remove(logList.size() - 1);
+			}
+		}
 
 		/**
 		 * 用于返回无符号的日志集合
