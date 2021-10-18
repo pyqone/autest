@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Function;
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -56,11 +57,11 @@ public abstract class AbstractEvent {
 	/**
 	 * 存储操作的日志文本
 	 */
-	protected static String logText = "";
+//	protected static String logText = "";
 	/**
 	 * 存储操作的返回值文本
 	 */
-	protected static String resultText = "";
+//	protected static String resultText = "";
 
 	/**
 	 * 存储当前操作的元素类
@@ -107,18 +108,18 @@ public abstract class AbstractEvent {
 	 * 
 	 * @return 操作日志
 	 */
-	public static String getLogText() {
-		return logText;
-	}
+//	public static String getLogText() {
+//		return logText;
+//	}
 
 	/**
 	 * 返回操作的返回值，若操作无返回值时，则返回空串
 	 * 
 	 * @return 操作返回值
 	 */
-	public static String getResultText() {
-		return resultText;
-	}
+//	public static String getResultText() {
+//		return resultText;
+//	}
 
 	/**
 	 * 用于返回当前在执行等待时被捕获的异常信息集合
@@ -178,13 +179,17 @@ public abstract class AbstractEvent {
 			return "[]";
 		}
 
-		StringBuilder text = new StringBuilder("[");
-		Arrays.asList(keys).forEach(key -> {
-			text.append(key);
-			text.append(", ");
-		});
-
-		return text.substring(0, text.lastIndexOf(", "));
+//		StringBuilder text = new StringBuilder("[");
+//		Arrays.asList(keys).forEach(key -> {
+//			text.append(key);
+//			text.append(", ");
+//		});
+//
+//		return text.substring(0, text.lastIndexOf(", "));
+		
+		StringJoiner text = new StringJoiner(", ", "[", "]");
+		Arrays.asList(keys).forEach(text::add);
+		return text.toString();
 	}
 
 	/**
@@ -194,9 +199,10 @@ public abstract class AbstractEvent {
 	 * @param element {@link Element}对象
 	 * @param action  需要执行的操作
 	 */
-	protected void actionOperate(Element element, Function<Element, String> action) {
+	protected String actionOperate(Element element, Function<Element, String> action) {
 		// 清空异常信息
 		exceptionSet.clear();
+		String resultText = "";
 
 		if (action != null) {
 			// 在指定的时间内判断是否能进行操作
@@ -252,6 +258,8 @@ public abstract class AbstractEvent {
 
 			resultText = "";
 		}
+		
+		return resultText;
 	}
 
 	/**
