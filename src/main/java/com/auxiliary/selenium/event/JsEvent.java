@@ -63,16 +63,13 @@ public class JsEvent extends AbstractEvent {
 		String script = "return arguments[0].getAttribute('" + attributeName + "');";
 		actionOperate(element, null);
 		
-		// 获取对应元素的内容
-//		String text = (String) (
-//				js.executeScript("return arguments[0].getAttribute('" + attributeName + "');",
-//				webElement));
 		String text = (String) runScript(script, webElement);
+		brower.getLogRecord().removeLog(1);
 		
-		logText = "获取“" + element.getElementData().getName() + "”元素的" + attributeName + "属性的属性值";
-		resultText = (text == null) ? "" : text;
+		String logText = "获取“%s”元素的“%s”属性的属性值";
+		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), attributeName));
 		
-		return resultText;
+		return (text == null) ? "" : text;
 	}
 
 	/**
@@ -87,24 +84,20 @@ public class JsEvent extends AbstractEvent {
 	 */
 	public String putAttribute(Element element, String attributeName, String value) {
 		// 获取原属性中的值
-		resultText = getAttribute(element, attributeName);
+		String resultText = getAttribute(element, attributeName);
+		// 删除多余的日志
+		brower.getLogRecord().removeLog(1);
 
-		// 执行代码
-//		js.executeScript("arguments[0].setAttribute('" + attributeName + "','" + value + "');", wait.until(driver -> {
-//				try {
-//					return element.getWebElement();
-//				} catch (StaleElementReferenceException e) {
-//					element.againFindElement();
-//					throw e;
-//				}
-//			}));
 		//指定脚本
 		String script = "arguments[0].setAttribute('" + attributeName + "','" + value + "');";
 		actionOperate(element, null);
 		
 		runScript(script, webElement);
+		brower.getLogRecord().removeLog(1);
 		
-		logText = "设置“" + element.getElementData().getName() + "”元素的" + attributeName + "属性的属性值";
+
+		String logText = "设置“%s”元素的“%s”属性的属性值为“%s”";
+		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), attributeName, value));
 		return resultText;
 	}
 
@@ -132,24 +125,15 @@ public class JsEvent extends AbstractEvent {
 		// 向指定位置添加节点
 		script += "oldElement.appendChild(newElement);";
 
-		// 执行代码
-//		js.executeScript(script, wait.until(driver -> {
-//				try {
-//					return element.getWebElement();
-//				} catch (StaleElementReferenceException e) {
-//					element.againFindElement();
-//					throw e;
-//				}
-//			}));
-		
 		actionOperate(element, null);
 		
 		runScript(script, webElement);
+		brower.getLogRecord().removeLog(1);
 		
-		logText = "在“" + element.getElementData().getName() + "”元素下添加“" + elementName + "”元素";
-		resultText = "//" + elementName + "[@temp_attribute='" + uuid + "']";
+		String logText = "在“%s”元素下添加“%s”元素";
+		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), elementName));
 		
-		return resultText;
+		return String.format("//%s[@temp_attribute='%s']", elementName, uuid);
 	}
 
 	/**
@@ -198,12 +182,12 @@ public class JsEvent extends AbstractEvent {
 		script += "parentNode.removeChild(deleteNode)";
 
 		// 执行代码，由于在获取元素信息时已经对元素的过期进行了判断，故此处无需在做判断
-//		js.executeScript(script, element.getWebElement());
 		actionOperate(element, null);
 		runScript(script, webElement);
+		brower.getLogRecord().removeLog(1);
 		
-		logText = "删除“" + element.getElementData().getName() + "”元素";
-		resultText = json.toJSONString();
+		String logText = "删除“%s”元素";
+		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
 		
 		return json;
 	}
@@ -217,8 +201,8 @@ public class JsEvent extends AbstractEvent {
 	 * @throws TimeoutException 元素无法操作时抛出的异常 
 	 */
 	public Object runScript(String script, Object... args) {
-		logText = "执行脚本：" + script;
-		resultText = "";
+		String logText = "执行脚本：\n\t%s";
+		brower.getLogRecord().recordLog(String.format(logText, script));
 		
 		// 执行代码
 		return js.executeScript(script, args);

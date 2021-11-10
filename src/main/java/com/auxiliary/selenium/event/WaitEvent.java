@@ -87,9 +87,9 @@ public class WaitEvent extends AbstractEvent {
 			}
 		});
 
-		logText = "等待“" + element.getElementData().getName() + "”元素从页面消失";
-		resultText = String.valueOf(result);
-
+		String logText = "等待“%s”元素从页面消失";
+		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
+		
 		return result;
 	}
 
@@ -122,8 +122,8 @@ public class WaitEvent extends AbstractEvent {
 			}
 		});
 
-		logText = "等待“" + element.getElementData().getName() + "”元素出现在页面";
-		resultText = String.valueOf(result);
+		String logText = "等待“%s”元素出现在页面";
+		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
 
 		return result;
 	}
@@ -140,11 +140,11 @@ public class WaitEvent extends AbstractEvent {
 	public boolean showText(Element element, String... keys) {
 		// 判断是否传入关键词数组，根据是否传入数组，调用不同的判断方式
 		if (keys == null || keys.length == 0) {
-			logText = "等待“" + element.getElementData().getName() + "”元素加载出文本内容";
+			String logText = "等待“%s”元素加载出文本内容";
+			brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
 
 			// 判断元素是否存在，若不存在，则直接返回false
 			if (!isExistElement(element)) {
-				resultText = Boolean.toString(false);
 				return false;
 			} else {
 				eventWait.withMessage(
@@ -161,16 +161,15 @@ public class WaitEvent extends AbstractEvent {
 					}
 				});
 
-				resultText = String.valueOf(result);
 				return result;
 			}
 		} else {
 			String keyText = arrayToString(keys);
-			logText = "等待“" + element.getElementData().getName() + "”元素出现文本关键词：" + keyText;
+			String logText = "等待“%s”元素出现文本关键词：%s";
+			brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), keyText));
 
 			// 判断元素是否存在，若不存在，则直接返回false
 			if (isExistElement(element)) {
-				resultText = Boolean.toString(false);
 				return false;
 			} else {
 				eventWait.withMessage("等待超时，元素“" + element.getElementData().getName() + "”仍未出现关键词“" + keyText
@@ -187,7 +186,6 @@ public class WaitEvent extends AbstractEvent {
 					}
 				});
 
-				resultText = String.valueOf(result);
 				return result;
 			}
 		}
