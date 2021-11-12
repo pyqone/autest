@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.StringJoiner;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
@@ -226,9 +225,11 @@ public final class DataTableEvent extends AbstractEvent {
 				}
 
 				clickEvent.click(controlElement);
+				brower.getLogRecord().removeLog(1);
 				// 等待控件消失
 				if (waitElement != null) {
 					waitEvent.disappear(waitElement);
+					brower.getLogRecord().removeLog(1);
 				}
 				return true;
 			}, columnNames);
@@ -241,10 +242,10 @@ public final class DataTableEvent extends AbstractEvent {
 			nowCount++;
 		}
 
-		logText = "点击“" + controlMap.get(dataTableKeywordType).getElementData().getName() + "”元素，使列表返回至"
-				+ (dataTableKeywordType == DataTableKeywordType.PREVIOUS_PAGE_BUTTON ? "上" : "下") + "页，其实际翻页数为："
-				+ nowCount;
-		resultText = String.valueOf(nowCount);
+		String logText = "点击“%s”元素，使列表返回至%s页，其实际翻页数为：%d";
+		brower.getLogRecord()
+				.recordLog(String.format(logText, controlMap.get(dataTableKeywordType).getElementData().getName(),
+						(dataTableKeywordType == DataTableKeywordType.PREVIOUS_PAGE_BUTTON ? "上" : "下"), nowCount));
 
 		// 返回实际点击次数
 		return nowCount;
@@ -255,6 +256,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * 即取存储的列表的第一行元素，若操作前后，该行元素不变，则判定为跳页失败
 	 * 
 	 * @param pageCount 页码数
+	 * @param columnNames 需要断言的列名称
 	 */
 	public boolean jumpPage(String pageCount, String... columnNames) {
 		if (!controlMap.containsKey(DataTableKeywordType.PAGE_INPUT_TEXTBOX)) {
@@ -284,9 +286,11 @@ public final class DataTableEvent extends AbstractEvent {
 			return true;
 		}, columnNames);
 
-		logText = "在“" + controlMap.get(DataTableKeywordType.PAGE_INPUT_TEXTBOX).getElementData().getName() + "”元素中输入"
-				+ pageCount + "，使列表跳转到相应的页码，其翻页" + (result ? "" : "不") + "成功";
-		resultText = String.valueOf(result);
+		String logText = "在“%s”元素中输入%s，使列表跳转到相应的页码，其翻页%s成功";
+		brower.getLogRecord()
+				.recordLog(String.format(logText,
+						controlMap.get(DataTableKeywordType.PAGE_INPUT_TEXTBOX).getElementData().getName(), pageCount,
+						(result ? "" : "不")));
 
 		return result;
 	}
@@ -335,9 +339,9 @@ public final class DataTableEvent extends AbstractEvent {
 			}
 		}, columnNames);
 
-		logText = "通过搜索条件，点击“" + controlMap.get(DataTableKeywordType.SEARCH_BUTTON).getElementData().getName()
-				+ "”元素，对列表进行搜索";
-		resultText = String.valueOf(result);
+		String logText = "通过搜索条件，点击“%s”元素，对列表进行搜索";
+		brower.getLogRecord().recordLog(
+				String.format(logText, controlMap.get(DataTableKeywordType.SEARCH_BUTTON).getElementData().getName()));
 
 		return result;
 	}
@@ -450,17 +454,9 @@ public final class DataTableEvent extends AbstractEvent {
 		}
 
 		// 记录日志
-		logText = String.format("通过在控件中，输入或选择“%s”搜索条件后，点击“%s”元素", key,
-				controlMap.get(DataTableKeywordType.SEARCH_BUTTON).getElementData().getName());
-		if (!resultList.isEmpty()) {
-			StringJoiner text = new StringJoiner("\n");
-			for (int i = 0; i < resultList.size(); i++) {
-				text.add(String.format("列表第%d条数据%s包含关键词“%s”", (i + 1), resultList.get(i) ? "" : "不", key));
-			}
-			resultText = text.toString();
-		} else {
-			resultText = "未进行列表断言";
-		}
+		String logText = "通过在控件中，输入或选择“%s”搜索条件后，点击“%s”元素";
+		brower.getLogRecord().recordLog(String.format(logText, key,
+				controlMap.get(DataTableKeywordType.SEARCH_BUTTON).getElementData().getName()));
 
 		return resultList;
 	}
@@ -504,11 +500,15 @@ public final class DataTableEvent extends AbstractEvent {
 		elementTableMap.forEach((k, v) -> v.find(k));
 
 		ArrayList<Optional<String>> rowTextList = new ArrayList<>(
-				ListUtil.changeList(getRowElement(rowIndex), textEvent::getText));
+				ListUtil.changeList(getRowElement(rowIndex), ele -> {
+					String text = textEvent.getText(ele);
+					brower.getLogRecord().removeLog(1);
+					return text;
+				}));
 
 		// 添加日志
-		resultText = rowTextList.toString();
-		logText = "获取列表第" + rowIndex + "行元素内容的文本，其获取到的文本内容为：" + resultText;
+		String logText = "获取列表第%d行元素内容的文本，其获取到的文本内容为：%s";
+		brower.getLogRecord().recordLog(String.format(logText, rowIndex, rowTextList.toString()));
 
 		return rowTextList;
 	}
@@ -525,11 +525,15 @@ public final class DataTableEvent extends AbstractEvent {
 		elementTableMap.forEach((k, v) -> v.find(k));
 
 		ArrayList<Optional<String>> listTextList = new ArrayList<>(
-				ListUtil.changeList(getElementTable().getColumnList(listName), textEvent::getText));
+				ListUtil.changeList(getElementTable().getColumnList(listName), ele -> {
+					String text = textEvent.getText(ele);
+					brower.getLogRecord().removeLog(1);
+					return text;
+				}));
 
 		// 添加日志
-		resultText = listTextList.toString();
-		logText = "获取列表的" + listName + "列元素内容的文本，其获取到的文本内容为：" + resultText;
+		String logText = "获取列表的%s列元素内容的文本，其获取到的文本内容为：%s";
+		brower.getLogRecord().recordLog(String.format(logText, listName, listTextList.toString()));
 
 		return listTextList;
 	}
@@ -650,7 +654,11 @@ public final class DataTableEvent extends AbstractEvent {
 			// 若元素列表非空，则获取第一行元素，用于进行断言
 			try {
 				return columnList.stream().filter(name -> elementTableMap.get(name).size() > 0)
-						.map(name -> elementTableMap.get(name).getElement(assertRowIndex)).map(textEvent::getText)
+						.map(name -> elementTableMap.get(name).getElement(assertRowIndex)).map(ele -> {
+							String text = textEvent.getText(ele);
+							brower.getLogRecord().removeLog(1);
+							return text;
+						})
 						.collect(Collectors.toList());
 			} catch (TimeoutException e) {
 				return new ArrayList<String>();
