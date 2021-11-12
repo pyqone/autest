@@ -27,89 +27,89 @@ import com.auxiliary.selenium.element.Element;
  *
  */
 public class ClickEvent extends AbstractEvent {
-	/**
-	 * 构造对象
-	 * 
-	 * @param brower 浏览器{@link AbstractBrower}类对象
-	 */
-	public ClickEvent(AbstractBrower brower) {
-		super(brower);
-	}
+    /**
+     * 构造对象
+     * 
+     * @param brower 浏览器{@link AbstractBrower}类对象
+     */
+    public ClickEvent(AbstractBrower brower) {
+        super(brower);
+    }
 
-	/**
-	 * 鼠标左键单击事件
-	 * 
-	 * @param element {@link Element}对象
-	 * @throws TimeoutException       元素无法操作时抛出的异常
-	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
-	 */
-	public void click(Element element) {
-		actionOperate(element, (e) -> {
-			e.getWebElement().click();
-			return "";
-		});
+    /**
+     * 鼠标左键单击事件
+     * 
+     * @param element {@link Element}对象
+     * @throws TimeoutException       元素无法操作时抛出的异常
+     * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
+     */
+    public void click(Element element) {
+        actionOperate(element, (e) -> {
+            e.getWebElement().click();
+            return "";
+        });
 
-		String logText = "左键点击“%s”元素";
-		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
-	}
+        String logText = "左键点击“%s”元素";
+        brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
+    }
 
-	/**
-	 * 鼠标左键双击事件
-	 * 
-	 * @param element {@link Element}对象
-	 * @throws TimeoutException       元素无法操作时抛出的异常
-	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
-	 */
-	public void doubleClick(Element element) {
-		actionOperate(element, (e) -> {
-			new Actions(brower.getDriver()).doubleClick(e.getWebElement()).perform();
-			return "";
-		});
+    /**
+     * 鼠标左键双击事件
+     * 
+     * @param element {@link Element}对象
+     * @throws TimeoutException       元素无法操作时抛出的异常
+     * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
+     */
+    public void doubleClick(Element element) {
+        actionOperate(element, (e) -> {
+            new Actions(brower.getDriver()).doubleClick(e.getWebElement()).perform();
+            return "";
+        });
 
-		String logText = "左键双击“%s”元素";
-		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
-	}
+        String logText = "左键双击“%s”元素";
+        brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
+    }
 
-	/**
-	 * 鼠标右键点击事件
-	 * 
-	 * @param element {@link Element}对象
-	 * @throws TimeoutException       元素无法操作时抛出的异常
-	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
-	 */
-	public void rightClick(Element element) {
-		actionOperate(element, (e) -> {
-			new Actions(brower.getDriver()).contextClick(e.getWebElement()).perform();
-			return "";
-		});
+    /**
+     * 鼠标右键点击事件
+     * 
+     * @param element {@link Element}对象
+     * @throws TimeoutException       元素无法操作时抛出的异常
+     * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
+     */
+    public void rightClick(Element element) {
+        actionOperate(element, (e) -> {
+            new Actions(brower.getDriver()).contextClick(e.getWebElement()).perform();
+            return "";
+        });
 
-		String logText = "右键点击“%s”元素";
-		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
-	}
+        String logText = "右键点击“%s”元素";
+        brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
+    }
 
-	/**
-	 * 连续进行指定次数的鼠标左键点击事件
-	 * 
-	 * @param element       {@link Element}对象
-	 * @param clickCount    点击次数
-	 * @param sleepInMillis 操作时间间隔，单位为毫秒
-	 * @throws TimeoutException       元素无法操作时抛出的异常
-	 * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
-	 */
-	public void continuousClick(Element element, int clickCount, long sleepInMillis) {
-		for (int i = 0; i < clickCount; i++) {
-			click(element);
+    /**
+     * 连续进行指定次数的鼠标左键点击事件
+     * 
+     * @param element       {@link Element}对象
+     * @param clickCount    点击次数
+     * @param sleepInMillis 操作时间间隔，单位为毫秒
+     * @throws TimeoutException       元素无法操作时抛出的异常
+     * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
+     */
+    public void continuousClick(Element element, int clickCount, long sleepInMillis) {
+        for (int i = 0; i < clickCount; i++) {
+            click(element);
 
-			try {
-				Thread.sleep(sleepInMillis);
-			} catch (InterruptedException e) {
-				continue;
-			}
-		}
-		
-		// 删除多余的日志
-		brower.getLogRecord().removeLog(clickCount);
-		String logText = "左键连续点击“%s”元素%d次";
-		brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), clickCount));
-	}
+            try {
+                Thread.sleep(sleepInMillis);
+            } catch (InterruptedException e) {
+                continue;
+            }
+        }
+
+        // 删除多余的日志
+        brower.getLogRecord().removeLog(clickCount);
+        String logText = "左键连续点击“%s”元素%d次";
+        brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), clickCount));
+    }
 }
