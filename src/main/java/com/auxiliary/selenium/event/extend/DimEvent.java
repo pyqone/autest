@@ -56,10 +56,6 @@ public class DimEvent extends AbstractEvent {
 	private HashSet<DataDriverFunction> dataFunctionSet = new HashSet<>();
 
 	/**
-	 * 用于存储事件执行日志集合
-	 */
-	private ArrayList<String> logList = new ArrayList<>();
-	/**
 	 * 用于存储事件执行结果集合
 	 */
 	private ArrayList<String> resultList = new ArrayList<>();
@@ -157,20 +153,9 @@ public class DimEvent extends AbstractEvent {
 					default:
 						throw new EventException(String.format("无法识别“%s”元素的类型：%s", ed.getName(), ed.getElementType()));
 					}
-
-					logList.add(AbstractEvent.logText);
 				});
 
 		return resultList.get(resultList.size() - 1);
-	}
-
-	/**
-	 * 用于返回上一次调用模糊事件后的执行日志集合
-	 * 
-	 * @return 执行日志集合
-	 */
-	public ArrayList<String> getLogList() {
-		return logList;
 	}
 
 	/**
