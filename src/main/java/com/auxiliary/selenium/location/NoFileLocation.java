@@ -21,12 +21,12 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <p>
  * <b>修改时间：</b>2021年4月17日 下午12:21:42
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.3
  */
 public class NoFileLocation extends AbstractLocation
-implements WriteLocation, WriteTempletLocation, ReadElementLimit, WriteAppElementLocation, AppElementLocation {
+        implements WriteLocation, WriteTempletLocation, ReadElementLimit, WriteAppElementLocation, AppElementLocation {
     /**
      * 存储json的读取方式
      */
@@ -164,7 +164,7 @@ implements WriteLocation, WriteTempletLocation, ReadElementLimit, WriteAppElemen
 
     /**
      * 用于返回元素名称对应的元素json对象
-     * 
+     *
      * @param name 元素名称
      * @return 元素名称对应的json对象
      */
@@ -179,7 +179,7 @@ implements WriteLocation, WriteTempletLocation, ReadElementLimit, WriteAppElemen
 
     /**
      * 用于判断当前json是否有变化，即是否对当前的json进行过变更
-     * 
+     *
      * @return json是否存在变化
      */
     private boolean isJsonChange() {
@@ -203,7 +203,7 @@ implements WriteLocation, WriteTempletLocation, ReadElementLimit, WriteAppElemen
 
     /**
      * 用于写入元素的默认值
-     * 
+     *
      * @param name         元素名称
      * @param defaultValue 元素默认值
      */

@@ -243,20 +243,6 @@ public class TextLocation extends AbstractLocation {
             throw new UndefinedElementException("元素信息不足，缺少必要信息！元素分隔符号：" + infoSplitSign + "；元素内容：" + elementText);
         }
 
-        /*
-		// 存储元素名称
-		noFileLocation.putElementLocation(elementInfoTexts[0], toByType(elementInfoTexts[1]), elementInfoTexts[2]);
-
-		// 若长度大于3个，则表示元素存在等待时间，则存储元素等待时间
-		if (length > 3) {
-			noFileLocation.putWaitTime(elementInfoTexts[0], toWaitTime(elementInfoTexts[3]));
-			// 若长度大于4个，则表示元素存在元素类型，则存储元素类型
-			if (length > 4) {
-				noFileLocation.putElementType(elementInfoTexts[0], toElementType(elementInfoTexts[4]));
-			}
-		}
-         */
-
         return elementInfoTexts[0];
     }
 
