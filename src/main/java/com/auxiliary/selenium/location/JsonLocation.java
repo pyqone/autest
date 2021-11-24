@@ -344,7 +344,7 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 
     @Override
     public boolean isNative() {
-        /// 判断是否进行元素查找
+        // 判断是否进行元素查找
         if (element == null) {
             throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
         }
