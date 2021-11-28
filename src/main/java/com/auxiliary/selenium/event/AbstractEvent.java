@@ -55,15 +55,6 @@ public abstract class AbstractEvent {
     protected long waitTime = 5;
 
     /**
-     * 存储操作的日志文本
-     */
-    //	protected static String logText = "";
-    /**
-     * 存储操作的返回值文本
-     */
-    //	protected static String resultText = "";
-
-    /**
      * 存储当前操作的元素类
      */
     protected WebElement webElement;
@@ -167,8 +158,7 @@ public abstract class AbstractEvent {
     }
 
     /**
-     * 用于对元素进行指定操作，并统一处理异常情况。操作必须包含一个{@link String}类型的返回值，
-     * 方法中将该返回值存储至{@link AbstractEvent#resultText}属性中。
+     * 用于对元素进行指定操作，并统一处理异常情况。
      * 
      * @param element {@link Element}对象
      * @param action  需要执行的操作
