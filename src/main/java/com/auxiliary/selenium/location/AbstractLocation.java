@@ -1,5 +1,7 @@
 package com.auxiliary.selenium.location;
 
+import java.util.Optional;
+
 import com.auxiliary.selenium.element.ElementType;
 
 /**
@@ -15,104 +17,130 @@ import com.auxiliary.selenium.element.ElementType;
  * <p>
  * <b>修改时间：</b>2021年3月8日上午8:08:45
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  *
  */
 public abstract class AbstractLocation implements ReadLocation {
-	/**
-	 * 定义用于正则的替换符开始标记
-	 */
-	public static final String MATCH_START_SIGN = "\\$\\{";
-	/**
-	 * 定义替换符开始标志
-	 */
-	public static final String START_SIGN = "${";
-	/**
-	 * 定义用于正则的替换符结束标记
-	 */
-	public static final String MATCH_END_SIGN = "\\}";
-	/**
-	 * 定义替换符结束标志
-	 */
-	public static final String END_SIGN = "}";
+    /**
+     * 定义替换符开始标志
+     * @deprecated 该标识符已无意义，将在autest Ver2.8.0或之后的版本中删除
+     */
+    @Deprecated
+    public static final String START_SIGN = "${";
+    /**
+     * 定义替换符结束标志
+     * @deprecated 该标识符已无意义，将在autest Ver2.8.0或之后的版本中删除
+     */
+    @Deprecated
+    public static final String END_SIGN = "}";
 
-	/**
-	 * 元素名称
-	 */
-	protected String name = "";
+    /**
+     * 元素占位符起始标识，默认{@link ReadLocation#MATCH_START_SIGN}
+     */
+    protected String startRegex = ReadLocation.MATCH_START_SIGN;
+    /**
+     * 元素占位符结束标识，默认{@link ReadLocation#MATCH_END_SIGN}
+     */
+    protected String endRegex = ReadLocation.MATCH_END_SIGN;
 
-	/**
-	 * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
-	 * 
-	 * @param value 元素类型文本值
-	 * @return 元素类型枚举类对象
-	 */
-	protected ElementType toElementType(String value) {
-		// 转换元素类型枚举，并返回
-		switch (value) {
-		case "1":
-			return ElementType.DATA_LIST_ELEMENT;
-		case "2":
-			return ElementType.SELECT_DATAS_ELEMENT;
-		case "3":
-			return ElementType.SELECT_OPTION_ELEMENT;
-		case "4":
-			return ElementType.IFRAME_ELEMENT;
-		case "0":
-		default:
-			return ElementType.COMMON_ELEMENT;
-		}
-	}
+    /**
+     * 元素名称
+     */
+    protected String name = "";
 
-	/**
-	 * 该方法用于根据标签的名称，返回相应的定位方式枚举
-	 * 
-	 * @param labelName 标签名称
-	 * @return {@link ByType}枚举
-	 */
-	protected ByType toByType(String labelName) {
-		switch (labelName) {
-		case "xpath":
-			return ByType.XPATH;
-		case "css":
-			return ByType.CSS;
-		case "classname":
-			return ByType.CLASSNAME;
-		case "id":
-			return ByType.ID;
-		case "linktext":
-			return ByType.LINKTEXT;
-		case "name":
-			return ByType.NAME;
-		case "tagname":
-			return ByType.TAGNAME;
-		// 定义需要忽略的标签
-		case "element":
-		case "iframe":
-		case "limits":
-			return null;
-		default:
-			throw new IllegalArgumentException("不存在的定位方式: " + labelName);
-		}
-	}
+    @Override
+    public void setElementPlaceholder(String startRegex, String endRegex) {
+        this.startRegex = startRegex;
+        this.endRegex = endRegex;
+    }
 
-	/**
-	 * 用于对等待时间进行转换
-	 * 
-	 * @param text 获取的文本
-	 * @return 转换后的等待时间
-	 */
-	protected long toWaitTime(String text) {
-		// 获取元素存储等待时间属性值，并转换为long类型
-		try {
-			// 将属性值进行转换，若属性值不存在，则赋为-1
-			long time = Long.valueOf(text == null ? "-1" : text);
-			// 若转换的时间小于0，则返回-1
-			return time < 0 ? -1L : time;
-		} catch (NumberFormatException e) {
-			return -1L;
-		}
-	}
+    @Override
+    public String getStartElementPlaceholder() {
+        return startRegex;
+    }
+
+    @Override
+    public String getEndElementPlaceholder() {
+        return endRegex;
+    }
+
+    /**
+     * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
+     *
+     * @param value 元素类型文本值
+     * @return 元素类型枚举类对象
+     */
+    protected ElementType toElementType(String value) {
+        // 转换元素类型枚举，并返回
+        switch (value) {
+        case "1":
+            return ElementType.DATA_LIST_ELEMENT;
+        case "2":
+            return ElementType.SELECT_DATAS_ELEMENT;
+        case "3":
+            return ElementType.SELECT_OPTION_ELEMENT;
+        case "4":
+            return ElementType.IFRAME_ELEMENT;
+        case "0":
+        default:
+            return ElementType.COMMON_ELEMENT;
+        }
+    }
+
+    /**
+     * 该方法用于根据标签的名称，返回相应的定位方式枚举
+     *
+     * @param labelName 标签名称
+     * @return {@link ByType}枚举
+     */
+    protected ByType toByType(String labelName) {
+        switch (labelName) {
+        case "xpath":
+            return ByType.XPATH;
+        case "css":
+            return ByType.CSS;
+        case "classname":
+            return ByType.CLASSNAME;
+        case "id":
+            return ByType.ID;
+        case "linktext":
+            return ByType.LINKTEXT;
+        case "name":
+            return ByType.NAME;
+        case "tagname":
+            return ByType.TAGNAME;
+            // 定义需要忽略的标签
+        case "element":
+        case "iframe":
+        case "limits":
+            return null;
+        default:
+            throw new IllegalArgumentException("不存在的定位方式: " + labelName);
+        }
+    }
+
+    /**
+     * 用于对等待时间进行转换
+     *
+     * @param text 获取的文本
+     * @return 转换后的等待时间
+     */
+    protected long toWaitTime(String text) {
+        // 若值为空值，则返回-1
+        if(!Optional.ofNullable(text).filter(t -> !t.isEmpty()).isPresent()) {
+            return -1L;
+        }
+
+        // 获取元素存储等待时间属性值，并转换为long类型
+        try {
+            // 将属性值进行转换，若属性值不存在，则赋为-1
+            long time = Long.valueOf(text == null ? "-1" : text);
+            // 若转换的时间小于0，则返回-1
+            return time < 0 ? -1L : time;
+        } catch (NumberFormatException e) {
+            return -1L;
+        }
+    }
 }

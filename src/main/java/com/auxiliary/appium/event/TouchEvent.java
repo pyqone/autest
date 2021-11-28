@@ -150,8 +150,10 @@ public class TouchEvent extends AbstractEvent {
 		// 使用默认手指进行滑动
 		actionGlide(PointOption.point(bottomXPoint, bottomYNum), point);
 
-		logText = String.format("单手指从底部坐标(%d, %d)直线滑动至坐标(%s, %d)", bottomXPoint, bottomYNum, point.build().get("x"),
-				stopYPoint);
+		String logText = "单手指从底部坐标(%d, %d)直线滑动至坐标(%s, %d)";
+		brower.getLogRecord()
+				.recordLog(String.format(logText, bottomXPoint, bottomYNum, point.build().get("x"), stopYPoint));
+
 	}
 
 	/**
@@ -204,8 +206,9 @@ public class TouchEvent extends AbstractEvent {
 		// 使用默认手指进行滑动
 		actionGlide(PointOption.point(bottomXPoint, topYNum), point);
 
-		logText = String.format("单手指从顶部坐标(%d, %d)直线滑动至坐标(%s, %d)", bottomXPoint, topYNum, point.build().get("x"),
-				stopYPoint);
+		String logText = "单手指从顶部坐标(%d, %d)直线滑动至坐标(%s, %d)";
+		brower.getLogRecord()
+				.recordLog(String.format(logText, bottomXPoint, topYNum, point.build().get("x"), stopYPoint));
 	}
 
 	/**
@@ -262,7 +265,8 @@ public class TouchEvent extends AbstractEvent {
 			pointText.add(String.format("(%s, %s)", pointMap.get("x"), pointMap.get("y")));
 		}
 
-		logText = "单手指依次从以下坐标进行滑动：" + pointText.toString();
+		String logText = "单手指依次从以下坐标进行滑动：%s";
+		brower.getLogRecord().recordLog(String.format(logText, pointText.toString()));
 	}
 
 	/**
@@ -307,7 +311,8 @@ public class TouchEvent extends AbstractEvent {
 		// 滑动页面
 		actionGlide(PointOption.point(centrePoint), movePoint);
 
-		logText = String.format("由中心点坐标(%d, %d)向%s移动%d个像素", x, y, directionType.getName(), pixel);
+		String logText = "由中心点坐标(%d, %d)向%s移动%d个像素";
+		brower.getLogRecord().recordLog(String.format(logText, x, y, directionType.getName(), pixel));
 	}
 
 	/**
@@ -333,7 +338,8 @@ public class TouchEvent extends AbstractEvent {
 		// 滑动页面
 		actionGlide(PointOption.point(startPoint), PointOption.point(endPoint));
 
-		logText = String.format("由起始元素坐标(%d, %d)滑动终止元素坐标(%d, %d)", startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+		String logText = "由起始元素坐标(%d, %d)滑动终止元素坐标(%d, %d)";
+		brower.getLogRecord().recordLog(String.format(logText, startPoint.x, startPoint.y, endPoint.x, endPoint.y));
 	}
 
 	/**
@@ -361,15 +367,15 @@ public class TouchEvent extends AbstractEvent {
 				touch.add(touch1).add(touch2);
 				touch.perform();
 			} catch (Exception e) {
-				System.out.println(e);
 				return null;
 			}
 
 			return true;
 		});
 
-		logText = String.format("由中心点坐标(%d, %d)模拟两根手指同时滑动到屏幕左下角(%d, %d)与屏幕右上角(%d, %d)，模拟放大操作", centrePoint.x,
-				centrePoint.y, leftDownPoint.x, leftDownPoint.y, rightUpPoint.x, rightUpPoint.y);
+		String logText = "由中心点坐标(%d, %d)模拟两根手指同时滑动到屏幕左下角(%d, %d)与屏幕右上角(%d, %d)，模拟放大操作";
+		brower.getLogRecord().recordLog(String.format(logText, centrePoint.x, centrePoint.y, leftDownPoint.x,
+				leftDownPoint.y, rightUpPoint.x, rightUpPoint.y));
 	}
 
 	/**
@@ -399,15 +405,15 @@ public class TouchEvent extends AbstractEvent {
 				touch.add(touch1).add(touch2);
 				touch.perform();
 			} catch (Exception e) {
-				System.out.println(e);
 				return null;
 			}
 
 			return true;
 		});
 
-		logText = String.format("模拟两根手指同时由屏幕左下角(%d, %d)与屏幕右上角(%d, %d)滑动到中心点坐标(%d, %d)，模拟缩小操作", leftDownPoint.x,
-				leftDownPoint.y, rightUpPoint.x, rightUpPoint.y, centrePoint.x, centrePoint.y);
+		String logText = "模拟两根手指同时由屏幕左下角(%d, %d)与屏幕右上角(%d, %d)滑动到中心点坐标(%d, %d)，模拟缩小操作";
+		brower.getLogRecord().recordLog(String.format(logText, leftDownPoint.x, leftDownPoint.y, rightUpPoint.x,
+				rightUpPoint.y, centrePoint.x, centrePoint.y));
 	}
 
 	/**
@@ -445,18 +451,17 @@ public class TouchEvent extends AbstractEvent {
 			try {
 				touch.add(touch1).add(touch2).add(touch3).perform();
 			} catch (Exception e) {
-				System.out.println(e);
 				return null;
 			}
 
 			return true;
 		});
 
-		logText = String.format(
-				"模拟三根手指同时由屏幕上方左(%d, %d)、中(%d, %d)、右(%d, %d)三个坐标，滑动至屏幕下方左(%d, %d)、中(%d, %d)、右(%d, %d)三个坐标，模拟三指下拉操作",
-				leftUpPoint.x, leftUpPoint.y, centerUpPoint.x, centerUpPoint.y, rightUpPoint.x, rightUpPoint.y,
-				leftDownPoint.x, leftDownPoint.y, centerDownPoint.x, centerDownPoint.y, rightDownPoint.x,
-				rightDownPoint.y);
+		String logText = "模拟三根手指同时由屏幕上方左(%d, %d)、中(%d, %d)、右(%d, %d)三个坐标，滑动至屏幕下方左(%d, %d)、中(%d, %d)、右(%d, %d)三个坐标，模拟三指下拉操作";
+		brower.getLogRecord()
+				.recordLog(String.format(logText, leftUpPoint.x, leftUpPoint.y, centerUpPoint.x, centerUpPoint.y,
+						rightUpPoint.x, rightUpPoint.y, leftDownPoint.x, leftDownPoint.y, centerDownPoint.x,
+						centerDownPoint.y, rightDownPoint.x, rightDownPoint.y));
 	}
 
 	/**
@@ -468,8 +473,8 @@ public class TouchEvent extends AbstractEvent {
 
 		actionGlide(PointOption.point(startPoint), PointOption.point(endPoint));
 
-		logText = String.format("使用单根手指从屏幕中心顶点坐标(%d, %d)滑动到屏幕中心底部坐标(%d, %d)，模拟打开通知栏", startPoint.x, startPoint.y,
-				endPoint.x, endPoint.y);
+		String logText = "使用单根手指从屏幕中心顶点坐标(%d, %d)滑动到屏幕中心底部坐标(%d, %d)，模拟打开通知栏";
+		brower.getLogRecord().recordLog(String.format(logText, startPoint.x, startPoint.y, endPoint.x, endPoint.y));
 	}
 
 	/**
@@ -481,8 +486,8 @@ public class TouchEvent extends AbstractEvent {
 
 		actionGlide(PointOption.point(startPoint), PointOption.point(endPoint));
 
-		logText = String.format("使用单根手指从屏幕中心底部坐标(%d, %d)滑动到屏幕中心顶部坐标(%d, %d)，模拟关闭通知栏", startPoint.x, startPoint.y,
-				endPoint.x, endPoint.y);
+		String logText = "使用单根手指从屏幕中心底部坐标(%d, %d)滑动到屏幕中心顶部坐标(%d, %d)，模拟关闭通知栏";
+		brower.getLogRecord().recordLog(String.format(logText, startPoint.x, startPoint.y, endPoint.x, endPoint.y));
 	}
 
 	/**

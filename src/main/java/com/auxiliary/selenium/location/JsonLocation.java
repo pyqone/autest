@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -123,38 +122,6 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 		analysisJson(jsonText);
 	}
 
-	@Override
-	@Deprecated
-	public ArrayList<ByType> findElementByTypeList(String name) {
-		return new ArrayList<ByType>(find(name).getElementLocation().stream().map(ElementLocationInfo::getByType)
-				.collect(Collectors.toList()));
-	}
-
-	@Override
-	@Deprecated
-	public ArrayList<String> findValueList(String name) {
-		return new ArrayList<String>(find(name).getElementLocation().stream().map(ElementLocationInfo::getLocationText)
-				.collect(Collectors.toList()));
-	}
-
-	@Override
-	@Deprecated
-	public ElementType findElementType(String name) {
-		return find(name).getElementType();
-	}
-
-	@Override
-	@Deprecated
-	public ArrayList<String> findIframeNameList(String name) {
-		return find(name).getIframeNameList();
-	}
-
-	@Override
-	@Deprecated
-	public long findWaitTime(String name) {
-		return find(name).getWaitTime();
-	}
-
 	/**
 	 * 返回获取的模板json内容
 	 * 
@@ -243,9 +210,14 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 		// 读取模板内容
 		String tempValueText = templateJson.getString(tempText);
 
+		// 判断元素是否存在需要替换的内容，若不存在，则不进行替换
+		if (!tempValueText.matches(String.format(".*%s.*%s.*", startRegex, endRegex))) {
+			return tempValueText;
+		}
+
 		// 遍历所有键值对，将相应的内容进行存储
 		for (String key : locationJson.keySet()) {
-			String matchKey = MATCH_START_SIGN + key + MATCH_END_SIGN;
+			String matchKey = startRegex + key + endRegex;
 			tempValueText = tempValueText.replaceAll(matchKey, locationJson.getString(key));
 		}
 
@@ -377,7 +349,7 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 
 	@Override
 	public boolean isNative() {
-		/// 判断是否进行元素查找
+		// 判断是否进行元素查找
 		if (element == null) {
 			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
 		}
@@ -401,8 +373,8 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 		if (element == null) {
 			throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
 		}
-		
-		//转换等待时间，若等待时间小于0，则返回为0
+
+		// 转换等待时间，若等待时间小于0，则返回为0
 		long time = toWaitTime(element.getString(KEY_BEFORE_TIME_VALUE));
 		return time < 0 ? 0 : time;
 	}

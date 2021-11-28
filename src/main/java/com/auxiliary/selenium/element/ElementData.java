@@ -2,9 +2,9 @@ package com.auxiliary.selenium.element;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.auxiliary.selenium.location.AbstractLocation;
 import com.auxiliary.selenium.location.AppElementLocation;
 import com.auxiliary.selenium.location.ElementLocationInfo;
 import com.auxiliary.selenium.location.ReadElementLimit;
@@ -78,27 +78,29 @@ public class ElementData {
 		// 若存储的外链词语不为空，则对需要外链的定位内容进行处理
 		if (!linkWordList.isEmpty()) {
 			for (int i = 0; i < locationList.size(); i++) {
-				// 判断字符串是否包含替换词语的开始标志，若不包含，则进行不进行替换操作
-				if (!locationList.get(i).getLocationText().contains(AbstractLocation.START_SIGN)) {
-					continue;
-				}
+				// 定义正则表达式
+				String regex = String.format("%s.*?%s", read.getStartElementPlaceholder(),
+						read.getEndElementPlaceholder());
+				// 获取元素定位内容
+				StringBuilder locationText = new StringBuilder(locationList.get(i).getLocationText());
 
-				// 获取替换词语集合的迭代器
-				Iterator<String> linkWordIter = linkWordList.iterator();
-				// 存储当前定位内容文本
-				StringBuilder value = new StringBuilder(locationList.get(i).getLocationText());
-				// 循环，替换当前定位内容中所有需要替换的词语，直到无词语替换或定位内容不存在需要替换的词语为止
-				while (linkWordIter.hasNext() && value.indexOf(AbstractLocation.START_SIGN) > -1) {
+				// 定义正则表达式类对象
+				Pattern pattern = Pattern.compile(regex);
+				Matcher mather = pattern.matcher(locationText);
+
+				// 根据正则查找相应的数据，对该数据进行替换
+				for (int index = 0; index < linkWordList.size() && mather.find(); index++) {
 					// 存储替换符的开始和结束位置
-					int replaceStartIndex = value.indexOf(AbstractLocation.START_SIGN);
-					int replaceEndIndex = value.indexOf(AbstractLocation.END_SIGN);
+					int replaceStartIndex = mather.start();
+					int replaceEndIndex = mather.end();
 
 					// 对当前位置的词语进行替换
-					value.replace(replaceStartIndex, replaceEndIndex + 1, linkWordIter.next());
+					locationText.replace(replaceStartIndex, replaceEndIndex, linkWordList.get(index));
+					mather = pattern.matcher(locationText);
 				}
 
 				// 存储当前替换后的定位内容
-				locationList.get(i).setLocationText(value.toString());
+				locationList.get(i).setLocationText(locationText.toString());
 			}
 		}
 
@@ -191,7 +193,7 @@ public class ElementData {
 			return "";
 		}
 	}
-	
+
 	/**
 	 * 返回元素前置等待时间
 	 * 
