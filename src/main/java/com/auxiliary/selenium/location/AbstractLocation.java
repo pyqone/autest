@@ -17,37 +17,58 @@ import com.auxiliary.selenium.element.ElementType;
  * <p>
  * <b>修改时间：</b>2021年3月8日上午8:08:45
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  *
  */
 public abstract class AbstractLocation implements ReadLocation {
     /**
-     * 定义用于正则的替换符开始标记
-     */
-    public static final String MATCH_START_SIGN = "\\$\\{";
-    /**
      * 定义替换符开始标志
+     * @deprecated 该标识符已无意义，将在autest Ver2.8.0或之后的版本中删除
      */
+    @Deprecated
     public static final String START_SIGN = "${";
     /**
-     * 定义用于正则的替换符结束标记
-     */
-    public static final String MATCH_END_SIGN = "\\}";
-    /**
      * 定义替换符结束标志
+     * @deprecated 该标识符已无意义，将在autest Ver2.8.0或之后的版本中删除
      */
+    @Deprecated
     public static final String END_SIGN = "}";
+
+    /**
+     * 元素占位符起始标识，默认{@link ReadLocation#MATCH_START_SIGN}
+     */
+    protected String startRegex = ReadLocation.MATCH_START_SIGN;
+    /**
+     * 元素占位符结束标识，默认{@link ReadLocation#MATCH_END_SIGN}
+     */
+    protected String endRegex = ReadLocation.MATCH_END_SIGN;
 
     /**
      * 元素名称
      */
     protected String name = "";
 
+    @Override
+    public void setElementPlaceholder(String startRegex, String endRegex) {
+        this.startRegex = startRegex;
+        this.endRegex = endRegex;
+    }
+
+    @Override
+    public String getStartElementPlaceholder() {
+        return startRegex;
+    }
+
+    @Override
+    public String getEndElementPlaceholder() {
+        return endRegex;
+    }
+
     /**
      * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
-     * 
+     *
      * @param value 元素类型文本值
      * @return 元素类型枚举类对象
      */
@@ -70,7 +91,7 @@ public abstract class AbstractLocation implements ReadLocation {
 
     /**
      * 该方法用于根据标签的名称，返回相应的定位方式枚举
-     * 
+     *
      * @param labelName 标签名称
      * @return {@link ByType}枚举
      */
@@ -102,7 +123,7 @@ public abstract class AbstractLocation implements ReadLocation {
 
     /**
      * 用于对等待时间进行转换
-     * 
+     *
      * @param text 获取的文本
      * @return 转换后的等待时间
      */

@@ -20,7 +20,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * </p>
  * <p>
  * <b>用途：</b>该类用于从指定格式的xml中读取元素信息<br/>
- * 
+ *
  * <b>注意：</b>
  * <ol>
  * <li>标签的name属性必须唯一，否则读取会出现错误
@@ -36,7 +36,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <p>
  * <b>修改时间：</b>2021年4月17日 上午11:21:25
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.6
  * @since JDK 8
@@ -59,7 +59,7 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
 
     /**
      * 根据xml文件对象进行构造
-     * 
+     *
      * @param xmlFile xml文件对象
      * @throws IncorrectFileException xml文件有误时抛出的异常
      */
@@ -77,7 +77,7 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
 
     /**
      * 根据xml文件的{@link Document}对象进行构造
-     * 
+     *
      * @param dom {@link Document}对象
      */
     public XmlLocation(Document dom) {
@@ -198,7 +198,7 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
 
     /**
      * 用于返回元素标签对象
-     * 
+     *
      * @param name 元素名称
      * @return 相应的元素标签类对象
      * @throws UndefinedElementException 元素不存在时抛出的异常
@@ -214,7 +214,7 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
 
     /**
      * 获取模板中的定位内容
-     * 
+     *
      * @param tempId 模板id
      * @param byType 定位方式枚举
      * @return 相应的定位内容
@@ -229,7 +229,7 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
 
     /**
      * 根据xpath在指定的XmlLocation对象中查找元素
-     * 
+     *
      * @param xml   XmlLocation对象
      * @param xpath 查询元素的xpath
      * @return 被查询的元素，无元素时返回null
@@ -256,14 +256,14 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
 
     /**
      * 用于对获取的元素内容进行转换，得到完整的定位内容
-     * 
+     *
      * @param element 元素类对象
      * @param value   定位内容
      * @return 完整的定位内容
      */
     private String replaceValue(Element element, String value) {
         // 判断元素是否存在需要替换的内容，若不存在，则不进行替换
-        if (value.indexOf(START_SIGN) == -1) {
+        if (!value.matches(String.format("%s.*%s", startRegex, endRegex))) {
             return value;
         }
 
@@ -272,13 +272,13 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
         // 遍历元素的所有属性，并一一进行替换
         for (Object att : element.attributes()) {
             // 定义属性替换符
-            repalceText = MATCH_START_SIGN + ((Attribute) att).getName() + MATCH_END_SIGN;
+            repalceText = startRegex + ((Attribute) att).getName() + endRegex;
             // 替换value中所有与repalceText匹配的字符
             value = value.replaceAll(repalceText, ((Attribute) att).getValue());
         }
 
         // 替换父层节点的name属性
-        repalceText = MATCH_START_SIGN + "name" + MATCH_END_SIGN;
+        repalceText = startRegex + "name" + endRegex;
         // 替换value中所有与repalceText匹配的字符
         value = value.replaceAll(repalceText, element.getParent().attributeValue("name"));
 
@@ -290,10 +290,10 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
      */
     private void readParentFile() {
         Optional.ofNullable(readDom.getRootElement().element("parents")).map(e -> e.elements("parent"))
-        .filter(list -> !list.isEmpty()).ifPresent(list -> {
-            list.stream().map(Element::getText).map(File::new).map(XmlLocation::new)
-            .forEach(parentLocationList::add);
-        });
+                .filter(list -> !list.isEmpty()).ifPresent(list -> {
+                    list.stream().map(Element::getText).map(File::new).map(XmlLocation::new)
+                            .forEach(parentLocationList::add);
+                });
     }
 
     @Override
@@ -339,7 +339,7 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
             throw new UndefinedElementException("元素未进行查找，无法返回元素信息");
         }
 
-        //转换等待时间，若等待时间小于0，则返回为0
+        // 转换等待时间，若等待时间小于0，则返回为0
         long time = toWaitTime(element.attributeValue("before_time"));
         return time < 0 ? 0 : time;
     }

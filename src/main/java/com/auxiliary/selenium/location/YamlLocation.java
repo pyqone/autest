@@ -28,7 +28,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * <p>
  * <b>修改时间：</b>2021年11月24日 上午7:58:43
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  */
@@ -94,7 +94,7 @@ public class YamlLocation extends AbstractLocation implements ReadElementLimit, 
 
     /**
      * 通过写在文件中的yaml文本类对象对类进行构造
-     * 
+     *
      * @param yamlFile 存储yaml的文件类对象
      */
     public YamlLocation(File yamlFile) {
@@ -265,7 +265,7 @@ public class YamlLocation extends AbstractLocation implements ReadElementLimit, 
 
     /**
      * 用于解析读取到的yaml文件中的内容，将其转换为相应的map集合
-     * 
+     *
      * @param locationMap 模板文件内容map集合
      */
     @SuppressWarnings("unchecked")
@@ -278,7 +278,7 @@ public class YamlLocation extends AbstractLocation implements ReadElementLimit, 
 
     /**
      * 用于返回读取到的模板内容
-     * 
+     *
      * @param locationInfoMap 定位方式map
      * @return 经过转换的定位方式
      */
@@ -293,9 +293,14 @@ public class YamlLocation extends AbstractLocation implements ReadElementLimit, 
         // 读取模板内容
         String tempValueText = tempLetMap.get(tempText);
 
+        // 判断元素是否存在需要替换的内容，若不存在，则不进行替换
+        if (!value.matches(String.format("%s.*%s", startRegex, endRegex))) {
+            return value;
+        }
+
         // 遍历所有键值对，将相应的内容进行存储
         for (String key : locationInfoMap.keySet()) {
-            String matchKey = MATCH_START_SIGN + key + MATCH_END_SIGN;
+            String matchKey = startRegex + key + endRegex;
             tempValueText = tempValueText.replaceAll(matchKey, locationInfoMap.get(key));
         }
 
