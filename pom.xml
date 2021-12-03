@@ -5,7 +5,7 @@
 
 	<groupId>com.gitee.pyqone</groupId>
 	<artifactId>autest</artifactId>
-	<version>2.7.0</version>
+	<version>3.0.0</version>
 	<packaging>jar</packaging>
 
 	<url>https://gitee.com/pyqone/autest</url>
@@ -197,9 +197,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.0.0</version>
 				<configuration>
-					<aggregate>true</aggregate>
 					<doclint>none</doclint>
-					<additionalOption>-Xdoclint:none</additionalOption>
 					<failOnError>false</failOnError>
 				</configuration>
 				<executions>
