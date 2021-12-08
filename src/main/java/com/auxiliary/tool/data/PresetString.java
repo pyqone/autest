@@ -7,7 +7,7 @@ import org.apache.commons.lang3.RandomUtils;
 
 /**
  * 该类提供一些已预设好的随机信息，可直接进行使用
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  */
@@ -16,7 +16,7 @@ public class PresetString {
 
 	/**
 	 * 该方法用于生成随机的民用车牌号
-	 * 
+	 *
 	 * @return 生成的车牌号字符串
 	 */
 	public static String carLicence() {
@@ -43,7 +43,7 @@ public class PresetString {
 
 	/**
 	 * 该方法用于生成一个指定样式的随机车牌
-	 * 
+	 *
 	 * @param carLicecenType 车牌的样式
 	 * @return 生成的车牌号字符串
 	 */
@@ -108,7 +108,7 @@ public class PresetString {
 
 	/**
 	 * 该方法用于随机生成一个身份证号
-	 * 
+	 *
 	 * @return 生成的身份证号码
 	 */
 	public static String identityCard() {
@@ -158,7 +158,7 @@ public class PresetString {
 
 	/**
 	 * 生成姓名
-	 * 
+	 *
 	 * @return 姓名
 	 */
 	public static String name() {
@@ -177,10 +177,12 @@ public class PresetString {
 
 	/**
 	 * 生成手机号码
-	 * 
+	 *
 	 * @return 手机号码
+	 * @deprecated 已使用{@link #mobleNumber(MobleNumberType)}方法代替
 	 */
-	public static String phoneID(PhoneType phoneType) {
+	@Deprecated
+    public static String phoneID(PhoneType phoneType) {
 		if (phoneType == PhoneType.MOBLE) {
 			return "139" + new RandomString(StringMode.NUM).toString(8);
 		} else {
@@ -199,7 +201,7 @@ public class PresetString {
 
 	/**
 	 * 根据运营商，生成相应运营商号段的随机号码
-	 * 
+	 *
 	 * @param mobleNumberType 运营商号段枚举
 	 * @return 相应运营商的随机号码
 	 */
@@ -218,7 +220,7 @@ public class PresetString {
 	 * <p>
 	 * 例如，生成的数字为1，传入的最大值为12，并设置需要补0，则最终返回的结果为：01
 	 * </p>
-	 * 
+	 *
 	 * @param minNum    范围最小值
 	 * @param maxNum    范围最大值
 	 * @param isZeroize 是否需要高位补0
@@ -273,19 +275,19 @@ public class PresetString {
 		// 将数值转换为小数
 		double maxNum = Double.valueOf(maxNumText);
 		double minNum = Double.valueOf(minNumText);
-		
+
 		// 判断两个数字是否都为整数
 		if (!minNumText.contains(".") && !maxNumText.contains(".")) {
 			return randomNumber(Integer.valueOf(minNumText), Integer.valueOf(maxNumText), false);
 		}
-		
+
 		// 若最大值比最小值小，则调换两个值
 		if (maxNum < minNum) {
 			double tempNum = minNum;
 			minNum = maxNum;
 			maxNum = tempNum;
 		}
-		
+
 		// 获取最小值与最大值小数点后的位数，计算最大位数
 		int length = Math.max(minNumText.substring(minNumText.indexOf(".") + 1).length(),
 				maxNumText.substring(maxNumText.indexOf(".") + 1).length());
@@ -304,7 +306,7 @@ public class PresetString {
 
 		// 判断是否需要补0，若需要补0，则根据最大值的位数对生成的随机数字补0
 		String randomNumText = String.valueOf(randomNum);
-		
+
 
 		// 判断生成的随机数字是否小于0，若小于0，则在负号后面补0
 		return randomNumText.substring(0, randomNumText.indexOf(".") + length + 1);
