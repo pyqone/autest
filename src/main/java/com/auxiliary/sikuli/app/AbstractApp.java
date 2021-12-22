@@ -30,7 +30,7 @@ public abstract class AbstractApp {
     /**
      * 定义默认的等待时间
      */
-    protected final long DEFAULT_WAIT_TIME = 5;
+    protected final int DEFAULT_WAIT_TIME = 5;
 
     /**
      * 用于存储所有的应用程序
@@ -48,7 +48,7 @@ public abstract class AbstractApp {
     /**
      * 存储应用启动后的等待时间
      */
-    protected long openWaitTime = DEFAULT_WAIT_TIME;
+    protected int openWaitTime = DEFAULT_WAIT_TIME;
 
     /**
      * 该方法用于启动指定的应用程序，并将文件名称作为应用的名称
@@ -74,12 +74,12 @@ public abstract class AbstractApp {
      */
     public void open(String appName, File appFile, String... appCourseKey) {
         // 判断应用名称是否存在，存在则抛出异常
-        if (!appMap.containsKey(appName)) {
+        if (appMap.containsKey(appName)) {
             throw new OpenAppException("存在的应用名称：" + appName);
         }
 
         // 打开app
-        App.open(appFile.getAbsolutePath());
+        App.open(appFile.getAbsolutePath(), openWaitTime);
         // 判断是否需要获取应用的pid值（应用进程名称为空）
         // 过滤数组为空的情况
         boolean isGetPid = Optional.ofNullable(appCourseKey).filter(keys -> keys.length != 0)
@@ -119,7 +119,7 @@ public abstract class AbstractApp {
      * @param openWaitTime 应用启动等待时间
      * @since autest 3.0.0
      */
-    public void setOpenWaitTime(long openWaitTime) {
+    public void setOpenWaitTime(int openWaitTime) {
         if (openWaitTime < 0) {
             this.openWaitTime = DEFAULT_WAIT_TIME;
         }
@@ -240,7 +240,7 @@ public abstract class AbstractApp {
      */
     protected boolean setAppPid(String appName) {
         // 根据app名称，获取其相应的下标，若应用名称不存在，则抛出异常
-        if (!appMap.containsKey(appName)) {
+        if (appMap.containsKey(appName)) {
             throw new OpenAppException("不存在的应用名称：" + appName);
         }
 
