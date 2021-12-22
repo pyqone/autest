@@ -29,6 +29,11 @@ import ch.qos.logback.core.joran.spi.ActionException;
  */
 public class WindowsCmdUtil {
     /**
+     * 定义命令行返回多个结果时的拼接字符串
+     */
+    public static final String APPEND_RESULT_SIGE = "\n";
+
+    /**
      * 私有构造
      */
     private WindowsCmdUtil() {
@@ -118,7 +123,7 @@ public class WindowsCmdUtil {
      * @return 包含关键词的输出，多行输出以“\n”分隔
      */
     private static String getResult(InputStream is, String charsetName, boolean isFull, String... keys) {
-        StringJoiner resultText = new StringJoiner("\n");
+        StringJoiner resultText = new StringJoiner(APPEND_RESULT_SIGE);
 
         String text = "";
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is, charsetName))) {
