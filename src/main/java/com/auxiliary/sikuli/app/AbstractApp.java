@@ -1,7 +1,8 @@
 package com.auxiliary.sikuli.app;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,8 +13,7 @@ import org.sikuli.script.App;
  * <b>文件名：</b>AbstractApp.java
  * </p>
  * <p>
- * <b>用途：</b>
- * 定义应用启动基本的方法
+ * <b>用途：</b> 定义应用启动基本的方法
  * </p>
  * <p>
  * <b>编码时间：</b>2021年12月17日 上午7:54:06
@@ -28,31 +28,36 @@ import org.sikuli.script.App;
  */
 public abstract class AbstractApp {
     /**
+     * 定义默认的等待时间
+     */
+    protected final long DEFAULT_WAIT_TIME = 5;
+
+    /**
      * 用于存储所有的应用程序
      */
     protected App app = new App();
     /**
-     * 用于存储所有应用程序的pid值
+     * 存储应用程序相关的信息，键为应用名称，值为应用pid
      */
-    protected List<Integer> pidList = new ArrayList<>();
-    /**
-     * 存储所有应用程序的名称
-     */
-    protected List<String> appNameList = new ArrayList<>();
+    protected HashMap<String, Integer> appMap = new HashMap<>();
 
     /**
      * 用于指向当前正在执行的应用名称
      */
     protected String nowAppName = "";
+    /**
+     * 存储应用启动后的等待时间
+     */
+    protected long openWaitTime = DEFAULT_WAIT_TIME;
 
     /**
-     * 该方法用于启动指定的应用程序
+     * 该方法用于启动指定的应用程序，并将文件名称作为应用的名称
      *
      * @param appFile 应用程序启动文件类对象
      * @since autest 3.0.0
      */
-    public void open(File appFile) {
-        open(appFile.getName(), appFile);
+    public void open(File appFile, String... appCourseKey) {
+        open(appFile.getName(), appFile, appCourseKey);
     }
 
     /**
@@ -61,15 +66,15 @@ public abstract class AbstractApp {
      * <b>注意：</b>搜索PID值是通过进程名称关键词，通过操作系统命令来查找，若通过关键词搜索到多个且不是通过程序打开的应用，则可能导致获取的PID值不正确。
      * </p>
      *
-     * @param appName 应用名称
-     * @param appFile       应用程序启动文件类对象
+     * @param appName      应用名称
+     * @param appFile      应用程序启动文件类对象
      * @param appCourseKey 搜索应用进程名称的关键词组
      * @since autest 3.0.0
      * @throws OpenAppException 当打开应用名称失败时，抛出的异常
      */
     public void open(String appName, File appFile, String... appCourseKey) {
         // 判断应用名称是否存在，存在则抛出异常
-        if (appNameList.contains(appName)) {
+        if (!appMap.containsKey(appName)) {
             throw new OpenAppException("存在的应用名称：" + appName);
         }
 
@@ -106,8 +111,26 @@ public abstract class AbstractApp {
     }
 
     /**
+     * 该方法用于设置应用启动的等待时间，单位为秒，默认为5秒
+     * <p>
+     * <b>注意：</b>该方法设置为小于0的参数时，则使用默认值
+     * </p>
+     *
+     * @param openWaitTime 应用启动等待时间
+     * @since autest 3.0.0
+     */
+    public void setOpenWaitTime(long openWaitTime) {
+        if (openWaitTime < 0) {
+            this.openWaitTime = DEFAULT_WAIT_TIME;
+        }
+        this.openWaitTime = openWaitTime;
+    }
+
+    /**
      * 该方法用于将指定的应用切换到顶层
-     * <p><b>注意：</b>若当前应用并未设置PID值，则不会进行切换操作</p>
+     * <p>
+     * <b>注意：</b>若当前应用并未设置PID值，则不会进行切换操作
+     * </p>
      *
      * @param appName 应用名称
      * @since autest 3.0.0
@@ -133,7 +156,7 @@ public abstract class AbstractApp {
     public void close() {
         // 若当前并未打开应用，则抛出异常，若存在已打开的应用，则将其关闭
         if (nowAppName.isEmpty()) {
-            throw new OpenAppException("当前并未打开应用");
+            throw new OpenAppException("当前未打开应用程序");
         }
 
         close(nowAppName);
@@ -151,7 +174,7 @@ public abstract class AbstractApp {
         app.close();
 
         // 移除相应的应用
-        removeApp(appName);
+        appMap.remove(appName);
     }
 
     /**
@@ -172,6 +195,7 @@ public abstract class AbstractApp {
     /**
      * 该方法用于终止（强行结束）启动的应用程序
      *
+     * @param appName 应用名称
      * @since autest 3.0.0
      */
     public abstract void quit(String appName);
@@ -189,17 +213,17 @@ public abstract class AbstractApp {
      * 该方法用于对应用的名称和pid值进行判断，对判断通过的值进行存储，并返回是否添加成功
      *
      * @param appName 应用名称
-     * @param pid 应用pid值
+     * @param pid     应用pid值
      * @return 应用名称是否添加成功
      * @since autest 3.0.0
      */
     protected boolean putApp(String appName, Integer pid) {
         // 判断当前应用名称是否存在
-        if (appNameList.contains(appName)) {
+        if (!appMap.containsKey(appName)) {
+            Collection<Integer> pidList = appMap.values();
             // 判断当前pid值是否存在，特别的，如果pid为-1（未查找到pid值），则也进行存储
-            if (pidList.contains(pid) || pid == -1) {
-                appNameList.add(appName);
-                pidList.add(pid);
+            if (!pidList.contains(pid) || pid == -1) {
+                appMap.put(appName, pid);
                 return true;
             }
         }
@@ -216,30 +240,17 @@ public abstract class AbstractApp {
      */
     protected boolean setAppPid(String appName) {
         // 根据app名称，获取其相应的下标，若应用名称不存在，则抛出异常
-        int index = appNameList.indexOf(appName);
-        if (index == -1) {
-            throw new OpenAppException("不存在的应用名称，无法切换应用：" + appName);
+        if (!appMap.containsKey(appName)) {
+            throw new OpenAppException("不存在的应用名称：" + appName);
         }
 
         // 根据下标，获取相应的pid值，若pid为-1，则返回设置失败；为正常的数值，则设置pid，并返回成功
-        int pid = pidList.get(index);
+        int pid = appMap.get(appName);
         if (pid == -1) {
             return false;
         } else {
             app.setPID(pid);
             return true;
         }
-    }
-
-    /**
-     * 该方法用于根据应用名称，移除相关的应用
-     *
-     * @param appName 应用名称
-     * @since autest 3.0.0
-     */
-    protected void removeApp(String appName) {
-         int index = appNameList.indexOf(appName);
-         appNameList.remove(index);
-         pidList.remove(index);
     }
 }
