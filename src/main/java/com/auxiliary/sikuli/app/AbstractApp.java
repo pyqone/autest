@@ -3,10 +3,14 @@ package com.auxiliary.sikuli.app;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.sikuli.script.App;
+
+import com.google.common.base.Objects;
 
 /**
  * <p>
@@ -57,6 +61,9 @@ public abstract class AbstractApp {
      * @since autest 3.0.0
      */
     public void open(File appFile, String... appCourseKey) {
+        if (appFile == null) {
+            throw new OpenAppException("未指定应用启动路径");
+        }
         open(appFile.getName(), appFile, appCourseKey);
     }
 
@@ -73,6 +80,9 @@ public abstract class AbstractApp {
      * @throws OpenAppException 当打开应用名称失败时，抛出的异常
      */
     public void open(String appName, File appFile, String... appCourseKey) {
+        // 判断基本的信息
+        Optional.ofNullable(appName).filter(name -> !name.isEmpty()).orElseThrow(() -> new OpenAppException("未指定应用名称"));
+        Optional.ofNullable(appName).orElseThrow(() -> new OpenAppException("未指定应用启动路径"));
         // 判断应用名称是否存在，存在则抛出异常
         if (appMap.containsKey(appName)) {
             throw new OpenAppException("存在的应用名称：" + appName);
@@ -100,6 +110,11 @@ public abstract class AbstractApp {
                 if (putApp(appName, pidList.get(i))) {
                     break;
                 }
+            }
+
+            // 判断当前是否存储成功，若未成功，则表示无法搜索到相应的pid，故存储-1
+            if (!appMap.containsKey(appName)) {
+                putApp(appName, -1);
             }
         } else {
             // 若无需获取pid值，则存储pid值为-1
@@ -172,16 +187,15 @@ public abstract class AbstractApp {
         // 设置pid值
         setAppPid(appName);
         app.close();
-
-        // 移除相应的应用
-        appMap.remove(appName);
+        // 移除应用名称
+        removeApp(appName);
     }
 
     /**
      * 该方法用于终止（强行结束）当前正在操作的应用程序
      *
      * @throws OpenAppException 当前未打开应用时，抛出的异常
-     * @since autest
+     * @since autest 3.0.0
      */
     public void quit() {
         // 若当前并未打开应用，则抛出异常，若存在已打开的应用，则将其关闭
@@ -199,6 +213,18 @@ public abstract class AbstractApp {
      * @since autest 3.0.0
      */
     public abstract void quit(String appName);
+
+    /**
+     * 该方法用于终止（强行结束）所有启动的应用程序
+     *
+     * @since autest 3.0.0
+     */
+    public void quitAll() {
+        Set<String> keySet = new HashSet<>(appMap.keySet());
+        for (String key : keySet) {
+            quit(key);
+        }
+    }
 
     /**
      * 该方法用于根据应用程序在终端中的名称，查找其对应的pid值，并进行返回。若无法查找到相应的PID值，则返回只有一个-1的集合
@@ -240,7 +266,7 @@ public abstract class AbstractApp {
      */
     protected boolean setAppPid(String appName) {
         // 根据app名称，获取其相应的下标，若应用名称不存在，则抛出异常
-        if (appMap.containsKey(appName)) {
+        if (!appMap.containsKey(appName)) {
             throw new OpenAppException("不存在的应用名称：" + appName);
         }
 
@@ -251,6 +277,21 @@ public abstract class AbstractApp {
         } else {
             app.setPID(pid);
             return true;
+        }
+    }
+
+    /**
+     * 该方法用于移除指定名称的应用，若移除的应用为当前正在操作的应用，则将nowAppName置空
+     *
+     * @param appName 应用名称
+     * @since autest 3.0.0
+     */
+    protected void removeApp(String appName) {
+        // 移除相应的应用
+        appMap.remove(appName);
+        // 若关闭的应用是当前正在执行的应用，则将执行应用置空
+        if (Objects.equal(appName, nowAppName)) {
+            nowAppName = "";
         }
     }
 }
