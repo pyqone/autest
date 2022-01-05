@@ -22,12 +22,35 @@ import java.util.List;
  */
 public abstract class AbstractSikuliLocation {
     /**
+     * 定义用于正则的默认替换符开始标记
+     */
+    public static final String MATCH_START_SIGN = "\\$\\{";
+    /**
+     * 定义用于正则的默认替换符结束标记
+     */
+    public static final String MATCH_END_SIGN = "\\}";
+
+    /**
      * 定义默认等待时间
      */
     protected final int DEFAULT_WAIT_TIME = 3;
 
     /**
-     * 该方法用于返回根据元素名称查找元素，并返回元素的信息
+     * 存储当前查找的元素名称
+     */
+    protected String name = "";
+
+    /**
+     * 该方法用于查找并缓存指定的元素
+     *
+     * @param name 元素名称
+     * @return 类本身
+     * @since autest 3.0.0
+     */
+    protected abstract AbstractSikuliLocation find(String name);
+
+    /**
+     * 该方法用于返回元素的信息
      *
      * @param name 元素名称
      * @return 元素信息
