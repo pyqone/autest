@@ -1,13 +1,18 @@
 package com.auxiliary.sikuli.location;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.sikuli.script.Location;
 
 import com.auxiliary.selenium.location.IncorrectFileException;
 import com.auxiliary.selenium.location.UndefinedElementException;
@@ -32,6 +37,16 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
      */
     private String defaultSuffix = "";
 
+    /**
+     * 存储所有的模板元素
+     */
+    private HashMap<String, Element> tempElementMap = new HashMap<>();
+
+    /**
+     * 构造对象，读取xml文件，并初始化相应内容
+     *
+     * @param xmlFile xml文件类对象
+     */
     public XmlSikuliLocation(File xmlFile) {
         // 将编译时异常转换为运行时异常
         try {
@@ -42,10 +57,20 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
 
         // 获取根节点
         Element rootElement = readDom.getRootElement();
+
         // 获取元素默认存放路径
         defaultPath = Optional.ofNullable(rootElement.attributeValue(XmlFileField.ATT_PATH.getName())).orElse("");
         // 获取元素默认后缀名
         defaultSuffix = Optional.ofNullable(rootElement.attributeValue(XmlFileField.ATT_SUFFIX.getName())).orElse("");
+
+        // 读取模板元素，并缓存至类中
+        rootElement.element(XmlFileField.ELE_TEMPLET.getName()).elements().forEach(element -> {
+            // 获取模板的id属性，若发现不存在该属性的内容，则抛出异常
+            String id = Optional.ofNullable(element.attributeValue(XmlFileField.ATT_ID.getName())).orElseThrow(
+                    () -> new UndefinedElementException("文件中存在无id属性的模板。文件位置：" + xmlFile.getAbsolutePath()));
+            // 缓存元素类对象
+            tempElementMap.put(id, element);
+        });
     }
 
     @Override
@@ -66,14 +91,92 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
 
     @Override
     public List<ElementLocationInfo> getElementLocationList(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        // 若当前查找的元素名称非上次查找的元素名称，则重新进行查找
+        if (!Objects.equals(name, this.name)) {
+            find(name);
+        } else {
+            if (Optional.ofNullable(elementInfoList).filter(li -> li.size() != 0).isPresent()) {
+                return elementInfoList;
+            }
+        }
+
+        // 获取当前元素下的所有元素，并将其转换为元素信息类对象
+        return element.elements().stream().map(element -> {
+            HashMap<ElementInfoDataType, String> elementDataMap = new HashMap<>();
+            elementDataMap.put(ElementInfoDataType.X, "0.0");
+            elementDataMap.put(ElementInfoDataType.Y, "0.0");
+            elementDataMap.put(ElementInfoDataType.SIMILAR, "");
+            elementDataMap.put(ElementInfoDataType.FILE_NAME, "");
+            elementDataMap.put(ElementInfoDataType.PATH, defaultPath);
+            elementDataMap.put(ElementInfoDataType.SUFFIX, defaultSuffix);
+
+            // 判断元素是否调用模板
+            String tempId = Optional.ofNullable(element.attributeValue(XmlFileField.ATT_TEMP_ID.getName())).orElse("");
+            if (!tempId.isEmpty()) {
+                // 判断当前模板是否存在，不存在，则抛出异常
+                if (!tempElementMap.containsKey(tempId)) {
+                    throw new UndefinedElementException(String.format("“%s”元素存在未定义的模板名称“%s”", name, tempId));
+                }
+
+                // 根据模板元素的标签属性更新元素信息
+                elementDataMap = updataElementData(elementDataMap, tempElementMap.get(tempId));
+            }
+
+            // 根据当前元素标签的属性更新元素信息
+            elementDataMap = updataElementData(elementDataMap, element);
+            // 替换占位符
+            elementDataMap.put(ElementInfoDataType.FILE_NAME,
+                    replaceValue(element, elementDataMap.get(ElementInfoDataType.FILE_NAME)));
+
+            // 封装元素文件类对象
+            String fileName = elementDataMap.get(ElementInfoDataType.FILE_NAME);
+            String suffix = elementDataMap.get(ElementInfoDataType.SUFFIX);
+            if (fileName.isEmpty() || suffix.isEmpty()) {
+                throw new IncorrectFileException(
+                        String.format("元素“%s”截图文件路径异常，无法定义截图文件对象。文件名：%s.%s", fileName, suffix));
+            }
+            File screenFile = new File(
+                    String.format("%s\\%s.%s", elementDataMap.get(ElementInfoDataType.PATH), fileName, suffix));
+
+            // 封装元素操作坐标信息
+            Location point = null;
+            try {
+                double x = Double.valueOf(elementDataMap.get(ElementInfoDataType.X));
+                double y = Double.valueOf(elementDataMap.get(ElementInfoDataType.Y));
+
+                point = new Location(x, y);
+            } catch (NumberFormatException e) {
+                throw new UndefinedElementException(String.format("“%s”元素指定的坐标存在异常，无法转换为数字：(%s, %s)",
+                        Double.valueOf(elementDataMap.get(ElementInfoDataType.X)),
+                        Double.valueOf(elementDataMap.get(ElementInfoDataType.Y))));
+            }
+
+            // 转换相似度数据
+            double similar = ElementLocationInfo.DEFAULT_SIMILAR;
+            try {
+                similar = Double.valueOf(elementDataMap.get(ElementInfoDataType.SIMILAR));
+            } catch (NumberFormatException e) {
+                throw new UndefinedElementException(String.format("“%s”元素指定的相似度数据存在异常，无法转换为数字：%s",
+                        Double.valueOf(elementDataMap.get(ElementInfoDataType.SIMILAR))));
+            }
+
+            return new ElementLocationInfo(screenFile.getAbsolutePath(), point, similar);
+        }).collect(Collectors.toList());
     }
 
     @Override
-    protected int getWaitTime(String name) {
-        // TODO Auto-generated method stub
-        return 0;
+    public int getWaitTime(String name) {
+        // 若当前查找的元素名称非上次查找的元素名称，则重新进行查找
+        if (!Objects.equals(name, this.name)) {
+            find(name);
+        }
+
+        try {
+            return Optional.ofNullable(element.attributeValue(XmlFileField.ATT_WAIT.getName())).map(Integer::valueOf).orElse(DEFAULT_WAIT_TIME);
+        } catch (NumberFormatException e) {
+            throw new UndefinedElementException(String.format("“%s”元素指定的等待时间存在异常，无法转换为数字：%s", name,
+                    element.attributeValue(XmlFileField.ATT_WAIT.getName())));
+        }
     }
 
     /**
@@ -93,12 +196,92 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
     }
 
     /**
+     * 该方法用于对元素相应的属性进行更新
+     *
+     * @param elementDataMap 元素信息组
+     * @param dataElement    元素类对象
+     * @return 更新后的元素信息
+     * @since autest 3.0.0
+     */
+    private HashMap<ElementInfoDataType, String> updataElementData(HashMap<ElementInfoDataType, String> elementDataMap,
+            Element dataElement) {
+        // 获取文件路径
+        Optional.ofNullable(dataElement.attributeValue(XmlFileField.ATT_PATH.getName())).ifPresent(path -> {
+            elementDataMap.put(ElementInfoDataType.PATH, path);
+        });
+
+        // 获取文件后缀
+        Optional.ofNullable(dataElement.attributeValue(XmlFileField.ATT_SUFFIX.getName())).ifPresent(suffix -> {
+            elementDataMap.put(ElementInfoDataType.SUFFIX, suffix);
+        });
+
+        // 获取文件名称
+        Optional.ofNullable(dataElement.getText()).ifPresent(text -> {
+            elementDataMap.put(ElementInfoDataType.FILE_NAME, text);
+        });
+
+        // 获取x坐标，当转换失败时，则不进行存储
+        Optional.ofNullable(dataElement.attributeValue(XmlFileField.ATT_X.getName())).ifPresent(x -> {
+            elementDataMap.put(ElementInfoDataType.X, x);
+        });
+
+        // 获取y坐标，当转换失败时，则不进行存储
+        Optional.ofNullable(dataElement.attributeValue(XmlFileField.ATT_Y.getName())).ifPresent(y -> {
+            try {
+                elementDataMap.put(ElementInfoDataType.Y, y);
+            } catch (NumberFormatException e) {
+            }
+        });
+
+        // 获取相似度，当转换失败时，则不进行存储
+        Optional.ofNullable(dataElement.attributeValue(XmlFileField.ATT_SIMILAR.getName())).ifPresent(similar -> {
+            try {
+                elementDataMap.put(ElementInfoDataType.SIMILAR, similar);
+            } catch (NumberFormatException e) {
+            }
+        });
+
+        return elementDataMap;
+    }
+
+    /**
+     * 用于对获取的元素内容进行转换，得到完整的定位内容
+     *
+     * @param element 元素类对象
+     * @param value   定位内容
+     * @return 完整的定位内容
+     * @since autest 3.0.0
+     */
+    private String replaceValue(Element element, String value) {
+        // 判断元素是否存在需要替换的内容，若不存在，则不进行替换
+        if (!value.matches(String.format("%s.*%s", startRegex, endRegex))) {
+            return value;
+        }
+
+        String repalceText = "";
+
+        // 遍历元素的所有属性，并一一进行替换
+        for (Object att : element.attributes()) {
+            // 定义属性替换符
+            repalceText = startRegex + ((Attribute) att).getName() + endRegex;
+            // 替换value中所有与repalceText匹配的字符
+            value = value.replaceAll(repalceText, ((Attribute) att).getValue());
+        }
+
+        // 替换父层节点的name属性
+        repalceText = startRegex + "name" + endRegex;
+        // 替换value中所有与repalceText匹配的字符
+        value = value.replaceAll(repalceText, element.getParent().attributeValue("name"));
+
+        return value;
+    }
+
+    /**
      * <p>
      * <b>文件名：</b>XmlSikuliLocation.java
      * </p>
      * <p>
-     * <b>用途：</b>
-     * 定义xml文件中使用到的字段与属性，其中：
+     * <b>用途：</b> 定义xml文件中使用到的字段与属性，其中：
      * <ul>
      * <li>ATT表示属性</li>
      * <li>ELE表示标签</li>
@@ -125,9 +308,37 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
          */
         ATT_SUFFIX("suffix"),
         /**
+         * 定义相似度属性
+         */
+        ATT_SIMILAR("similar"),
+        /**
+         * 定义操作坐标x属性
+         */
+        ATT_X("x"),
+        /**
+         * 定义操作坐标y属性
+         */
+        ATT_Y("y"),
+        /**
+         * 定义读取模板id属性
+         */
+        ATT_TEMP_ID("temp_id"),
+        /**
+         * 定义操作等待时间
+         */
+        ATT_WAIT("wait"),
+        /**
+         * 定义模板id属性
+         */
+        ATT_ID("id"),
+        /**
          * 定义元素标签
          */
-        ELE_ELEMENT("element");
+        ELE_ELEMENT("element"),
+        /**
+         * 定义模板标签
+         */
+        ELE_TEMPLET("templet");
         ;
 
         /**
@@ -137,6 +348,7 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
 
         /**
          * 初始化字段名称
+         *
          * @param name 字段名称
          */
         private XmlFileField(String name) {
@@ -152,5 +364,27 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
         public String getName() {
             return name;
         }
+    }
+
+    /**
+     * <p>
+     * <b>文件名：</b>XmlSikuliLocation.java
+     * </p>
+     * <p>
+     * <b>用途：</b> 定义元素信息需要包含的内容枚举
+     * </p>
+     * <p>
+     * <b>编码时间：</b>2022年1月6日 上午11:17:59
+     * </p>
+     * <p>
+     * <b>修改时间：</b>2022年1月6日 上午11:17:59
+     * </p>
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since autest 3.0.0
+     */
+    private enum ElementInfoDataType {
+        X, Y, SIMILAR, FILE_NAME, PATH, SUFFIX;
     }
 }

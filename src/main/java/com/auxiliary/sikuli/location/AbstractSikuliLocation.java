@@ -2,6 +2,8 @@ package com.auxiliary.sikuli.location;
 
 import java.util.List;
 
+import com.auxiliary.selenium.location.ReadLocation;
+
 /**
  * <p>
  * <b>文件名：</b>AbstractSikuliLocation.java
@@ -31,6 +33,20 @@ public abstract class AbstractSikuliLocation {
     public static final String MATCH_END_SIGN = "\\}";
 
     /**
+     * 元素占位符起始标识，默认{@link ReadLocation#MATCH_START_SIGN}
+     */
+    protected String startRegex = ReadLocation.MATCH_START_SIGN;
+    /**
+     * 元素占位符结束标识，默认{@link ReadLocation#MATCH_END_SIGN}
+     */
+    protected String endRegex = ReadLocation.MATCH_END_SIGN;
+
+    /**
+     * 存储元素信息集合，建议将该数据进行缓存，以减少不必要的麻烦处理
+     */
+    protected List<ElementLocationInfo> elementInfoList;
+
+    /**
      * 定义默认等待时间
      */
     protected final int DEFAULT_WAIT_TIME = 3;
@@ -50,6 +66,39 @@ public abstract class AbstractSikuliLocation {
     protected abstract AbstractSikuliLocation find(String name);
 
     /**
+     * 该方法用于设置自定义的元素占位符标识
+     * <p><b>注意：</b>该方法接收的标识符是正则表达式，若传入的标识符为特殊符号（如：*），则需要使用双反斜杠来转义（如：\\*）</p>
+     *
+     * @param startRegex 占位符起始标识
+     * @param endRegex 占位符结束标识
+     * @since autest 3.0.0
+     */
+    public void setElementPlaceholder(String startRegex, String endRegex) {
+        this.startRegex = startRegex;
+        this.endRegex = endRegex;
+    }
+
+    /**
+     * 该方法用于返回元素占位符起始标识
+     *
+     * @return 占位符起始标识
+     * @since autest 3.0.0
+     */
+    public String getStartElementPlaceholder() {
+        return startRegex;
+    }
+
+    /**
+     * 该方法用于返回元素占位符结束标识
+     *
+     * @return 占位符结束标识
+     * @since autest 3.0.0
+     */
+    public String getEndElementPlaceholder() {
+        return endRegex;
+    }
+
+    /**
      * 该方法用于返回元素的信息
      *
      * @param name 元素名称
@@ -66,5 +115,5 @@ public abstract class AbstractSikuliLocation {
      * @return 查找等待时间
      * @since autest 3.0.0
      */
-    protected abstract int getWaitTime(String name);
+    public abstract int getWaitTime(String name);
 }
