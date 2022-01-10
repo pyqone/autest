@@ -131,6 +131,16 @@ public class ElementLocationInfo {
     }
 
     /**
+     * 该方法用于返回元素截图所在绝对路径
+     *
+     * @return 截图元素所在绝对路径
+     * @since autest 3.0.0
+     */
+    public String getScreenFilePath() {
+        return screenFilePath;
+    }
+
+    /**
      * 该方法用于根据已有的信息，返回截图元素封装类对象
      *
      * @return 截图元素封装类对象
