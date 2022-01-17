@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.sikuli.script.Match;
 import org.sikuli.script.Region;
@@ -45,6 +44,7 @@ public class FindSikuliElement {
 
     /**
      * 构造对象，并指定当前需要识别的屏幕范围
+     *
      * @param region {@link Region}类对象，默认屏幕时，可传入{@link Screen}类对象
      * @since autest 3.0.0
      */
@@ -65,42 +65,44 @@ public class FindSikuliElement {
     /**
      * 该方法用于根据设置的识别范围，查找对应名称的元素。若界面上识别到多个结果，则取第1个作为目标元素。
      *
-     * @param name 元素名称
+     * @param name     元素名称
      * @param linkKeys 外链词语
      * @return 查找到的元素类对象
      * @since autest 3.0.0
      * @throws TimeoutException 当元素查找超时时，抛出的异常
      */
-    public SikuliElement findElement(String name, String...linkKeys) {
+    public Match findElement(String name, String... linkKeys) {
         return findElement(name, 1, linkKeys);
     }
 
     /**
      * 该方法用于根据设置的识别范围，查找对应名称的元素，并返回指定下标的元素
-     * <p><b>注意：</b>元素下标传入元素的真实下标，例如，当在界面识别到3个相同的元素时，需要取第2个作为目标元素，则下标传入2。
-     * 另外，下标可以传入负数，表示从后向前遍历</p>
+     * <p>
+     * <b>注意：</b>元素下标传入元素的真实下标，例如，当在界面识别到3个相同的元素时，需要取第2个作为目标元素，则下标传入2。
+     * 另外，下标可以传入负数，表示从后向前遍历
+     * </p>
      *
-     * @param name 元素名称
+     * @param name     元素名称
      * @param linkKeys 外链词语
      * @return 查找到的元素类对象
      * @since autest 3.0.0
      * @throws TimeoutException 当元素查找超时时，抛出的异常
      */
-    public SikuliElement findElement(String name, int index, String...linkKeys) {
-        List<SikuliElement> elementList = findAllElement(name, linkKeys);
+    public Match findElement(String name, int index, String... linkKeys) {
+        List<Match> elementList = findAllElement(name, linkKeys);
         return elementList.get(disposeElementIndex(index, elementList.size()));
     }
 
     /**
      * 该方法用于根据设置的识别范围，查找对应名称的元素所有元素，并返回目标元素集合
      *
-     * @param name 元素名称
+     * @param name     元素名称
      * @param linkKeys 外链词语
      * @return 查找到的元素类对象
      * @since autest3.0.0
      * @throws TimeoutException 当元素查找超时时，抛出的异常
      */
-    public List<SikuliElement> findAllElement(String name, String...linkKeys) {
+    public List<Match> findAllElement(String name, String... linkKeys) {
         // 查找元素信息
         List<ElementLocationInfo> infoList = locationFile.getElementLocationList(name);
         // 根据外链词信息，将包含占位符的内容进行替换
@@ -113,18 +115,18 @@ public class FindSikuliElement {
         // 在指定的操作时间内，循环调用exists方法，判断元素是否存在，若超过执行时间仍未找到元素，则抛出异常
         // TODO 此处等待时间单位为秒，故乘以1000，换算成毫秒，后续优化单位时，注意修改
         long waitTime = locationFile.getWaitTime(name) * 1000L;
-        while(waitTime > 0) {
+        while (waitTime > 0) {
             // 记录执行开始时间
             long startTime = System.currentTimeMillis();
             // 将infoList中存储的所有元素遍历一次，直至界面上出现相应元素为止
             for (ElementLocationInfo info : infoList) {
                 List<Match> matchList = region.findAllList(info.getPattern());
                 if (matchList.size() != 0) {
-                    return matchList.stream().map(SikuliElement::new).collect(Collectors.toList());
+                    return matchList;
                 }
             }
 
-            //若所有的元素文件均无法查到元素，则计算剩余等待时间，重新查找元素
+            // 若所有的元素文件均无法查到元素，则计算剩余等待时间，重新查找元素
             waitTime += (startTime - System.currentTimeMillis());
         }
 
@@ -142,7 +144,7 @@ public class FindSikuliElement {
      * <li>当下标为0时，则在元素总数范围内，随机返回一个数</li>
      * </ol>
      *
-     * @param index 传入的下标
+     * @param index  传入的下标
      * @param length 元素总数量
      * @return 处理后的元素下标
      * @since autest 3.0.0
@@ -153,7 +155,7 @@ public class FindSikuliElement {
             if (index > 0) {
                 return length - 1;
             } else {
-               return 0;
+                return 0;
             }
         }
 
@@ -177,7 +179,7 @@ public class FindSikuliElement {
      * @return 替换后的词语
      * @since autest 3.0.0
      */
-    private String disposeLinkKeys(String fileName, String...linkKeys) {
+    private String disposeLinkKeys(String fileName, String... linkKeys) {
         // 定义对占位符进行判断的正则表达式
         String regex = String.format("%s.*?%s", locationFile.getStartElementPlaceholder(),
                 locationFile.getEndElementPlaceholder());
