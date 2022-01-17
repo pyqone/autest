@@ -1,4 +1,4 @@
-package com.auxiliary.sikuli.location;
+package com.auxiliary.sikuli.element;
 
 import java.util.Objects;
 
@@ -128,6 +128,16 @@ public class ElementLocationInfo {
      */
     public void setSimilar(double similar) {
         this.similar = similar;
+    }
+
+    /**
+     * 该方法用于直接设置截图文件的存放路径
+     *
+     * @param screenFilePath 截图文件所在路径
+     * @since autest 3.0.0
+     */
+    protected void setScreenFilePath(String screenFilePath) {
+        this.screenFilePath = screenFilePath;
     }
 
     /**
