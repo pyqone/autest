@@ -3,6 +3,7 @@ package com.auxiliary.sikuli.location;
 import java.util.List;
 
 import com.auxiliary.selenium.location.ReadLocation;
+import com.auxiliary.sikuli.element.ElementLocationInfo;
 
 /**
  * <p>
