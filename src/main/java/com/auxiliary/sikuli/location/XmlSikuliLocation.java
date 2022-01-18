@@ -17,6 +17,7 @@ import org.sikuli.script.Location;
 import com.auxiliary.selenium.location.IncorrectFileException;
 import com.auxiliary.selenium.location.UndefinedElementException;
 import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElementType;
+import com.auxiliary.sikuli.element.ElementLocationInfo;
 
 /**
  * <p>
