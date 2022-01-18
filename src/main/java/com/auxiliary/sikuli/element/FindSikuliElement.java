@@ -121,7 +121,7 @@ public class FindSikuliElement {
             // 将infoList中存储的所有元素遍历一次，直至界面上出现相应元素为止
             for (ElementLocationInfo info : infoList) {
                 List<Match> matchList = region.findAllList(info.getPattern());
-                if (matchList.size() != 0) {
+                if (!matchList.isEmpty()) {
                     return matchList;
                 }
             }
