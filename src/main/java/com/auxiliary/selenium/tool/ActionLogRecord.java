@@ -58,7 +58,7 @@ public class ActionLogRecord {
      * @param num 需要删除的条数
      */
     public void removeLog(int num) {
-        // 若大于等于日志最大值，则直接调用clear方法
+        // 若大于等于日志，则直接调用clear方法
         if (num >= logList.size()) {
             clearLog();
             return;
@@ -146,6 +146,26 @@ public class ActionLogRecord {
      */
     public String[] getSignLogArray(String sign) {
         return listToArray(getSignLogList(sign));
+    }
+
+    /**
+     * 该方法用于判断当前日志数量是否为空
+     *
+     * @return 日志数量是否为空
+     * @since autest 3.0.0
+     */
+    public boolean isEmpty() {
+        return logList.isEmpty();
+    }
+
+    /**
+     * 该方法用于返回当前的日志数量
+     *
+     * @return 日志数量
+     * @since autest 3.0.0
+     */
+    public int logNumber() {
+        return logList.size();
     }
 
     /**
