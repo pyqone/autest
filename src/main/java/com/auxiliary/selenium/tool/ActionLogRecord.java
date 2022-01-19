@@ -1,6 +1,7 @@
 package com.auxiliary.selenium.tool;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,8 +42,21 @@ public class ActionLogRecord {
      *
      * @param logText 日志信息
      */
-    public void recordLog(String logText) {
-        Optional.ofNullable(logText).filter(t -> !t.isEmpty()).ifPresent(logList::add);
+    public void recordLog(String... logTexts) {
+        Optional.ofNullable(logTexts).filter(logs -> logs.length != 0).map(Arrays::asList).ifPresent(this::recordLog);
+    }
+
+    /**
+     * 该方法用于记录日志集合
+     *
+     * @param logList 日志集合
+     * @since autest 3.0.0
+     */
+    public void recordLog(List<String> logList) {
+        Optional.ofNullable(logList).filter(list -> !list.isEmpty()).ifPresent(list -> {
+            list.stream().filter(log -> !log.isEmpty()).forEach(this.logList::add);
+        });
+
     }
 
     /**
