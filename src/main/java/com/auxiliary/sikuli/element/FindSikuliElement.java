@@ -59,8 +59,9 @@ public class FindSikuliElement {
      * @param locationFile 元素文件读取类对象
      * @since autest 3.0.0
      */
-    public void setReadMode(AbstractSikuliLocation locationFile) {
+    public FindSikuliElement setReadMode(AbstractSikuliLocation locationFile) {
         this.locationFile = locationFile;
+        return this;
     }
 
     /**
@@ -84,6 +85,7 @@ public class FindSikuliElement {
      * </p>
      *
      * @param name     元素名称
+     * @param index 多元素时的下标
      * @param linkKeys 外链词语
      * @return 查找到的元素类对象
      * @since autest 3.0.0
