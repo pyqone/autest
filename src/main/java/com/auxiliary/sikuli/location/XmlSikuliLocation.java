@@ -3,7 +3,6 @@ package com.auxiliary.sikuli.location;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -110,7 +109,7 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
     @Override
     public List<ElementLocationInfo> getElementLocationList(String name) {
         // 若当前查找的元素名称非上次查找的元素名称，则重新进行查找
-        if (!Objects.equals(name, this.name)) {
+        if (!compareElementName(name)) {
             find(name);
         } else {
             if (Optional.ofNullable(elementInfoList).filter(li -> li.size() != 0).isPresent()) {
@@ -194,7 +193,7 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
     @Override
     public int getWaitTime(String name) {
         // 若当前查找的元素名称非上次查找的元素名称，则重新进行查找
-        if (!Objects.equals(name, this.name)) {
+        if (!compareElementName(name)) {
             find(name);
         }
 
