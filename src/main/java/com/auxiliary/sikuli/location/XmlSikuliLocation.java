@@ -83,13 +83,15 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
         // 获取元素默认后缀名
         defaultSuffix = Optional.ofNullable(rootElement.attributeValue(XmlFileField.ATT_SUFFIX.getName())).orElse("");
 
-        // 读取模板元素，并缓存至类中
-        rootElement.element(XmlFileField.ELE_TEMPLET.getName()).elements().forEach(element -> {
-            // 获取模板的id属性，若发现不存在该属性的内容，则抛出异常
-            String id = Optional.ofNullable(element.attributeValue(XmlFileField.ATT_ID.getName())).orElseThrow(
-                    () -> new UndefinedElementException("文件中存在无id属性的模板。文件位置：" + xmlFile.getAbsolutePath()));
-            // 缓存元素类对象
-            tempElementMap.put(id, element);
+        // 读取模板元素，并缓存至类中，若返回空，则不存储
+        Optional.ofNullable(rootElement.element(XmlFileField.ELE_TEMPLET.getName())).ifPresent(tempElement -> {
+            tempElement.elements().forEach(element -> {
+                // 获取模板的id属性，若发现不存在该属性的内容，则抛出异常
+                String id = Optional.ofNullable(element.attributeValue(XmlFileField.ATT_ID.getName())).orElseThrow(
+                        () -> new UndefinedElementException("文件中存在无id属性的模板。文件位置：" + xmlFile.getAbsolutePath()));
+                // 缓存元素类对象
+                tempElementMap.put(id, element);
+            });
         });
     }
 
