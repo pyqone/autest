@@ -15,9 +15,8 @@ import org.dom4j.io.SAXReader;
 import org.sikuli.script.Location;
 
 import com.auxiliary.selenium.location.IncorrectFileException;
-import com.auxiliary.selenium.location.UndefinedElementException;
-import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElementType;
 import com.auxiliary.sikuli.element.ElementLocationInfo;
+import com.auxiliary.sikuli.location.UndefinedElementException.ExceptionElementType;
 
 /**
  * <p>
