@@ -1,9 +1,12 @@
 package com.auxiliary.sikuli.element;
 
+import java.io.File;
 import java.util.Objects;
 
 import org.sikuli.script.Location;
 import org.sikuli.script.Pattern;
+
+import com.auxiliary.sikuli.SikuliToolsExcepton;
 
 /**
  * <p>
@@ -157,6 +160,11 @@ public class ElementLocationInfo {
      * @since autest 3.0.0
      */
     public Pattern getPattern() {
+        // 判断当前文件是否存在
+        if (!new File(screenFilePath).exists()) {
+            throw new SikuliToolsExcepton("元素文件路径不正确：" + screenFilePath);
+        }
+
         Pattern pattern = new Pattern(screenFilePath);
         pattern.targetOffset(operateLocation);
 
