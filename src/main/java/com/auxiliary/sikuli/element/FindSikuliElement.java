@@ -11,6 +11,7 @@ import org.sikuli.script.Match;
 import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
 
+import com.auxiliary.sikuli.SikuliToolsExcepton;
 import com.auxiliary.sikuli.location.AbstractSikuliLocation;
 
 /**
@@ -85,7 +86,7 @@ public class FindSikuliElement {
      * </p>
      *
      * @param name     元素名称
-     * @param index 多元素时的下标
+     * @param index    多元素时的下标
      * @param linkKeys 外链词语
      * @return 查找到的元素类对象
      * @since autest 3.0.0
@@ -107,7 +108,9 @@ public class FindSikuliElement {
      */
     public List<SikuliElement> findAllElement(String name, String... linkKeys) {
         // 查找元素信息
-        List<ElementLocationInfo> infoList = locationFile.getElementLocationList(name);
+        List<ElementLocationInfo> infoList = Optional.ofNullable(locationFile)
+                .orElseThrow(() -> new SikuliToolsExcepton("未指定元素存储文件读取类（AbstractSikuliLocation子类），无法读取元素信息"))
+                .getElementLocationList(name);
         // 根据外链词信息，将包含占位符的内容进行替换
         if (Optional.ofNullable(linkKeys).filter(arr -> arr.length != 0).isPresent()) {
             infoList.forEach(info -> {
