@@ -13,6 +13,9 @@ import com.auxiliary.sikuli.element.TimeoutException;
  * </p>
  * <p>
  * <b>用途：</b> 封装sikuli工具的鼠标事件，可设置{@link FindSikuliElement}类对象，用以元素名称来进行操作
+ * <p>
+ * <b>注意：</b>通过元素名称对元素进行查找的方式不支持外链词语
+ * </p>
  * </p>
  * <p>
  * <b>编码时间：</b>2022年1月21日 上午8:03:49
@@ -62,15 +65,14 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
      *
      * @param elementName 元素名称
      * @param index       多元素时的下标，允许传入负数，参考{@link FindSikuliElement#findElement(String, int, String...)}方法
-     * @param keys        外链词语
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void click(String elementName, int index, String... keys) {
+    public void click(String elementName, int index) {
         if (Optional.ofNullable(find).isPresent()) {
-            click(find.findElement(elementName, index, keys));
+            click(find.findElement(elementName, index));
         } else {
             throw new ElementOperateException("未指定元素查找类对象，无法通过元素名称查找指定的元素");
         }
@@ -80,14 +82,13 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
      * 该方法用于根据元素信息，通过指定的元素查找类，查找到目标元素后，使用鼠标左键单击目标元素
      *
      * @param elementName 元素名称
-     * @param keys        外链词语
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void click(String elementName, String... keys) {
-        click(elementName, 1, keys);
+    public void click(String elementName) {
+        click(elementName, 1);
     }
 
     /**
@@ -117,15 +118,14 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
      *
      * @param elementName 元素名称
      * @param index       多元素时的下标，允许传入负数，参考{@link FindSikuliElement#findElement(String, int, String...)}方法
-     * @param keys        外链词语
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void doubleClick(String elementName, int index, String... keys) {
+    public void doubleClick(String elementName, int index) {
         if (Optional.ofNullable(find).isPresent()) {
-            doubleClick(find.findElement(elementName, index, keys));
+            doubleClick(find.findElement(elementName, index));
         } else {
             throw new ElementOperateException("未指定元素查找类对象，无法通过元素名称查找指定的元素");
         }
@@ -135,14 +135,13 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
      * 该方法用于根据元素信息，通过指定的元素查找类，查找到目标元素后，使用鼠标左键双击目标元素
      *
      * @param elementName 元素名称
-     * @param keys        外链词语
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void doubleClick(String elementName, String... keys) {
-        doubleClick(elementName, 1, keys);
+    public void doubleClick(String elementName) {
+        doubleClick(elementName, 1);
     }
 
     /**
@@ -172,15 +171,14 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
      *
      * @param elementName 元素名称
      * @param index       多元素时的下标，允许传入负数，参考{@link FindSikuliElement#findElement(String, int, String...)}方法
-     * @param keys        外链词语
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void rightClick(String elementName, int index, String... keys) {
+    public void rightClick(String elementName, int index) {
         if (Optional.ofNullable(find).isPresent()) {
-            rightClick(find.findElement(elementName, index, keys));
+            rightClick(find.findElement(elementName, index));
         } else {
             throw new ElementOperateException("未指定元素查找类对象，无法通过元素名称查找指定的元素");
         }
@@ -190,14 +188,13 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
      * 该方法用于根据元素信息，通过指定的元素查找类，查找到目标元素后，使用鼠标右键单击目标元素
      *
      * @param elementName 元素名称
-     * @param keys        外链词语
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void rightClick(String elementName, String... keys) {
-        rightClick(elementName, 1, keys);
+    public void rightClick(String elementName) {
+        rightClick(elementName, 1);
     }
 
     /**
@@ -247,15 +244,14 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
      * @param sleepInMillis 每次之间的时间间隔（单位：毫秒）
      * @param elementName   元素名称
      * @param index         多元素时的下标，允许传入负数，参考{@link FindSikuliElement#findElement(String, int, String...)}方法
-     * @param keys          外链词语
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void continuousClick(int clickCount, long sleepInMillis, String elementName, int index, String... keys) {
+    public void continuousClick(int clickCount, long sleepInMillis, String elementName, int index) {
         if (Optional.ofNullable(find).isPresent()) {
-            continuousClick(clickCount, sleepInMillis, find.findElement(elementName, index, keys));
+            continuousClick(clickCount, sleepInMillis, find.findElement(elementName, index));
         } else {
             throw new ElementOperateException("未指定元素查找类对象，无法通过元素名称查找指定的元素");
         }
@@ -267,13 +263,12 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
      * @param clickCount    点击次数
      * @param sleepInMillis 每次之间的时间间隔（单位：毫秒）
      * @param elementName   元素名称
-     * @param keys          外链词语
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void continuousClick(int clickCount, long sleepInMillis, String elementName, String... keys) {
-        continuousClick(clickCount, sleepInMillis, elementName, 1, keys);
+    public void continuousClick(int clickCount, long sleepInMillis, String elementName) {
+        continuousClick(clickCount, sleepInMillis, elementName, 1);
     }
 }
