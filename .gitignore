@@ -19,3 +19,4 @@
 .gitignore
 /bin/
 /Result/
+/test-output/

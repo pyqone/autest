@@ -5,7 +5,7 @@
 
 	<groupId>com.gitee.pyqone</groupId>
 	<artifactId>autest</artifactId>
-	<version>2.7.0</version>
+	<version>3.0.0</version>
 	<packaging>jar</packaging>
 
 	<url>https://gitee.com/pyqone/autest</url>
@@ -37,6 +37,13 @@
 			<artifactId>java-client</artifactId>
 			<version>7.5.1</version>
 		</dependency>
+		
+		<!-- sikuli 基于图片识别的自动化操作工具 -->
+		<dependency>
+            <groupId>com.sikulix</groupId>
+            <artifactId>sikulixapi</artifactId>
+            <version>2.0.5</version>
+        </dependency>
 
 		<!-- csv读取工具 -->
 		<dependency>
@@ -197,9 +204,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.0.0</version>
 				<configuration>
-					<aggregate>true</aggregate>
 					<doclint>none</doclint>
-					<additionalOption>-Xdoclint:none</additionalOption>
 					<failOnError>false</failOnError>
 				</configuration>
 				<executions>

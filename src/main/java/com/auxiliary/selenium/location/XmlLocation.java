@@ -263,18 +263,18 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
      */
     private String replaceValue(Element element, String value) {
         // 判断元素是否存在需要替换的内容，若不存在，则不进行替换
-        if (!value.matches(String.format("%s.*%s", startRegex, endRegex))) {
+        if (!value.matches(String.format(".*%s.*%s.*", startRegex, endRegex))) {
             return value;
         }
 
         String repalceText = "";
 
         // 遍历元素的所有属性，并一一进行替换
-        for (Object att : element.attributes()) {
+        for (Attribute att : element.attributes()) {
             // 定义属性替换符
-            repalceText = startRegex + ((Attribute) att).getName() + endRegex;
+            repalceText = startRegex + att.getName() + endRegex;
             // 替换value中所有与repalceText匹配的字符
-            value = value.replaceAll(repalceText, ((Attribute) att).getValue());
+            value = value.replaceAll(repalceText, att.getValue());
         }
 
         // 替换父层节点的name属性
