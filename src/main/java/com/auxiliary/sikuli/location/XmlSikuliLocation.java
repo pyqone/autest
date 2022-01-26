@@ -3,7 +3,6 @@ package com.auxiliary.sikuli.location;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,9 +14,8 @@ import org.dom4j.io.SAXReader;
 import org.sikuli.script.Location;
 
 import com.auxiliary.selenium.location.IncorrectFileException;
-import com.auxiliary.selenium.location.UndefinedElementException;
-import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElementType;
 import com.auxiliary.sikuli.element.ElementLocationInfo;
+import com.auxiliary.sikuli.location.UndefinedElementException.ExceptionElementType;
 
 /**
  * <p>
@@ -83,13 +81,15 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
         // 获取元素默认后缀名
         defaultSuffix = Optional.ofNullable(rootElement.attributeValue(XmlFileField.ATT_SUFFIX.getName())).orElse("");
 
-        // 读取模板元素，并缓存至类中
-        rootElement.element(XmlFileField.ELE_TEMPLET.getName()).elements().forEach(element -> {
-            // 获取模板的id属性，若发现不存在该属性的内容，则抛出异常
-            String id = Optional.ofNullable(element.attributeValue(XmlFileField.ATT_ID.getName())).orElseThrow(
-                    () -> new UndefinedElementException("文件中存在无id属性的模板。文件位置：" + xmlFile.getAbsolutePath()));
-            // 缓存元素类对象
-            tempElementMap.put(id, element);
+        // 读取模板元素，并缓存至类中，若返回空，则不存储
+        Optional.ofNullable(rootElement.element(XmlFileField.ELE_TEMPLET.getName())).ifPresent(tempElement -> {
+            tempElement.elements().forEach(element -> {
+                // 获取模板的id属性，若发现不存在该属性的内容，则抛出异常
+                String id = Optional.ofNullable(element.attributeValue(XmlFileField.ATT_ID.getName())).orElseThrow(
+                        () -> new UndefinedElementException("文件中存在无id属性的模板。文件位置：" + xmlFile.getAbsolutePath()));
+                // 缓存元素类对象
+                tempElementMap.put(id, element);
+            });
         });
     }
 
@@ -109,7 +109,7 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
     @Override
     public List<ElementLocationInfo> getElementLocationList(String name) {
         // 若当前查找的元素名称非上次查找的元素名称，则重新进行查找
-        if (!Objects.equals(name, this.name)) {
+        if (!compareElementName(name)) {
             find(name);
         } else {
             if (Optional.ofNullable(elementInfoList).filter(li -> li.size() != 0).isPresent()) {
@@ -193,7 +193,7 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
     @Override
     public int getWaitTime(String name) {
         // 若当前查找的元素名称非上次查找的元素名称，则重新进行查找
-        if (!Objects.equals(name, this.name)) {
+        if (!compareElementName(name)) {
             find(name);
         }
 

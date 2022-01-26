@@ -5,11 +5,13 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.sikuli.script.Match;
 import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
 
+import com.auxiliary.sikuli.SikuliToolsExcepton;
 import com.auxiliary.sikuli.location.AbstractSikuliLocation;
 
 /**
@@ -58,8 +60,9 @@ public class FindSikuliElement {
      * @param locationFile 元素文件读取类对象
      * @since autest 3.0.0
      */
-    public void setReadMode(AbstractSikuliLocation locationFile) {
+    public FindSikuliElement setReadMode(AbstractSikuliLocation locationFile) {
         this.locationFile = locationFile;
+        return this;
     }
 
     /**
@@ -71,7 +74,7 @@ public class FindSikuliElement {
      * @since autest 3.0.0
      * @throws TimeoutException 当元素查找超时时，抛出的异常
      */
-    public Match findElement(String name, String... linkKeys) {
+    public SikuliElement findElement(String name, String... linkKeys) {
         return findElement(name, 1, linkKeys);
     }
 
@@ -83,13 +86,14 @@ public class FindSikuliElement {
      * </p>
      *
      * @param name     元素名称
+     * @param index    多元素时的下标
      * @param linkKeys 外链词语
      * @return 查找到的元素类对象
      * @since autest 3.0.0
      * @throws TimeoutException 当元素查找超时时，抛出的异常
      */
-    public Match findElement(String name, int index, String... linkKeys) {
-        List<Match> elementList = findAllElement(name, linkKeys);
+    public SikuliElement findElement(String name, int index, String... linkKeys) {
+        List<SikuliElement> elementList = findAllElement(name, linkKeys);
         return elementList.get(disposeElementIndex(index, elementList.size()));
     }
 
@@ -102,9 +106,11 @@ public class FindSikuliElement {
      * @since autest3.0.0
      * @throws TimeoutException 当元素查找超时时，抛出的异常
      */
-    public List<Match> findAllElement(String name, String... linkKeys) {
+    public List<SikuliElement> findAllElement(String name, String... linkKeys) {
         // 查找元素信息
-        List<ElementLocationInfo> infoList = locationFile.getElementLocationList(name);
+        List<ElementLocationInfo> infoList = Optional.ofNullable(locationFile)
+                .orElseThrow(() -> new SikuliToolsExcepton("未指定元素存储文件读取类（AbstractSikuliLocation子类），无法读取元素信息"))
+                .getElementLocationList(name);
         // 根据外链词信息，将包含占位符的内容进行替换
         if (Optional.ofNullable(linkKeys).filter(arr -> arr.length != 0).isPresent()) {
             infoList.forEach(info -> {
@@ -122,7 +128,7 @@ public class FindSikuliElement {
             for (ElementLocationInfo info : infoList) {
                 List<Match> matchList = region.findAllList(info.getPattern());
                 if (!matchList.isEmpty()) {
-                    return matchList;
+                    return matchList.stream().map(match -> new SikuliElement(name, match)).collect(Collectors.toList());
                 }
             }
 
