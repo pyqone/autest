@@ -48,7 +48,7 @@ public class ElementLocationInfo {
     /**
      * 初始化元素信息，并指定识别元素截图文件路径
      *
-     * @param screenFile 元素截图文件类对象
+     * @param screenFilePath 元素截图文件类对象
      * @since autest 3.0.0
      */
     public ElementLocationInfo(String screenFilePath) {

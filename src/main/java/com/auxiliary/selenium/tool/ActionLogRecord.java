@@ -40,7 +40,7 @@ public class ActionLogRecord {
     /**
      * 用于记录日志
      *
-     * @param logText 日志信息
+     * @param logTexts 日志信息组
      */
     public void recordLog(String... logTexts) {
         Optional.ofNullable(logTexts).filter(logs -> logs.length != 0).map(Arrays::asList).ifPresent(this::recordLog);
