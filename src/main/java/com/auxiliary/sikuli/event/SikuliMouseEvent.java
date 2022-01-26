@@ -200,13 +200,13 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
     /**
      * 该方法用于连续指定次数的鼠标左键单击事件
      *
+     * @param element       元素类对象
      * @param clickCount    点击次数
      * @param sleepInMillis 每次之间的时间间隔（单位：毫秒）
-     * @param element       元素类对象
      * @since autest 3.0.0
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void continuousClick(int clickCount, long sleepInMillis, SikuliElement element) {
+    public void continuousClick(SikuliElement element, int clickCount, long sleepInMillis) {
         // 判断点击次数是否小于0
         if (clickCount < 1) {
             throw new ElementOperateException(
@@ -240,18 +240,18 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
     /**
      * 该方法用于根据元素信息，通过指定的元素查找类，查找到目标元素后，连续指定次数的鼠标左键单击事件
      *
-     * @param clickCount    点击次数
-     * @param sleepInMillis 每次之间的时间间隔（单位：毫秒）
      * @param elementName   元素名称
      * @param index         多元素时的下标，允许传入负数，参考{@link FindSikuliElement#findElement(String, int, String...)}方法
+     * @param clickCount    点击次数
+     * @param sleepInMillis 每次之间的时间间隔（单位：毫秒）
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void continuousClick(int clickCount, long sleepInMillis, String elementName, int index) {
+    public void continuousClick(String elementName, int index, int clickCount, long sleepInMillis) {
         if (Optional.ofNullable(find).isPresent()) {
-            continuousClick(clickCount, sleepInMillis, find.findElement(elementName, index));
+            continuousClick(find.findElement(elementName, index), clickCount, sleepInMillis);
         } else {
             throw new ElementOperateException("未指定元素查找类对象，无法通过元素名称查找指定的元素");
         }
@@ -260,15 +260,15 @@ public class SikuliMouseEvent extends SikuliAbstractEvent {
     /**
      * 该方法用于根据元素信息，通过指定的元素查找类，查找到目标元素后，连续指定次数的鼠标左键单击事件
      *
+     * @param elementName   元素名称
      * @param clickCount    点击次数
      * @param sleepInMillis 每次之间的时间间隔（单位：毫秒）
-     * @param elementName   元素名称
      * @since autest 3.0.0
      * @throws ElementOperateException 未指定元素查找类时，抛出的异常
      * @throws TimeoutException        元素查找超时时，抛出的异常
      * @throws OperateTimeoutException 操作超时时，抛出的异常
      */
-    public void continuousClick(int clickCount, long sleepInMillis, String elementName) {
-        continuousClick(clickCount, sleepInMillis, elementName, 1);
+    public void continuousClick(String elementName, int clickCount, long sleepInMillis) {
+        continuousClick(elementName, 1, clickCount, sleepInMillis);
     }
 }

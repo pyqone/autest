@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.sikuli.script.Match;
+import org.sikuli.script.Region;
+import org.sikuli.script.Screen;
 
 import com.auxiliary.selenium.tool.ActionLogRecord;
 import com.auxiliary.sikuli.element.FindSikuliElement;
@@ -28,6 +30,11 @@ import com.auxiliary.sikuli.element.SikuliElement;
  * @since autest 3.0.0
  */
 public abstract class SikuliAbstractEvent {
+    /**
+     * 定义默认的屏幕识别范围
+     */
+    protected final Region DEFAULT_REGION = new Screen();
+
     /**
      * 指向元素查找类，用于根据名称查找元素
      */
