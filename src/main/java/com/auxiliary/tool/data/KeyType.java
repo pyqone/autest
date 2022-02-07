@@ -5,8 +5,7 @@ package com.auxiliary.tool.data;
  * <b>文件名：</b>KeyType.java
  * </p>
  * <p>
- * <b>用途：</b>
- * 用于统一键盘按键指向的键值，以便于统一工具的调用
+ * <b>用途：</b> 用于统一键盘按键指向的键值，以便于统一工具的调用
  * </p>
  * <p>
  * <b>编码时间：</b>2022年1月29日 下午5:04:29
@@ -331,8 +330,7 @@ public enum KeyType {
     /**
      * Z键
      */
-    Z("Z", 'Z', 'z')
-    ;
+    Z("Z", 'Z', 'z');
 
     /**
      * 在selenium工具中按键指向的key值
@@ -350,12 +348,13 @@ public enum KeyType {
 
     /**
      * 初始化枚举值
+     *
      * @param seleniumKey selenium工具中按键指向的key值
-     * @param sikuliKey sikuli工具中按键指向的key值
-     * @param name 按键对应的名称
+     * @param sikuliKey   sikuli工具中按键指向的key值
+     * @param name        按键对应的名称
      * @since autest 3.1.0
      */
-    private KeyType(String  name, char seleniumKey, char sikuliKey) {
+    private KeyType(String name, char seleniumKey, char sikuliKey) {
         this.seleniumKey = seleniumKey;
         this.sikuliKey = sikuliKey;
         this.name = name;
