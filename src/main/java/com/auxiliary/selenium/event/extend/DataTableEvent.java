@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 
 import com.auxiliary.selenium.brower.AbstractBrower;
@@ -21,6 +20,7 @@ import com.auxiliary.selenium.event.AssertEvent;
 import com.auxiliary.selenium.event.ClickEvent;
 import com.auxiliary.selenium.event.TextEvent;
 import com.auxiliary.selenium.event.WaitEvent;
+import com.auxiliary.tool.data.KeyType;
 import com.auxiliary.tool.data.ListUtil;
 import com.auxiliary.tool.data.TableData;
 
@@ -37,7 +37,7 @@ import com.auxiliary.tool.data.TableData;
  * <p>
  * <b>修改时间：</b>2021年3月10日上午8:05:36
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.1
  * @since JDK 1.8
@@ -86,7 +86,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 构造对象
-	 * 
+	 *
 	 * @param brower 浏览器{@link AbstractBrower}类对象
 	 */
 	public DataTableEvent(AbstractBrower brower) {
@@ -101,7 +101,7 @@ public final class DataTableEvent extends AbstractEvent {
 	/**
 	 * 用于设置是否对传入的元素列表的个数进行严格校验，即在调用{@link #addList(FindDataListElement)}方法时，
 	 * 若元素个数与初次传入的个数不符且需要严格校验，则抛出异常；反之，则直接进行存储
-	 * 
+	 *
 	 * @param isExamine 是否严格校验元素个数
 	 * @deprecated 方法可在返回列表对象{@link TableData}中调用{@link TableData#setExamine(boolean)}进行设置
 	 */
@@ -112,7 +112,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 用于设置列表加载等待元素，通过该元素，将应用与列表操作后，等待该控件消失后再进行断言的操作
-	 * 
+	 *
 	 * @param waitElement 列表加载等待控件
 	 */
 	public void setWaitElement(Element waitElement) {
@@ -125,7 +125,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <b>注意：</b>传入的{@link FindDataListElement}类对象中元素的名称请勿与其他元素名称一致，否则会覆盖原有的元素列。
 	 * 其元素名称将作为列表名称，可通过该名称获取当前列
 	 * </p>
-	 * 
+	 *
 	 * @param dataListBy 元素列查找对象
 	 */
 	public void addList(FindDataListElement dataListBy) {
@@ -139,7 +139,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 用于添加列表控件的枚举，在调用部分列表操作方法时会使用在此处添加的映射
-	 * 
+	 *
 	 * @param dataTableKeywordType 列表可映射的控件枚举{@link DataTableKeywordType}
 	 * @param elemenet             控件相应的元素对象{@link Element}
 	 */
@@ -158,7 +158,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <p>
 	 * <b>注意：</b>在不进行断言或断言列为空时，则翻页将一直返回成功，直到达到指定的翻页数量为止
 	 * </p>
-	 * 
+	 *
 	 * @param count       点击次数
 	 * @param columnNames 需要进行断言的列名称
 	 * @return 实际点击次数
@@ -178,7 +178,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <p>
 	 * <b>注意：</b>在不进行断言或断言列为空时，则翻页将一直返回成功，直到达到指定的翻页数量为止
 	 * </p>
-	 * 
+	 *
 	 * @param count       点击次数
 	 * @param columnNames 需要进行断言的列名称
 	 * @return 实际点击次数
@@ -189,7 +189,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 用于对列表进行翻页操作
-	 * 
+	 *
 	 * @param dataTableKeywordType 翻页按钮类型
 	 * @param count                指定的翻页次数
 	 * @param columnNames          需要进行断言的列名称
@@ -254,7 +254,7 @@ public final class DataTableEvent extends AbstractEvent {
 	/**
 	 * 用于对列表进行点击跳页按钮后的跳页操作。若当前存储过元素列表，则对元素列表进行断言，
 	 * 即取存储的列表的第一行元素，若操作前后，该行元素不变，则判定为跳页失败
-	 * 
+	 *
 	 * @param pageCount 页码数
 	 * @param columnNames 需要断言的列名称
 	 */
@@ -272,7 +272,7 @@ public final class DataTableEvent extends AbstractEvent {
 				// 点击跳页
 				clickEvent.click(controlMap.get(DataTableKeywordType.JUMP_PAGE_BUTTON));
 			} else {
-				textEvent.keyToSend(controlMap.get(DataTableKeywordType.PAGE_INPUT_TEXTBOX), Keys.ENTER);
+				textEvent.keyToSend(controlMap.get(DataTableKeywordType.PAGE_INPUT_TEXTBOX), KeyType.ENTER);
 			}
 
 			// 清空输入框
@@ -310,7 +310,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <p>
 	 * <b>注意：</b>默认断言表示根据指定的断言列，取每列的第一条数据，判断该值搜索前后的变化，若存在变化，则 断言成功。不传入断言列时，则默认断言所有的列
 	 * </p>
-	 * 
+	 *
 	 * @param action      返回值为boolean类型的操作
 	 * @param columnNames 指定的断言列
 	 * @return 列表是否有变化
@@ -348,7 +348,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 用于无条件点击{@link DataTableKeywordType#SEARCH_BUTTON}映射的按钮。
-	 * 
+	 *
 	 * @return 列表是否有变化
 	 * @throws ControlException 未指定搜索按钮的映射时抛出的异常
 	 */
@@ -374,7 +374,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <li>当指定的关键词为空或为null时，则不做任何处理，并返回空集合</li>
 	 * </ol>
 	 * </p>
-	 * 
+	 *
 	 * @param columnName     断言列名称
 	 * @param key            关键词
 	 * @param textboxElement 搜索条件控件的{@link Element}对象
@@ -415,7 +415,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <li>当指定的关键词为空或为null时，则不做任何处理，并返回空集合</li>
 	 * </ol>
 	 * </p>
-	 * 
+	 *
 	 * @param columnName 断言列名称
 	 * @param key        关键词
 	 * @param action     点击搜索按钮前的操作
@@ -468,7 +468,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <p>
 	 * <b>注意：</b>下标从1开始计算，即传入1时表示获取第1行数据；若传入0，则以表中最长列的元素个数为基准， 返回一个随机的数字
 	 * </p>
-	 * 
+	 *
 	 * @param rowIndex 需要获取的行下标
 	 * @return 指定行的元素集合
 	 * @throws ControlException 元素集合为空时抛出的异常
@@ -491,7 +491,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 获取指定行的文本，其行号可传入负数，具体规则可参考{@link FindDataListElement#getElement(int)}方法
-	 * 
+	 *
 	 * @param rowIndex 指定的行号
 	 * @return 该行元素的文本
 	 */
@@ -515,7 +515,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 获取指定列的文本，若该列元素异常时，则抛出异常
-	 * 
+	 *
 	 * @param listName 列表名称
 	 * @return 指定列的文本内容
 	 * @throws ControlException 该列不存在或该列元素为空时抛出的异常
@@ -540,7 +540,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 用于以{@link TableData}的形式返回元素列表
-	 * 
+	 *
 	 * @return 元素列表
 	 */
 	public TableData<Element> getElementTable() {
@@ -556,7 +556,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 用于随机返回指定列表的随机一个元素
-	 * 
+	 *
 	 * @param listName 列表名称
 	 * @return 指定列表的随机元素
 	 */
@@ -575,7 +575,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 用于执行需要断言页面元素的列表操作，在其操作方法前后添加了断言操作
-	 * 
+	 *
 	 * @param action 需要执行的内容
 	 * @return 是否翻页成功
 	 */
@@ -635,7 +635,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 用于返回断言所需指定列的指定行文本（下标从1开始）。
-	 * 
+	 *
 	 * @param columnNames 列名称数组
 	 * @return 获取的文本集合
 	 */
@@ -671,7 +671,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 获取断言列元素个数。列名称只做空判断
-	 * 
+	 *
 	 * @param name 列名称
 	 * @return 指定列的元素个数
 	 */
@@ -685,7 +685,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 	/**
 	 * 重新获取指定列名对应的元素数据，若未传入列名称，则对存储所有数据进行重获
-	 * 
+	 *
 	 * @param columnNames 存储的列名称
 	 */
 	protected void againFindElement(String... columnNames) {
@@ -710,7 +710,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <p>
 	 * <b>修改时间：</b>2020年11月30日上午8:03:59
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
@@ -753,7 +753,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 		/**
 		 * 初始化枚举名称
-		 * 
+		 *
 		 * @param name
 		 */
 		private DataTableKeywordType(String name) {
@@ -762,7 +762,7 @@ public final class DataTableEvent extends AbstractEvent {
 
 		/**
 		 * 返回枚举指向的控件名称
-		 * 
+		 *
 		 * @return 控件名称
 		 */
 		public String getName() {
@@ -783,7 +783,7 @@ public final class DataTableEvent extends AbstractEvent {
 	 * <p>
 	 * <b>修改时间：</b>2020年11月19日下午8:26:49
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
