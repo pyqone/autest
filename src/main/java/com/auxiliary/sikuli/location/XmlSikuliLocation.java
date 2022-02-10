@@ -28,7 +28,7 @@ import com.auxiliary.sikuli.location.UndefinedElementException.ExceptionElementT
  * <b>编码时间：</b>2022年1月10日 下午3:41:25
  * </p>
  * <p>
- * <b>修改时间：</b>2022年1月10日 下午3:41:25
+ * <b>修改时间：</b>2022年2月10日 上午9:02:09
  * </p>
  *
  * @author 彭宇琦
