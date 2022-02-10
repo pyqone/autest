@@ -18,11 +18,12 @@ import com.auxiliary.sikuli.element.ElementLocationInfo;
  * <b>编码时间：</b>2021年12月27日 上午8:29:45
  * </p>
  * <p>
- * <b>修改时间：</b>2021年12月27日 上午8:29:45
+ * <b>修改时间：</b>2022年2月10日 上午9:02:09
  * </p>
  *
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
+ * @since JDK 1.8
  * @since autest 3.0.0
  */
 public abstract class AbstractSikuliLocation {
@@ -34,6 +35,19 @@ public abstract class AbstractSikuliLocation {
      * 定义用于正则的默认替换符结束标记
      */
     public static final String MATCH_END_SIGN = "\\}";
+
+    /**
+     * 定义元素路径信息拼接的格式
+     *
+     * @since autest 3.1.0
+     */
+    public static final String FORMAT_FILE_PATH = "%s\\%s.%s";
+    /**
+     * 定义元素占位符替换规则格式
+     *
+     * @since autest 3.1.0
+     */
+    public static final String FORMAT_REPLACE_REGEX = ".*%s.*%s.*";
 
     /**
      * 元素占位符起始标识，默认{@link ReadLocation#MATCH_START_SIGN}
