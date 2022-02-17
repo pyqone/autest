@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.sikuli.script.Image;
 import org.sikuli.script.Region;
 
-import com.auxiliary.sikuli.SikuliToolsExcepton;
+import com.auxiliary.sikuli.IncorrectFileException;
 import com.auxiliary.tool.date.Time;
 
 /**
@@ -98,6 +98,7 @@ public class SikuliScreenshot {
      * @param fileName 文件名称
      * @return 截图文件类对象
      * @since autest 3.1.0
+     * @throws IncorrectFileException 截图存在错误时抛出的异常
      */
     public File createImage(String fileName) {
         // 判断文件名是否为空，若文件名为空，则使用默认名称
@@ -110,54 +111,12 @@ public class SikuliScreenshot {
         try {
             Thread.sleep(time);
             image.save(fileName, savePathFolder.getAbsolutePath());
+
         } catch (Exception e) {
-            throw new ImageFileException("无法保存当前截图，截图保存路径：" + savePathFolder.getAbsolutePath(), e);
+            throw new IncorrectFileException("无法保存当前截图，截图保存路径：" + savePathFolder.getAbsolutePath(), e);
         }
 
         // 返回截图文件类对象
         return new File(savePathFolder, (fileName + ".png"));
-    }
-
-    /**
-     * <p>
-     * <b>文件名：</b>SikuliScreenshot.java
-     * </p>
-     * <p>
-     * <b>用途：</b> 定义当截图文件存在错误时，抛出的异常
-     * </p>
-     * <p>
-     * <b>编码时间：</b>2022年2月14日 下午5:29:15
-     * </p>
-     * <p>
-     * <b>修改时间：</b>2022年2月14日 下午5:29:15
-     * </p>
-     *
-     * @author 彭宇琦
-     * @version Ver1.0
-     * @since JDK 1.8
-     * @since autest 3.1.0
-     */
-    public class ImageFileException extends SikuliToolsExcepton {
-        private static final long serialVersionUID = 1L;
-
-        public ImageFileException() {
-            super();
-        }
-
-        public ImageFileException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
-            super(arg0, arg1, arg2, arg3);
-        }
-
-        public ImageFileException(String arg0, Throwable arg1) {
-            super(arg0, arg1);
-        }
-
-        public ImageFileException(String arg0) {
-            super(arg0);
-        }
-
-        public ImageFileException(Throwable arg0) {
-            super(arg0);
-        }
     }
 }
