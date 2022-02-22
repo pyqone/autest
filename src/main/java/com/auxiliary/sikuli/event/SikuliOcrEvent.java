@@ -36,11 +36,11 @@ public class SikuliOcrEvent extends SikuliAbstractEvent {
     /**
      * 默认语言包路径下的语言包名称
      */
-    private final String DEFAULT_LANGUAGE_NAME = "eng";
+    public static final String DEFAULT_LANGUAGE_NAME = "eng";
     /**
      * 语言包文件的后缀名称
      */
-    private final String LANGUAGE_FILE_SUFFIX = "traineddata";
+    public static final String LANGUAGE_FILE_SUFFIX = "traineddata";
 
     /**
      * 存储tess4j语言包所在文件路径
@@ -76,17 +76,9 @@ public class SikuliOcrEvent extends SikuliAbstractEvent {
             throw new IncorrectFileException("未指定语言包名称或语言包名称为空");
         }
 
-        // 判断当前是否重新指定语言包路径
-        if (tessdataFilePath.isEmpty()) {
-            if (!Objects.equals(languageName, DEFAULT_LANGUAGE_NAME)) {
-                throw new IncorrectFileException(String.format("未指定语言包路径，默认路径下只存在“%s”语言包", DEFAULT_LANGUAGE_NAME));
-            }
-        } else {
-            File languageFile = new File(new File(tessdataFilePath),
-                    String.format("%s.%s", languageName, LANGUAGE_FILE_SUFFIX));
-            if (!languageFile.exists()) {
-                throw new IncorrectFileException("在指定的语言包文件夹路径下，不存在语言包文件：" + languageFile.getAbsolutePath());
-            }
+        // 判断当前语言包文件是否存在
+        if (!isExistsLanguage(tessdataFilePath, languageName)) {
+            throw IncorrectFileException.throwLanguageException(tessdataFilePath, languageName);
         }
 
         this.languageName = languageName;
@@ -134,10 +126,9 @@ public class SikuliOcrEvent extends SikuliAbstractEvent {
 
             // 判断当前是否进行自定义配置
             if (!tessdataFilePath.isEmpty()) {
-                // 若存在自定义配置，则判断文件夹下语言包是否存在，若存在，则设置语言包
-                File languageFile = new File(new File(tessdataFilePath), languageName);
-                if (!languageFile.exists()) {
-                    throw new IncorrectFileException("在指定的语言包文件夹路径下，不存在语言包文件：" + languageFile.getAbsolutePath());
+                // 判断当前语言包文件是否存在
+                if (!isExistsLanguage(tessdataFilePath, languageName)) {
+                    throw IncorrectFileException.throwLanguageException(tessdataFilePath, languageName);
                 }
 
                 OCR.globalOptions().dataPath(tessdataFilePath);
@@ -194,5 +185,23 @@ public class SikuliOcrEvent extends SikuliAbstractEvent {
      */
     public String readText(String elementName) {
         return readText(elementName, 1);
+    }
+
+    /**
+     * 该方法用于判断指定路径下是否存在指定的语言包文件
+     *
+     * @param path 语言包包所在路径
+     * @param languageName 语言包名称
+     * @return 路径下是否存在语言包
+     * @since autest 3.1.0
+     */
+    private boolean isExistsLanguage(String path, String languageName) {
+        // 判断当前是否重新指定语言包路径
+        if (path.isEmpty()) {
+            return Objects.equals(languageName, DEFAULT_LANGUAGE_NAME);
+        } else {
+            return new File(new File(tessdataFilePath),
+                    String.format("%s.%s", languageName, LANGUAGE_FILE_SUFFIX)).exists();
+        }
     }
 }
