@@ -52,9 +52,8 @@ public class SikuliOcrEvent extends SikuliAbstractEvent {
     private String languageName = OCR.globalOptions().language();
 
     /**
-     * 构造对象，并指向tess语言包所在路径（tessdata文件夹）
+     * 构造对象
      *
-     * @param tessdataFolder 语言包所在路径
      * @since autest 3.1.0
      */
     public SikuliOcrEvent() {
@@ -89,7 +88,7 @@ public class SikuliOcrEvent extends SikuliAbstractEvent {
      *
      * @param dataPathFolder 语言包文件所在路径
      * @since autest 3.1.0
-     * @throws IncorrectFileException 当文件对象为null、不存在或者路径最后一层名称不为{@link #TESSDATA_FILE_NAME}时抛出的异常
+     * @throws IncorrectFileException 当文件对象为null或不存在时抛出的异常
      */
     public void setDataPath(File dataPathFolder) {
         if (dataPathFolder == null) {
