@@ -22,6 +22,7 @@ import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -62,7 +63,7 @@ import com.auxiliary.tool.regex.RegexType;
  * <p>
  * <b>修改时间：</b>2021年8月27日下午7:42:30
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -97,7 +98,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 构造Excel写入类，并设置一个Sheet页的模板及相应的名称
-	 * 
+	 *
 	 * @param templetName 模板名称
 	 * @param templet     模板类
 	 */
@@ -110,7 +111,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * <p>
 	 * 通过该方法构造的写入类为包含模板的写入类，可直接按照字段编写文件内容
 	 * </p>
-	 * 
+	 *
 	 * @param templetXml 模板配置文件
 	 * @param saveFile   文件保存路径
 	 */
@@ -225,7 +226,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * <li>字段行标为真实的行标，当传入的下标为“2”时，则表示链接到文本的2行，而不是第1行</li>
 	 * </ol>
 	 * </p>
-	 * 
+	 *
 	 * @param field     字段
 	 * @param linkField 需要链接的字段
 	 * @param index     字段指定的下标
@@ -273,7 +274,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			JSONObject linkJson = new JSONObject();
 			linkJson.put(KEY_TYPE, LinkType.DOMCUMENT.getCode());
 			linkJson.put(KEY_LINK_CONTENT, linkText);
-			
+
 			if (!data.getCaseJson().containsKey(field)) {
 				data.getCaseJson().put(field, new JSONObject());
 			}
@@ -391,13 +392,15 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public T changeCaseBackground(MarkColorsType markColorsType) {
 		data.getCaseJson().put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public T changeFieldBackground(String field, MarkColorsType markColorsType) {
 		if (data.getCaseJson().containsKey(field)) {
 			data.getCaseJson().getJSONObject(field).put(KEY_BACKGROUND, markColorsType.getColorsValue());
@@ -507,6 +510,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				}
 			});
 		});
+
+		// 添加数据筛选按钮
+        Optional.ofNullable(tempJson.getBoolean(ExcelFileTemplet.KEY_FILTRATE)).filter(is -> is == true).ifPresent(is -> {
+            sheet.setAutoFilter(CellRangeAddress.valueOf(String.format("A1:%s1", num2CharIndex(sheet.getRow(0).getLastCellNum() - 1))));
+        });
 
 		// 若存在数据有效性sheet页，则设置该页展示在文档最后
 		if (excel.getSheet(DATA_SHEET_NAME) != null) {
@@ -622,7 +630,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于写入单个单元格内容
-	 * 
+	 *
 	 * @param excel            excel文件对象
 	 * @param templetSheet     工作页
 	 * @param fieldContentJson 字段内容json
@@ -665,7 +673,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于写入多个单元格内容
-	 * 
+	 *
 	 * @param excel            excel文件对象
 	 * @param templetSheet     工作页
 	 * @param fieldContentJson 字段内容json
@@ -728,7 +736,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于对需要写入单元格的文本进行拼接
-	 * 
+	 *
 	 * @param content      需要拼接的富文本内容
 	 * @param style        样式
 	 * @param text         文本内容
@@ -752,7 +760,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于获取指定的单元格对象，若对象不存在，则创建单元格
-	 * 
+	 *
 	 * @param sheet       工作页
 	 * @param rowIndex    单元格所在下标
 	 * @param columnIndex 单元格所在列下标
@@ -769,7 +777,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于在单元格设置样式，并写入内容
-	 * 
+	 *
 	 * @param cell    单元格类
 	 * @param content 需要写入单元格的内容
 	 * @param style   需要写入单元格的样式，为空则不设置样式
@@ -788,7 +796,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于拼接一个单元格中带样式的内容
-	 * 
+	 *
 	 * @param content 富文本
 	 * @param text    文本内容
 	 * @param style   样式
@@ -810,7 +818,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于将字段的json转换为字段样式json
-	 * 
+	 *
 	 * @param templetName      模板名称
 	 * @param templetFieldJson 模板字段json
 	 * @param textJson         文本json
@@ -850,7 +858,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * <p>
 	 * 根据样式json，来判断该样式是否存在，若不存在，则创建样式；若存在，则获取该样式
 	 * </p>
-	 * 
+	 *
 	 * @param styleJson 样式json
 	 * @return 指定内容的单元格样式
 	 */
@@ -922,7 +930,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于将列数字下标转换为英文下标，数字下标计数从0开始，即0为第一列
-	 * 
+	 *
 	 * @param numberIndex 列数字下标
 	 * @return 列英文下标
 	 */
@@ -954,7 +962,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于将英文下标转换为数字下标，转换的数字下标从0开始，即0为第一列，英文下标允许传入小写、大写字母
-	 * 
+	 *
 	 * @param charIndex 列英文下标
 	 * @return 列数字下标
 	 * @throws IncorrectIndexException 当英文下标不正确时抛出的异常
@@ -983,7 +991,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于读取数据有效性sheet页中所有数据有效性列的标题
-	 * 
+	 *
 	 * @param excel 模板类对象
 	 * @return 数据有效性相关的标题
 	 */
@@ -1001,7 +1009,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于向单元格上添加Comment标注
-	 * 
+	 *
 	 * @param excel          excel对象
 	 * @param sheet          sheet对象
 	 * @param cell           相应单元格对象
@@ -1025,7 +1033,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于向单元格上添加超链接
-	 * 
+	 *
 	 * @param excel    excel对象
 	 * @param cell     相应单元格对象
 	 * @param linkJson 链接内容json
@@ -1043,7 +1051,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 	/**
 	 * 用于在单元格上附加数据有效性下拉选项
-	 * 
+	 *
 	 * @param sheet         工作页
 	 * @param templetJson   模板json
 	 * @param dataTitleList 数据有效性选项标题集合
@@ -1106,7 +1114,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * <p>
 	 * <b>修改时间：</b>2021年5月22日下午3:48:50
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
@@ -1156,7 +1164,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		/**
 		 * 初始化枚举内容，若非相应的对齐方式，则其存储该方式为null
-		 * 
+		 *
 		 * @param type       对齐方式的名称
 		 * @param horizontal 水平对齐方式枚举
 		 * @param vertical   垂直对齐方式枚举
@@ -1173,7 +1181,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		 * <p>
 		 * 若枚举为设置垂直对齐方式，则该方法返回null
 		 * </p>
-		 * 
+		 *
 		 * @return 水平对齐方式枚举
 		 */
 		public HorizontalAlignment getHorizontal() {
@@ -1182,7 +1190,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		/**
 		 * 用于返回当前枚举的编码值
-		 * 
+		 *
 		 * @return 枚举的编码值
 		 */
 		public short getCode() {
@@ -1194,7 +1202,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		 * <p>
 		 * 若枚举为设置水平对齐方式，则该方法返回null
 		 * </p>
-		 * 
+		 *
 		 * @return 垂直对齐方式枚举
 		 */
 		public VerticalAlignment getVertical() {
@@ -1203,7 +1211,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		/**
 		 * 返回枚举的名称
-		 * 
+		 *
 		 * @return 枚举名称
 		 */
 		public String getName() {
@@ -1215,7 +1223,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		 * <p>
 		 * 若无法查到与之匹配的编码，则返回null
 		 * </p>
-		 * 
+		 *
 		 * @param code 枚举编码
 		 * @return 对齐方式枚举
 		 */
@@ -1234,7 +1242,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		 * <p>
 		 * 若无法查到与之匹配的编码，则返回null
 		 * </p>
-		 * 
+		 *
 		 * @param name 枚举名称
 		 * @return 对齐方式枚举
 		 */

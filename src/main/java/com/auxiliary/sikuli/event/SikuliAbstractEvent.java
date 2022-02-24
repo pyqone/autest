@@ -140,7 +140,7 @@ public abstract class SikuliAbstractEvent {
                 return result;
             }
 
-            time -= (startTime - System.currentTimeMillis());
+            time -= (System.currentTimeMillis() - startTime);
         }
 
         throw new OperateTimeoutException(eventName, operateTime);
