@@ -106,7 +106,7 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
             throw new SikuliAssertFailException(log);
         }
 
-        return result;
+        return result.booleanValue();
     }
 
     /**
@@ -159,15 +159,15 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
             return AssertStringUtil.assertTextNotContainKey(text, isJudgeAllKey, keys);
         });
 
-        String log = String.format("%s“%s”元素的文本内容不包含%s关键词：%s", eventName, element.getName(), (isJudgeAllKey ? "所有" : "部分"),
-                arrayToString(keys));
+        String log = String.format("%s“%s”元素的文本内容不包含%s关键词：%s", eventName, element.getName(),
+                (isJudgeAllKey ? "所有" : "部分"), arrayToString(keys));
         recordLog(log, 1);
 
         if (!result && isThrowException) {
             throw new SikuliAssertFailException(log);
         }
 
-        return result;
+        return result.booleanValue();
     }
 
     /**
@@ -237,7 +237,7 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
             throw new SikuliAssertFailException(log);
         }
 
-        return result;
+        return result.booleanValue();
     }
 
     /**
@@ -302,7 +302,7 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
             throw new SikuliAssertFailException(log);
         }
 
-        return result;
+        return result.booleanValue();
     }
 
     /**
