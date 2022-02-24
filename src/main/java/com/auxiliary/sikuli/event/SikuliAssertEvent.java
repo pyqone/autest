@@ -98,8 +98,13 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
             return AssertStringUtil.assertTextContainKey(text, isJudgeAllKey, keys);
         });
 
-        recordLog(String.format("%s“%s”元素的文本内容包含%s关键词：%s", eventName, element.getName(), (isJudgeAllKey ? "所有" : "部分"),
-                arrayToString(keys)), 1);
+        String log = String.format("%s“%s”元素的文本内容包含%s关键词：%s", eventName, element.getName(),
+                (isJudgeAllKey ? "所有" : "部分"), arrayToString(keys));
+        recordLog(log, 1);
+
+        if (!result && isThrowException) {
+            throw new SikuliAssertFailException(log);
+        }
 
         return result;
     }
@@ -153,8 +158,14 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
             String text = ocr.readText(element);
             return AssertStringUtil.assertTextNotContainKey(text, isJudgeAllKey, keys);
         });
-        recordLog(String.format("%s“%s”元素的文本内容不包含%s关键词：%s", eventName, element.getName(), (isJudgeAllKey ? "所有" : "部分"),
-                arrayToString(keys)), 1);
+
+        String log = String.format("%s“%s”元素的文本内容不包含%s关键词：%s", eventName, element.getName(), (isJudgeAllKey ? "所有" : "部分"),
+                arrayToString(keys));
+        recordLog(log, 1);
+
+        if (!result && isThrowException) {
+            throw new SikuliAssertFailException(log);
+        }
 
         return result;
     }
@@ -217,8 +228,14 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
 
             return AssertStringUtil.assertNumber(text, compareNumberType, comparaText);
         });
-        recordLog(String.format("%s“%s”元素数字内容%s“%s”元素数字内容", eventName, referencedElement.getName(),
-                compareNumberType.getLogText(), comparativeElement.getName()), 2);
+
+        String log = String.format("%s“%s”元素数字内容%s“%s”元素数字内容", eventName, referencedElement.getName(),
+                compareNumberType.getLogText(), comparativeElement.getName());
+        recordLog(log, 2);
+
+        if (!result && isThrowException) {
+            throw new SikuliAssertFailException(log);
+        }
 
         return result;
     }
@@ -276,8 +293,14 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
             String text = ocr.readText(element);
             return AssertStringUtil.assertNumber(text, compareNumberType, compareNumber);
         });
-        recordLog(String.format("%s断言“%s”元素数字内容%s%f", eventName, element.getName(), compareNumberType.getLogText(),
-                compareNumber), 1);
+
+        String log = String.format("%s断言“%s”元素数字内容%s%f", eventName, element.getName(), compareNumberType.getLogText(),
+                compareNumber);
+        recordLog(log, 1);
+
+        if (!result && isThrowException) {
+            throw new SikuliAssertFailException(log);
+        }
 
         return result;
     }
@@ -360,7 +383,7 @@ public class SikuliAssertEvent extends SikuliAbstractEvent {
         }
 
         public SikuliAssertFailException(String arg0) {
-            super(arg0);
+            super("断言失败，断言步骤：" + arg0);
         }
 
         public SikuliAssertFailException(Throwable arg0) {
