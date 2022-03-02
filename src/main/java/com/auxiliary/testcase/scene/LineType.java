@@ -24,19 +24,87 @@ public enum LineType {
     /**
      * 直线连线
      */
-    LINE("-"),
+    LINE("---"),
     /**
-     * 箭头连线
+     * 加粗直线
      */
-    ARROWS(">"),
+    BOLD_LINE("==="),
     /**
-     * 圆头连线
+     * 直虚线
      */
-    CIRCLE("o"),
+    DASHED_LINE("-.-"),
     /**
-     * 星形头连线
+     * 单向箭头连线
      */
-    STARLIKE("x")
+    ARROWS("-->"),
+    /**
+     * 双线箭头连线
+     */
+    BIDIRECTION_ARROWS("<-->"),
+    /**
+     * 单向加粗箭头连线
+     */
+    BOLD_ARROWS("==>"),
+    /**
+     * 双向加粗箭头连线
+     */
+    BIDIRECTION_BOLD_ARROWS("<==>"),
+    /**
+     * 单向虚线箭头连线
+     */
+    DASHED_ARROWS("-.->"),
+    /**
+     * 双向虚线箭头连线
+     */
+    BIDIRECTION_DASHED_ARROWS("<-.->"),
+    /**
+     * 单向圆头连线
+     */
+    CIRCLE("--o"),
+    /**
+     * 双向圆头连线
+     */
+    BIDIRECTION_CIRCLE("o--o"),
+    /**
+     * 单向加粗圆头连线
+     */
+    BOLD_CIRCLE("==o"),
+    /**
+     * 双向加粗圆头连线
+     */
+    BIDIRECTION_BOLD_CIRCLE("o==o"),
+    /**
+     * 单向虚线圆头连线
+     */
+    DASHED_CIRCLE("-.-o"),
+    /**
+     * 双向虚线圆头连线
+     */
+    BIDIRECTION_DASHED_CIRCLE("o-.-o"),
+    /**
+     * 单向星形头连线
+     */
+    STARLIKE("--x"),
+    /**
+     * 双向星形头连线
+     */
+    BIDIRECTION_STARLIKE("x--x"),
+    /**
+     * 单向加粗星形头连线
+     */
+    BOLD_STARLIKE("==x"),
+    /**
+     * 双向加粗星形头连线
+     */
+    BIDIRECTION_BOLD_STARLIKE("x==x"),
+    /**
+     * 单向虚线星形头连线
+     */
+    DASHED_STARLIKE("-.-x"),
+    /**
+     * 双向虚线星形头连线
+     */
+    BIDIRECTION_DASHED_STARLIKE("x-.-x")
     ;
 
     /**
@@ -54,99 +122,12 @@ public enum LineType {
     }
 
     /**
-     * 该方法用于返回节点间枚举对应形状默认线型的连线
+     * 该方法用于返回节点间连线的线型
      *
-     * @param isBidirection 是否需要反向
-     * @return 枚举对应形状的默认线型连线
+     * @return 节点间连线的线型
      * @since autest 3.2.0
      */
-    public String getNormalLine(boolean isBidirection) {
-        String text = "--" + shape;
-        if (isBidirection) {
-            return disposeBidirectionText(this, text);
-        } else {
-            return text;
-        }
-    }
-
-    /**
-     * 该方法用于返回节点间枚举对应形状默认线型的连线
-     *
-     * @return 枚举对应形状的默认线型连线
-     * @since autest 3.2.0
-     */
-    public String getNormalLine() {
-        return getNormalLine(false);
-    }
-
-    /**
-     * 该方法用于返回节点间枚举对应形状加粗线型的连线
-     *
-     * @param isBidirection 是否需要反向
-     * @return 枚举对应形状的加粗线型连线
-     * @since autest 3.2.0
-     */
-    public String getBoldLine(boolean isBidirection) {
-        String text = "==" + shape;
-        if (isBidirection) {
-            return disposeBidirectionText(this, text);
-        } else {
-            return text;
-        }
-    }
-
-    /**
-     * 该方法用于返回节点间枚举对应形状加粗线型的连线
-     *
-     * @return 枚举对应形状的加粗线型连线
-     * @since autest 3.2.0
-     */
-    public String getBoldLine() {
-        return getBoldLine(false);
-    }
-
-    /**
-     * 该方法用于返回节点间枚举对应形状虚线线型的连线
-     *
-     * @param isBidirection 是否需要反向
-     * @return 枚举对应形状的虚线线型连线
-     * @since autest 3.2.0
-     */
-    public String getDashedLine(boolean isBidirection) {
-        String text = "-.-" + shape;
-        if (isBidirection) {
-            return disposeBidirectionText(this, text);
-        } else {
-            return text;
-        }
-    }
-
-    /**
-     * 该方法用于返回节点间枚举对应形状虚线线型的连线
-     *
-     * @return 枚举对应形状的虚线线型连线
-     * @since autest 3.2.0
-     */
-    public String getDashedLine() {
-        return getDashedLine(false);
-    }
-
-    /**
-     * 该方法用于对当箭头需要反向时，进行处理相应的线型文本
-     *
-     * @param type 枚举
-     * @param LineText 线型文本
-     * @return 处理后的文本
-     * @since autest 3.2.0
-     */
-    private String disposeBidirectionText(LineType type, String LineText) {
-        switch (type) {
-        case LINE:
-            return LineText;
-        case ARROWS:
-            return "<" + LineText;
-        default:
-            return type.shape + LineText;
-        }
+    public String getLine() {
+        return shape;
     }
 }
