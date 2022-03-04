@@ -2,11 +2,34 @@ package com.auxiliary.testcase.scene;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
 import com.auxiliary.testcase.TestCaseException;
 
+/**
+ * <p>
+ * <b>文件名：</b>Flowcharting.java
+ * </p>
+ * <p>
+ * <b>用途：</b>
+ * 用于定义流程图的各个节点与其之间的连线关系，生成基于Mermaid语法的流程图文本，该内容可写入到支持Mermaid的Markdown编辑器中，
+ * 或通过<a href='https://mermaid-js.github.io/mermaid-live-editor/edit/'>Mermaid在线编辑器</a>生成相应的流程图
+ * </p>
+ * <p><b>注意：</b>每次添加节点后，会以默认的线型连接上一次添加的节点，若不希望连接上一次节点，可调用{@link FlowchartNode#addParentNode(String...)}等方法修改相应的父层或子层 </p>
+ * <p>
+ * <b>编码时间：</b>2022年3月4日 上午7:51:20
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2022年3月4日 上午7:51:20
+ * </p>
+ *
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 1.8
+ * @since autest 3.2.0
+ */
 public class Flowcharting {
     /**
      * 用于存储已添加的节点
@@ -16,6 +39,10 @@ public class Flowcharting {
      * 起始节点的名称
      */
     private String startNodeName = "";
+    /**
+     * 最后一层节点名称
+     */
+    private String laseNode = "";
 
     /**
      * 构造对象，初始化起始节点
@@ -27,7 +54,10 @@ public class Flowcharting {
     public Flowcharting(String nodeName, String nodeText) {
         // 添加起始节点
         addNode(nodeName, nodeText, NodeGraphType.ELLIPSE);
+
+        //设置起始节点和最后一层节点名称
         startNodeName = nodeName;
+        laseNode = nodeName;
     }
 
     /**
@@ -44,8 +74,17 @@ public class Flowcharting {
      * @throws TestCaseException 节点名称为空时抛出的异常
      */
     public FlowchartNode addNode(String nodeName, String nodeText, NodeGraphType grapg) {
+        // 存储节点
         FlowchartNode node = new FlowchartNode(nodeName, nodeText, grapg);
         nodeMap.put(nodeName, node);
+
+        //
+        if (!Objects.equals(laseNode, nodeName)) {
+            // 设置节点的默认父层节点
+            node.addParentNode(laseNode);
+            laseNode = nodeName;
+        }
+
         return node;
     }
 
@@ -147,8 +186,13 @@ public class Flowcharting {
             if (!text.toString().contains(relationText)) {
                 text.add(relationText);
             }
-            // 拼接子节点与其孙节点之间的关系
-            getNodeRelationMermaidText(key, text);
+
+            if (Objects.equals(nodeName, key)) {
+                return;
+            } else {
+                // 拼接子节点与其孙节点之间的关系
+                getNodeRelationMermaidText(key, text);
+            }
         });
     }
 
@@ -184,6 +228,7 @@ public class Flowcharting {
          * 当前节点图形
          */
         private NodeGraphType grapg;
+
         /**
          * 子节点连线集合
          */
@@ -232,7 +277,10 @@ public class Flowcharting {
          * @throws TestCaseException 节点不存在时抛出的异常
          */
         public FlowchartNode addParentNode(String parentNodeName, LineType lineType, String lineText) {
-            putNode(nodeMap.get(parentNodeName).childNodeMap, parentNodeName, lineType, lineText);
+            if (nodeMap.containsKey(parentNodeName)) {
+                putNode(nodeMap.get(parentNodeName).childNodeMap, nodeName, lineType, lineText);
+            }
+
             return this;
         }
 
@@ -264,6 +312,7 @@ public class Flowcharting {
             putNode(childNodeMap, childNodeName, lineType, lineText);
             return this;
         }
+
 
         /**
          * 该方法用于添加一个已存在的子层节点，以便于循环流程的编写
