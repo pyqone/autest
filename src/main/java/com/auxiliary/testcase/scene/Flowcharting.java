@@ -2,6 +2,7 @@ package com.auxiliary.testcase.scene;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -155,7 +156,7 @@ public class Flowcharting {
      */
     public String getFlowchartMermaidText(FlowchartDirectionType flowchartDirectionType) {
         // 定义文本的主体形式，若未定义方向，则默认为TD
-        StringJoiner text = new StringJoiner("\n", String.format("``Mermaid\ngraph %s\n",
+        StringJoiner text = new StringJoiner("\n", String.format("```Mermaid\nflowchart %s\n",
                 Optional.ofNullable(flowchartDirectionType).orElse(FlowchartDirectionType.TD)), "\n```");
 
         // 添加节点信息
@@ -164,7 +165,7 @@ public class Flowcharting {
         // 添加节点关系信息
         text.add("\n\t%% 节点间关系信息");
         StringJoiner relationText = new StringJoiner("\n");
-        appendNodeRelationMermaidText(startNodeName, relationText);
+        appendNodeRelationMermaidText(startNodeName, relationText, new HashSet<>());
         text.add(relationText.toString());
 
         return text.toString();
@@ -179,9 +180,10 @@ public class Flowcharting {
      *
      * @param nodeName 节点名称
      * @param text     文本
+     * @param childNodeNameSet 子节点集合，用于当节点已被存储时，则不再重复调用方法，避免死递归
      * @since autest 3.2.0
      */
-    private void appendNodeRelationMermaidText(String nodeName, StringJoiner text) {
+    private void appendNodeRelationMermaidText(String nodeName, StringJoiner text, HashSet<String> childNodeNameSet) {
         // 获取节点
         FlowchartNode node = nodeMap.get(nodeName);
 
@@ -192,16 +194,17 @@ public class Flowcharting {
 
         node.childNodeMap.forEach((key, value) -> {
             // 拼接节点间关系
-            String relationText = String.format("\t%s%s%s", nodeName, value, key);
+            String relationText = String.format("\t%s %s %s", nodeName, value, key);
             // 判断该内容是否已经存在于text中，若不存在则拼接节点与当前子节点的关系
             if (!text.toString().contains(relationText)) {
                 text.add(relationText);
             }
 
             // 判断当前子节点名称是否与自身相同，若不相同，再递归调用自身，对子节点进行判定
-            if (!Objects.equals(nodeName, key)) {
+            if (!Objects.equals(nodeName, key) && !childNodeNameSet.contains(key)) {
+                childNodeNameSet.add(key);
                 // 拼接子节点与其孙节点之间的关系
-                appendNodeRelationMermaidText(key, text);
+                appendNodeRelationMermaidText(key, text, childNodeNameSet);
             }
         });
     }
@@ -237,7 +240,7 @@ public class Flowcharting {
         /**
          * 当前节点图形
          */
-        private NodeGraphType grapg;
+        private NodeGraphType graph;
 
         /**
          * 子节点连线集合
@@ -263,10 +266,11 @@ public class Flowcharting {
          */
         public FlowchartNode(String nodeName, String nodeText, NodeGraphType grapg) {
             super();
+            // TODO 添加四字分行
             this.nodeName = Optional.ofNullable(nodeName).filter(name -> !name.isEmpty())
                     .orElseThrow(() -> new TestCaseException("节点名称不能为空"));
             this.nodeText = Optional.ofNullable(nodeText).orElse(nodeName);
-            this.grapg = Optional.ofNullable(grapg).orElse(NodeGraphType.ROUNDED_RECTANGLE);
+            this.graph = Optional.ofNullable(grapg).orElse(NodeGraphType.ROUNDED_RECTANGLE);
         }
 
         /**
@@ -292,13 +296,17 @@ public class Flowcharting {
          * @throws TestCaseException 节点不存在时抛出的异常
          */
         public FlowchartNode addParentNode(String parentNodeName, LineType lineType, String lineText) {
-            if (nodeMap.containsKey(parentNodeName)) {
-                // 判断当前是否需要连接虚拟父层节点，若需要，则移除当前的虚拟父节点，并设置其为不需要连接
-                if (!virtualParentNode.isEmpty()) {
+            // 添加父层节点
+            putNode(parentNodeName, lineType, lineText, true);
+
+            // 判断当前是否存在虚拟节点，且当前添加的节点名称非自身节点名称
+            if (!virtualParentNode.isEmpty() && !Objects.equals(parentNodeName, nodeName)) {
+                // 判断当前虚拟节点名称与添加的父层节点名称是否一致，不一致，则移除虚拟节点
+                if (!Objects.equals(parentNodeName, virtualParentNode)) {
                     removeParentNode(virtualParentNode);
-                    virtualParentNode = "";
                 }
-                putNode(nodeMap.get(parentNodeName).childNodeMap, nodeName, lineType, lineText);
+                // 将虚拟节点置空，表示当前节点不需要连接虚拟节点
+                virtualParentNode = "";
             }
 
             return this;
@@ -326,10 +334,15 @@ public class Flowcharting {
          * @param lineType      节点间连接线型枚举
          * @return 类本身
          * @since autest 3.2.0
-         * @throws TestCaseException 父层节点不存在时抛出的异常
+         * @throws TestCaseException 节点不存在或子节点为起始节点时抛出的异常
          */
         public FlowchartNode addChildNode(String childNodeName, LineType lineType, String lineText) {
-            putNode(childNodeMap, childNodeName, lineType, lineText);
+            // 判断当前节点是否为起始节点，若为起始节点，则排除异常
+            if (Objects.equals(childNodeName, startNodeName)) {
+                throw new TestCaseException("子节点不能是起始节点：" + startNodeName);
+            }
+
+            putNode(childNodeName, lineType, lineText, false);
             return this;
         }
 
@@ -396,7 +409,7 @@ public class Flowcharting {
          * @since autest 3.2.0
          */
         public String getNodeText() {
-            return nodeName + String.format(grapg.getSign(), nodeText);
+            return nodeName + String.format(graph.getSign(), nodeText);
         }
 
         /**
@@ -408,24 +421,31 @@ public class Flowcharting {
          * @since autest 3.2.0
          */
         private String disposeLineText(LineType lineType, String lineText) {
-            return lineType.getLine() + Optional.ofNullable(lineText).filter(text -> !text.isEmpty())
+            return Optional.ofNullable(lineType).orElse(LineType.ARROWS).getLine() + Optional.ofNullable(lineText).filter(text -> !text.isEmpty())
                     .map(text -> "|" + text + "|").orElse("");
         }
 
         /**
          * 该方法用于在指定的元素map集合中，添加相应的元素信息
          *
-         * @param map      元素map集合
          * @param nodeName 需要添加的节点名称
          * @param lineType 节点间连接线型枚举
          * @param lineText 节点间连线上的文本内容
          * @since autest 3.2.0
          * @throws TestCaseException 节点不存在时抛出的异常
          */
-        private void putNode(HashMap<String, String> map, String nodeName, LineType lineType, String lineText) {
+        private void putNode(String nodeName, LineType lineType, String lineText, boolean isParent) {
             // 判断节点是否存在
             if (!nodeMap.containsKey(nodeName)) {
                 throw new TestCaseException("不存在的流程节点：" + nodeName);
+            }
+
+            HashMap<String, String> map = null;
+            if (isParent) {
+                map = nodeMap.get(nodeName).childNodeMap;
+                nodeName = this.nodeName;
+            } else {
+                map = childNodeMap;
             }
 
             // 在指定的节点中，添加数据
