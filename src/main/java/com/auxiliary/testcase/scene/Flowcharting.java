@@ -70,16 +70,16 @@ public class Flowcharting {
      * <b>注意：</b>自定义的图形元素不被当做特殊元素处理，例如，使用{@link NodeGraphType#DIAMOND}枚举，其不会被当成判定节点，只作为普通节点看待
      * </p>
      *
-     * @param nodeName 节点名称
-     * @param nodeText 节点文本
-     * @param grapg    节点图形样式
+     * @param nodeName      节点名称
+     * @param nodeText      节点文本
+     * @param nodeGraphType 节点图形样式
      * @return 节点类对象
      * @since autest 3.2.0
      * @throws TestCaseException 节点名称为空时抛出的异常
      */
-    public FlowchartNode addNode(String nodeName, String nodeText, NodeGraphType grapg) {
+    public FlowchartNode addNode(String nodeName, String nodeText, NodeGraphType nodeGraphType) {
         // 存储节点
-        FlowchartNode node = new FlowchartNode(nodeName, nodeText, grapg);
+        FlowchartNode node = new FlowchartNode(nodeName, nodeText, nodeGraphType);
         nodeMap.put(nodeName, node);
 
         // 判断当前节点名称是否与最后一层节点名称相同，若不相同，则将最后一层节点名称作为其虚拟父层节点，并设置当前节点为最后一层节点
@@ -178,8 +178,8 @@ public class Flowcharting {
     /**
      * 该方法用于处理节点之间的连接关系，并将其转换为相应的文本进行，添加至指定的字符串中
      *
-     * @param nodeName 节点名称
-     * @param text     文本
+     * @param nodeName         节点名称
+     * @param text             文本
      * @param childNodeNameSet 子节点集合，用于当节点已被存储时，则不再重复调用方法，避免死递归
      * @since autest 3.2.0
      */
@@ -230,6 +230,15 @@ public class Flowcharting {
      */
     public class FlowchartNode {
         /**
+         * 定义文本换行符
+         */
+        private static final String LINE_SWITCH = "<br>";
+        /**
+         * 定义节点文本换行字数
+         */
+        private final int LINE_SWITCH_INDEX = 4;
+
+        /**
          * 节点名称
          */
         private String nodeName = "";
@@ -258,19 +267,18 @@ public class Flowcharting {
          * <b>注意：</b>节点名称不能为空，否则抛出异常；节点内容为null时，则默认与名称内容一致；节点的图形为null时，默认采用{@link NodeGraphType#ROUNDED_RECTANGLE}
          * </p>
          *
-         * @param nodeName 节点名称
-         * @param nodeText 节点内容
-         * @param grapg    图形枚举
+         * @param nodeName      节点名称
+         * @param nodeText      节点内容
+         * @param nodeGraphType 图形枚举
          * @since autest 3.2.0
          * @throws TestCaseException 节点名称为空时抛出的异常
          */
-        public FlowchartNode(String nodeName, String nodeText, NodeGraphType grapg) {
+        public FlowchartNode(String nodeName, String nodeText, NodeGraphType nodeGraphType) {
             super();
-            // TODO 添加四字分行
             this.nodeName = Optional.ofNullable(nodeName).filter(name -> !name.isEmpty())
                     .orElseThrow(() -> new TestCaseException("节点名称不能为空"));
-            this.nodeText = Optional.ofNullable(nodeText).orElse(nodeName);
-            this.graph = Optional.ofNullable(grapg).orElse(NodeGraphType.ROUNDED_RECTANGLE);
+            setNodeText(nodeText);
+            setNodeGraphType(nodeGraphType);
         }
 
         /**
@@ -400,7 +408,35 @@ public class Flowcharting {
             return this;
         }
 
-        // TODO 添加修改节点文本以及修改节点连线的联系的方法
+        /**
+         * 该方法用于设置节点的文本内容
+         * <p>
+         * 节点内容将按照每4个字符，添加一个换行符&lt;br&gt;进行处理，以避免节点图形过大；当节点内容为空或为null事，则将节点名称作为节点内容
+         * </p>
+         *
+         * @param text 节点内容
+         * @return 类本身
+         * @since autest 3.2.0
+         */
+        public FlowchartNode setNodeText(String text) {
+            nodeText = Optional.ofNullable(text).map(this::disposeNodeText).orElse(disposeNodeText(nodeName));
+            return this;
+        }
+
+        /**
+         * 该方法用于设置节点的图形样式
+         * <p>
+         * 若传入的节点为null，则默认使用{@link NodeGraphType#ROUNDED_RECTANGLE}
+         * </p>
+         *
+         * @param nodeGraphType 节点图形样式
+         * @return 类本身
+         * @since autest 3.2.0
+         */
+        public FlowchartNode setNodeGraphType(NodeGraphType nodeGraphType) {
+            graph = Optional.ofNullable(nodeGraphType).orElse(NodeGraphType.ROUNDED_RECTANGLE);
+            return this;
+        }
 
         /**
          * 该方法用于返回mermaid语法中，节点的表示文本
@@ -421,8 +457,28 @@ public class Flowcharting {
          * @since autest 3.2.0
          */
         private String disposeLineText(LineType lineType, String lineText) {
-            return Optional.ofNullable(lineType).orElse(LineType.ARROWS).getLine() + Optional.ofNullable(lineText).filter(text -> !text.isEmpty())
-                    .map(text -> "|" + text + "|").orElse("");
+            return Optional.ofNullable(lineType).orElse(LineType.ARROWS).getLine() + Optional.ofNullable(lineText)
+                    .filter(text -> !text.isEmpty()).map(text -> "|" + text + "|").orElse("");
+        }
+
+        /**
+         * 该方法用于对节点内的文本进行处理，当字数超过{@link #LINE_SWITCH_INDEX}限制的字数使，则在其后添加一个{@link #LINE_SWITCH}符号
+         *
+         * @param text 需要处理的文本
+         * @return 处理后的文本
+         * @since autest 3.2.0
+         */
+        private String disposeNodeText(String text) {
+            StringBuilder sb = new StringBuilder(text);
+            int endIndex = LINE_SWITCH_INDEX;
+
+            // 循环，为每“LINE_SWITCH_INDEX”个字后添加一个换行符
+            while (sb.length() > endIndex) {
+                sb.insert(endIndex, LINE_SWITCH);
+                endIndex += (LINE_SWITCH.length() + LINE_SWITCH_INDEX);
+            }
+
+            return sb.toString();
         }
 
         /**
