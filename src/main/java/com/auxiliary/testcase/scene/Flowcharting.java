@@ -15,9 +15,12 @@ import com.auxiliary.testcase.TestCaseException;
  * <p>
  * <b>用途：</b>
  * 用于定义流程图的各个节点与其之间的连线关系，生成基于Mermaid语法的流程图文本，该内容可写入到支持Mermaid的Markdown编辑器中，
- * 或通过<a href='https://mermaid-js.github.io/mermaid-live-editor/edit/'>Mermaid在线编辑器</a>生成相应的流程图
+ * 或通过<a href=
+ * 'https://mermaid-js.github.io/mermaid-live-editor/edit/'>Mermaid在线编辑器</a>生成相应的流程图
  * </p>
- * <p><b>注意：</b>每次添加节点后，会以默认的线型连接上一次添加的节点，若不希望连接上一次节点，可调用{@link FlowchartNode#addParentNode(String...)}等方法修改相应的父层或子层 </p>
+ * <p>
+ * <b>注意：</b>每次添加节点后，会以默认的线型连接上一次添加的节点，若不希望连接上一次节点，可调用{@link FlowchartNode#addParentNode(String...)}等方法修改相应的父层或子层
+ * </p>
  * <p>
  * <b>编码时间：</b>2022年3月4日 上午7:51:20
  * </p>
@@ -42,7 +45,7 @@ public class Flowcharting {
     /**
      * 最后一层节点名称
      */
-    private String laseNode = "";
+    private String lastNode = "";
 
     /**
      * 构造对象，初始化起始节点
@@ -55,9 +58,9 @@ public class Flowcharting {
         // 添加起始节点
         addNode(nodeName, nodeText, NodeGraphType.ELLIPSE);
 
-        //设置起始节点和最后一层节点名称
+        // 设置起始节点和最后一层节点名称
         startNodeName = nodeName;
-        laseNode = nodeName;
+        lastNode = nodeName;
     }
 
     /**
@@ -78,11 +81,14 @@ public class Flowcharting {
         FlowchartNode node = new FlowchartNode(nodeName, nodeText, grapg);
         nodeMap.put(nodeName, node);
 
-        //
-        if (!Objects.equals(laseNode, nodeName)) {
+        // 判断当前节点名称是否与最后一层节点名称相同，若不相同，则将最后一层节点名称作为其虚拟父层节点，并设置当前节点为最后一层节点
+        if (!Objects.equals(lastNode, nodeName) && !lastNode.isEmpty()) {
             // 设置节点的默认父层节点
-            node.addParentNode(laseNode);
-            laseNode = nodeName;
+            node.addParentNode(lastNode);
+
+            // 设置节点连接虚拟节点的信息
+            node.virtualParentNode = lastNode;
+            lastNode = nodeName;
         }
 
         return node;
@@ -148,9 +154,9 @@ public class Flowcharting {
      * @since autest 3.2.0
      */
     public String getFlowchartMermaidText(FlowchartDirectionType flowchartDirectionType) {
-        // 定义文本的主体形式
-        StringJoiner text = new StringJoiner("\n", String.format("``Mermaid\ngraph %s\n", flowchartDirectionType),
-                "\n```");
+        // 定义文本的主体形式，若未定义方向，则默认为TD
+        StringJoiner text = new StringJoiner("\n", String.format("``Mermaid\ngraph %s\n",
+                Optional.ofNullable(flowchartDirectionType).orElse(FlowchartDirectionType.TD)), "\n```");
 
         // 添加节点信息
         text.add("\t%% 节点信息");
@@ -158,11 +164,15 @@ public class Flowcharting {
         // 添加节点关系信息
         text.add("\n\t%% 节点间关系信息");
         StringJoiner relationText = new StringJoiner("\n");
-        getNodeRelationMermaidText(startNodeName, relationText);
+        appendNodeRelationMermaidText(startNodeName, relationText);
         text.add(relationText.toString());
 
         return text.toString();
     }
+
+    // TODO 添加返回孤立节点与边数的方法
+    // TODO 添加移除节点的方法，考虑移除后，各个节点间的连接关系
+    // TODO 添加返回指定的节点方法
 
     /**
      * 该方法用于处理节点之间的连接关系，并将其转换为相应的文本进行，添加至指定的字符串中
@@ -171,9 +181,10 @@ public class Flowcharting {
      * @param text     文本
      * @since autest 3.2.0
      */
-    private void getNodeRelationMermaidText(String nodeName, StringJoiner text) {
+    private void appendNodeRelationMermaidText(String nodeName, StringJoiner text) {
         // 获取节点
         FlowchartNode node = nodeMap.get(nodeName);
+
         // 判断节点是否存在下级节点，若无下级节点，则拼接当前节点后，再次向下判断子节点；若无子节点，则返回拼接的文本
         if (node.childNodeMap.isEmpty()) {
             return;
@@ -187,11 +198,10 @@ public class Flowcharting {
                 text.add(relationText);
             }
 
-            if (Objects.equals(nodeName, key)) {
-                return;
-            } else {
+            // 判断当前子节点名称是否与自身相同，若不相同，再递归调用自身，对子节点进行判定
+            if (!Objects.equals(nodeName, key)) {
                 // 拼接子节点与其孙节点之间的关系
-                getNodeRelationMermaidText(key, text);
+                appendNodeRelationMermaidText(key, text);
             }
         });
     }
@@ -233,6 +243,11 @@ public class Flowcharting {
          * 子节点连线集合
          */
         private HashMap<String, String> childNodeMap = new HashMap<>(16);
+
+        /**
+         * 虚拟父层节点
+         */
+        private String virtualParentNode = "";
 
         /**
          * 初始化节点的内容及图形样式
@@ -278,6 +293,11 @@ public class Flowcharting {
          */
         public FlowchartNode addParentNode(String parentNodeName, LineType lineType, String lineText) {
             if (nodeMap.containsKey(parentNodeName)) {
+                // 判断当前是否需要连接虚拟父层节点，若需要，则移除当前的虚拟父节点，并设置其为不需要连接
+                if (!virtualParentNode.isEmpty()) {
+                    removeParentNode(virtualParentNode);
+                    virtualParentNode = "";
+                }
                 putNode(nodeMap.get(parentNodeName).childNodeMap, nodeName, lineType, lineText);
             }
 
@@ -308,11 +328,10 @@ public class Flowcharting {
          * @since autest 3.2.0
          * @throws TestCaseException 父层节点不存在时抛出的异常
          */
-        public FlowchartNode addExistingChildNode(String childNodeName, LineType lineType, String lineText) {
+        public FlowchartNode addChildNode(String childNodeName, LineType lineType, String lineText) {
             putNode(childNodeMap, childNodeName, lineType, lineText);
             return this;
         }
-
 
         /**
          * 该方法用于添加一个已存在的子层节点，以便于循环流程的编写
@@ -322,8 +341,8 @@ public class Flowcharting {
          * @since autest 3.2.0
          * @throws TestCaseException 节点不存在时抛出的异常
          */
-        public FlowchartNode addExistingChildNode(String childNodeName, LineType lineType) {
-            return addExistingChildNode(childNodeName, lineType, "");
+        public FlowchartNode addChildNode(String childNodeName, LineType lineType) {
+            return addChildNode(childNodeName, lineType, "");
         }
 
         /**
@@ -334,12 +353,41 @@ public class Flowcharting {
          * @since autest 3.2.0
          * @throws TestCaseException 节点不存在时抛出的异常
          */
-        public FlowchartNode addExistingChildNode(String... childNodeNames) {
+        public FlowchartNode addChildNode(String... childNodeNames) {
             Optional.ofNullable(childNodeNames).filter(arr -> arr.length != 0).map(Arrays::asList)
-                    .ifPresent(list -> list.forEach(name -> addExistingChildNode(name, LineType.ARROWS)));
+                    .ifPresent(list -> list.forEach(name -> addChildNode(name, LineType.ARROWS)));
 
             return this;
         }
+
+        /**
+         * 该方法用于移除已添加的父层节点
+         *
+         * @param nodeName 父层节点名称
+         * @return 类本身
+         * @since autest 3.2.0
+         */
+        public FlowchartNode removeParentNode(String parentNodeName) {
+            if (nodeMap.containsKey(parentNodeName)) {
+                nodeMap.get(parentNodeName).childNodeMap.remove(nodeName);
+            }
+
+            return this;
+        }
+
+        /**
+         * 该方法用于移除已添加的子层节点
+         *
+         * @param nodeName 子层节点名称
+         * @return 类本身
+         * @since autest 3.2.0
+         */
+        public FlowchartNode removeChildNode(String childNodeName) {
+            childNodeMap.remove(childNodeName);
+            return this;
+        }
+
+        // TODO 添加修改节点文本以及修改节点连线的联系的方法
 
         /**
          * 该方法用于返回mermaid语法中，节点的表示文本
@@ -367,7 +415,7 @@ public class Flowcharting {
         /**
          * 该方法用于在指定的元素map集合中，添加相应的元素信息
          *
-         * @param map 元素map集合
+         * @param map      元素map集合
          * @param nodeName 需要添加的节点名称
          * @param lineType 节点间连接线型枚举
          * @param lineText 节点间连线上的文本内容
