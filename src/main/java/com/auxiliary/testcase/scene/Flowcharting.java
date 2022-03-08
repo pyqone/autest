@@ -20,7 +20,8 @@ import com.auxiliary.testcase.TestCaseException;
  * 'https://mermaid-js.github.io/mermaid-live-editor/edit/'>Mermaid在线编辑器</a>生成相应的流程图
  * </p>
  * <p>
- * <b>注意：</b>每次添加节点后，会以默认的线型连接上一次添加的节点，若不希望连接上一次节点，可调用{@link FlowchartNode#addParentNode(String...)}等方法修改相应的父层或子层
+ * <b>注意：</b>每次添加节点后，会以默认的线型连接上一次添加的节点，若不希望连接上一次节点，可调用{@link FlowchartNode#addParentNode(String...)}等方法修改相应的父层或子层；
+ * 图形内容请勿出现中文标点符号，其Meraid语法不支持中文标点
  * </p>
  * <p>
  * <b>编码时间：</b>2022年3月4日 上午7:51:20
@@ -335,7 +336,8 @@ public class Flowcharting {
         /**
          * 初始化节点的内容及图形样式
          * <p>
-         * <b>注意：</b>节点名称不能为空，否则抛出异常；节点内容为null时，则默认与名称内容一致；节点的图形为null时，默认采用{@link NodeGraphType#ROUNDED_RECTANGLE}
+         * <b>注意：</b>节点名称不能为空，否则抛出异常；节点内容为null时，则默认与名称内容一致；节点的图形为null时，默认采用{@link NodeGraphType#ROUNDED_RECTANGLE}；
+         * 图形内容请勿出现中文标点符号，其Meraid语法不支持中文标点
          * </p>
          *
          * @param nodeName      节点名称
@@ -455,6 +457,7 @@ public class Flowcharting {
 
         /**
          * 该方法用于移除已添加的父层节点
+         * <p><b>注意：</b>当需要移除的节点不存在时，则不进行操作</p>
          *
          * @param nodeName 父层节点名称
          * @return 类本身
@@ -474,6 +477,7 @@ public class Flowcharting {
 
         /**
          * 该方法用于移除已添加的子层节点
+         * <p><b>注意：</b>当需要移除的节点不存在时，则不进行操作</p>
          *
          * @param nodeName 子层节点名称
          * @return 类本身
@@ -492,15 +496,16 @@ public class Flowcharting {
         /**
          * 该方法用于设置节点的文本内容
          * <p>
-         * 节点内容将按照每4个字符，添加一个换行符&lt;br&gt;进行处理，以避免节点图形过大；当节点内容为空或为null事，则将节点名称作为节点内容
+         * 节点内容将按照每4个字符，添加一个换行符&lt;br&gt;进行处理，以避免节点图形过大；当节点内容为空或为null时，则将节点名称作为节点内容
          * </p>
+         * <p><b>注意：</b>图形内容请勿出现中文标点符号，其Meraid语法不支持中文标点</p>
          *
          * @param text 节点内容
          * @return 类本身
          * @since autest 3.2.0
          */
         public FlowchartNode setNodeText(String text) {
-            nodeText = Optional.ofNullable(text).map(this::disposeNodeText).orElse(disposeNodeText(nodeName));
+            nodeText = Optional.ofNullable(text).filter(t -> !t.isEmpty()).map(this::disposeNodeText).orElse(disposeNodeText(nodeName));
             return this;
         }
 
