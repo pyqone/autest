@@ -36,9 +36,14 @@ import com.auxiliary.testcase.TestCaseException;
  */
 public class Flowcharting {
     /**
-     * 用于存储已添加的节点
+     * 存储已添加的节点
      */
     private HashMap<String, FlowchartNode> nodeMap = new HashMap<>(16);
+    /**
+     * 存储孤立的节点
+     */
+    private HashSet<String> insularNodeSet = new HashSet<>(16);
+
     /**
      * 起始节点的名称
      */
@@ -47,6 +52,11 @@ public class Flowcharting {
      * 最后一层节点名称
      */
     private String lastNode = "";
+
+    /**
+     * 边数
+     */
+    private int lineNumber = 0;
 
     /**
      * 构造对象，初始化起始节点
@@ -91,6 +101,9 @@ public class Flowcharting {
             node.virtualParentNode = lastNode;
             lastNode = nodeName;
         }
+
+        // 存储节点为孤立节点
+        insularNodeSet.add(nodeName);
 
         return node;
     }
@@ -148,11 +161,58 @@ public class Flowcharting {
     }
 
     /**
+     * 该方法用于指定名称的节点
+     *
+     * @param nodeName 节点名称
+     * @return 指定名称的节点
+     * @since autest 3.2.0
+     */
+    public FlowchartNode getNode(String nodeName) {
+        return nodeMap.get(nodeName);
+    }
+
+    /**
+     * 该方法用于返回当前流程图中的节点数
+     *
+     * @return 节点数
+     * @since autest 3.2.0
+     */
+    public int getNodeNumber() {
+        return nodeMap.size();
+    }
+
+    /**
+     * 该方法用于返回流程图中的连线数量（边数）
+     * <p>
+     * <b>注意：</b>输出边数时，需要先调用{@link #getFlowchartMermaidText(FlowchartDirectionType)}方法，对流程图输出后，才能返回当前流程图的边数，
+     * 否则只能返回上一次输出的流程图边数
+     * </p>
+     *
+     * @return 连线数量（边数）
+     * @since autest 3.2.0
+     */
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    /**
+     * 该方法用于返回孤立节点的个数
+     *
+     * @return 孤立节点的个数
+     * @since autest 3.2.0
+     */
+    public int getInsularNodeNumber() {
+        // 起始节点有子节点，但也需要被计算为孤立节点，且整个流程图只有一个起始节点，故返回时将存储的孤立节点数加1
+        return insularNodeSet.size() + 1;
+    }
+
+    /**
      * 该方法用于返回在Markdown中，Mermaid语法绘制流程图的文本
      *
      * @param flowchartDirectionType 流程图方向枚举
      * @return 流程图的文本
      * @since autest 3.2.0
+     * @throws TestCaseException 存在孤立流程时，抛出的异常
      */
     public String getFlowchartMermaidText(FlowchartDirectionType flowchartDirectionType) {
         // 定义文本的主体形式，若未定义方向，则默认为TD
@@ -162,18 +222,26 @@ public class Flowcharting {
         // 添加节点信息
         text.add("\t%% 节点信息");
         nodeMap.forEach((key, value) -> text.add("\t" + value.getNodeText()));
+
         // 添加节点关系信息
         text.add("\n\t%% 节点间关系信息");
         StringJoiner relationText = new StringJoiner("\n");
-        appendNodeRelationMermaidText(startNodeName, relationText, new HashSet<>());
+        HashSet<String> nodeSet = new HashSet<>();
+
+        appendNodeRelationMermaidText(startNodeName, relationText, nodeSet);
+
+        // 判断连线节点数与节点个数是否对等，不对等，则抛出异常
+        if (nodeSet.size() != nodeMap.size()) {
+            throw new TestCaseException(String.format("连线节点数与节点个数不对等，存在孤立流程\n连线节点：%s\n实际节点：%s", nodeSet.toString(),
+                    nodeMap.keySet().toString()));
+        }
+
         text.add(relationText.toString());
 
         return text.toString();
     }
 
-    // TODO 添加返回孤立节点与边数的方法
     // TODO 添加移除节点的方法，考虑移除后，各个节点间的连接关系
-    // TODO 添加返回指定的节点方法
 
     /**
      * 该方法用于处理节点之间的连接关系，并将其转换为相应的文本进行，添加至指定的字符串中
@@ -184,6 +252,7 @@ public class Flowcharting {
      * @since autest 3.2.0
      */
     private void appendNodeRelationMermaidText(String nodeName, StringJoiner text, HashSet<String> childNodeNameSet) {
+        childNodeNameSet.add(nodeName);
         // 获取节点
         FlowchartNode node = nodeMap.get(nodeName);
 
@@ -198,11 +267,13 @@ public class Flowcharting {
             // 判断该内容是否已经存在于text中，若不存在则拼接节点与当前子节点的关系
             if (!text.toString().contains(relationText)) {
                 text.add(relationText);
+
+                // 边数 + 1
+                lineNumber++;
             }
 
             // 判断当前子节点名称是否与自身相同，若不相同，再递归调用自身，对子节点进行判定
             if (!Objects.equals(nodeName, key) && !childNodeNameSet.contains(key)) {
-                childNodeNameSet.add(key);
                 // 拼接子节点与其孙节点之间的关系
                 appendNodeRelationMermaidText(key, text, childNodeNameSet);
             }
@@ -351,6 +422,7 @@ public class Flowcharting {
             }
 
             putNode(childNodeName, lineType, lineText, false);
+
             return this;
         }
 
@@ -391,6 +463,10 @@ public class Flowcharting {
         public FlowchartNode removeParentNode(String parentNodeName) {
             if (nodeMap.containsKey(parentNodeName)) {
                 nodeMap.get(parentNodeName).childNodeMap.remove(nodeName);
+                // 判断父层节点是否存在子节点，若不存在，则将其记录至孤立节点中
+                if (nodeMap.get(parentNodeName).childNodeMap.size() == 0) {
+                    insularNodeSet.add(parentNodeName);
+                }
             }
 
             return this;
@@ -405,6 +481,11 @@ public class Flowcharting {
          */
         public FlowchartNode removeChildNode(String childNodeName) {
             childNodeMap.remove(childNodeName);
+            // 判断当前节点是否存在子层节点，若不存在，则将当前节点记录为孤立节点
+            if (childNodeMap.size() == 0) {
+                insularNodeSet.add(nodeName);
+            }
+
             return this;
         }
 
@@ -499,9 +580,14 @@ public class Flowcharting {
             HashMap<String, String> map = null;
             if (isParent) {
                 map = nodeMap.get(nodeName).childNodeMap;
+                // 将其从孤立节点中移除
+                insularNodeSet.remove(nodeName);
+
                 nodeName = this.nodeName;
             } else {
                 map = childNodeMap;
+                // 将其从孤立节点中移除
+                insularNodeSet.remove(this.nodeName);
             }
 
             // 在指定的节点中，添加数据
