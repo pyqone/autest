@@ -35,7 +35,7 @@ import com.auxiliary.testcase.TestCaseException;
  * @since JDK 1.8
  * @since autest 3.2.0
  */
-public class Flowcharting {
+public class Flowcharting implements Cloneable {
     /**
      * 存储已添加的节点
      */
@@ -242,8 +242,6 @@ public class Flowcharting {
         return text.toString();
     }
 
-    // TODO 添加移除节点的方法，考虑移除后，各个节点间的连接关系
-
     /**
      * 该方法用于处理节点之间的连接关系，并将其转换为相应的文本进行，添加至指定的字符串中
      *
@@ -281,6 +279,49 @@ public class Flowcharting {
         });
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(nodeMap, startNodeName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Flowcharting other = (Flowcharting) obj;
+        return Objects.equals(nodeMap, other.nodeMap) && Objects.equals(startNodeName, other.startNodeName);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object clone() {
+        Flowcharting flow = null;
+        try {
+            // 拷贝类本身
+            flow = (Flowcharting) super.clone();
+
+            // 拷贝独立节点集合
+            flow.insularNodeSet = (HashSet<String>) insularNodeSet.clone();
+            // 拷贝节点集合，由于Map的拷贝机制也并非深度拷贝，故需要自行编写其map的拷贝机制
+            flow.nodeMap = new HashMap<>();
+            for (String key : nodeMap.keySet()) {
+                flow.nodeMap.put(key, (FlowchartNode) nodeMap.get(key).clone());
+            }
+        } catch (CloneNotSupportedException e) {
+            throw new TestCaseException("流程图对象无法被拷贝", e);
+        }
+        return flow;
+    }
+
+    @Override
+    public String toString() {
+        return "Flowcharting [startNodeName=" + startNodeName + ", nodeMap=" + nodeMap + "]";
+    }
+
     /**
      * <p>
      * <b>文件名：</b>Flowcharting.java
@@ -300,7 +341,7 @@ public class Flowcharting {
      * @since JDK 1.8
      * @since autest 3.2.0
      */
-    public class FlowchartNode {
+    public class FlowchartNode implements Cloneable {
         /**
          * 定义文本换行符
          */
@@ -604,6 +645,58 @@ public class Flowcharting {
 
             // 在指定的节点中，添加数据
             map.put(nodeName, disposeLineText(lineType, lineText));
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getEnclosingInstance().hashCode();
+            result = prime * result + Objects.hash(childNodeMap, nodeName);
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            FlowchartNode other = (FlowchartNode) obj;
+            if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
+                return false;
+            return Objects.equals(childNodeMap, other.childNodeMap) && Objects.equals(nodeName, other.nodeName);
+        }
+
+        /**
+         * 该方法用于获取封装实例
+         *
+         * @return 封装实例
+         * @since autest 3.2.0
+         */
+        private Flowcharting getEnclosingInstance() {
+            return Flowcharting.this;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Object clone() {
+            FlowchartNode node = null;
+            try {
+                node = (FlowchartNode) super.clone();
+                node.childNodeMap = (HashMap<String, String>) childNodeMap.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new TestCaseException("节点类对象无法被拷贝：" + nodeName, e);
+            }
+
+            return node;
+        }
+
+        @Override
+        public String toString() {
+            return getNodeText();
         }
     }
 }
