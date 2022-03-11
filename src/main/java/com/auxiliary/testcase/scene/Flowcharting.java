@@ -281,13 +281,12 @@ public class Flowcharting implements Cloneable {
 
     /**
      * 该方法用于返回流程图中的节点集合
-     * <p>方法返回的集合不会影响到流程图中的节点集合</p>
      *
      * @return 节点集合
      * @since autest 3.2.0
      */
     public HashMap<String, FlowchartNode> getNodeMap() {
-        return ((Flowcharting)clone()).nodeMap;
+        return nodeMap;
     }
 
     /**
@@ -302,14 +301,12 @@ public class Flowcharting implements Cloneable {
 
     /**
      * 该方法用于返回流程图的孤立节点集合
-     * <p>方法返回的集合不会影响到流程图中的孤立节点集合</p>
      *
      * @return 孤立节点集合
      * @since autest 3.2.0
      */
-    @SuppressWarnings("unchecked")
     public HashSet<String> getInsularNodeSet() {
-        return (HashSet<String>) insularNodeSet.clone();
+        return insularNodeSet;
     }
 
     @Override
