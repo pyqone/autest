@@ -3,9 +3,11 @@ package com.auxiliary.testcase.scene;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 import com.auxiliary.testcase.TestCaseException;
 
@@ -78,6 +80,9 @@ public class Flowcharting implements Cloneable {
     /**
      * 该方法用于添加一个自定义图形的节点元素
      * <p>
+     * 当传入的节点名称存在时，则只修改其节点内容与图形样式，若节点为起始节点，则只修改其内容，不修改图形样式
+     * </p>
+     * <p>
      * <b>注意：</b>自定义的图形元素不被当做特殊元素处理，例如，使用{@link NodeGraphType#DIAMOND}枚举，其不会被当成判定节点，只作为普通节点看待
      * </p>
      *
@@ -89,6 +94,18 @@ public class Flowcharting implements Cloneable {
      * @throws TestCaseException 节点名称为空时抛出的异常
      */
     public FlowchartNode addNode(String nodeName, String nodeText, NodeGraphType nodeGraphType) {
+        // 判断节点是否已经存在，存在的节点将不会重新构造
+        if (nodeMap.containsKey(nodeName)) {
+            FlowchartNode nowNode = nodeMap.get(nodeName);
+            nowNode.setNodeText(nodeText);
+            // 判断节点是否为起始节点，若为起始节点，则不允许修改图形
+            if (!Objects.equals(startNodeName, nodeName)) {
+                nowNode.setNodeGraphType(nodeGraphType);
+            }
+
+            return nowNode;
+        }
+
         // 存储节点
         FlowchartNode node = new FlowchartNode(nodeName, nodeText, nodeGraphType);
         nodeMap.put(nodeName, node);
@@ -111,6 +128,9 @@ public class Flowcharting implements Cloneable {
 
     /**
      * 该方法用于添加判断节点
+     * <p>
+     * 当传入的节点名称存在时，则只修改其节点内容与图形样式，若节点为起始节点，则只修改其内容，不修改图形样式
+     * </p>
      *
      * @param nodeName 节点名称
      * @param nodeText 节点内文本
@@ -123,7 +143,10 @@ public class Flowcharting implements Cloneable {
     }
 
     /**
-     * 该方法用于普通流程节点
+     * 该方法用于添加普通流程节点
+     * <p>
+     * 当传入的节点名称存在时，则只修改其节点内容与图形样式，若节点为起始节点，则只修改其内容，不修改图形样式
+     * </p>
      *
      * @param nodeName 节点名称
      * @param nodeText 节点内文本
@@ -136,7 +159,27 @@ public class Flowcharting implements Cloneable {
     }
 
     /**
-     * 该方法用于结束节点
+     * 该方法用于添加普通流程节点
+     * <p>
+     * <b>注意：</b>通过该方法添加的节点将使用一个随机的uuid作为节点名称并进行返回
+     * </p>
+     * 
+     * @param nodeText 节点文本
+     * @return 节点的名称
+     * @since autest 3.2.0
+     */
+    public String addFlowNode(String nodeText) {
+        String uuid = UUID.randomUUID().toString();
+        addFlowNode(uuid, nodeText);
+
+        return uuid;
+    }
+
+    /**
+     * 该方法用于添加结束节点
+     * <p>
+     * 当传入的节点名称存在时，则只修改其节点内容与图形样式，若节点为起始节点，则只修改其内容，不修改图形样式
+     * </p>
      *
      * @param nodeName 节点名称
      * @param nodeText 节点内文本
@@ -149,7 +192,27 @@ public class Flowcharting implements Cloneable {
     }
 
     /**
-     * 该方法用于页面引用节点
+     * 该方法用于添加结束节点
+     * <p>
+     * <b>注意：</b>通过该方法添加的节点将使用一个随机的uuid作为节点名称并进行返回
+     * </p>
+     * 
+     * @param nodeText 节点文本
+     * @return 节点的名称
+     * @since autest 3.2.0
+     */
+    public String addEndNode(String nodeText) {
+        String uuid = UUID.randomUUID().toString();
+        addEndNode(uuid, nodeText);
+
+        return uuid;
+    }
+
+    /**
+     * 该方法用于添加页面引用节点
+     * <p>
+     * 当传入的节点名称存在时，则只修改其节点内容与图形样式，若节点为起始节点，则只修改其内容，不修改图形样式
+     * </p>
      *
      * @param nodeName 节点名称
      * @param nodeText 节点内文本
@@ -162,7 +225,7 @@ public class Flowcharting implements Cloneable {
     }
 
     /**
-     * 该方法用于指定名称的节点
+     * 该方法用于返回指定名称的节点
      *
      * @param nodeName 节点名称
      * @return 指定名称的节点
@@ -222,7 +285,7 @@ public class Flowcharting implements Cloneable {
 
         // 添加节点信息
         text.add("\t%% 节点信息");
-        nodeMap.forEach((key, value) -> text.add("\t" + value.getNodeText()));
+        nodeMap.forEach((key, value) -> text.add("\t" + value.getNodeMermaidText()));
 
         // 添加节点关系信息
         text.add("\n\t%% 节点间关系信息");
@@ -262,7 +325,7 @@ public class Flowcharting implements Cloneable {
 
         node.childNodeMap.forEach((key, value) -> {
             // 拼接节点间关系
-            String relationText = String.format("\t%s %s %s", nodeName, value, key);
+            String relationText = String.format("\t%s %s %s", nodeName, value.toString(), key);
             // 判断该内容是否已经存在于text中，若不存在则拼接节点与当前子节点的关系
             if (!text.toString().contains(relationText)) {
                 text.add(relationText);
@@ -316,19 +379,22 @@ public class Flowcharting implements Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Flowcharting other = (Flowcharting) obj;
         return Objects.equals(nodeMap, other.nodeMap) && Objects.equals(startNodeName, other.startNodeName);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object clone() {
+    public Flowcharting clone() {
         Flowcharting flow = null;
         try {
             // 拷贝类本身
@@ -339,7 +405,7 @@ public class Flowcharting implements Cloneable {
             // 拷贝节点集合，由于Map的拷贝机制也并非深度拷贝，故需要自行编写其map的拷贝机制
             flow.nodeMap = new HashMap<>();
             for (String key : nodeMap.keySet()) {
-                flow.nodeMap.put(key, (FlowchartNode) nodeMap.get(key).clone());
+                flow.nodeMap.put(key, nodeMap.get(key).clone());
             }
         } catch (CloneNotSupportedException e) {
             throw new TestCaseException("流程图对象无法被拷贝", e);
@@ -397,7 +463,7 @@ public class Flowcharting implements Cloneable {
         /**
          * 子节点连线集合
          */
-        private HashMap<String, String> childNodeMap = new HashMap<>(16);
+        private HashMap<String, LineEntry> childNodeMap = new HashMap<>(16);
 
         /**
          * 虚拟父层节点
@@ -596,8 +662,14 @@ public class Flowcharting implements Cloneable {
          * @param nodeGraphType 节点图形样式
          * @return 类本身
          * @since autest 3.2.0
+         * @throws TestCaseException 当更改的节点为起始节点时抛出的异常
          */
         public FlowchartNode setNodeGraphType(NodeGraphType nodeGraphType) {
+            // 判断当前节点是否为起始节点，若为起始节点，则拒绝进行更改
+            if (Objects.equals(nodeName, startNodeName)) {
+                throw new TestCaseException("起始节点图形不能被改变");
+            }
+
             graph = Optional.ofNullable(nodeGraphType).orElse(NodeGraphType.ROUNDED_RECTANGLE);
             return this;
         }
@@ -608,8 +680,64 @@ public class Flowcharting implements Cloneable {
          * @return 节点的表示文本
          * @since autest 3.2.0
          */
-        public String getNodeText() {
+        public String getNodeMermaidText() {
             return nodeName + String.format(graph.getSign(), nodeText);
+        }
+
+        /**
+         * 该方法用于返回节点的名称
+         * 
+         * @return 节点名称
+         * @since autest 3.2.0
+         */
+        public String getNodeName() {
+            return nodeName;
+        }
+
+        /**
+         * 该方法用于返回节点中的文本
+         * 
+         * @return 节点文本
+         * @since autest 3.2.0
+         */
+        public String getNodeText() {
+            return nodeText;
+        }
+
+        /**
+         * 该方法用于返回节点的图形枚举
+         * 
+         * @return 节点的图形枚举
+         * @since autest 3.2.0
+         */
+        public NodeGraphType getGraph() {
+            return graph;
+        }
+        
+        /**
+         * 该方法用于子节点集合
+         * 
+         * @return 子节点集合
+         * @since autest 3.2.0
+         */
+        public HashMap<String, LineEntry> getChildNodeMap() {
+            return childNodeMap;
+        }
+
+        /**
+         * 该方法用于与子节点间的节点连接方式
+         * 
+         * @param childNodeName 子节点名称
+         * @return 与子节点间的连接方式
+         * @since autest 3.2.0
+         */
+        public LineEntry getChildNodeLineEntry(String childNodeName) {
+            // 判断节点是否存在
+            if (!childNodeMap.containsKey(childNodeName)) {
+                throw new TestCaseException(String.format("当前“%s”节点下，不存在子流程节点“%s”", nodeName, childNodeName));
+            }
+
+            return childNodeMap.get(childNodeName);
         }
 
         /**
@@ -620,10 +748,10 @@ public class Flowcharting implements Cloneable {
          * @return 节点间连线的文本
          * @since autest 3.2.0
          */
-        private String disposeLineText(LineType lineType, String lineText) {
-            return Optional.ofNullable(lineType).orElse(LineType.ARROWS).getLine() + Optional.ofNullable(lineText)
-                    .filter(text -> !text.isEmpty()).map(text -> "|" + text + "|").orElse("");
-        }
+//        private String disposeLineText(LineType lineType, String lineText) {
+//            return Optional.ofNullable(lineType).orElse(LineType.ARROWS).getLine() + Optional.ofNullable(lineText)
+//                    .filter(text -> !text.isEmpty()).map(text -> "|" + text + "|").orElse("");
+//        }
 
         /**
          * 该方法用于对节点内的文本进行处理，当字数超过{@link #LINE_SWITCH_INDEX}限制的字数使，则在其后添加一个{@link #LINE_SWITCH}符号
@@ -660,7 +788,7 @@ public class Flowcharting implements Cloneable {
                 throw new TestCaseException("不存在的流程节点：" + nodeName);
             }
 
-            HashMap<String, String> map = null;
+            HashMap<String, LineEntry> map = null;
             if (isParent) {
                 map = nodeMap.get(nodeName).childNodeMap;
                 // 将其从孤立节点中移除
@@ -674,7 +802,7 @@ public class Flowcharting implements Cloneable {
             }
 
             // 在指定的节点中，添加数据
-            map.put(nodeName, disposeLineText(lineType, lineText));
+            map.put(nodeName, new LineEntry(lineType, lineText));
         }
 
         @Override
@@ -688,15 +816,19 @@ public class Flowcharting implements Cloneable {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             FlowchartNode other = (FlowchartNode) obj;
-            if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
+            if (!getEnclosingInstance().equals(other.getEnclosingInstance())) {
                 return false;
+            }
             return Objects.equals(childNodeMap, other.childNodeMap) && Objects.equals(nodeName, other.nodeName);
         }
 
@@ -710,13 +842,15 @@ public class Flowcharting implements Cloneable {
             return Flowcharting.this;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
-        public Object clone() {
+        public FlowchartNode clone() {
             FlowchartNode node = null;
             try {
                 node = (FlowchartNode) super.clone();
-                node.childNodeMap = (HashMap<String, String>) childNodeMap.clone();
+                node.childNodeMap = new HashMap<>(16);
+                for (String key : childNodeMap.keySet()) {
+                    node.childNodeMap.put(key, childNodeMap.get(key).clone());
+                }
             } catch (CloneNotSupportedException e) {
                 throw new TestCaseException("节点类对象无法被拷贝：" + nodeName, e);
             }
@@ -726,7 +860,78 @@ public class Flowcharting implements Cloneable {
 
         @Override
         public String toString() {
-            return getNodeText();
+            return getNodeMermaidText();
+        }
+    }
+
+    /**
+     * <p>
+     * <b>文件名：Flowcharting.java</b>
+     * </p>
+     * <p>
+     * <b>用途：</b> 存储节点间的连接线与连接线之间的文本内容
+     * </p>
+     * <p>
+     * <b>编码时间：2022年3月16日 上午11:15:44
+     * </p>
+     * <p>
+     * <b>修改时间：2022年3月16日 上午11:15:44
+     * </p>
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     * @since autest 3.2.0
+     */
+    public class LineEntry implements Entry<LineType, String>, Cloneable {
+        /**
+         * 节点间连接的线型
+         */
+        LineType key;
+        /**
+         * 连接线上的文本
+         */
+        String value;
+
+        /**
+         * 初始化连接线型与连线间的文本
+         * 
+         * @param key   线型枚举
+         * @param value 连接线间的文本
+         */
+        public LineEntry(LineType key, String value) {
+            super();
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public LineType getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String setValue(String value) {
+            String nowValue = getValue();
+            this.value = value;
+            
+            return nowValue;
+        }
+
+        @Override
+        public LineEntry clone() throws CloneNotSupportedException {
+            return (LineEntry) super.clone();
+        }
+
+        @Override
+        public String toString() {
+            return Optional.ofNullable(key).orElse(LineType.ARROWS).getLine() + Optional.ofNullable(value)
+                    .filter(text -> !text.isEmpty()).map(text -> "|" + text + "|").orElse("");
         }
     }
 }
