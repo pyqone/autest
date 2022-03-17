@@ -3,36 +3,50 @@ package com.auxiliary.testcase.scene;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import com.auxiliary.testcase.scene.Flowcharting.FlowchartNode;
 import com.auxiliary.testcase.scene.Flowcharting.LineEntry;
 
 public class SceneTestCase {
     /**
+     * 定义流程图文本间的分割符号
+     */
+    private final String FLOWCHART_TEXT_SEPARATOR_SYMBOL = "、";
+    /**
+     * 定义流程图文本循环的流程符号
+     */
+    private final String FLOWCHART_TEXT_LOOP_SYMBOL = "...";
+
+    /**
      * 流程图大图
      */
-    Flowcharting flowchart;
+    private Flowcharting flowchart;
     /**
      * 流程图大图的Mermaid文本
      */
-    String flowText;
+    private String flowText;
     /**
      * 流程图大图的边数
      */
-    int lineNumber;
+    private int lineNumber;
     /**
      * 流程图大图的节点数
      */
-    int nodeNumber;
+    private int nodeNumber;
     /**
      * 流程图大图的孤立节点数
      */
-    int insularNodeNumber;
+    private int insularNodeNumber;
 
     /**
      * 存放通过总流程图分解得到的各个子场景流程图
      */
-    ArrayList<Flowcharting> childFlowchartList = new ArrayList<>();
+    private ArrayList<Flowcharting> childFlowchartList = new ArrayList<>();
+    /**
+     * 存储分解流程图后的文本说明
+     */
+    private ArrayList<String> childFlowchartTextList = new ArrayList<>();
 
     /**
      * 构造对象，并初始化当前的总流程图
@@ -70,7 +84,7 @@ public class SceneTestCase {
     }
 
     /**
-     * 该方法用于返回通过大流程图分解的各个子流程图
+     * 该方法用于返回通过大流程图分解的各个子流程图Mermaid文本
      * <p>
      * 该方法返回的流程图个数可能会与实际计算的圈复杂度存在一定的偏差，其取决于判定节点串联的个数，可根据计算值酌情筛选
      * </p>
@@ -80,6 +94,61 @@ public class SceneTestCase {
      */
     public List<Flowcharting> getSceneFlowchart() {
         return new ArrayList<>(childFlowchartList);
+    }
+
+    /**
+     * 该方法用于返回通过大流程图分解的各个子流程图的说明文本
+     * <p>
+     * 流程图文本通过拼接节点名称，将其组成为说明被分解场景的节点走向，每个节点名称间，用顿号相隔
+     * </p>
+     * 
+     * @return 子流程图的说明文本
+     * @since autest 3.2.0
+     */
+    public List<String> getSceneFlowchartText() {
+        return new ArrayList<>(childFlowchartTextList);
+    }
+
+    /**
+     * 该方法用于返回初始化流程图的Mermaid文本，等同于调用{@link Flowcharting#getFlowchartMermaidText(FlowchartDirectionType)}，流程图以竖行绘制
+     * 
+     * @return 初始化流程图的Mermaid文本
+     * @since autest 3.2.0
+     */
+    public String getFlowchartText() {
+        return flowText;
+    }
+
+    /**
+     * 该方法用于以Markdown形式返回通过分析流程图得到的场景测试用例文本
+     * <p>
+     * 该方法返回的内容不可制定，仅为一个内容返回的参考，可通过类中的其他方法，自行定义格式
+     * </p>
+     * 
+     * @return 场景测试用例文本
+     * @since autest 3.2.0
+     */
+    public String getTestCaseMarkdownText() {
+        // 存储用例数
+        StringJoiner caseText = new StringJoiner("\r\n");
+        caseText.add("# 用例数");
+        caseText.add(String.format("* 理论用例数 = %d - %d + %d = %d", lineNumber, nodeNumber, insularNodeNumber,
+                getTestCaseNumber()));
+        caseText.add("");
+        caseText.add(String.format("* 实际用例数 ：%d", childFlowchartList.size()));
+        
+        // 存储流程大图
+        caseText.add("# 总流程图");
+        caseText.add(flowText);
+
+        // 存储流程图
+        caseText.add("# 场景用例");
+        for (int index = 0; index < childFlowchartList.size(); index++) {
+            caseText.add(String.format("- [ ] **第%d条流程：** %s", (index + 1), childFlowchartTextList.get(index)));
+            caseText.add(childFlowchartList.get(index).getFlowchartMermaidText(FlowchartDirectionType.TD));
+        }
+        
+        return caseText.toString();
     }
 
     /**
@@ -98,6 +167,7 @@ public class SceneTestCase {
         // 判断节点是否存在下级节点，若无下级节点，则将节点集合中的节点组成
         if (node.getChildNodeMap().isEmpty()) {
             childFlowchartList.add(appendFlowchart(nodeList));
+            childFlowchartTextList.add(appendFlowchartText(nodeList));
 
             return;
         }
@@ -113,6 +183,7 @@ public class SceneTestCase {
                 } else {
                     nodeList.add(key);
                     childFlowchartList.add(appendFlowchart(nodeList));
+                    childFlowchartTextList.add(appendFlowchartText(nodeList) + FLOWCHART_TEXT_LOOP_SYMBOL);
                     
                     nodeList.remove(nodeList.size() - 1);
                 }
@@ -146,5 +217,18 @@ public class SceneTestCase {
         }
 
         return flow;
+    }
+
+    /**
+     * 该方法用于拼接流程图文本
+     * 
+     * @param nodeList节点名称集合
+     * @return 流程图文本
+     * @since autest 3.2.0
+     */
+    private String appendFlowchartText(ArrayList<String> nodeList) {
+        StringJoiner text = new StringJoiner(FLOWCHART_TEXT_SEPARATOR_SYMBOL);
+        nodeList.forEach(text::add);
+        return text.toString();
     }
 }

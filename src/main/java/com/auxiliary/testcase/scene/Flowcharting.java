@@ -161,7 +161,7 @@ public class Flowcharting implements Cloneable {
     /**
      * 该方法用于添加普通流程节点
      * <p>
-     * <b>注意：</b>通过该方法添加的节点将使用一个随机的uuid作为节点名称并进行返回
+     * <b>注意：</b>通过该方法添加的节点将使用一个随机的一串英文作为节点名称并进行返回
      * </p>
      * 
      * @param nodeText 节点文本
@@ -170,7 +170,7 @@ public class Flowcharting implements Cloneable {
      */
     public String addFlowNode(String nodeText) {
         String uuid = UUID.randomUUID().toString();
-        addFlowNode(uuid, nodeText);
+        addFlowNode(uuid.substring(0, uuid.indexOf("-")), nodeText);
 
         return uuid;
     }
@@ -194,7 +194,7 @@ public class Flowcharting implements Cloneable {
     /**
      * 该方法用于添加结束节点
      * <p>
-     * <b>注意：</b>通过该方法添加的节点将使用一个随机的uuid作为节点名称并进行返回
+     * <b>注意：</b>通过该方法添加的节点将使用一个随机的一串英文作为节点名称并进行返回
      * </p>
      * 
      * @param nodeText 节点文本
@@ -203,7 +203,7 @@ public class Flowcharting implements Cloneable {
      */
     public String addEndNode(String nodeText) {
         String uuid = UUID.randomUUID().toString();
-        addEndNode(uuid, nodeText);
+        addFlowNode(uuid.substring(0, uuid.indexOf("-")), nodeText);
 
         return uuid;
     }
