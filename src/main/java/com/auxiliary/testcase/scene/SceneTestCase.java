@@ -8,6 +8,25 @@ import java.util.StringJoiner;
 import com.auxiliary.testcase.scene.Flowcharting.FlowchartNode;
 import com.auxiliary.testcase.scene.Flowcharting.LineEntry;
 
+/**
+ * <p>
+ * <b>文件名：SceneTestCase.java</b>
+ * </p>
+ * <p>
+ * <b>用途：</b> 分解{@link Flowcharting}中绘制的流程图，得到从起始节点至各个结束节点的子流程，作为场景法生成的测试用例
+ * </p>
+ * <p>
+ * <b>编码时间：2022年3月17日 下午6:02:11
+ * </p>
+ * <p>
+ * <b>修改时间：2022年3月17日 下午6:02:11
+ * </p>
+ *
+ * @author 彭宇琦
+ * @version Ver1.0
+ * @since JDK 1.8
+ * @since autest 3.2.0
+ */
 public class SceneTestCase {
     /**
      * 定义流程图文本间的分割符号
