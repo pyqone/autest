@@ -2,6 +2,8 @@ package com.auxiliary.tool.date;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -15,7 +17,7 @@ import java.util.Random;
  * <b>编码时间：</b>2021年1月22日下午7:52:10
  * </p>
  * <p>
- * <b>修改时间：</b>2021年1月22日下午7:52:10
+ * <b>修改时间：</b>2022年3月21日 下午5:28:28
  * </p>
  * 
  * @author 彭宇琦
@@ -144,62 +146,59 @@ public class TimeUtil {
 				
 		return Duration.between(time.getLocalDateTime(), compareTime.getLocalDateTime());
 	}
-	
-	/**
-	 * 用于计算指定时间与待比较时间之间各个单位的差值，并以{@link Map}的形式进行返回
-	 * <p>
-	 * 在返回值中，其键为时间单位，值为该单位的差值
-	 * </p>
-	 * @param time 指定时间
-	 * @param compareTime 待比较时间
-	 * @return 两时间的差值
-	 */
-	/* TODO 暂时搁置 未想到解决借位或精度的解决办法
-	public static Map<TimeUnit, Integer> timeDifferenceToMap(Time time, Time compareTime) {
-		// 判断传入的对象是否为空
-		if (time == null || compareTime == null) {
-			throw new IncorrectConditionException(String
-					.format("必须指定时间范围与最小变动单位：[time:%s, compareTime:%s]", time, compareTime));
-		}
-		
-		//存储转换单位后的数据
-		Map<TimeUnit, Integer> UnitMap = new HashMap<>();
-		TimeUnit unit = TimeUnit.YEAR;
-		//循环，直到毫秒值小于1000时（单位已计算至毫秒）结束
-		while(unit != null) {
-			int value = 0;
-			switch (unit) {
-			case YEAR:
-				value = time.getLocalDateTime().getYear() - compareTime.getLocalDateTime().getYear();
-				unit = TimeUnit.MONTH;
-				break;
-			case MONTH:
-				value = time.getLocalDateTime().getMonthValue() - compareTime.getLocalDateTime().getMonthValue();
-				if (value < 0) {
-					UnitMap.put(TimeUnit.YEAR, UnitMap.get(TimeUnit.YEAR) - 1);
-					value = 12 + value;
-				}
-				unit = TimeUnit.DAY;
-				break;
-			case DAY:
-				unit = TimeUnit.HOUR;
-				break;
-			case HOUR:
-				unit = TimeUnit.MINUTE;
-				break;
-			case MINUTE:
-				unit = TimeUnit.SECOND;
-				break;
-			case SECOND:
-			default:
-				unit = null;
-				break;
-			}
-			
-			UnitMap.put(unit, value);
-		}
-		
-		return UnitMap;
+
+    /**
+     * 该方法用于将指定的与一组时间进行比较，返回待比较时间在时间组中的位置下标
+     * <p>
+     * 下标从0开始计算，0表示待比较时间在时间组的第一位。
+     * </p>
+     * <p>
+     * <b>注意：</b>方法不对时间组进行排序，当待比较时间为null时，则返回-1
+     * </p>
+     * 
+     * @param time         待比较时间
+     * @param compareTimes 时间组
+     * @return 待比较时间在时间组中的位置
+     * @since autest 3.2.0
+     */
+    public static int compareTimes(Time time, Time... compareTimes) {
+        return compareTimes(time, Arrays.asList(compareTimes));
 	}
-	*/
+
+    /**
+     * 该方法用于将指定的与一组时间进行比较，返回待比较时间在时间组中的位置下标
+     * <p>
+     * 下标从0开始计算，0表示待比较时间在时间组的第一位。
+     * </p>
+     * <p>
+     * <b>注意：</b>方法不对时间组进行排序，当待比较时间为null时，则返回-1
+     * </p>
+     * 
+     * @param time         待比较时间
+     * @param compareTimes 时间组
+     * @return 待比较时间在时间组中的位置
+     * @since autest 3.2.0
+     */
+    public static int compareTimes(Time time, Collection<Time> compareTimes) {
+        // 判断待比较的时间对象是否为null，为null，则返回-1
+        if (time == null) {
+            return -1;
+        }
+
+        // 判断比较的时间组是否为空，为空，则返回0
+        if (compareTimes == null || compareTimes.size() == 0) {
+            return 0;
+        }
+
+        // 循环， 对比所有的时间，当待比较的时间小于被比较的时间时，则返回被比较时间所在的下标
+        int index = 0;
+        for (Time compareTime : compareTimes) {
+            if (time.compareTo(compareTime) < 0) {
+                break;
+            }
+
+            index++;
+        }
+        return index;
+    }
 }
