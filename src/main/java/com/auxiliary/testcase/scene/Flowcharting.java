@@ -163,7 +163,7 @@ public class Flowcharting implements Cloneable {
      * <p>
      * <b>注意：</b>通过该方法添加的节点将使用一个随机的一串英文作为节点名称并进行返回
      * </p>
-     * 
+     *
      * @param nodeText 节点文本
      * @return 节点的名称
      * @since autest 3.2.0
@@ -196,7 +196,7 @@ public class Flowcharting implements Cloneable {
      * <p>
      * <b>注意：</b>通过该方法添加的节点将使用一个随机的一串英文作为节点名称并进行返回
      * </p>
-     * 
+     *
      * @param nodeText 节点文本
      * @return 节点的名称
      * @since autest 3.2.0
@@ -494,8 +494,8 @@ public class Flowcharting implements Cloneable {
         /**
          * 该方法用于添加元素的父层节点
          *
-         * @param nodeName 父层节点名称
-         * @param lineType 节点间连接线型枚举
+         * @param parentNodeName 父层节点名称
+         * @param lineType       节点间连接线型枚举
          * @since autest 3.2.0
          * @throws TestCaseException 节点不存在时抛出的异常
          */
@@ -506,9 +506,9 @@ public class Flowcharting implements Cloneable {
         /**
          * 该方法用于添加元素的父层节点
          *
-         * @param nodeName 父层节点名称
-         * @param lineType 节点间连接线型枚举
-         * @param lineText 节点间连线上的文本内容
+         * @param parentNodeName 父层节点名称
+         * @param lineType       节点间连接线型枚举
+         * @param lineText       节点间连线上的文本内容
          * @return 类本身
          * @since autest 3.2.0
          * @throws TestCaseException 节点不存在时抛出的异常
@@ -568,8 +568,8 @@ public class Flowcharting implements Cloneable {
         /**
          * 该方法用于添加一个已存在的子层节点，以便于循环流程的编写
          *
-         * @param nodeName 父层节点名称
-         * @param lineType 节点间连接线型枚举
+         * @param childNodeName 子层节点名称
+         * @param lineType      节点间连接线型枚举
          * @since autest 3.2.0
          * @throws TestCaseException 节点不存在时抛出的异常
          */
@@ -598,7 +598,7 @@ public class Flowcharting implements Cloneable {
          * <b>注意：</b>当需要移除的节点不存在时，则不进行操作
          * </p>
          *
-         * @param nodeName 父层节点名称
+         * @param parentNodeName 父层节点名称
          * @return 类本身
          * @since autest 3.2.0
          */
@@ -620,7 +620,7 @@ public class Flowcharting implements Cloneable {
          * <b>注意：</b>当需要移除的节点不存在时，则不进行操作
          * </p>
          *
-         * @param nodeName 子层节点名称
+         * @param childNodeName 子层节点名称
          * @return 类本身
          * @since autest 3.2.0
          */
@@ -686,7 +686,7 @@ public class Flowcharting implements Cloneable {
 
         /**
          * 该方法用于返回节点的名称
-         * 
+         *
          * @return 节点名称
          * @since autest 3.2.0
          */
@@ -696,7 +696,7 @@ public class Flowcharting implements Cloneable {
 
         /**
          * 该方法用于返回节点中的文本
-         * 
+         *
          * @return 节点文本
          * @since autest 3.2.0
          */
@@ -706,17 +706,17 @@ public class Flowcharting implements Cloneable {
 
         /**
          * 该方法用于返回节点的图形枚举
-         * 
+         *
          * @return 节点的图形枚举
          * @since autest 3.2.0
          */
         public NodeGraphType getGraph() {
             return graph;
         }
-        
+
         /**
          * 该方法用于子节点集合
-         * 
+         *
          * @return 子节点集合
          * @since autest 3.2.0
          */
@@ -726,7 +726,7 @@ public class Flowcharting implements Cloneable {
 
         /**
          * 该方法用于与子节点间的节点连接方式
-         * 
+         *
          * @param childNodeName 子节点名称
          * @return 与子节点间的连接方式
          * @since autest 3.2.0
@@ -895,7 +895,7 @@ public class Flowcharting implements Cloneable {
 
         /**
          * 初始化连接线型与连线间的文本
-         * 
+         *
          * @param key   线型枚举
          * @param value 连接线间的文本
          */
@@ -919,7 +919,7 @@ public class Flowcharting implements Cloneable {
         public String setValue(String value) {
             String nowValue = getValue();
             this.value = value;
-            
+
             return nowValue;
         }
 
