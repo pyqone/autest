@@ -494,7 +494,7 @@ public class AssertEvent extends AbstractEvent {
         private static final long serialVersionUID = 1L;
 
         public SeleniumAssertException(String message) {
-            super("selenium事件断言失败，日志为：" + message);
+            super("selenium工具断言失败，日志为：" + message);
         }
     }
 }
