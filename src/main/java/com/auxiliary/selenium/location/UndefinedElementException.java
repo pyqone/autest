@@ -1,16 +1,27 @@
 package com.auxiliary.selenium.location;
 
+import com.auxiliary.selenium.SeleniumToolsException;
+
 /**
- * <p><b>文件名：</b>UndefinedElementException.java</p>
- * <p><b>用途：</b>用于查找文件中有误时抛出的异常</p>
- * <p><b>编码时间：</b>2019年10月25日上午8:30:20</p>
- * <p><b>修改时间：</b>2020年10月28日上午11:31:51</p>
+ * <p>
+ * <b>文件名：</b>UndefinedElementException.java
+ * </p>
+ * <p>
+ * <b>用途：</b>用于查找文件中有误时抛出的异常
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2019年10月25日上午8:30:20
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2022年3月25日上午8:42:39
+ * </p>
+ *
  * @author 彭宇琦
  * @version Ver1.0
- * @since JDK 8
+ * @since JDK 1.8
  *
  */
-public class UndefinedElementException extends RuntimeException {
+public class UndefinedElementException extends SeleniumToolsException {
 
 	public UndefinedElementException() {
 		super();
