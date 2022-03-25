@@ -5,6 +5,7 @@ import java.util.function.Function;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 
+import com.auxiliary.selenium.SeleniumToolsException;
 import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.selenium.element.Element;
 import com.auxiliary.tool.asserts.AssertStringUtil;
@@ -23,7 +24,7 @@ import com.auxiliary.tool.asserts.AssertStringUtil;
  * <p>
  * <b>修改时间：</b>2021年10月18日 上午10:25:01
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -40,7 +41,7 @@ public class AssertEvent extends AbstractEvent {
 
     /**
      * 构造对象
-     * 
+     *
      * @param brower 浏览器{@link AbstractBrower}类对象
      */
     public AssertEvent(AbstractBrower brower) {
@@ -51,7 +52,7 @@ public class AssertEvent extends AbstractEvent {
 
     /**
      * 设置当前断言失败时，是否抛出一个异常，默认为false，即不抛出异常
-     * 
+     *
      * @param isThrowException 是否抛出异常
      */
     public void setThrowException(boolean isThrowException) {
@@ -92,7 +93,7 @@ public class AssertEvent extends AbstractEvent {
      * <p>
      * <b>注意：</b>若不传入关键词，或关键词为null时，则返回true
      * </p>
-     * 
+     *
      * @param element       {@link Element}对象
      * @param isJudgeAllKey 是否需要完全判断所有关键词
      * @param keys          关键词组
@@ -109,7 +110,7 @@ public class AssertEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(),
                 (isJudgeAllKey ? "所有" : "部分"), arrayToString(keys)));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
@@ -146,7 +147,7 @@ public class AssertEvent extends AbstractEvent {
      * <p>
      * <b>注意：</b>若不传入关键词，或关键词为null时，则返回true
      * </p>
-     * 
+     *
      * @param element       {@link Element}对象
      * @param isJudgeAllKey 是否需要完全判断所有关键词
      * @param keys          关键词组
@@ -163,13 +164,13 @@ public class AssertEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(),
                 (isJudgeAllKey ? "所有" : "部分"), arrayToString(keys)));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 断言元素的指定属性是否包含指定的关键词。可设置元素的文本内容是否需要判断传入的所有关键词，
      * 具体参数介绍可参考{@link #assertTextContainKey(Element, boolean, String...)}方法
-     * 
+     *
      * @param element       {@link Element}对象
      * @param attributeName 属性名称
      * @param isJudgeAllKey 是否需要完全判断所有关键词
@@ -190,13 +191,13 @@ public class AssertEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), attributeName,
                 (isJudgeAllKey ? "所有" : "部分"), arrayToString(keys)));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 断言元素的文本内容中不包含指定的关键词。可设置元素的文本内容是否需要判断传入的所有关键词，
      * 具体参数介绍可参考{@link #assertTextNotContainKey(Element, boolean, String...)}方法
-     * 
+     *
      * @param element       {@link Element}对象
      * @param attributeName 属性名称
      * @param isJudgeAllKey 是否需要完全判断所有关键词
@@ -216,13 +217,13 @@ public class AssertEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), attributeName,
                 (isJudgeAllKey ? "所有" : "部分"), arrayToString(keys)));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 对元素内容进行处理，并断言处理后的文本内容中包含指定的关键词。 可设置元素的文本内容是否需要判断传入的所有关键词，具体参数介绍
      * 可参考{@link #assertTextContainKey(Element, boolean, String...)}方法
-     * 
+     *
      * @param element       {@link Element}对象
      * @param dispose       对元素内容的处理方法，传入的参数为{@link Element}对象，返回的参数为字符串
      * @param isJudgeAllKey 是否需要完全判断所有关键词
@@ -245,13 +246,13 @@ public class AssertEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), text,
                 (isJudgeAllKey ? "所有" : "部分"), arrayToString(keys)));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 对元素内容进行处理，并断言处理后的文本内容中不包含指定的关键词。 可设置元素的文本内容是否需要判断传入的所有关键词，
      * 具体参数介绍可参考{@link #assertTextContainKey(Element, boolean, String...)}方法
-     * 
+     *
      * @param element       {@link Element}对象
      * @param dispose       对元素内容的处理方法，传入的参数为{@link Element}对象，返回的参数为字符串
      * @param isJudgeAllKey 是否需要完全判断所有关键词
@@ -274,12 +275,12 @@ public class AssertEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), text,
                 (isJudgeAllKey ? "所有" : "部分"), arrayToString(keys)));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 用于断言元素的内容与预期的文本一致
-     * 
+     *
      * @param element {@link Element}对象
      * @param text    需要判断的文本内容
      * @return 断言结果
@@ -298,12 +299,12 @@ public class AssertEvent extends AbstractEvent {
         String logText = "断言“%s”元素的文本内容为“%s”";
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), text));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 用于断言元素的内容与传入的文本不一致
-     * 
+     *
      * @param element {@link Element}对象
      * @param text    需要判断的文本内容
      * @return 断言结果
@@ -322,16 +323,16 @@ public class AssertEvent extends AbstractEvent {
         String logText = "断言“%s”元素的文本内容不为“%s”";
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), text));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 断言两个元素内文本一致
-     * 
+     *
      * @param referencedElement  参考元素
      * @param comparativeElement 比较元素
      * @return 断言结果
-     * 
+     *
      * @throws TimeoutException       元素无法操作时抛出的异常
      * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
      */
@@ -345,16 +346,16 @@ public class AssertEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, referencedElement.getElementData().getName(),
                 comparativeElement.getElementData().getName()));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 断言两个元素内文本不一致
-     * 
+     *
      * @param referencedElement  参考元素
      * @param comparativeElement 比较元素
      * @return 断言结果
-     * 
+     *
      * @throws TimeoutException       元素无法操作时抛出的异常
      * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
      */
@@ -368,12 +369,12 @@ public class AssertEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, referencedElement.getElementData().getName(),
                 comparativeElement.getElementData().getName()));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 断言元素存在
-     * 
+     *
      * @param element {@link Element}对象
      * @return 断言结果
      */
@@ -383,12 +384,12 @@ public class AssertEvent extends AbstractEvent {
         String logText = "断言“%s”元素存在";
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 断言元素不存在
-     * 
+     *
      * @param element {@link Element}对象
      * @return 断言结果
      */
@@ -398,13 +399,13 @@ public class AssertEvent extends AbstractEvent {
         String logText = "断言“%s”元素不存在";
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName()));
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 断言两元素中的数字内容，按照{@link CompareNumberType}指定的比较类型进行比较。若断言的
      * 元素文本内容存在非数字字符时，则直接断言失败
-     * 
+     *
      * @param referencedElement  参考元素
      * @param compareNumberType  比较方式{@link CompareNumberType}枚举类
      * @param comparativeElement 比较元素
@@ -428,13 +429,13 @@ public class AssertEvent extends AbstractEvent {
             return false;
         }
 
-        return result;
+        return disposeException(result, logText);
     }
 
     /**
      * 断言元素中的数字内容与指定的数字按照{@link CompareNumberType}指定的比较类型进行比较。若断言的
      * 元素文本内容为非数字字符时，则直接断言失败
-     * 
+     *
      * @param element           {@link Element}对象
      * @param compareNumberType 比较方式{@link CompareNumberType}枚举类
      * @param compareNumber     预期数字
@@ -449,6 +450,51 @@ public class AssertEvent extends AbstractEvent {
         // 删除获取文本的日志
         brower.getLogRecord().removeLog(1);
 
+        return disposeException(result, logText);
+    }
+
+    /**
+     * 该方法用于判断断言失败时是否需要抛出异常
+     *
+     * @param result  断言结果
+     * @param logText 断言日志
+     * @return 断言结果
+     * @since autest 3.2.0
+     */
+    private boolean disposeException(boolean result, String logText) {
+        // 当断言失败且需要抛出异常时，则抛出指定的异常
+        if (!result && isThrowException) {
+            throw new SeleniumAssertException(logText);
+        }
+
         return result;
+    }
+
+    /**
+     * <p>
+     * <b>文件名：AssertEvent.java</b>
+     * </p>
+     * <p>
+     * <b>用途：</b>定义当Selenium工具断言失败时抛出的异常
+     * </p>
+     * <p>
+     * <b>编码时间：2022年3月25日 上午8:10:28
+     * </p>
+     * <p>
+     * <b>修改时间：2022年3月25日 上午8:10:28
+     * </p>
+     *
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     * @since autest 3.2.0
+     */
+    public class SeleniumAssertException extends SeleniumToolsException {
+        private static final long serialVersionUID = 1L;
+
+        public SeleniumAssertException(String message) {
+            super("selenium事件断言失败，日志为：" + message);
+        }
     }
 }
