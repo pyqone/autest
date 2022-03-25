@@ -57,7 +57,8 @@ public abstract class AbstractApp {
     /**
      * 该方法用于启动指定的应用程序，并将文件名称作为应用的名称
      *
-     * @param appFile 应用程序启动文件类对象
+     * @param appFile      应用程序启动文件类对象
+     * @param appCourseKey 搜索应用进程名称的关键词组
      * @since autest 3.0.0
      */
     public void open(File appFile, String... appCourseKey) {

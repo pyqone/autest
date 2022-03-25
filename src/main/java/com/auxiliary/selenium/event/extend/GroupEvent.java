@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.auxiliary.selenium.SeleniumToolsException;
+
 /**
  * <p>
  * <b>文件名：</b>GroupEvent.java
@@ -22,7 +24,7 @@ import java.util.function.Predicate;
  * <p>
  * <b>修改时间：</b>2020年12月28日上午8:23:55
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -40,7 +42,7 @@ public class GroupEvent {
 
 	/**
 	 * 设置在连续执行事件时，是否由于某一方法执行失败而终止运行
-	 * 
+	 *
 	 * @param isExceptionBreak 失败是否继续执行
 	 */
 	public void setExceptionBreak(boolean isExceptionBreak) {
@@ -49,7 +51,7 @@ public class GroupEvent {
 
 	/**
 	 * 用于添加无参数的事件组合
-	 * 
+	 *
 	 * @param eventName 事件组合名称
 	 * @param event     相应的一组操作
 	 */
@@ -63,12 +65,12 @@ public class GroupEvent {
 	 * 其中，执行方法中的参数为Object的封装类型，其可获取后强转为所需要的类型进行使用，而形参arg为
 	 * 需要传入到执行方法中的参数，无需使用{@link Optional}类进行封装。例如，假设类的对象为test，则调用方法 时可以写为：
 	 * <code><pre>
-	 * test.addEvent("测试", 1, 
+	 * test.addEvent("测试", 1,
 	 * 	text -&gt; Optional.ofNullable("当前参数：" + text.map(t -&gt; (Integer) t).orElse(-1)));
 	 * System.out.println(test.actionEvent("测试").orElse("错误"));//输出：当前参数：1
 	 * </pre></code>
 	 * </p>
-	 * 
+	 *
 	 * @param eventName 事件组合名称
 	 * @param arg       需要传入到事件组中的传参
 	 * @param event     相应的一组操作
@@ -84,7 +86,7 @@ public class GroupEvent {
 
 	/**
 	 * 用于根据组合名称执行事件组合
-	 * 
+	 *
 	 * @param eventName 事件名称
 	 * @return 方法执行后的出参封装类
 	 * @throws ParamException 事件组名称不存在时抛出的异常
@@ -103,7 +105,7 @@ public class GroupEvent {
 	 * <li>若未指定失败或成功方法组名称时，将不执行方法，且不存储执行结果，故结果集中最少存在1个结果，最多存在两个结果</li>
 	 * </ol>
 	 * </p>
-	 * 
+	 *
 	 * @param mustActionEventName    原执行的事件组名称
 	 * @param successActionEventName 原事件组执行成功后执行的事件组名称
 	 * @param failActionEventName    原事件组执行失败后执行的事件组名称
@@ -138,7 +140,7 @@ public class GroupEvent {
 
 	/**
 	 * 用于执行指定的事件组成功后，再执行另一个指定的事件组，若另一事件组名称为空 或为null时，则不执行方法也不存储结果
-	 * 
+	 *
 	 * @param mustActionEventName  原执行的事件组名称
 	 * @param aftreActionEventName 原事件组执行成功后执行的事件组名称
 	 * @return 事件组执行结果集
@@ -150,7 +152,7 @@ public class GroupEvent {
 
 	/**
 	 * 用于执行指定的事件组失败后，再执行另一个指定的事件组，若另一事件组名称为空 或为null时，则不执行方法也不存储结果
-	 * 
+	 *
 	 * @param mustActionEventName  原执行的事件组名称
 	 * @param aftreActionEventName 原事件组执行失败后执行的事件组名称
 	 * @return 事件组执行结果集
@@ -169,7 +171,7 @@ public class GroupEvent {
 	 * <li>设置的是否中断执行，只控制执行方法中产生的异常，若因方法名称不存在而抛出异常时，则同样会中断运行</li>
 	 * </ol>
 	 * </p>
-	 * 
+	 *
 	 * @param eventNames 执行方法名称组
 	 * @return 方法执行结果集合
 	 * @throws ParamException 原事件组名称未指定或事件组名称不存在时抛出的异常
@@ -180,7 +182,7 @@ public class GroupEvent {
 
 	/**
 	 * 用于按照顺序执行事件，并将每条事件的结果进行判断，若判断不通过，则终止运行。
-	 * 
+	 *
 	 * @param predicate  继续执行条件，其参数为上一个事件组执行的结果
 	 * @param eventNames 执行方法名称组
 	 * @return 方法执行结果集合
@@ -213,7 +215,7 @@ public class GroupEvent {
 	 * <p>
 	 * <b>注意：</b>无论条件如何设置，其事件组都会执行一次
 	 * </p>
-	 * 
+	 *
 	 * @param predicate  继续执行条件，其参数为上一次事件组执行的一组结果
 	 * @param eventNames 执行方法名称组
 	 * @return 最后一次循环方法执行结果集合
@@ -231,7 +233,7 @@ public class GroupEvent {
 
 	/**
 	 * 执行相应的事件组，当事件组抛出指定的异常时，则执行相应的事件组。
-	 * 
+	 *
 	 * @param mustActionEventName      事件组名称
 	 * @param exceptionClass           异常类对象
 	 * @param exceptionActionEventName 产生异常时执行的事件组名称
@@ -250,7 +252,7 @@ public class GroupEvent {
 	 * <p>
 	 * <b>注意:</b>若执行事件组抛出的异常不在所传入的捕捉列表中，则抛出该异常
 	 * </p>
-	 * 
+	 *
 	 * @param mustActionEventName         事件组名称
 	 * @param exceptionActionEventNameMap 异常类与产生相应异常时执行的事件组名称键值对
 	 * @return 产生异常时执行的事件组执行结果
@@ -275,7 +277,7 @@ public class GroupEvent {
 
 	/**
 	 * 用于执行事件组，并将事件组的执行结果传入到下一个事件组中作为执行参数， 直到执行完毕，返回最后一个事件组处理的结果
-	 * 
+	 *
 	 * @param eventNames 一组事件组名称
 	 * @return 最后一个事件组处理结果
 	 */
@@ -289,7 +291,7 @@ public class GroupEvent {
 	 * <b>注意：</b>设置的处理方式对第一个事件组的方法传参不生效，对最后一个事件组执行结果也不生效（即不处理
 	 * 第一个传入事件组的参数和最后一个事件组返回的结果）
 	 * </p>
-	 * 
+	 *
 	 * @param mapper     参数处理方式
 	 * @param eventNames 一组事件组名称
 	 * @return 最后一个事件组处理结果
@@ -313,7 +315,7 @@ public class GroupEvent {
 
 	/**
 	 * 用于判断事件组名称是否存在
-	 * 
+	 *
 	 * @param name 事件组名称
 	 * @return 事件组名称
 	 * @throws ParamException 原事件组名称未指定或事件组名称不存在时抛出的异常
@@ -325,7 +327,7 @@ public class GroupEvent {
 
 	/**
 	 * 集成在持续运行中相应事件组的执行结果
-	 * 
+	 *
 	 * @param name 事件组名称
 	 * @return 相应事件组的执行结果
 	 */
@@ -357,7 +359,7 @@ public class GroupEvent {
 	 * <p>
 	 * <b>修改时间：</b>2020年12月29日上午8:25:06
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
@@ -375,7 +377,7 @@ public class GroupEvent {
 
 		/**
 		 * 初始化事件组
-		 * 
+		 *
 		 * @param eventFunction 事件组执行方法
 		 * @param arg           执行 参数
 		 */
@@ -387,7 +389,7 @@ public class GroupEvent {
 
 		/**
 		 * 用于设置方法的执行参数，若设置该参数为非空时，则调用带参的方法；设置为空对象时，则调用无参方法
-		 * 
+		 *
 		 * @param arg 方法执行参数
 		 */
 		public void setParam(Optional<Object> arg) {
@@ -396,7 +398,7 @@ public class GroupEvent {
 
 		/**
 		 * 用于执行指定的方法，以Object类的封装类返回执行出参，若事件组无出参，则返回{@link Optional#empty()}。
-		 * 
+		 *
 		 * @return 方法执行出参
 		 */
 		public Optional<Object> run() {
@@ -423,7 +425,7 @@ public class GroupEvent {
 	 * <p>
 	 * <b>修改时间：</b>2020年12月30日上午7:59:58
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
@@ -448,14 +450,15 @@ public class GroupEvent {
 	 * <p>
 	 * <b>修改时间：</b>2020年12月30日上午8:01:37
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
 	 *
 	 */
 	public interface NoParamGroupEventFunction extends GroupEventFunction {
-		default Object action(Optional<Object> arg) {
+		@Override
+        default Object action(Optional<Object> arg) {
 			return null;
 		}
 	}
@@ -473,38 +476,39 @@ public class GroupEvent {
 	 * <p>
 	 * <b>修改时间：</b>2020年12月30日上午8:03:07
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
 	 *
 	 */
 	public interface HasParamGroupEventFunction extends GroupEventFunction {
-		default void action() {
+		@Override
+        default void action() {
 			return;
 		}
 	}
 
 	/**
-	 * <p>
-	 * <b>文件名：</b>GroupEvent.java
-	 * </p>
-	 * <p>
-	 * <b>用途：</b> 定义参数错误异常
-	 * </p>
-	 * <p>
-	 * <b>编码时间：</b>2020年12月30日下午12:36:37
-	 * </p>
-	 * <p>
-	 * <b>修改时间：</b>2020年12月30日下午12:36:37
-	 * </p>
-	 * 
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 * @since JDK 1.8
-	 *
-	 */
-	public class ParamException extends RuntimeException {
+     * <p>
+     * <b>文件名：</b>GroupEvent.java
+     * </p>
+     * <p>
+     * <b>用途：</b> 定义参数错误异常
+     * </p>
+     * <p>
+     * <b>编码时间：</b>2020年12月30日下午12:36:37
+     * </p>
+     * <p>
+     * <b>修改时间：</b>2022年3月25日上午8:42:39
+     * </p>
+     * 
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     *
+     */
+    public class ParamException extends SeleniumToolsException {
 		private static final long serialVersionUID = 1L;
 
 		public ParamException(String message) {

@@ -1,5 +1,7 @@
 package com.auxiliary.selenium.brower;
 
+import com.auxiliary.selenium.SeleniumToolsException;
+
 /**
  * <p><b>文件名：</b>IncorrectPageException.java</p>
  * <p><b>用途：</b>当页面配置错误或加载有误时抛出</p>
@@ -9,7 +11,7 @@ package com.auxiliary.selenium.brower;
  * @version Ver1.0
  * @since JDK 1.8
  */
-public class IncorrectPageException extends RuntimeException {
+public class IncorrectPageException extends SeleniumToolsException {
 
 	private static final long serialVersionUID = 1L;
 

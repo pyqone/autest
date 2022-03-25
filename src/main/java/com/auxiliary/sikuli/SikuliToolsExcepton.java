@@ -1,25 +1,26 @@
 package com.auxiliary.sikuli;
 
+import com.auxiliary.AuxiliaryToolsException;
+
 /**
  * <p>
  * <b>文件名：</b>SikuliToolsExcepton.java
  * </p>
  * <p>
- * <b>用途：</b>
- * 当sikuli工具使用出错时，抛出的异常。所有与sikuli相关的异常类都应继承该异常
+ * <b>用途：</b> 当sikuli工具使用出错时，抛出的异常。所有与sikuli相关的异常类都应继承该异常
  * </p>
  * <p>
  * <b>编码时间：</b>2022年1月13日 上午8:04:39
  * </p>
  * <p>
- * <b>修改时间：</b>2022年1月13日 上午8:04:39
+ * <b>修改时间：</b>2022年3月25日 上午8:04:39
  * </p>
  *
  * @author 彭宇琦
  * @version Ver1.0
  * @since autest 3.0.0
  */
-public class SikuliToolsExcepton extends RuntimeException {
+public class SikuliToolsExcepton extends AuxiliaryToolsException {
     private static final long serialVersionUID = 1L;
 
     public SikuliToolsExcepton() {

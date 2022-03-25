@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.openqa.selenium.TimeoutException;
 
+import com.auxiliary.selenium.SeleniumToolsException;
 import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.selenium.element.Element;
 import com.auxiliary.selenium.element.FindDataListElement;
@@ -661,11 +662,11 @@ public final class DataTableEvent extends AbstractEvent {
 						})
 						.collect(Collectors.toList());
 			} catch (TimeoutException e) {
-				return new ArrayList<String>();
+				return new ArrayList<>();
 			}
 
 		} else {
-			return new ArrayList<String>();
+			return new ArrayList<>();
 		}
 	}
 
@@ -771,25 +772,25 @@ public final class DataTableEvent extends AbstractEvent {
 	}
 
 	/**
-	 * <p>
-	 * <b>文件名：</b>DataTableEvent.java
-	 * </p>
-	 * <p>
-	 * <b>用途：</b> 若元素列表无法添加时抛出的异常
-	 * </p>
-	 * <p>
-	 * <b>编码时间：</b>2020年11月19日下午8:26:49
-	 * </p>
-	 * <p>
-	 * <b>修改时间：</b>2020年11月19日下午8:26:49
-	 * </p>
-	 *
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 * @since JDK 1.8
-	 *
-	 */
-	public class InvalidDataListException extends RuntimeException {
+     * <p>
+     * <b>文件名：</b>DataTableEvent.java
+     * </p>
+     * <p>
+     * <b>用途：</b> 若元素列表无法添加时抛出的异常
+     * </p>
+     * <p>
+     * <b>编码时间：</b>2020年11月19日下午8:26:49
+     * </p>
+     * <p>
+     * <b>修改时间：</b>2022年3月25日上午8:42:39
+     * </p>
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     *
+     */
+    public class InvalidDataListException extends SeleniumToolsException {
 		private static final long serialVersionUID = 1L;
 
 		public InvalidDataListException() {
