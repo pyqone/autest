@@ -1,18 +1,27 @@
 package com.auxiliary.selenium.event.extend;
 
+import com.auxiliary.selenium.SeleniumToolsException;
+
 /**
- * <p><b>文件名：</b>ControlException.java</p>
- * <p><b>用途：</b>
- * 获取控件有误时抛出的异常
+ * <p>
+ * <b>文件名：</b>ControlException.java
  * </p>
- * <p><b>编码时间：</b>2020年11月30日上午8:37:49</p>
- * <p><b>修改时间：</b>2020年11月30日上午8:37:49</p>
+ * <p>
+ * <b>用途：</b> 获取控件有误时抛出的异常
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2020年11月30日上午8:37:49
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2022年3月25日上午8:42:39
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
  *
  */
-public class ControlException extends RuntimeException {
+public class ControlException extends SeleniumToolsException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,7 +43,7 @@ public class ControlException extends RuntimeException {
 	public ControlException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
-	
+
 	/**
 	 * 用于对控件枚举不存在抛出异常时编写的基础信息
 	 * @param controlName 控件名称
