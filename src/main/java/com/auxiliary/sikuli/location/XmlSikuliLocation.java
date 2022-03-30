@@ -16,6 +16,7 @@ import org.sikuli.script.Location;
 import com.auxiliary.selenium.location.IncorrectFileException;
 import com.auxiliary.sikuli.element.ElementLocationInfo;
 import com.auxiliary.sikuli.location.UndefinedElementException.ExceptionElementType;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -117,7 +118,7 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
         }
 
         // 初始化元素默认信息
-        HashMap<ElementInfoDataType, String> elementDataMap = new HashMap<>(16);
+        HashMap<ElementInfoDataType, String> elementDataMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 判断获取的元素标签是否为空，若为空，则人为在其下方添加一个没有任何属性的file标签
         if (element.elements().isEmpty()) {

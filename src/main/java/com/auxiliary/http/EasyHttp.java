@@ -14,6 +14,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.auxiliary.tool.regex.ConstType;
+
 /**
  * <p><b>文件名：</b>EasyHttp.java</p>
  * <p><b>用途：</b>
@@ -30,12 +32,12 @@ public class EasyHttp implements Cloneable {
 	 * 存储指定的请求方式，默认get请求
 	 */
 	private RequestType requestType = RequestType.GET;
-	
+
 	/**
 	 * 存储接口请求地址，及相应拼接的参数，用于最终请求
 	 */
 	private StringBuilder url = new StringBuilder();
-	
+
 	/**
 	 * 存储接口请求协议
 	 */
@@ -52,27 +54,27 @@ public class EasyHttp implements Cloneable {
 	 * 存储接口路径
 	 */
 	private String address = "";
-	
+
 	/**
 	 * 存储接口请求的参数
 	 */
-	private HashMap<String, String> parameterMap = new HashMap<>(16);
-	
+    private HashMap<String, String> parameterMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
 	/**
 	 * 存储请求体
 	 */
 	private String body = "";
-	
+
 	/**
 	 * 存储字体编码
 	 */
 	private String encoding = "UTF-8";
-	
+
 	/**
 	 * 用于存储请求头
 	 */
 	private HashMap<String, String> headMap = new HashMap<>();
-	
+
 	/**
 	 * 用于设置请求方式，传入请求方式枚举类{@link RequestType}
 	 * @param requestType {@link RequestType}枚举类
@@ -82,7 +84,7 @@ public class EasyHttp implements Cloneable {
 		this.requestType = requestType;
 		return this;
 	}
-	
+
 	/**
 	 * 指定接口请求url，当未指定协议时，将默认以http为请求协议
 	 * @param url 请求url
@@ -91,7 +93,7 @@ public class EasyHttp implements Cloneable {
 	public EasyHttp url(String url) {
 		String inter = "";
 		String param = "";
-		
+
 		//替换中文冒号为英文冒号
 		inter.replaceAll("：", ":");
 		//判断传入的url是否存在参数
@@ -101,15 +103,15 @@ public class EasyHttp implements Cloneable {
 		} else {
 			inter = url;
 		}
-		
+
 		//判断传参是否包含协议，若未包含，则默认拼接http
 		int index = inter.indexOf("://");
 		if (index > -1) {
 			agreement(inter.substring(0, index + "://".length()));
 			//裁剪协议
 			inter = inter.substring(index + "://".length());
-		} 
-		
+		}
+
 		//按照“/”符号，拆分IP及端口
 		if((index = inter.indexOf("/")) > -1) {
 			//获取接口地址
@@ -117,7 +119,7 @@ public class EasyHttp implements Cloneable {
 			//裁剪接口地址
 			inter = inter.substring(0, index);
 		}
-		
+
 		//判断获取的ip是否包含冒号，若包含冒号，则按照冒号切分ip及端口
 		if ((index = inter.indexOf(":")) > -1) {
 			port(Integer.valueOf(inter.substring(index + 1)));
@@ -125,17 +127,17 @@ public class EasyHttp implements Cloneable {
 		} else {
 			host(inter);
 		}
-		
+
 		//裁剪参数
 		if (!param.isEmpty()) {
 			Arrays.stream(param.split("&")).forEach(parameterText -> {
 				putParameter(parameterText);
 			});
 		}
-		
+
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置接口请求协议，默认为“http://”
 	 * @param agreement 协议
@@ -145,7 +147,7 @@ public class EasyHttp implements Cloneable {
 		this.agreement = agreement;
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置接口请求的IP或域名
 	 * @param host IP或域名
@@ -155,7 +157,7 @@ public class EasyHttp implements Cloneable {
 		this.host = host;
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置接口路径
 	 * @param address 接口路径
@@ -165,7 +167,7 @@ public class EasyHttp implements Cloneable {
 		this.address = address;
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置端口号
 	 * @param port 端口号
@@ -175,7 +177,7 @@ public class EasyHttp implements Cloneable {
 		this.port = String.valueOf(port);
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置请求参数，若参数名存在时，则覆盖上一次设置的值
 	 * @param key 参数名
@@ -186,7 +188,7 @@ public class EasyHttp implements Cloneable {
 		parameterMap.put(key, value);
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置“key=value”格式的参数，若参数名存在时，则覆盖上一次设置的值
 	 * @param parameterText 参数文本
@@ -198,12 +200,12 @@ public class EasyHttp implements Cloneable {
 		if (parameterText.indexOf("=") < 0) {
 			return this;
 		}
-		
+
 		String[] parameter = parameterText.split("=");
 		//去空格后传入putParameter方法中
 		return putParameter(parameter[0].trim(), parameter[1].trim());
 	}
-	
+
 	/**
 	 * 用于清空设置的请求参数
 	 * @return 类本身
@@ -212,7 +214,7 @@ public class EasyHttp implements Cloneable {
 		parameterMap.clear();
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置接口的请求体
 	 * @param body 请求体
@@ -222,7 +224,7 @@ public class EasyHttp implements Cloneable {
 		this.body = body;
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置请求头，若请求头名存在时，则覆盖上一次设置的值
 	 * @param key 请求头名
@@ -233,7 +235,7 @@ public class EasyHttp implements Cloneable {
 		headMap.put(key, value);
 		return this;
 	}
-	
+
 	/**
 	 * 用于根据请求头枚举类{@link HeadType}设置请求头，若请求头名存在时，则覆盖上一次设置的值
 	 * @param headType {@link HeadType}枚举类
@@ -243,7 +245,7 @@ public class EasyHttp implements Cloneable {
 		putHead(headType.getHeadName(), headType.getHeadValue());
 		return this;
 	}
-	
+
 	/**
 	 * 用于清空设置的请求头
 	 * @return 类本身
@@ -252,7 +254,7 @@ public class EasyHttp implements Cloneable {
 		headMap.clear();
 		return this;
 	}
-	
+
 	/**
 	 * 用于设置字体编码，默认为UTF-8
 	 * @param encoding 字体编码
@@ -262,7 +264,7 @@ public class EasyHttp implements Cloneable {
 		this.encoding = encoding;
 		return this;
 	}
-	
+
 	/**
 	 * 返回设置的url
 	 * @return url
@@ -272,36 +274,36 @@ public class EasyHttp implements Cloneable {
 		url.delete(0, url.length());
 		//拼接接口请求地址
 		url.append(agreement).append(host).append(":" + port).append(address).toString();
-		
+
 		//拼接接口请求参数，若无请求参数，则不拼接参数
 		if (!parameterMap.isEmpty()) {
 			url.append("?");
-			
+
 			//遍历parameterMap，获取参数值
 			parameterMap.forEach((key, value) -> {
 				url.append(key).append("=").append(value).append("&");
 			});
-			
+
 			//删除多余的&符号
 			url.delete(url.lastIndexOf("&"), url.length());
 		}
-		
+
 		//判断请求方式是否为get请求，若为get请求时，若设置了body，则将body拼接至末尾
 		if (requestType == RequestType.GET && !body.isEmpty()) {
 			//根据parameterMap是否为空判断，应拼接何种连接符，若parameterMap存在参数，则拼接"&"符号
 			url.append(parameterMap.isEmpty() ? "?" : "&");
 		}
-		
+
 		//返回参数，并将空格转换为%20
 		return url.toString().replaceAll(" ", "%20");
 	}
-	
+
 	/**
 	 * 根据设置的内容，对接口进行请求，返回{@link EasyResponse}类对象，可通过该类对响应结果进行返回
 	 * @return {@link EasyResponse}
 	 * @throws URISyntaxException 当url地址有误时抛出的异常
-	 * @throws IOException 
-	 * @throws ClientProtocolException 
+	 * @throws IOException
+	 * @throws ClientProtocolException
 	 */
 	public EasyResponse response() throws URISyntaxException, ClientProtocolException, IOException {
 		//根据请求方式，构造相应的请求类对象
@@ -320,7 +322,7 @@ public class EasyHttp implements Cloneable {
 		default:
 			break;
 		}
-		
+
 		//设置请求头
 		request = setHead(request);
 		//对接口进行请求，并存储响应结果
@@ -328,7 +330,7 @@ public class EasyHttp implements Cloneable {
 		//通过响应结果构造EasyResponse类
 		return new EasyResponse(responseText);
 	}
-	
+
 	/**
 	 * 用于设置请求头
 	 * @param requestBase 请求类对象
@@ -339,7 +341,7 @@ public class EasyHttp implements Cloneable {
 		headMap.forEach((key, value) -> {
 			requestBase.setHeader(key, value);
 		});
-		
+
 		return requestBase;
 	}
 }

@@ -24,6 +24,7 @@ import com.auxiliary.selenium.event.WaitEvent;
 import com.auxiliary.tool.data.KeyType;
 import com.auxiliary.tool.data.ListUtil;
 import com.auxiliary.tool.data.TableData;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -68,7 +69,7 @@ public final class DataTableEvent extends AbstractEvent {
 	/**
 	 * 用于存储列表相应的操作元素映射
 	 */
-	private HashMap<DataTableKeywordType, Element> controlMap = new HashMap<>(16);
+    private HashMap<DataTableKeywordType, Element> controlMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 	/**
 	 * 指向列表加载等待控件
 	 */

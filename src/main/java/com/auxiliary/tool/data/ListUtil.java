@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- *
  */
 public class ListUtil {
 	/**
@@ -174,7 +173,7 @@ public class ListUtil {
 		LinkedHashSet<Optional<T>> set = new LinkedHashSet<>();
 		Optional.ofNullable(list).filter(l -> !l.isEmpty()).ifPresent(l -> l.forEach(set::add));
 
-		return new ArrayList<Optional<T>>(set);
+		return new ArrayList<>(set);
 	}
 
 	/**

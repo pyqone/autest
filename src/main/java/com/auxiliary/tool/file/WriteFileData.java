@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.file.excel.ExcelFileTemplet;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -55,7 +56,7 @@ public class WriteFileData {
     /**
      * 存储待替换的词语以及被替换的词语
      */
-    private HashMap<String, DataFunction> replaceWordMap = new HashMap<>(16);
+    private HashMap<String, DataFunction> replaceWordMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 初始化相关的数据

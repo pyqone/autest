@@ -19,6 +19,7 @@ import com.auxiliary.selenium.element.ElementData;
 import com.auxiliary.selenium.location.ByType;
 import com.auxiliary.selenium.location.ElementLocationInfo;
 import com.auxiliary.selenium.location.NoFileLocation;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p><b>文件名：</b>Page.java</p>
@@ -59,12 +60,12 @@ public class Page {
 	 * 用于存储页面自动刷新的次数，默认为0次
 	 */
 	int rafreshCount = 0;
-	
+
 	/**
 	 * 用于存储浏览器启动时的信息
 	 */
 	private JSONObject pageInformationJson = new JSONObject();
-	
+
 	/**
 	 * 初始化需要打开页面url以及站点的名称
 	 * @param url 待测站点url
@@ -73,17 +74,17 @@ public class Page {
 	public Page(String url, String pageName) {
 		this.url = url;
 		this.pageName = pageName;
-		
-		assertMap = new HashMap<>(16);
+
+        assertMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 		//初始化断言的内容
 		Arrays.stream(PageAssertType.values()).forEach(type -> assertMap.put(type, new ArrayList<>()));
-		
+
 		//存储页面信息
 		pageInformationJson.put("页面名称", pageName);
 		pageInformationJson.put("页面站点", url);
 		pageInformationJson.put("页面加载时间", loadTime);
 	}
-	
+
 	/**
 	 * 用于返回存储的页面名称
 	 * @return 页面名称
@@ -91,7 +92,7 @@ public class Page {
 	public String getPageName() {
 		return pageName;
 	}
-	
+
 	/**
 	 * 返回待测站点的url
 	 * @return 待测站点的url
@@ -107,7 +108,7 @@ public class Page {
 	public String getHandle() {
 		return handle;
 	}
-	
+
 	/**
 	 * 用于设置页面所在窗口的handle
 	 * @param handle handle值
@@ -127,7 +128,7 @@ public class Page {
 		//存储加载时间信息
 		pageInformationJson.put("页面加载时间", loadTime);
 	}
-	
+
 	/**
 	 * 用于设置对页面的标题断言
 	 * <p>
@@ -145,14 +146,14 @@ public class Page {
 			List<Object> list = assertMap.get(PageAssertType.TITLE);
 			Arrays.stream(ts).forEach(list::add);
 			assertMap.put(PageAssertType.TITLE, list);
-			
+
 			pageInformationJson.put("页面标题断言", list);
-			
+
 			//记录启用了断言
 			isAssert = true;
 		});
 	}
-	
+
 	/**
 	 * 用于设置对页面的html内容断言
 	 * <p>
@@ -170,14 +171,14 @@ public class Page {
 			List<Object> list = assertMap.get(PageAssertType.HTML);
 			Arrays.stream(ts).forEach(list::add);
 			assertMap.put(PageAssertType.HTML, list);
-			
+
 			pageInformationJson.put("页面html断言", list);
-			
+
 			//记录启用了断言
 			isAssert = true;
 		});
 	}
-	
+
 	/**
 	 * 用于设置对页面最终跳转的url
 	 * <p>
@@ -195,14 +196,14 @@ public class Page {
 			List<Object> list = assertMap.get(PageAssertType.URL);
 			Arrays.stream(ts).forEach(list::add);
 			assertMap.put(PageAssertType.URL, list);
-			
+
 			pageInformationJson.put("页面url断言", list);
-			
+
 			//记录启用了断言
 			isAssert = true;
 		});
 	}
-	
+
 	/**
 	 * 用于设置对页面的文本内容断言
 	 * <p>
@@ -221,19 +222,19 @@ public class Page {
 			Arrays.stream(texts).map(text -> {
 				NoFileLocation nf = new NoFileLocation();
 				nf.putElementLocation("文本元素", ByType.XPATH, "//*[contains(text(), '" + text + "')]");
-				
+
 				ElementData el = new ElementData("文本元素", nf);
 				return el;
 			}).forEach(list::add);
 			assertMap.put(PageAssertType.TEXT, list);
-			
+
 			pageInformationJson.put("页面文本断言", list);
-			
+
 			//记录启用了断言
 			isAssert = true;
 		});
 	}
-	
+
 	/**
 	 * 用于设置对页面的元素断言
 	 * <p>
@@ -251,21 +252,21 @@ public class Page {
 			List<Object> list = assertMap.get(PageAssertType.ELEMENT);
 			Arrays.stream(elements).filter(e -> e != null).forEach(list::add);
 			assertMap.put(PageAssertType.ELEMENT, list);
-			
+
 			pageInformationJson.put("页面元素断言", list);
-			
+
 			//记录启用了断言
 			isAssert = true;
 		});
 	}
-	
+
 	/**
 	 * 用于设置对页面自动加载次数的限制
 	 * @param rafreshCount 加载次数限制
 	 */
 	public void setRafreshCount(int rafreshCount) {
 		this.rafreshCount = rafreshCount;
-		
+
 		pageInformationJson.put("页面重载次数", rafreshCount);
 	}
 
@@ -276,7 +277,7 @@ public class Page {
 	public JSONObject getPageInformation() {
 		return pageInformationJson;
 	}
-	
+
 	/**
 	 * 用于通过浏览器加载页面，并根据页面断言，返回页面是否加载成功。若未设置断言，则无论
 	 * 页面是否成功加载，均返回true
@@ -287,12 +288,12 @@ public class Page {
 		// 将设置的自动刷新次数存储在临时变量中，并加上1
 		// 加1的目的是自动刷新判断是用do...while循环实现，若不事先加上1在会导致循环少1次
 		int rafresh = rafreshCount + 1;
-				
+
 		// 进入站点
 		driver.get(url);
 		// 读取并设置浏览器等待时间
 		driver.manage().timeouts().pageLoadTimeout(loadTime, TimeUnit.SECONDS);
-		
+
 		// 循环执行页面加载判断，判断其是否加载出目标站点，若加载出来页面，则结束循环，若用户设置的自动刷新次数循环完还没加载出页面，则
 		// 抛出PageNotFoundException异常。页面加载判断必须读取一次，所以使用do...while循环
 		do {
@@ -305,16 +306,16 @@ public class Page {
 				// 不执行后续代码，继续循环
 				continue;
 			}
-			
+
 			//若通过判断，则返回相应的WebDriver对象
 			return true;
 
 		// 判断的条件刷新次数rafresh为0时则结束循环
 		} while (rafresh != 0);
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * 用于对加载的页面信息与断言对比 ，返回对比结果
 	 * @param driver WebDriver对象
@@ -324,19 +325,19 @@ public class Page {
 		if (driver == null) {
 			throw new IncorrectPageException("未指定WebDriver对象");
 		}
-		
+
 		//判断当前是否启用了断言
 		if (!isAssert) {
 			return true;
 		}
-		
+
 		//遍历断言内容的key值
 		for (PageAssertType key : assertMap.keySet()) {
 			//若当前未设置断言，则跳过该判断
 			if (assertMap.get(key).size() == 0) {
 				continue;
 			}
-			
+
 			//根据关键词，对页面进行断言
 			switch (key) {
 			case TITLE:
@@ -369,10 +370,10 @@ public class Page {
 				break;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * 用于对页面文本相关的内容进行断言的方法
 	 * @param content 文本内容
@@ -388,11 +389,11 @@ public class Page {
 				return false;
 			}
 		}
-		
+
 		//若通过所有判断，则返回true
 		return true;
 	}
-	
+
 	/**
 	 * 用于对页面元素相关的内容进行断言的方法
 	 * @param driver 页面WebDriver对象
@@ -405,7 +406,7 @@ public class Page {
 			ElementData e = (ElementData) assertObj;
 			//获取元素的定位方式
 			List<ElementLocationInfo> locationList = e.getLocationList();
-			
+
 			//遍历元素的定位方式，拼接定位方式为By对象
 			boolean isSuccess = true;
 			for (int i = 0; i < locationList.size(); i++) {
@@ -416,7 +417,7 @@ public class Page {
 					isSuccess = false;
 				}
 			}
-			
+
 			//判断当前查找完所有元素定位方式后是否能在页面找到元素，
 			//若不能找到，则直接返回false；否则，进行下一个判断
 			if (!isSuccess) {
@@ -425,11 +426,11 @@ public class Page {
 				continue;
 			}
 		}
-		
+
 		//若通过所有判断，则返回true
 		return true;
 	}
-	
+
 
 	@Override
 	public int hashCode() {
@@ -443,31 +444,40 @@ public class Page {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		Page other = (Page) obj;
 		if (handle == null) {
-			if (other.handle != null)
-				return false;
-		} else if (!handle.equals(other.handle))
-			return false;
+			if (other.handle != null) {
+                return false;
+            }
+		} else if (!handle.equals(other.handle)) {
+            return false;
+        }
 		if (pageName == null) {
-			if (other.pageName != null)
-				return false;
-		} else if (!pageName.equals(other.pageName))
-			return false;
+			if (other.pageName != null) {
+                return false;
+            }
+		} else if (!pageName.equals(other.pageName)) {
+            return false;
+        }
 		if (url == null) {
-			if (other.url != null)
-				return false;
-		} else if (!url.equals(other.url))
-			return false;
+			if (other.url != null) {
+                return false;
+            }
+		} else if (!url.equals(other.url)) {
+            return false;
+        }
 		return true;
 	}
-	
+
 	/**
 	 * <p><b>文件名：</b>Page.java</p>
 	 * <p><b>用途：</b>
@@ -484,19 +494,19 @@ public class Page {
 		/**
 		 * 断言页面标题
 		 */
-		TITLE, 
+		TITLE,
 		/**
 		 * 断言页面html代码
 		 */
-		HTML, 
+		HTML,
 		/**
 		 * 断言页面最终跳转的url
 		 */
-		URL, 
+		URL,
 		/**
 		 * 断言页面文本
 		 */
-		TEXT, 
+		TEXT,
 		/**
 		 * 断言页面元素
 		 */

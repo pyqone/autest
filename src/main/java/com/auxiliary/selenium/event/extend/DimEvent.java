@@ -16,6 +16,7 @@ import com.auxiliary.selenium.element.ElementData;
 import com.auxiliary.selenium.event.AbstractEvent;
 import com.auxiliary.selenium.event.ClickEvent;
 import com.auxiliary.selenium.event.TextEvent;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -34,7 +35,7 @@ import com.auxiliary.selenium.event.TextEvent;
  * <p>
  * <b>修改时间：</b>2021年3月23日下午6:29:22
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -71,7 +72,7 @@ public class DimEvent extends AbstractEvent {
 
 	/**
 	 * 构造对象
-	 * 
+	 *
 	 * @param brower 浏览器{@link AbstractBrower}类对象
 	 */
 	public DimEvent(AbstractBrower brower) {
@@ -88,7 +89,7 @@ public class DimEvent extends AbstractEvent {
 	 * </pre></code>
 	 * 当元素默认值为“${World}”时，其字符串“World”与正则表达式“Wo.*”匹配，故在事件的操作中，该字符串将被解析为“Hello World!”
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * <b>注意：</b>
 	 * <ol>
@@ -96,7 +97,7 @@ public class DimEvent extends AbstractEvent {
 	 * <li>在{@link Functions}类中已定义多个默认公式可供选择，其方法均为静态方法，返回值为{@link DataDriverFunction}</li>
 	 * </ol>
 	 * </p>
-	 * 
+	 *
 	 * @param function 方法
 	 */
 	public void addFunction(DataDriverFunction function) {
@@ -112,7 +113,7 @@ public class DimEvent extends AbstractEvent {
 	 * <li>窗体元素等特殊的元素类型将无法被识别，传入该元素后，将抛出异常</li>
 	 * </ol>
 	 * </p>
-	 * 
+	 *
 	 * @param elements 元素组
 	 * @return 最后一个事件执行返回结果
 	 */
@@ -160,7 +161,7 @@ public class DimEvent extends AbstractEvent {
 
 	/**
 	 * 用于返回上一次调用模糊事件后的执行结果集合
-	 * 
+	 *
 	 * @return 执行结果集合
 	 */
 	public ArrayList<String> getResultList() {
@@ -169,7 +170,7 @@ public class DimEvent extends AbstractEvent {
 
 	/**
 	 * 定义对普通型元素进行处理的方法
-	 * 
+	 *
 	 * @param element      元素类对象
 	 * @param defaultValue 元素的默认值
 	 * @return 元素的操作结果
@@ -197,12 +198,12 @@ public class DimEvent extends AbstractEvent {
 
 	/**
 	 * 根据公式关键词，与存储的公式进行匹配，返回替换的关键词以及替换结果
-	 * 
+	 *
 	 * @param keySet 公式关键词
 	 * @return 与公式正则匹配的结果
 	 */
 	private HashMap<String, String> repleat(Set<String> keySet) {
-		HashMap<String, String> repleatMap = new HashMap<>(16);
+        HashMap<String, String> repleatMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 		// 遍历提取的所有关键词
 		keySet.forEach(key -> {
 			// 将关键词与公式正则进行匹配，若匹配成功，则将相应的内容进行转译

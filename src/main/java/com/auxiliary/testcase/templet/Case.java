@@ -12,6 +12,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.auxiliary.testcase.file.IncorrectFileException;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -26,7 +27,7 @@ import com.auxiliary.testcase.file.IncorrectFileException;
  * <p>
  * <b>修改时间：</b>2020年3月4日 07:39:23
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -73,16 +74,16 @@ public abstract class Case {
 	/**
 	 * 存储xml文件中其需要替换的词语
 	 */
-	protected HashMap<String, String> wordMap = new HashMap<String, String>(16);
+    protected HashMap<String, String> wordMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
 	/**
 	 * 存储字段的文本内容
 	 */
-	protected HashMap<String, ArrayList<String>> fieldTextMap = new HashMap<String, ArrayList<String>>(16);
+    protected HashMap<String, ArrayList<String>> fieldTextMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
 	/**
 	 * 根据用例xml文件来构造Case类
-	 * 
+	 *
 	 * @param configXmlFile xml配置文件
 	 * @throws IncorrectFileException 文件格式或路径不正确时抛出的异常
 	 */
@@ -102,7 +103,7 @@ public abstract class Case {
 
 	/**
 	 * 用于设置需要替换的词语
-	 * 
+	 *
 	 * @param word 测试用例xml库中需要替换的词语
 	 * @param text 被替换的词语
 	 */
@@ -117,7 +118,7 @@ public abstract class Case {
 
 	/**
 	 * 返回字段内容
-	 * 
+	 *
 	 * @return 字段内容
 	 */
 	public HashMap<String, ArrayList<String>> getFieldTextMap() {
@@ -126,7 +127,7 @@ public abstract class Case {
 
 	/**
 	 * 用于替换文本中需要替换的单词，返回替换后的文本
-	 * 
+	 *
 	 * @param text 需要替换的文本
 	 * @return 替换后的文本
 	 */
@@ -152,7 +153,7 @@ public abstract class Case {
 
 	/**
 	 * 用于获取用例xml中对应用例的标签内的文本，并返回替换词语后的文本
-	 * 
+	 *
 	 * @param caseName  用例名称
 	 * @param labelType 标签枚举{@link LabelType}
 	 * @param id        对应标签的id属性
@@ -166,7 +167,7 @@ public abstract class Case {
 
 	/**
 	 * 用于获取用例xml中对应用例的标签内的文本，并返回替换词语后的文本
-	 * 
+	 *
 	 * @param caseName  用例名称
 	 * @param labelName 标签名称
 	 * @param id        对应标签的id属性
@@ -193,7 +194,7 @@ public abstract class Case {
 
 	/**
 	 * 用于获取用例xml中对应用例的标签内所有的文本，并返回替换词语后的文本
-	 * 
+	 *
 	 * @param caseName  用例名称
 	 * @param labelType 标签枚举
 	 * @return 标签中存储的文本，并进行处理
@@ -203,9 +204,9 @@ public abstract class Case {
 		String xpath = "//" + LabelType.CASE.getName() + "[@" + ATTRIBUTE_NAME + "='" + caseName + "']//"
 				+ labelType.getName();
 
-		
+
 		// 存储节点中的value属性内的文本
-		ArrayList<String> texts = new ArrayList<String>();
+		ArrayList<String> texts = new ArrayList<>();
 		// 获取所有的节点
 		configXml.selectNodes(xpath).stream()
 				.map(e -> (Element) e)
@@ -251,7 +252,7 @@ public abstract class Case {
 
 	/**
 	 * 用于添加一行文本
-	 * 
+	 *
 	 * @param labelType 标签名称（枚举）
 	 * @param text      相应内容
 	 */
@@ -261,7 +262,7 @@ public abstract class Case {
 
 	/**
 	 * 用于添加多行文本
-	 * 
+	 *
 	 * @param labelName 标签名称
 	 * @param texts     相应内容
 	 */
@@ -271,7 +272,7 @@ public abstract class Case {
 
 	/**
 	 * 用于添加一行文本
-	 * 
+	 *
 	 * @param labelName 标签名称
 	 * @param text      相应内容
 	 */
@@ -281,7 +282,7 @@ public abstract class Case {
 
 	/**
 	 * 用于添加多行文本
-	 * 
+	 *
 	 * @param label 标签名称（枚举）
 	 * @param texts 相应内容
 	 */
@@ -306,7 +307,7 @@ public abstract class Case {
 	 * <li>步骤</li>
 	 * <li>预期</li>
 	 * </ol>
-	 * 
+	 *
 	 * @param caseName 读取的用例名称
 	 * @param ids      id参数串
 	 */
