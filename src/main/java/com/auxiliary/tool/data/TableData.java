@@ -551,7 +551,12 @@ public class TableData<T> {
      * @throws IllegalDataException 需要严格检查且存在列数据不同时抛出的异常
      */
 	public List<List<Optional<T>>> getRowData(int startIndex, int endIndex) {
-		return ListUtil.transposition(ListUtil.toNoTitleTable(getData(startIndex, endIndex, getColumnName())));
+        try {
+            return ListUtil.transposition(ListUtil.toNoTitleTable(getData(startIndex, endIndex, getColumnName())));
+        } catch (Exception e) {
+            throw new IllegalDataException(String.format("指定行（%d~%d行）数据异常，无法进行获取", startIndex, endIndex));
+        }
+
 	}
 
     /**
@@ -729,4 +734,35 @@ public class TableData<T> {
 	public String toString() {
 		return "[" + tableMap + "]";
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((tableMap == null) ? 0 : tableMap.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        @SuppressWarnings("unchecked")
+        TableData<T> other = (TableData<T>) obj;
+        if (tableMap == null) {
+            if (other.tableMap != null) {
+                return false;
+            }
+        } else if (!tableMap.equals(other.tableMap)) {
+            return false;
+        }
+        return true;
+    }
 }

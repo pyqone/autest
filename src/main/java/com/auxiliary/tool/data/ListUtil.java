@@ -35,7 +35,7 @@ import com.auxiliary.tool.common.Entry;
 public class ListUtil {
     /**
      * 私有构造，避免被构造出对象
-     * 
+     *
      * @since autest 3.3.0
      */
     private ListUtil() {
@@ -51,7 +51,7 @@ public class ListUtil {
         List<List<Optional<T>>> tableList = new ArrayList<>();
         // 遍历tableMap，在tableList中添加数据
         Optional.ofNullable(tableMap).filter(table -> !table.isEmpty())
-                .orElseThrow(() -> new IllegalDataException("未指定列表"))
+                .orElseThrow(() -> new IllegalDataException("列表对象为空或列表无数据，无法进行转换"))
                 .forEach((key, value) -> tableList.add(new ArrayList<>(value)));
 
         return tableList;
@@ -256,11 +256,20 @@ public class ListUtil {
      */
     public static <T> TableData<T> filterTable(TableData<T> table, boolean isFull,
             List<Entry<Integer, Predicate<T>>> filterList) {
+        // 若表对象为空，则返回空表对象
+        if (!Optional.ofNullable(table).filter(t -> !t.getColumnName().isEmpty()).isPresent()) {
+            return new TableData<>();
+        }
+        // 若判断条件集合为空，则返回原表的克隆
+        if (filterList.isEmpty()) {
+            return new TableData<>(table);
+        }
+
         // 根据原表格对象的列名集合，定义新的表格对象
         TableData<T> newTable = new TableData<>(table.getColumnName());
 
         // 遍历每一行元素，并根据筛选条件对其进行判断
-        for (int rowIndex = 0; rowIndex < table.getLongColumnSize(); rowIndex++) {
+        for (int rowIndex = 1; rowIndex <= table.getLongColumnSize(); rowIndex++) {
             // 获取当前行
             List<Optional<T>> rowList = table.getRowData(rowIndex);
 
@@ -271,7 +280,7 @@ public class ListUtil {
                 int columnIndex = entry.getKey();
 
                 // 若指定的行数小于0或者大于当前行的最大列数，则继续循环，不执行筛选
-                if (columnIndex < 0 || columnIndex > rowList.size()) {
+                if (columnIndex < 0 || columnIndex >= rowList.size()) {
                     continue;
                 }
 
