@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.auxiliary.selenium.SeleniumToolsException;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -241,7 +242,7 @@ public class GroupEvent {
 	 */
 	public Optional<Object> exceptionAction(String mustActionEventName, Class<? extends Exception> exceptionClass,
 			String exceptionActionEventName) {
-		HashMap<Class<? extends Exception>, String> exceptionMap = new HashMap<>(16);
+        HashMap<Class<? extends Exception>, String> exceptionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 		exceptionMap.put(exceptionClass, exceptionActionEventName);
 
 		return exceptionAction(mustActionEventName, exceptionMap);
@@ -502,7 +503,7 @@ public class GroupEvent {
      * <p>
      * <b>修改时间：</b>2022年3月25日上午8:42:39
      * </p>
-     * 
+     *
      * @author 彭宇琦
      * @version Ver1.0
      * @since JDK 1.8

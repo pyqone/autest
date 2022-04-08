@@ -1,4 +1,4 @@
-package com.auxiliary.tool.funextend;
+package com.auxiliary.tool.common;
 
 /**
  * <p>

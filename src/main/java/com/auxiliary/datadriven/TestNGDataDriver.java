@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import com.auxiliary.tool.data.TableData;
 import com.auxiliary.tool.date.Time;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -22,7 +23,7 @@ import com.auxiliary.tool.date.Time;
  * </p>
  * <p>
  * 在类中可按照以下方法定义：
- * 
+ *
  * <pre>
  * <code>
  * dataDriver.addFunction("test", text -&gt; "HelloWorld");
@@ -38,7 +39,7 @@ import com.auxiliary.tool.date.Time;
  * });
  * </code>
  * </pre>
- * 
+ *
  * 从数据驱动中读取到的数据有${test}、${select(1)}，则按照字符串的形式输出后分别得到“HelloWorld”、“function1”。
  * </p>
  * <p>
@@ -50,7 +51,7 @@ import com.auxiliary.tool.date.Time;
  * <p>
  * <b>修改时间：</b>2020年6月3日上午7:04:51
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 8
@@ -65,7 +66,7 @@ public class TestNGDataDriver {
 	/**
 	 * 用于存储自定义的公式
 	 */
-	private HashMap<String, DataFunction> dataFunctionMap = new HashMap<>(16);
+    private HashMap<String, DataFunction> dataFunctionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
 	/**
 	 * 用于对日期格式或特殊字段输入的日期进行转换
@@ -81,7 +82,7 @@ public class TestNGDataDriver {
 
 	/**
 	 * 用于返回数据驱动中列表的元素个数，即当前数据驱动中最大行元素个数
-	 * 
+	 *
 	 * @return 列元素个数
 	 */
 	public int getColumnSize() {
@@ -98,7 +99,7 @@ public class TestNGDataDriver {
 	/**
 	 * 用于添加自定义的公式，支持传入正则表达式，当数据驱动中的数据满足传入的正则时，则会
 	 * 将其按照在公式中定义的处理方式对数据进行处理，生成对应的数据。注意，公式的返回值和 传参均为{@link String}类型
-	 * 
+	 *
 	 * @param function 数据处理方法
 	 */
 	public void addFunction(DataDriverFunction function) {
@@ -107,7 +108,7 @@ public class TestNGDataDriver {
 
 	/**
 	 * 用于添加根据存储的表数据类对象（{@link TableData}类）向数据驱动添加数据
-	 * 
+	 *
 	 * @param table 表数据类对象
 	 */
 	public void addDataDriver(TableData<Object> table) {
@@ -120,7 +121,7 @@ public class TestNGDataDriver {
 
 	/**
 	 * 用于在非文件中添加数据驱动
-	 * 
+	 *
 	 * @param title   数据列标题
 	 * @param objects 相应的元素
 	 */
@@ -132,7 +133,7 @@ public class TestNGDataDriver {
 	/**
 	 * 返回可以使用的TestNG数据驱动。注意，数组第一维代表获取到的数据驱动的行，第二维只包含
 	 * 一个{@link Data}类对象，通过该对象，对获取到的所有数据进行返回，以简化在编写脚本时 的传参
-	 * 
+	 *
 	 * @return TestNG形式的数据驱动
 	 */
 	public Object[][] getDataDriver() {
@@ -149,7 +150,7 @@ public class TestNGDataDriver {
 
 	/**
 	 * 用于以{@link TableData}表类对象的形式返回当前读取的数据驱动
-	 * 
+	 *
 	 * @return {@link TableData}表类对象
 	 */
 	public TableData<Object> getTable() {
@@ -169,7 +170,7 @@ public class TestNGDataDriver {
 	 * <p>
 	 * <b>修改时间：</b>2020年6月3日上午7:12:20
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 *
@@ -196,7 +197,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 构造方法，初始化一组数据
-		 * 
+		 *
 		 * @param dataList 数据集合
 		 */
 		public Data(List<Optional<Object>> dataList) {
@@ -205,7 +206,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以字符串的形式返回数据
-		 * 
+		 *
 		 * @param listName 列名称
 		 * @return 字符串形式的数据
 		 */
@@ -217,7 +218,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列编号，以字符串的形式返回数据
-		 * 
+		 *
 		 * @param index 列下标
 		 * @return 字符串形式的数据
 		 */
@@ -227,7 +228,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以double的形式对数据进行返回
-		 * 
+		 *
 		 * @param listName 列表名称
 		 * @return double类型的数据
 		 */
@@ -237,7 +238,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列编号，以double的形式对数据进行返回
-		 * 
+		 *
 		 * @param index 列下标
 		 * @return double类型的数据
 		 */
@@ -247,7 +248,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以int的形式对数据进行返回
-		 * 
+		 *
 		 * @param listName 列表名称
 		 * @return int类型的数据
 		 */
@@ -257,7 +258,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列编号，以int的形式对数据进行返回
-		 * 
+		 *
 		 * @param index 列下标
 		 * @return int类型的数据
 		 */
@@ -267,7 +268,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以long的形式对数据进行返回
-		 * 
+		 *
 		 * @param listName 列表名称
 		 * @return long类型的数据
 		 */
@@ -277,7 +278,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列编号，以long的形式对数据进行返回
-		 * 
+		 *
 		 * @param index 列下标
 		 * @return long类型的数据
 		 */
@@ -287,7 +288,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以boolean的形式对数据进行返回
-		 * 
+		 *
 		 * @param listName 列表名称
 		 * @return boolean类型的数据
 		 */
@@ -297,7 +298,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列编号，以boolean的形式对数据进行返回
-		 * 
+		 *
 		 * @param index 列下标
 		 * @return boolean类型的数据
 		 */
@@ -307,7 +308,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列编号，以{@link File}的形式对数据进行返回
-		 * 
+		 *
 		 * @param index 列下标
 		 * @return {@link File}类型的数据
 		 */
@@ -317,7 +318,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以{@link File}的形式对数据进行返回
-		 * 
+		 *
 		 * @param listName 列表名称
 		 * @return {@link File}类型的数据
 		 */
@@ -327,7 +328,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列编号，以{@link Time}的形式对数据进行返回
-		 * 
+		 *
 		 * @param index 列下标
 		 * @return {@link Time}类型的数据
 		 */
@@ -337,7 +338,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以{@link Time}的形式对数据进行返回
-		 * 
+		 *
 		 * @param listName 列表名称
 		 * @return {@link Time}类型的数据
 		 */
@@ -347,7 +348,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以{@link Object}的形式对数据进行返回
-		 * 
+		 *
 		 * @param listName 列表名称
 		 * @return {@link Object}类型的数据
 		 */
@@ -358,7 +359,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列名称，以{@link Object}的形式对数据进行返回
-		 * 
+		 *
 		 * @param index 列表下标
 		 * @return {@link Object}类型的数据
 		 */
@@ -368,7 +369,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于处理读取得到的内容，并将处理后的内容进行返回
-		 * 
+		 *
 		 * @param content 读取的内容
 		 * @return 处理后的内容
 		 */
@@ -412,7 +413,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于对数据驱动中的公式进行处理，返回处理得到的数据，若数据不予存储的任何正则匹配，则 返回空串
-		 * 
+		 *
 		 * @param content 内容
 		 * @return 处理后的内容
 		 */
@@ -431,7 +432,7 @@ public class TestNGDataDriver {
 
 		/**
 		 * 用于根据列下标返回列名称，若列下标对应的列不存在，则抛出异常
-		 * 
+		 *
 		 * @param index 列下标
 		 * @return 下标对应的列名
 		 * @throws DataNotFoundException 列不存在时抛出的异常

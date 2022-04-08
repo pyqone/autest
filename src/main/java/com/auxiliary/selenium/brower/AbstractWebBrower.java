@@ -15,6 +15,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.alibaba.fastjson.JSONArray;
 import com.auxiliary.selenium.page.Page;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -29,7 +30,7 @@ import com.auxiliary.selenium.page.Page;
  * <p>
  * <b>修改时间：</b>2021年4月2日上午8:28:30
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.2
  * @since JDK 1.8
@@ -42,7 +43,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	/**
 	 * 存储打开的页面
 	 */
-	protected HashMap<String, Page> pageMap = new HashMap<String, Page>(16);
+    protected HashMap<String, Page> pageMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
 	/**
 	 * 存储浏览器打开的窗口handle值
@@ -63,7 +64,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 指定驱动文件所在路径
-	 * 
+	 *
 	 * @param driverFile 驱动文件对象
 	 */
 	public AbstractWebBrower(File driverFile) {
@@ -75,7 +76,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 指定驱动文件路径并添加一个待测站点
-	 * 
+	 *
 	 * @param driverFile 驱动文件对象
 	 * @param url        待测站点
 	 * @param pageName   待测站点名称，用于切换页面
@@ -87,7 +88,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 指定驱动文件路径并添加一个待测站点
-	 * 
+	 *
 	 * @param driverFile 驱动文件对象
 	 * @param page       {@link Page}类对象
 	 */
@@ -109,7 +110,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	 * 则在调用该方法时，无论openNewLabel传入是何值，均不影响在第一个标签中打开页面</li>
 	 * <li>执行该方法后，其WebDriver对象将切换至新的标签页上</li>
 	 * </ol>
-	 * 
+	 *
 	 * @param url          站点域名
 	 * @param pageName     页面名称
 	 * @param openNewLabel 是否在新标签中打开页面
@@ -138,7 +139,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	 * 则在调用该方法时，无论openNewLabel传入是何值，均不影响在第一个标签中打开页面</li>
 	 * <li>执行该方法后，其WebDriver对象将切换至新的标签页上</li>
 	 * </ol>
-	 * 
+	 *
 	 * @param newPage      Page类对象
 	 * @param openNewLabel 是否在新标签中打开页面
 	 * @throws IncorrectPageException 当浏览器未打开或者页面加载错误时抛出的异常
@@ -209,7 +210,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于返回浏览器驱动设置的名称，由于每个浏览器不同，导致启动驱动名称也不同
-	 * 
+	 *
 	 * @return 驱动设置名称
 	 */
 	protected abstract String getBrowerDriverSetName();
@@ -229,7 +230,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于返回当前在浏览器中被打开的页面
-	 * 
+	 *
 	 * @return 在浏览器中被打开的{@link Page}对象
 	 */
 	public List<Page> getOpenPage() {
@@ -247,7 +248,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于返回当前指向的窗体打开的页面{@link Page}对象
-	 * 
+	 *
 	 * @return {@link Page}对象
 	 */
 	public Page getNowPage() {
@@ -327,7 +328,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于根据页面名称切换页面
-	 * 
+	 *
 	 * @param pageName 页面名称
 	 */
 	public void switchWindow(String pageName) {
@@ -342,7 +343,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于根据页面切换页面
-	 * 
+	 *
 	 * @param page 页面对象
 	 */
 	public void switchWindow(Page page) {
@@ -373,7 +374,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 	 * 但调用该方法后，其弹窗会作为{@link Page}类对象进行存储，其页面名称为当前窗口的
 	 * handle值，若切换的窗口非理想的窗口，则可以多次调用该方法，直至切换至理想的窗口
 	 * 为止。若当前不存在弹窗，则返回false，若切换弹窗成功，则返回true
-	 * 
+	 *
 	 * @return 是否成功切换弹窗
 	 */
 	public boolean switchPopuWindow() {
@@ -403,7 +404,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于判断当前浏览器中是否存在弹窗（未被存储的浏览器标签）。注意，若在 浏览器上自行打开的标签，其也会被计算为弹窗
-	 * 
+	 *
 	 * @return 是否存在弹窗
 	 */
 	public boolean hasPopuWindow() {
@@ -417,7 +418,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 定位到弹框上并且点击确定按钮，并返回弹框上的文本
-	 * 
+	 *
 	 * @return 弹框上的文本
 	 */
 	public String alertAccept() {
@@ -430,7 +431,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 定位到弹框上并且点击取消按钮，并返回弹框上的文本
-	 * 
+	 *
 	 * @return 弹框上的文本
 	 */
 	public String alertDimiss() {
@@ -442,7 +443,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 定位到弹框上并且在其文本框中输入信息
-	 * 
+	 *
 	 * @param content 需要输入的信息
 	 * @return 弹框上的文本
 	 */
@@ -455,7 +456,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 获取弹框上的文本
-	 * 
+	 *
 	 * @return 弹框上的文本
 	 */
 	public String alertGetText() {
@@ -464,7 +465,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于新增一个标签页，并打开指定站点
-	 * 
+	 *
 	 * @param url 指定的站点
 	 * @throws IncorrectPageException 当页面无法加载时抛出
 	 */
@@ -477,7 +478,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于在原标签页中打开站点
-	 * 
+	 *
 	 * @param url 指定的站点
 	 */
 	private void overridePage() {
@@ -489,7 +490,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于新建一个标签（窗口），返回其在浏览器中的handle值
-	 * 
+	 *
 	 * @return 新建标签（窗口）的handle
 	 */
 	private String openNewLabel() {
@@ -512,7 +513,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于加载页面
-	 * 
+	 *
 	 * @param newPage 页面类对象
 	 */
 	private void loadPage(Page newPage) {
@@ -526,7 +527,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 该方法用于根据页面的名称查找窗口的Handle
-	 * 
+	 *
 	 * @param pageName 页面名称
 	 * @return 页面对应窗口的Handle
 	 */
@@ -540,7 +541,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于根据窗口handle来获取Page对象
-	 * 
+	 *
 	 * @param handle 窗口handle
 	 * @return Page对象
 	 */
@@ -559,7 +560,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于在pageMap中移除已被关闭的浏览器标签，该方法主要用于清除手动关闭的标签
-	 * 
+	 *
 	 * @param handleList 当前浏览器存储的标签值
 	 */
 	private void removeClosePage(Set<String> handleList) {
@@ -579,7 +580,7 @@ public abstract class AbstractWebBrower extends AbstractBrower {
 
 	/**
 	 * 用于返回当前浏览器中其中一个弹窗的handle值，当存在多个弹窗时 该方法不保证返回的handle为理想的handle值
-	 * 
+	 *
 	 * @param handleList 当前浏览器中所有的窗口handle集合
 	 * @return 其中一个弹窗的handle值
 	 */

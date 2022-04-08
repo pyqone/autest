@@ -13,6 +13,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.selenium.brower.ChromeBrower;
 import com.auxiliary.selenium.element.Element;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p><b>文件名：</b>EventProxy.java</p>
@@ -36,7 +37,7 @@ import com.auxiliary.selenium.element.Element;
  * chrome，此时，可以将代码写作<br>
  * <code><pre>
  * EventProxy &lt;ClickEvent&gt; clickEventProxy = new EventProxy(new ClickEvent(chrome.getDriver()));
- * 
+ *
  * clickProxy.addAcion(ActionType.ELEMENT_BEFORE, ".*登录.*", (info) -&gt; {
  * 			TextEvent text = inputProxy.getProxyInstance();
  * 			text.input(by.getElement("//*[@name='account']"), "admin");
@@ -47,39 +48,45 @@ import com.auxiliary.selenium.element.Element;
  * </p>
  * <p><b>编码时间：</b>2020年7月12日 下午1:35:22</p>
  * <p><b>修改时间：</b>2020年10月20日下午7:54:15</p>
- * 
+ *
  * @version Ver1.0
  * @since JDK 8
  * @author 彭宇琦
- * 
+ *
  * @param <T> 继承自{@link AbstractEvent}的事件类
  */
 public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
 	/**
 	 * 用于存储方法前置通知，key表示方法名称匹配规则，value表示调用的方法
 	 */
-	private LinkedHashMap<String, ArrayList<EventAction>> functionBeforeActionMap = new LinkedHashMap<>(16); 
+    private LinkedHashMap<String, ArrayList<EventAction>> functionBeforeActionMap = new LinkedHashMap<>(
+            ConstType.DEFAULT_MAP_SIZE);
 	/**
 	 * 用于存储元素前置通知，key表示元素名称匹配规则，value表示调用的方法
 	 */
-	private LinkedHashMap<String, ArrayList<EventAction>> elementBeforeActionMap = new LinkedHashMap<>(16);
+    private LinkedHashMap<String, ArrayList<EventAction>> elementBeforeActionMap = new LinkedHashMap<>(
+            ConstType.DEFAULT_MAP_SIZE);
 	/**
 	 * 用于存储元素后置通知
 	 */
-	private LinkedHashMap<String, ArrayList<EventAction>> elementAfterActionMap = new LinkedHashMap<>(16);
+    private LinkedHashMap<String, ArrayList<EventAction>> elementAfterActionMap = new LinkedHashMap<>(
+            ConstType.DEFAULT_MAP_SIZE);
 	/**
 	 * 用于存储方法执行成功通知
 	 */
-	private LinkedHashMap<String, ArrayList<EventAction>> functionSuccessActionMap = new LinkedHashMap<>(16);
+    private LinkedHashMap<String, ArrayList<EventAction>> functionSuccessActionMap = new LinkedHashMap<>(
+            ConstType.DEFAULT_MAP_SIZE);
 	/**
 	 * 用于存储方法执行失败通知
 	 */
-	private LinkedHashMap<String, ArrayList<EventAction>> functionFailActionMap = new LinkedHashMap<>(16);
+    private LinkedHashMap<String, ArrayList<EventAction>> functionFailActionMap = new LinkedHashMap<>(
+            ConstType.DEFAULT_MAP_SIZE);
 	/**
 	 * 用于存储方法最终通知
 	 */
-	private LinkedHashMap<String, ArrayList<EventAction>> functionFinalActionMap = new LinkedHashMap<>(16);
-	
+    private LinkedHashMap<String, ArrayList<EventAction>> functionFinalActionMap = new LinkedHashMap<>(
+            ConstType.DEFAULT_MAP_SIZE);
+
 	/**
      * 事件类对象
      */
@@ -112,7 +119,7 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
         return (T) en.create(new Class[] {AbstractBrower.class}, new Object[] {brower});
 //        return (T) en.create();
     }
-    
+
     /**
      * 根据相应的执行的方法类型，添加指定的名称匹配规则及执行方法
      * @param actionType 通知类型枚举类{@link ActionType}
@@ -145,24 +152,24 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
 		default:
 			break;
 		}
-    	
+
     	//执行添加通知的方法
 		mapAddAction(regex, action, actionMap);
-    	
+
     }
-    
+
 	@Override
 	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		//构造事件信息类对象
 		EventInformation eventInformation = new EventInformation(method, args);
-		
+
 		//按照方法名或元素名，匹配到相应的通知后，运行通知，若通知运行出现异常，则直接跳过
 		//运行方法前置通知
 		runFuntionAction(eventInformation, functionBeforeActionMap);
-    	
+
 		//运行元素前置通知
 		runElementAction(eventInformation, elementBeforeActionMap);
-    	
+
         //执行目标对象的方法
     	try {
     		Object returnValue = method.invoke(target, args);
@@ -176,12 +183,12 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
 		} finally {
 			//运行元素后置通知
 			runElementAction(eventInformation, elementAfterActionMap);
-	    	
+
 	    	//运行方法最终通知
 	    	runFuntionAction(eventInformation, functionFinalActionMap);
 		}
 	}
-	
+
 	/**
 	 * 运行方法通知
 	 * @param eventInformation 事件信息类对象
@@ -200,7 +207,7 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
     		}
     	});
 	}
-	
+
 	/**
 	 * 执行元素通知
 	 * @param eventInformation 事件类对象
@@ -220,7 +227,7 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
     		});
     	});
 	}
-	
+
 	/**
 	 * 用于向相应的通知map中添加通知
 	 * @param regex 匹配规则
@@ -232,11 +239,11 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
 		if (!actionMap.containsKey(regex)) {
 			actionMap.put(regex, new ArrayList<EventAction>());
 		}
-		
+
 		//在相应的regex中添加action
 		actionMap.get(regex).add(action);
 	}
-	
+
 	/**
 	 * <p><b>文件名：</b>EventProxy.java</p>
 	 * <p><b>用途：</b>用于标记通知的类型</p>
@@ -250,23 +257,23 @@ public class EventProxy<T extends AbstractEvent> implements MethodInterceptor {
 		/**
 		 * 表示方法前置通知
 		 */
-		FUNCTION_BEFORE, 
+		FUNCTION_BEFORE,
 		/**
 		 * 表示元素前置通知
 		 */
-		ELEMENT_BEFORE, 
+		ELEMENT_BEFORE,
 		/**
 		 * 表示方法执行成功通知
 		 */
-		FUNCTION_SUCCESS_AFTER, 
+		FUNCTION_SUCCESS_AFTER,
 		/**
 		 * 表示方法执行失败通知
 		 */
-		FUNCTION_FAIL_AFTER, 
+		FUNCTION_FAIL_AFTER,
 		/**
 		 * 表示元素后置通知
 		 */
-		ELEMENT_AFTER, 
+		ELEMENT_AFTER,
 		/**
 		 * 表示方法最终通知
 		 */
