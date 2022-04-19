@@ -36,23 +36,23 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 定义默认接口协议
      */
-    private final String DEFAULT_PROTOCOL = "http://";
+    protected final String DEFAULT_PROTOCOL = "http://";
     /**
      * 定义默认主机
      */
-    private final String DEFAULT_HOST = "127.0.0.1";
+    protected final String DEFAULT_HOST = "127.0.0.1";
     /**
      * 定义默认主机端口
      */
-    private final int DEFAULT_PORT = 80;
+    protected final int DEFAULT_PORT = 80;
     /**
      * 定义接口默认请求方式
      */
-    private final RequestType DEFAULT_REQUESTTYPE = RequestType.GET;
+    protected final RequestType DEFAULT_REQUESTTYPE = RequestType.GET;
     /**
      * 定义响应内容默认字符集
      */
-    private final String DEFAULT_CHARSETNAME = "UTF-8";
+    protected final String DEFAULT_CHARSETNAME = "UTF-8";
 
     /**
      * 接口协议，默认http
@@ -93,7 +93,9 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口响应内容格式
      */
-    private Set<ResponseContentType> responseContentTypeSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+//    private Set<ResponseContentType> responseContentTypeSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    private HashMap<Integer, HashSet<ResponseContentType>> responseContentTypeMap = new HashMap<>(
+            ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 该方法用于返回接口的url协议
@@ -361,13 +363,14 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于返回接口响应内容的格式枚举
+     * 该方法用于返回接口响应内容的格式枚举，当状态码不存在时，则返回空集合
      *
+     * @param state 状态码
      * @return 接口响应内容的格式枚举
      * @since autest 3.3.0
      */
-    public Set<ResponseContentType> getResponseContentTypeSet() {
-        return responseContentTypeSet;
+    public Set<ResponseContentType> getResponseContentType(int state) {
+        return Optional.ofNullable(responseContentTypeMap.get(state)).orElseGet(() -> new HashSet<>());
     }
 
     /**
@@ -379,7 +382,15 @@ public class InterfaceInfo implements Cloneable {
      * @param responseContentTypes 响应内容格式数组
      * @since autest 3.3.0
      */
-    public void addResponseContentTypeSet(ResponseContentType... responseContentTypes) {
+    public void addResponseContentTypeSet(int state, ResponseContentType... responseContentTypes) {
+        // 判断当前状态码是否存在，若不存在，则添加空集合
+        if (!responseContentTypeMap.containsKey(state)) {
+            responseContentTypeMap.put(state, new HashSet<>());
+        }
+
+        // 获取当前状态码中 存储的状态
+        HashSet<ResponseContentType> responseContentTypeSet = responseContentTypeMap.get(state);
+
         // 过滤掉数组为null或为空的情况
         Optional.ofNullable(responseContentTypes).filter(types -> types.length != 0).ifPresent(types -> {
             Arrays.stream(types).filter(type -> type != null).forEach(responseContentTypeSet::add);
@@ -483,7 +494,7 @@ public class InterfaceInfo implements Cloneable {
      * @return 接口url内容
      * @since autest 3.3.0
      */
-    public String toInterfaceString() {
+    public String toUrlString() {
         // 拼接接口参数信息
         StringJoiner paramInfo = new StringJoiner("&");
         paramMap.forEach((k, v) -> paramInfo.add(String.format("%s=%s", k, v)));
@@ -500,7 +511,7 @@ public class InterfaceInfo implements Cloneable {
 
         // 添加接口整体参数
         JSONObject interInfoJson = new JSONObject();
-        interInfoJson.put("url", toInterfaceString());
+        interInfoJson.put("url", toUrlString());
         interInfoJson.put("requestType", requestType);
         interInfoJson.put("body", body);
         interInfoJson.put("requestHeader", headerJson);
