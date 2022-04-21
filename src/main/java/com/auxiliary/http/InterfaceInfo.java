@@ -118,9 +118,12 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口响应内容格式
      */
-//    private Set<ResponseContentType> responseContentTypeSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
     private HashMap<Integer, HashSet<ResponseContentType>> responseContentTypeMap = new HashMap<>(
             ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储接口返回提词的内容
+     */
+    private HashMap<String, String> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 该方法用于返回接口的url协议
