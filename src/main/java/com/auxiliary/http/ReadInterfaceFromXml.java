@@ -41,6 +41,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      */
     private final String XML_LABEL_ENVIRONMENTS = "environments";
     /**
+     * 定义default属性名称
+     */
+    private final String XML_ATTRI_DEFAULT = "default";
+    /**
      * 定义name属性名称
      */
     private final String XML_ATTRI_NAME = "name";
@@ -60,7 +64,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     private String actionEnvironment = DEFAULT_HOST;
 
     /**
-     * 根据xml文件对象，解析接口信息xml文件
+     * 根据xml文件对象，解析接口信息xml文件，并设置接口执行环境及接口默认执行环境
      *
      * @param xmlFile xml文件类对象
      */
@@ -75,14 +79,26 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         }
 
         // 读取环境集合
-        List<Element> environmentElementList = rootElement.element(XML_LABEL_ENVIRONMENTS).elements();
-        for (Element environmentElement : environmentElementList) {
-            String name = Optional.ofNullable(environmentElement.attributeValue(XML_ATTRI_NAME)).orElseGet(() -> "");
-            // 判断当前环境名称是否为空，为空，则不存储
-            if (!name.isEmpty()) {
-                // 若当前标签不存在文本节点，则存储默认内容
-                environmentMap.put(name, Optional.ofNullable(environmentElement.getText())
-                        .orElseGet(() -> DEFAULT_HOST));
+        Element environmentsElement = rootElement.element(XML_LABEL_ENVIRONMENTS);
+        List<Element> environmentElementList = environmentsElement.elements();
+        // 判断集合是否为空，若为不为空，则存储所有的环境，并设置默认环境
+        if (!environmentElementList.isEmpty()) {
+            // 获取所有得到环境，并存储所有的环境
+            for (Element environmentElement : environmentElementList) {
+                String name = Optional.ofNullable(environmentElement.attributeValue(XML_ATTRI_NAME)).orElseGet(() -> "");
+                // 判断当前环境名称是否为空，为空，则不存储
+                if (!name.isEmpty()) {
+                    // 若当前标签不存在文本节点，则存储默认内容
+                    environmentMap.put(name, Optional.ofNullable(environmentElement.getText())
+                            .orElseGet(() -> DEFAULT_HOST));
+                }
+            }
+
+            // 判断环境集合标签中是否指定默认环境，若存在，则将执行环境指向为默认环境；若不存在，则取环境集合的第一个元素
+            if (environmentMap.containsKey(environmentsElement.attributeValue(XML_ATTRI_DEFAULT))) {
+                actionEnvironment = environmentMap.get(environmentsElement.attributeValue(XML_ATTRI_DEFAULT));
+            } else {
+                actionEnvironment = environmentElementList.get(0).getText();
             }
         }
     }
