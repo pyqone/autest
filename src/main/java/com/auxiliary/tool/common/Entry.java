@@ -1,5 +1,7 @@
 package com.auxiliary.tool.common;
 
+import java.util.Optional;
+
 /**
  * <p>
  * <b>文件名：Entry.java</b>
@@ -56,6 +58,16 @@ public class Entry<K, V> {
     }
 
     /**
+     * 该方法用于返回值的封装类对象
+     *
+     * @return 值的封装类对象
+     * @since autest 3.3.0
+     */
+    public Optional<V> getOptionValue() {
+        return Optional.ofNullable(value);
+    }
+
+    /**
      * 该方法用于设置值的内容
      *
      * @param value 值
@@ -73,5 +85,15 @@ public class Entry<K, V> {
      */
     public K getKey() {
         return key;
+    }
+
+    /**
+     * 该方法用于返回键的封装类对象
+     *
+     * @return 键的封装类对象
+     * @since autest 3.3.0
+     */
+    public Optional<K> getOptionalKey() {
+        return Optional.ofNullable(key);
     }
 }

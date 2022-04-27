@@ -36,23 +36,23 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 定义默认接口协议
      */
-    protected final String DEFAULT_PROTOCOL = "http://";
+    public static final String DEFAULT_PROTOCOL = "http://";
     /**
      * 定义默认主机
      */
-    protected final String DEFAULT_HOST = "127.0.0.1";
+    public static final String DEFAULT_HOST = "127.0.0.1";
     /**
      * 定义默认主机端口
      */
-    protected final int DEFAULT_PORT = 80;
+    public static final int DEFAULT_PORT = 80;
     /**
      * 定义接口默认请求方式
      */
-    protected final RequestType DEFAULT_REQUESTTYPE = RequestType.GET;
+    public static final RequestType DEFAULT_REQUESTTYPE = RequestType.GET;
     /**
      * 定义响应内容默认字符集
      */
-    protected final String DEFAULT_CHARSETNAME = "UTF-8";
+    public static final String DEFAULT_CHARSETNAME = "UTF-8";
 
     /**
      * 定义接口主机与协议间分隔的符号
@@ -116,14 +116,23 @@ public class InterfaceInfo implements Cloneable {
      */
     private String charsetname = DEFAULT_CHARSETNAME;
     /**
-     * 接口响应内容格式
+     * 接口响应内容格式集合
      */
-    private HashMap<Integer, HashSet<ResponseContentType>> responseContentTypeMap = new HashMap<>(
+    private HashMap<String, HashSet<ResponseContentType>> responseContentTypeMap = new HashMap<>(
             ConstType.DEFAULT_MAP_SIZE);
     /**
-     * 存储接口返回提词的内容
+     * 接口响应报文断言规则集合
      */
-    private HashMap<String, String> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    private HashSet<JSONObject> assertRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 接口响应报文提词规则
+     */
+    private HashSet<JSONObject> extractRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 接口响应报文提词内容
+     */
+    private HashMap<String, String> extractValueMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    // TODO 添加存储断言、提词规则的方法
 
     /**
      * 该方法用于返回接口的url协议
@@ -254,9 +263,9 @@ public class InterfaceInfo implements Cloneable {
      * @return 类本身
      * @since autest 3.3.0
      */
-    public InterfaceInfo analysisUrl(String url) {
+    public void analysisUrl(String url) {
         if (url == null || url.isEmpty()) {
-            return this;
+            return;
         }
 
         // 将传入接口的所有中文符号替换成英文符号，并存储
@@ -293,7 +302,6 @@ public class InterfaceInfo implements Cloneable {
         }
 
         setHost(urlText.toString());
-        return this;
     }
 
     /**
@@ -460,7 +468,7 @@ public class InterfaceInfo implements Cloneable {
      * @return 接口响应内容的格式枚举
      * @since autest 3.3.0
      */
-    public Set<ResponseContentType> getResponseContentType(int state) {
+    public Set<ResponseContentType> getResponseContentType(String state) {
         return Optional.ofNullable(responseContentTypeMap.get(state)).orElseGet(() -> new HashSet<>());
     }
 
@@ -473,7 +481,7 @@ public class InterfaceInfo implements Cloneable {
      * @param responseContentTypes 响应内容格式数组
      * @since autest 3.3.0
      */
-    public void addResponseContentTypeSet(int state, ResponseContentType... responseContentTypes) {
+    public void addResponseContentTypeSet(String state, ResponseContentType... responseContentTypes) {
         // 判断当前状态码是否存在，若不存在，则添加空集合
         if (!responseContentTypeMap.containsKey(state)) {
             responseContentTypeMap.put(state, new HashSet<>());
@@ -488,14 +496,181 @@ public class InterfaceInfo implements Cloneable {
         });
     }
 
+    /**
+     * 该方法用于添加断言规则json
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>传入的json为空或不符合json格式时，将不进行存储</li>
+     * <li>json必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储</li>
+     * </ol>
+     * </p>
+     *
+     * @param assertRuleJsonText 断言规则json
+     * @since autest 3.3.0
+     */
+    public void addAssertRule(String assertRuleJsonText) {
+        // 若传入的json格式有误，则将不进行存储
+        try {
+            // 若json不包含断言内容字段，则亦不进行存储
+            Optional.ofNullable(assertRuleJsonText).filter(text -> !text.isEmpty()).map(JSONObject::parseObject)
+                    .filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE))
+                    .ifPresent(assertRuleSet::add);
+        } catch (Exception e) {
+        }
+    }
+
+    /**
+     * 该方法用于添加断言规则集合
+     * <p>
+     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储
+     * </p>
+     *
+     * @param ruleMap 断言规则集合
+     * @since autest 3.3.0
+     */
+    public void addAssertRule(HashMap<String, String> assertRuleMap) {
+        // 判断集合是否存在断言内容字段
+        if (assertRuleMap == null || !assertRuleMap.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE)) {
+            return;
+        }
+
+        JSONObject json = new JSONObject();
+        assertRuleMap.forEach(json::put);
+        assertRuleSet.add(json);
+    }
+
+    /**
+     * 该方法用于以字符串集合的形式，返回断言规则json
+     * <p>
+     * json字段可参考{@link ReadInterfaceFromAbstract}中“JSON_ASSERT_XXX”常量
+     * </p>
+     *
+     * @return 断言规则json集合
+     * @since autest 3.3.0
+     */
+    public Set<String> getAssertRuleJson() {
+        Set<String> assertRuleJsonText = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+        assertRuleSet.stream().map(json -> json.toJSONString()).forEach(assertRuleJsonText::add);
+
+        return assertRuleJsonText;
+    }
+
+    /**
+     * 该方法用于存储提词规则
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>传入的json为空或不符合json格式时，将不进行存储</li>
+     * <li>json必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_PARAM_NAME}字段，否则将不进行存储</li>
+     * </ol>
+     * </p>
+     *
+     * @param extractRuleJsonText 提词规则json文本
+     * @since autest 3.3.0
+     */
+    public void addExtractRule(String extractRuleJsonText) {
+        // 若传入的json格式有误，则将不进行存储
+        try {
+            // 若json不包含断言内容字段，则亦不进行存储
+            Optional.ofNullable(extractRuleJsonText).filter(text -> !text.isEmpty()).map(JSONObject::parseObject)
+                    .filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME))
+                    .ifPresent(json -> {
+                        // 存储规则，并在提词内容集合中，构造空值
+                        extractRuleSet.add(json);
+                        extractValueMap.put(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME), "");
+                    });
+        } catch (Exception e) {
+        }
+    }
+
+    /**
+     * 该方法用于添加提词规则
+     * <p>
+     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_PARAM_NAME}字段，否则将不进行存储
+     * </p>
+     *
+     * @param ruleMap 提词规则集合
+     * @since autest 3.3.0
+     */
+    public void addExtractRule(HashMap<String, String> extractRuleMap) {
+        // 判断集合是否存在断言内容字段
+        if (extractRuleMap == null || !extractRuleMap.containsKey(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME)) {
+            return;
+        }
+
+        JSONObject json = new JSONObject();
+        extractRuleMap.forEach(json::put);
+        extractRuleSet.add(json);
+        extractValueMap.put(extractRuleMap.get(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME), "");
+
+    }
+
+    /**
+     * 该方法用于向接口中添加提词内容
+     *
+     * @param paramName 提词保存名称
+     * @param value     提词内容
+     * @since autest 3.3.0
+     */
+    public void putExtractValue(String paramName, String value) {
+        extractValueMap.put(paramName, value);
+    }
+
+    /**
+     * 该方法用于以字符串集合的形式，返回提词规则json
+     * <p>
+     * json字段可参考{@link ReadInterfaceFromAbstract}中“JSON_EXTRACT_XXX”常量
+     * </p>
+     *
+     * @return 提词规则json集合
+     * @since autest 3.3.0
+     */
+    public Set<String> getExtractRuleJson() {
+        Set<String> extractRuleJsonText = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+        extractRuleSet.stream().map(json -> json.toJSONString()).forEach(extractRuleJsonText::add);
+
+        return extractRuleJsonText;
+    }
+
+    /**
+     * 该方法用于返回提词的内容
+     *
+     * @param paramName 参数名称
+     * @return 提词的内容
+     * @since autest 3.3.0
+     */
+    public String getExtractValue(String paramName) {
+        return Optional.ofNullable(extractValueMap.get(paramName)).orElseGet(() -> "");
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public InterfaceInfo clone() throws CloneNotSupportedException {
         InterfaceInfo newInter = null;
         try {
+            // 克隆接口静态信息
             newInter = (InterfaceInfo) super.clone();
+            // 克隆接口参数信息
             newInter.paramMap = (HashMap<String, String>) paramMap.clone();
+            // 克隆接口请求头信息
             newInter.requestHeaderMap = (HashMap<String, String>) requestHeaderMap.clone();
+
+            // 克隆接口响应报文格式信息
+            newInter.responseContentTypeMap = new HashMap<>();
+            for (String key : responseContentTypeMap.keySet()) {
+                newInter.responseContentTypeMap.put(key,
+                        (HashSet<ResponseContentType>) responseContentTypeMap.get(key).clone());
+            }
+            // 克隆接口响应报文断言规则信息
+            newInter.assertRuleSet = new HashSet<>();
+            assertRuleSet.stream().map(json -> json.toJSONString()).map(JSONObject::parseObject)
+                    .forEach(newInter.assertRuleSet::add);
+            // 克隆接口响应报文提词规则信息
+            newInter.extractRuleSet = new HashSet<>();
+            extractRuleSet.stream().map(json -> json.toJSONString()).map(JSONObject::parseObject)
+                    .forEach(newInter.extractRuleSet::add);
+
         } catch (CloneNotSupportedException e) {
             throw new TestCaseException("接口数据异常，无法被拷贝：" + toString());
         }
