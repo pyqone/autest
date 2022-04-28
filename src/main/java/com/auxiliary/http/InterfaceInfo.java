@@ -646,7 +646,7 @@ public class InterfaceInfo implements Cloneable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public InterfaceInfo clone() throws CloneNotSupportedException {
+    public InterfaceInfo clone() {
         InterfaceInfo newInter = null;
         try {
             // 克隆接口静态信息
