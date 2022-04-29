@@ -1,5 +1,10 @@
 package com.auxiliary.http;
 
+import java.util.HashMap;
+import java.util.List;
+
+import com.auxiliary.tool.regex.ConstType;
+
 /**
  * <p>
  * <b>文件名：ReadInterfaceFromAbstract.java</b>
@@ -71,6 +76,12 @@ public abstract class ReadInterfaceFromAbstract {
      */
     public static final String JSON_EXTRACT_ORD = JSON_ASSERT_ORD;
 
+    /**
+     * 存储已读取的接口信息
+     */
+    protected HashMap<String, InterfaceInfo> interfaceMap = new HashMap<>(
+            ConstType.DEFAULT_MAP_SIZE);
+
     // TODO 自动识别请求体格式，并设置相应的请求头
     /**
      * 该方法用于根据接口名称，返回接口的信息类对象
@@ -80,4 +91,25 @@ public abstract class ReadInterfaceFromAbstract {
      * @since autest 3.3.0
      */
     public abstract InterfaceInfo getInterface(String interName);
+
+    /**
+     * 该方法用于返回接口的父层接口集合
+     *
+     * @param interName 接口名称
+     * @return 接口的父层接口集合
+     * @since autest 3.3.0
+     */
+    public abstract List<String> getInterfaceParent(String interName);
+
+    /**
+     * 该方法用于清除已缓存的接口信息
+     * <p>
+     * 调用该方法后，若再次读取之前已读取的接口信息时，则将重新查找接口信息（只针对启用缓存的情况）
+     * </p>
+     *
+     * @since autest 3.3.0
+     */
+    public void clearInterfaceInfoCache() {
+        interfaceMap.clear();
+    }
 }

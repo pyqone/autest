@@ -80,25 +80,25 @@ public class InterfaceInfo implements Cloneable {
     protected final String SYMBOL_SPLIT_PARAM = "&";
 
     /**
-     * 接口协议，默认http
+     * 接口协议
      */
-    private String protocol = DEFAULT_PROTOCOL;
+    private String protocol = "";
     /**
-     * 主机，默认127.0.0.1
+     * 主机
      */
-    private String host = DEFAULT_HOST;
+    private String host = "";
     /**
-     * 主机端口号，默认80
+     * 主机端口号
      */
-    private int port = DEFAULT_PORT;
+    private int port = -1;
     /**
      * 接口地址
      */
     private String path = "";
     /**
-     * 请求类型，默认Get
+     * 请求类型
      */
-    private RequestType requestType = DEFAULT_REQUESTTYPE;
+    private RequestType requestType = null;
     /**
      * 接口请求参数
      */
@@ -114,7 +114,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口相应字符集
      */
-    private String charsetname = DEFAULT_CHARSETNAME;
+    private String charsetname = "";
     /**
      * 接口响应内容格式集合
      */
@@ -132,7 +132,6 @@ public class InterfaceInfo implements Cloneable {
      * 接口响应报文提词内容
      */
     private HashMap<String, String> extractValueMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-    // TODO 添加存储断言、提词规则的方法
 
     /**
      * 该方法用于返回接口的url协议
@@ -141,6 +140,11 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public String getProtocol() {
+        // 若未存储协议信息，则返回默认协议
+        if (protocol.isEmpty()) {
+            return DEFAULT_PROTOCOL;
+        }
+
         return protocol;
     }
 
@@ -159,7 +163,7 @@ public class InterfaceInfo implements Cloneable {
                         p += SYMBOL_SPLIT_PROTOCOL;
                     }
                     return p;
-                }).orElseGet(() -> DEFAULT_PROTOCOL);
+                }).orElseGet(() -> "");
     }
 
     /**
@@ -169,6 +173,10 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public String getHost() {
+        if (host.isEmpty()) {
+            return DEFAULT_HOST;
+        }
+
         return host;
     }
 
@@ -185,7 +193,7 @@ public class InterfaceInfo implements Cloneable {
                 h = h.substring(0, h.length() - 1);
             }
             return h;
-        }).orElseGet(() -> DEFAULT_HOST);
+        }).orElseGet(() -> "");
     }
 
     /**
@@ -195,6 +203,10 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public int getPort() {
+        if (port == -1) {
+            return DEFAULT_PORT;
+        }
+
         return port;
     }
 
@@ -206,7 +218,7 @@ public class InterfaceInfo implements Cloneable {
      */
     public void setPort(int port) {
         if (port < 0 || port > 65535) {
-            port = DEFAULT_PORT;
+            return;
         }
 
         this.port = port;
@@ -301,7 +313,9 @@ public class InterfaceInfo implements Cloneable {
             }
         }
 
-        setHost(urlText.toString());
+        if (!urlText.toString().isEmpty()) {
+            setHost(urlText.toString());
+        }
     }
 
     /**
@@ -311,6 +325,10 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public RequestType getRequestType() {
+        if (requestType == null) {
+            return DEFAULT_REQUESTTYPE;
+        }
+
         return requestType;
     }
 
@@ -321,7 +339,7 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public void setRequestType(RequestType requestType) {
-        this.requestType = Optional.ofNullable(requestType).orElseGet(() -> DEFAULT_REQUESTTYPE);
+        this.requestType = requestType;
     }
 
     /**
@@ -448,6 +466,9 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public String getCharsetname() {
+        if (charsetname.isEmpty()) {
+            return DEFAULT_CHARSETNAME;
+        }
         return charsetname;
     }
 
@@ -458,7 +479,7 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public void setCharsetname(String charsetname) {
-        this.charsetname = Optional.ofNullable(charsetname).orElseGet(() -> DEFAULT_CHARSETNAME);
+        this.charsetname = Optional.ofNullable(charsetname).orElseGet(() -> "");
     }
 
     /**
@@ -765,7 +786,8 @@ public class InterfaceInfo implements Cloneable {
         StringJoiner paramInfo = new StringJoiner(SYMBOL_SPLIT_PARAM);
         paramMap.forEach((k, v) -> paramInfo.add(String.format("%s%s%s", k, SYMBOL_SPLIT_PARAM_VALUE, v)));
 
-        return String.format("%s%s%s%s%s", protocol, host, (port == 80 ? "" : (SYMBOL_SPLIT_PORT + port)), path,
+        return String.format("%s%s%s%s%s", getProtocol(), getHost(),
+                (getPort() == 80 ? "" : (SYMBOL_SPLIT_PORT + getPort())), getPath(),
                 (paramInfo.length() != 0 ? (SYMBOL_SPLIT_START_PARAM + paramInfo.toString()) : ""));
     }
 
@@ -778,7 +800,7 @@ public class InterfaceInfo implements Cloneable {
         // 添加接口整体参数
         JSONObject interInfoJson = new JSONObject();
         interInfoJson.put("url", toUrlString());
-        interInfoJson.put("requestType", requestType);
+        interInfoJson.put("requestType", getRequestType());
         interInfoJson.put("body", body);
         interInfoJson.put("requestHeader", headerJson);
 
