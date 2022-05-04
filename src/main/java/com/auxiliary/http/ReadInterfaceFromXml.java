@@ -1,14 +1,17 @@
 package com.auxiliary.http;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * <p>
@@ -33,11 +36,6 @@ import org.dom4j.io.SAXReader;
 public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         implements ActionEnvironment, AssertResponse, ExtractResponse {
     /**
-     * 定义接口默认请求环境
-     */
-    private final String DEFAULT_HOST = InterfaceInfo.DEFAULT_PROTOCOL + InterfaceInfo.DEFAULT_HOST;
-
-    /**
      * 存储xml元素文件类对象
      */
     private File xmlFile;
@@ -45,7 +43,6 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * xml文件根节点
      */
     private Element rootElement;
-    private Document dom;
 
     /**
      * 环境集合
@@ -63,8 +60,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      */
     public ReadInterfaceFromXml(File xmlFile) {
         try {
-            dom = new SAXReader().read(xmlFile);
-            rootElement = dom.getRootElement();
+            rootElement = new SAXReader().read(xmlFile).getRootElement();
             this.xmlFile = xmlFile;
         } catch (DocumentException e) {
             throw new InterfaceReadToolsException(String.format("xml文件存在异常，无法解析。文件路径为：%s", xmlFile.getAbsolutePath()),
@@ -115,16 +111,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         InterfaceInfo inter = new InterfaceInfo();
         // 解析环境信息
         inter.analysisUrl(actionEnvironment);
-
-        // 定义查找接口的xpath，并获取接口元素
-        String elementXpath = String.format("//%s/%s[@%s='%s']", XmlParamName.XML_LABEL_INTERFACES,
-                XmlParamName.XML_LABEL_INTERFACE, XmlParamName.XML_ATTRI_NAME, interName);
-        Element interElement = (Element) rootElement.selectSingleNode(elementXpath);
-        // 若未查找接口元素，则抛出异常
-        if (interElement == null) {
-            throw new InterfaceReadToolsException(
-                    String.format("接口元素“%s”在文件中不存在：%s", interName, xmlFile.getAbsolutePath()));
-        }
+        // 查找元素
+        Element interElement = findElement(interName);
 
         // 获取接口的url
         inter.analysisUrl(readInterURL(interElement));
@@ -138,8 +126,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         readHeader(inter, interElement);
         // 读取请求体信息
         inter.setBody(readInterBody(interElement));
-
-        // TODO 读取接口响应信息
+        // 读取接口断言信息
+        inter.addAssertRule(getAssertContent(interName));
+        // TODO 添加提词信息
 
         return inter;
     }
@@ -241,8 +230,41 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     @Override
     public String getAssertContent(String interName) {
-        // TODO Auto-generated method stub
-        return null;
+        // 查找元素
+        Element element = findElement(interName);
+        // 获取断言标签集合
+        List<Element> assertElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_ASSERTS))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_ASSERT)).orElseGet(() -> new ArrayList<>());
+
+        // 根据标签属性，生成断言json
+        JSONObject assertsJson = new JSONObject();
+        JSONArray assertListJson = new JSONArray();
+        for (Element assertElement : assertElementList) {
+            String assertValue = assertElement.attributeValue(XmlParamName.XML_ATTRI_ASSERT_VALUE);
+            // 判断当前是否存在断言内容属性，若不存在，则不进行存储
+            if (assertValue == null || assertValue.isEmpty()) {
+                continue;
+            }
+            
+            // 存储断言信息，生成断言json
+            JSONObject assertJson = new JSONObject();
+            assertJson.put(JSON_ASSERT_ASSERT_VALUE, assertValue);
+            assertJson.put(JSON_ASSERT_SEARCH,
+                    Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
+                            .orElseGet(() -> DEFAULT_SEARCH));
+            assertJson.put(JSON_ASSERT_LB, Optional
+                    .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
+            assertJson.put(JSON_ASSERT_RB,
+                    Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
+            assertJson.put(JSON_ASSERT_PARAM_NAME, Optional
+                    .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
+            assertJson.put(JSON_ASSERT_ORD, Optional
+                    .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_ORD)).orElseGet(() -> DEFAULT_ORD));
+
+            assertListJson.add(assertJson);
+        }
+        assertsJson.put(JSON_ASSERT_ASSERT_LIST, assertListJson);
+        return assertsJson.toJSONString();
     }
 
     @Override
@@ -267,6 +289,27 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     public List<String> getInterfaceParent(String interName) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    /**
+     * 该方法用于通过元素名称查找相应的接口元素
+     * 
+     * @param interName 元素名称
+     * @return 元素名称对应的接口元素
+     * @since autest 3.3.0
+     */
+    private Element findElement(String interName) {
+        // 定义查找接口的xpath，并获取接口元素
+        String elementXpath = String.format("//%s/%s[@%s='%s']", XmlParamName.XML_LABEL_INTERFACES,
+                XmlParamName.XML_LABEL_INTERFACE, XmlParamName.XML_ATTRI_NAME, interName);
+        Element interElement = (Element) rootElement.selectSingleNode(elementXpath);
+        // 若未查找接口元素，则抛出异常
+        if (interElement == null) {
+            throw new InterfaceReadToolsException(
+                    String.format("接口元素“%s”在文件中不存在：%s", interName, xmlFile.getAbsolutePath()));
+        }
+
+        return interElement;
     }
 
     // TODO 考虑参数间关联
@@ -329,6 +372,14 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         public static final String XML_LABEL_BODY = "body";
         /**
+         * 定义asserts标签名称
+         */
+        public static final String XML_LABEL_ASSERTS = "asserts";
+        /**
+         * 定义assert标签名称
+         */
+        public static final String XML_LABEL_ASSERT = "assert";
+        /**
          * 定义name属性名称
          */
         public static final String XML_ATTRI_NAME = "name";
@@ -348,5 +399,29 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义value属性名称
          */
         public static final String XML_ATTRI_VALUE = "value";
+        /**
+         * 定义assertValue属性名称
+         */
+        public static final String XML_ATTRI_ASSERT_VALUE = "assertValue";
+        /**
+         * 定义search属性名称
+         */
+        public static final String XML_ATTRI_SEARCH = "search";
+        /**
+         * 定义lb属性名称
+         */
+        public static final String XML_ATTRI_RB = "lb";
+        /**
+         * 定义rb属性名称
+         */
+        public static final String XML_ATTRI_LB = "rb";
+        /**
+         * 定义paramName属性名称
+         */
+        public static final String XML_ATTRI_PARAMNAME = "paramName";
+        /**
+         * 定义ord属性名称
+         */
+        public static final String XML_ATTRI_ORD = "ord";
     }
 }
