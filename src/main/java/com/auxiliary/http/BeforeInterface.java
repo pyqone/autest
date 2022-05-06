@@ -26,8 +26,9 @@ public interface BeforeInterface {
     /**
      * 该方法用于返回接口的所有父层接口名称（不包括当前接口名称）
      *
+     * @param interName 接口名称
      * @return 父层接口名称集合
      * @since autest 3.3.0
      */
-    public List<String> getParentInterfaceName();
+    public List<String> getParentInterfaceName(String interName);
 }

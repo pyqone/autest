@@ -391,9 +391,23 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     }
 
     @Override
-    public List<String> getParentInterfaceName() {
-        // TODO Auto-generated method stub
-        return null;
+    public List<String> getParentInterfaceName(String interName) {
+        // 查找元素
+        Element element = findElement(interName);
+        // 获取所有的前置接口名称
+        List<Element> beforeElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_BEFORE))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_INTERFACE)).orElseGet(() -> new ArrayList<>());
+
+        // 遍历标签，并存储相应不为空的接口名称
+        List<String> interNameList = new ArrayList<>();
+        for (Element beforeElement : beforeElementList) {
+            String name = beforeElement.attributeValue(XmlParamName.XML_ATTRI_NAME);
+            if (name != null && !name.isEmpty()) {
+                interNameList.add(name);
+            }
+        }
+
+        return interNameList;
     }
 
     /**
@@ -518,6 +532,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义extracts标签名称
          */
         public static final String XML_LABEL_EXTRACTS = "extracts";
+        /**
+         * 定义before标签名称
+         */
+        public static final String XML_LABEL_BEFORE = "before";
         /**
          * 定义name属性名称
          */
