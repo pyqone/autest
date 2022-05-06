@@ -237,12 +237,15 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于设置接口的路径
+     * <p>
+     * <b>注意：</b>该方法不接受为空的接口路径，若需要清除当前的接口路径，需要调用{@link #clearPath()}方法
+     * </p>
      *
      * @param path 接口的路径
      * @since autest 3.3.0
      */
     public void setPath(String path) {
-        this.path = Optional.ofNullable(path).map(p -> {
+         path = Optional.ofNullable(path).map(p -> {
             // 判断接口第一位是否为/，若不是，则添加
             if (p.indexOf(SYMBOL_SPLIT_PATH) != 0) {
                 p = SYMBOL_SPLIT_PATH + p;
@@ -252,7 +255,20 @@ public class InterfaceInfo implements Cloneable {
                 p = p.substring(0, p.length() - 1);
             }
             return p;
-        }).orElseGet(() -> "");
+        }).orElse("");
+        // 判断path是否为空，不为空，则存储其内容
+        if (!path.isEmpty()) {
+            this.path = path;
+        }
+    }
+
+    /**
+     * 该方法用于清空当前接口的路径
+     * 
+     * @since autest 3.3.0
+     */
+    public void clearPath() {
+        this.path = "";
     }
 
     /**

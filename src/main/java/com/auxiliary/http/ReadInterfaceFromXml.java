@@ -365,7 +365,6 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
         // 查找元素
         Element interElement = findElement(interName);
-
         // 获取接口的url
         inter.analysisUrl(readInterURL(interElement));
         // 获取接口的路径
@@ -387,6 +386,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 读取接口提词规则信息
         inter.addAllExtractRule(getExtractContent(interName));
 
+        // 缓存读取的接口
+        interfaceMap.put(interName, inter);
         return inter;
     }
 
