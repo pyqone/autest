@@ -1,6 +1,7 @@
 package com.auxiliary.http;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -118,7 +119,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口响应内容格式集合
      */
-    private HashMap<String, HashSet<ResponseContentType>> responseContentTypeMap = new HashMap<>(
+    private HashMap<Integer, HashSet<ResponseContentType>> responseContentTypeMap = new HashMap<>(
             ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文断言规则集合
@@ -489,7 +490,7 @@ public class InterfaceInfo implements Cloneable {
      * @return 接口响应内容的格式枚举
      * @since autest 3.3.0
      */
-    public Set<ResponseContentType> getResponseContentType(String state) {
+    public Set<ResponseContentType> getResponseContentType(int state) {
         return Optional.ofNullable(responseContentTypeMap.get(state)).orElseGet(() -> new HashSet<>());
     }
 
@@ -502,7 +503,7 @@ public class InterfaceInfo implements Cloneable {
      * @param responseContentTypes 响应内容格式数组
      * @since autest 3.3.0
      */
-    public void addResponseContentTypeSet(String state, ResponseContentType... responseContentTypes) {
+    public void addResponseContentTypeSet(int state, ResponseContentType... responseContentTypes) {
         // 判断当前状态码是否存在，若不存在，则添加空集合
         if (!responseContentTypeMap.containsKey(state)) {
             responseContentTypeMap.put(state, new HashSet<>());
@@ -559,6 +560,26 @@ public class InterfaceInfo implements Cloneable {
         JSONObject json = new JSONObject();
         assertRuleMap.forEach(json::put);
         assertRuleSet.add(json);
+    }
+
+    /**
+     * 该方法用于添加多组断言规则json
+     * <p>
+     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储
+     * </p>
+     *
+     * @param rules 断言规则json集合
+     * @since autest 3.3.0
+     */
+    public void addAllAssertRule(Collection<String> rules) {
+        rules.stream().filter(rule -> rule != null && !rule.isEmpty()).map(rule -> {
+            try {
+                return JSONObject.parseObject(rule);
+            } catch (Exception e) {
+                return new JSONObject();
+            }
+        }).filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE))
+                .forEach(assertRuleSet::add);
     }
 
     /**
@@ -628,6 +649,26 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
+     * 该方法用于添加多组提词规则json
+     * <p>
+     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_PARAM_NAME}字段，否则将不进行存储
+     * </p>
+     *
+     * @param rules 提词规则json集合
+     * @since autest 3.3.0
+     */
+    public void addAllExtractRule(Collection<String> rules) {
+        rules.stream().filter(rule -> rule != null && !rule.isEmpty()).map(rule -> {
+            try {
+                return JSONObject.parseObject(rule);
+            } catch (Exception e) {
+                return new JSONObject();
+            }
+        }).filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_PARAM_NAME))
+                .forEach(extractRuleSet::add);
+    }
+
+    /**
      * 该方法用于向接口中添加提词内容
      *
      * @param paramName 提词保存名称
@@ -679,7 +720,7 @@ public class InterfaceInfo implements Cloneable {
 
             // 克隆接口响应报文格式信息
             newInter.responseContentTypeMap = new HashMap<>();
-            for (String key : responseContentTypeMap.keySet()) {
+            for (int key : responseContentTypeMap.keySet()) {
                 newInter.responseContentTypeMap.put(key,
                         (HashSet<ResponseContentType>) responseContentTypeMap.get(key).clone());
             }

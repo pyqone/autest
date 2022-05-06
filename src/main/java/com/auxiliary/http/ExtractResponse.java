@@ -1,5 +1,7 @@
 package com.auxiliary.http;
 
+import java.util.Set;
+
 /**
  * <p>
  * <b>文件名：ExtractResponse.java</b>
@@ -31,5 +33,5 @@ public interface ExtractResponse {
      * @return 接口响应报文提词内容json串
      * @since autest 3.3.0
      */
-    public abstract String getExtractContent(String interName);
+    public abstract Set<String> getExtractContent(String interName);
 }

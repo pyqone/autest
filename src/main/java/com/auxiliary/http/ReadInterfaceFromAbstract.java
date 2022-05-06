@@ -1,7 +1,6 @@
 package com.auxiliary.http;
 
 import java.util.HashMap;
-import java.util.List;
 
 import com.auxiliary.tool.regex.ConstType;
 
@@ -91,7 +90,7 @@ public abstract class ReadInterfaceFromAbstract {
     /**
      * 定义接口断言默认搜索范围
      */
-    protected final String DEFAULT_SEARCH = "body";
+    protected final String DEFAULT_SEARCH = "BODY";
     /**
      * 定义接口断言默认搜索结果下标
      */
@@ -112,15 +111,6 @@ public abstract class ReadInterfaceFromAbstract {
      * @since autest 3.3.0
      */
     public abstract InterfaceInfo getInterface(String interName);
-
-    /**
-     * 该方法用于返回接口的父层接口集合
-     *
-     * @param interName 接口名称
-     * @return 接口的父层接口集合
-     * @since autest 3.3.0
-     */
-    public abstract List<String> getInterfaceParent(String interName);
 
     /**
      * 该方法用于清除已缓存的接口信息

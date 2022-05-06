@@ -1,5 +1,7 @@
 package com.auxiliary.http;
 
+import java.util.Set;
+
 /**
  * <p>
  * <b>文件名：AssertResponse.java</b>
@@ -31,5 +33,5 @@ public interface AssertResponse {
      * @return 接口断言内容json串
      * @since autest 3.3.0
      */
-    public abstract String getAssertContent(String interName);
+    public abstract Set<String> getAssertContent(String interName);
 }

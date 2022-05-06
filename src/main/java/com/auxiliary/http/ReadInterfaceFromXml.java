@@ -3,14 +3,15 @@ package com.auxiliary.http;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -34,7 +35,7 @@ import com.alibaba.fastjson.JSONObject;
  * @since autest 3.3.0
  */
 public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
-        implements ActionEnvironment, AssertResponse, ExtractResponse {
+        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeInterface {
     /**
      * 存储xml元素文件类对象
      */
@@ -45,13 +46,22 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     private Element rootElement;
 
     /**
+     * 当前查找元素类对象
+     */
+    private Element nowElement;
+    /**
+     * 当前查找元素名称
+     */
+    private String nowElementName = "";
+
+    /**
      * 环境集合
      */
     private HashMap<String, String> environmentMap = new HashMap<>();
     /**
      * 当前执行接口的环境
      */
-    private String actionEnvironment = DEFAULT_HOST;
+    private String actionEnvironment = "";
 
     /**
      * 根据xml文件对象，解析接口信息xml文件，并设置接口执行环境及接口默认执行环境
@@ -88,49 +98,66 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 判断环境集合标签中是否指定默认环境，若存在，则将执行环境指向为默认环境；若不存在，则取环境集合的第一个元素
             if (environmentMap.containsKey(environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT))) {
-                actionEnvironment = environmentMap
-                        .get(environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT));
+                actionEnvironment = environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
             } else {
-                actionEnvironment = environmentElementList.get(0).getText();
+                actionEnvironment = environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
             }
         }
     }
 
     @Override
     public InterfaceInfo getInterface(String interName) {
-        if (interName == null || interName.isEmpty()) {
-            throw new InterfaceReadToolsException("指定的接口名称为空或未指定接口名称：" + interName);
-        }
-
-        // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
-        if (interfaceMap.containsKey(interName)) {
-            return interfaceMap.get(interName).clone();
-        }
-
-        // 若未缓存信息，则构造接口信息对象，添加接口信息
-        InterfaceInfo inter = new InterfaceInfo();
-        // 解析环境信息
-        inter.analysisUrl(actionEnvironment);
-        // 查找元素
+        // 查找元素，并判断其是否指定环境属性
         Element interElement = findElement(interName);
+        String environmentName = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT)).orElse("");
+        if (environmentName.isEmpty()) {
+            return getInterface(interName, actionEnvironment);
+        } else {
+            return getInterface(interName, environmentName);
+        }
+    }
 
-        // 获取接口的url
-        inter.analysisUrl(readInterURL(interElement));
-        // 获取接口的路径
-        inter.setPath(readInterPath(interElement));
-        // 获取接口的请求方式
-        inter.setRequestType(readInterRequestType(interElement));
-        // 获取接口参数信息
-        readParams(inter, interElement);
-        // 设置请求头信息
-        readHeader(inter, interElement);
-        // 读取请求体信息
-        inter.setBody(readInterBody(interElement));
-        // 读取接口断言信息
-        inter.addAssertRule(getAssertContent(interName));
-        // TODO 添加提词信息
+    /**
+     * 该方法用于读取接口的响应报文格式信息，并存储至接口信息类对象中
+     *
+     * @param inter        接口信息类对象
+     * @param interElement 接口元素
+     * @since autest 3.3.0
+     */
+    private void readResponseTypes(InterfaceInfo inter, Element interElement) {
+        // 获取响应标签
+        List<Element> responeTypeElementList = Optional
+                .ofNullable(interElement.element(XmlParamName.XML_LABEL_RESPONSE))
+                .map(ele -> ele.element(XmlParamName.XML_LABEL_RESPONSE_TYPES))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_RESPONSE_TYPE)).orElseGet(() -> new ArrayList<>());
+        // 遍历所有的响应格式标签
+        for (Element responeTypeElement : responeTypeElementList) {
+            // 解析状态码，若状态码无法解析，则不进行存储
+            try {
+                int state = Integer.valueOf(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_STATUS));
+                String responeType = Optional.ofNullable(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
+                        .filter(type -> !type.isEmpty()).map(String::toUpperCase).orElse("");
+                if (responeType.isEmpty()) {
+                    continue;
+                }
+                // 将响应报文格式进行转换，之后存储相应的内容
+                inter.addResponseContentTypeSet(state, ResponseContentType.valueOf(responeType));
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+        }
+    }
 
-        return inter;
+    /**
+     * 该方法用于返回响应报文的字符集格式
+     *
+     * @param interElement 接口元素类对象
+     * @return 响应报文的字符集格式
+     * @since autest 3.3.0
+     */
+    private String readCharsetname(Element interElement) {
+        return Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_RESPONSE))
+                .map(ele -> ele.attributeValue(XmlParamName.XML_ATTRI_CHARSET)).orElseGet(() -> "");
     }
 
     /**
@@ -164,8 +191,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      */
     private void readHeader(InterfaceInfo inter, Element interElement) {
         // 获取所有的请求头元素
-        List<Element> headerElementList = interElement.element(XmlParamName.XML_LABEL_HEADERS)
-                .elements(XmlParamName.XML_LABEL_HEADER);
+        List<Element> headerElementList = Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_HEADERS))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_HEADER)).orElseGet(() -> new ArrayList<>());
         for (Element headerElement : headerElementList) {
             // 判断当前标签是否存储参数名称，若为空，则不进行存储
             Optional.ofNullable(headerElement.attributeValue(XmlParamName.XML_ATTRI_NAME))
@@ -186,8 +213,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      */
     private void readParams(InterfaceInfo inter, Element interElement) {
         // 获取所有的参数标签元素
-        List<Element> paramElementList = interElement.element(XmlParamName.XML_LABEL_PARAMS)
-                .elements(XmlParamName.XML_LABEL_PARAM);
+        List<Element> paramElementList = Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_PARAMS))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_PARAM)).orElseGet(() -> new ArrayList<>());
         for (Element paramElement : paramElementList) {
             // 判断当前标签是否存储参数名称，若为空，则不进行存储
             Optional.ofNullable(paramElement.attributeValue(XmlParamName.XML_ATTRI_NAME))
@@ -223,35 +250,69 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     }
 
     @Override
-    public String getExtractContent(String interName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getAssertContent(String interName) {
+    public Set<String> getExtractContent(String interName) {
         // 查找元素
         Element element = findElement(interName);
         // 获取断言标签集合
-        List<Element> assertElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_ASSERTS))
-                .map(ele -> ele.elements(XmlParamName.XML_LABEL_ASSERT)).orElseGet(() -> new ArrayList<>());
+        List<Element> extractElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_RESPONSE))
+                .map(ele -> ele.element(XmlParamName.XML_LABEL_EXTRACTS))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_EXTRACT)).orElseGet(() -> new ArrayList<>());
 
         // 根据标签属性，生成断言json
-        JSONObject assertsJson = new JSONObject();
-        JSONArray assertListJson = new JSONArray();
+        Set<String> extractSet = new HashSet<>();
+        for (Element extractElement : extractElementList) {
+            String saveName = extractElement.attributeValue(XmlParamName.XML_ATTRI_SAVE_NAME);
+            // 判断当前是否存在断言内容属性，若不存在，则不进行存储
+            if (saveName == null || saveName.isEmpty()) {
+                continue;
+            }
+
+            // 存储断言信息，生成断言json
+            JSONObject extractJson = new JSONObject();
+            extractJson.put(JSON_EXTRACT_SAVE_NAME, saveName);
+            extractJson.put(JSON_EXTRACT_SEARCH,
+                    Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
+                            .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
+            extractJson.put(JSON_EXTRACT_LB,
+                    Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
+            extractJson.put(JSON_EXTRACT_RB,
+                    Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
+            extractJson.put(JSON_EXTRACT_PARAM_NAME, Optional
+                    .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
+            extractJson.put(JSON_EXTRACT_ORD,
+                    Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_ORD))
+                            .orElseGet(() -> DEFAULT_ORD));
+
+            extractSet.add(extractJson.toJSONString());
+        }
+
+        return extractSet;
+    }
+
+    @Override
+    public Set<String> getAssertContent(String interName) {
+        // 查找元素
+        Element element = findElement(interName);
+        // 获取断言标签集合
+        List<Element> assertElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_RESPONSE))
+                .map(ele -> ele.element(XmlParamName.XML_LABEL_ASSERTS))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_ASSERT)).orElseGet(() -> new ArrayList<>());
+
+        // 根据标签属性，生成断言json，并存储至集合中
+        Set<String> assertSet = new HashSet<>();
         for (Element assertElement : assertElementList) {
             String assertValue = assertElement.attributeValue(XmlParamName.XML_ATTRI_ASSERT_VALUE);
             // 判断当前是否存在断言内容属性，若不存在，则不进行存储
             if (assertValue == null || assertValue.isEmpty()) {
                 continue;
             }
-            
+
             // 存储断言信息，生成断言json
             JSONObject assertJson = new JSONObject();
             assertJson.put(JSON_ASSERT_ASSERT_VALUE, assertValue);
             assertJson.put(JSON_ASSERT_SEARCH,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
-                            .orElseGet(() -> DEFAULT_SEARCH));
+                            .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
             assertJson.put(JSON_ASSERT_LB, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
             assertJson.put(JSON_ASSERT_RB,
@@ -261,10 +322,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             assertJson.put(JSON_ASSERT_ORD, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_ORD)).orElseGet(() -> DEFAULT_ORD));
 
-            assertListJson.add(assertJson);
+            assertSet.add(assertJson.toJSONString());
         }
-        assertsJson.put(JSON_ASSERT_ASSERT_LIST, assertListJson);
-        return assertsJson.toJSONString();
+
+        return assertSet;
     }
 
     @Override
@@ -281,24 +342,78 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     @Override
     public InterfaceInfo getInterface(String interName, String environmentName) {
-        // TODO Auto-generated method stub
-        return null;
+        if (interName == null || interName.isEmpty()) {
+            throw new InterfaceReadToolsException("指定的接口名称为空或未指定接口名称：" + interName);
+        }
+
+        // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
+        if (interfaceMap.containsKey(interName)) {
+            return interfaceMap.get(interName).clone();
+        }
+
+        // 若未缓存信息，则构造接口信息对象，添加接口信息
+        InterfaceInfo inter = new InterfaceInfo();
+        // 解析环境，获取环境主机等信息
+        if (environmentMap.containsKey(environmentName)) {
+            // 解析环境信息
+            inter.analysisUrl(environmentMap.get(environmentName));
+        } else {
+            if (!actionEnvironment.isEmpty()) {
+                inter.analysisUrl(environmentMap.get(actionEnvironment));
+            }
+        }
+
+        // 查找元素
+        Element interElement = findElement(interName);
+
+        // 获取接口的url
+        inter.analysisUrl(readInterURL(interElement));
+        // 获取接口的路径
+        inter.setPath(readInterPath(interElement));
+        // 获取接口的请求方式
+        inter.setRequestType(readInterRequestType(interElement));
+        // 获取接口参数信息
+        readParams(inter, interElement);
+        // 设置请求头信息
+        readHeader(inter, interElement);
+        // 读取请求体信息
+        inter.setBody(readInterBody(interElement));
+        // 读取响应体字符集
+        inter.setCharsetname(readCharsetname(interElement));
+        // 读取接口不同状态的响应报文格式
+        readResponseTypes(inter, interElement);
+        // 读取接口断言规则信息
+        inter.addAllAssertRule(getAssertContent(interName));
+        // 读取接口提词规则信息
+        inter.addAllExtractRule(getExtractContent(interName));
+
+        return inter;
     }
 
     @Override
-    public List<String> getInterfaceParent(String interName) {
+    public List<String> getParentInterfaceName() {
         // TODO Auto-generated method stub
         return null;
     }
 
     /**
      * 该方法用于通过元素名称查找相应的接口元素
-     * 
+     *
      * @param interName 元素名称
      * @return 元素名称对应的接口元素
      * @since autest 3.3.0
      */
     private Element findElement(String interName) {
+        // 若指定的接口名称为空，则抛出异常
+        if (interName == null || interName.isEmpty()) {
+            throw new InterfaceReadToolsException("未指定元素名称，无法查找元素");
+        }
+
+        // 若指定的接口名称与当前缓存的接口名称相同，则直接返回缓存的元素类对象
+        if (interName.equals(nowElementName)) {
+            return nowElement;
+        }
+
         // 定义查找接口的xpath，并获取接口元素
         String elementXpath = String.format("//%s/%s[@%s='%s']", XmlParamName.XML_LABEL_INTERFACES,
                 XmlParamName.XML_LABEL_INTERFACE, XmlParamName.XML_ATTRI_NAME, interName);
@@ -308,6 +423,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             throw new InterfaceReadToolsException(
                     String.format("接口元素“%s”在文件中不存在：%s", interName, xmlFile.getAbsolutePath()));
         }
+
+        // 将缓存元素指向当前元素
+        nowElementName = interName;
+        nowElement = interElement;
 
         return interElement;
     }
@@ -372,6 +491,18 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         public static final String XML_LABEL_BODY = "body";
         /**
+         * 定义response标签名称
+         */
+        public static final String XML_LABEL_RESPONSE = "response";
+        /**
+         * 定义responseTypes标签名称
+         */
+        public static final String XML_LABEL_RESPONSE_TYPES = "responseTypes";
+        /**
+         * 定义responseType标签名称
+         */
+        public static final String XML_LABEL_RESPONSE_TYPE = "responseType";
+        /**
          * 定义asserts标签名称
          */
         public static final String XML_LABEL_ASSERTS = "asserts";
@@ -379,6 +510,14 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义assert标签名称
          */
         public static final String XML_LABEL_ASSERT = "assert";
+        /**
+         * 定义extract标签名称
+         */
+        public static final String XML_LABEL_EXTRACT = "extract";
+        /**
+         * 定义extracts标签名称
+         */
+        public static final String XML_LABEL_EXTRACTS = "extracts";
         /**
          * 定义name属性名称
          */
@@ -400,9 +539,21 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         public static final String XML_ATTRI_VALUE = "value";
         /**
+         * 定义charset属性名称
+         */
+        public static final String XML_ATTRI_CHARSET = "charset";
+        /**
+         * 定义status属性名称
+         */
+        public static final String XML_ATTRI_STATUS = "status";
+        /**
          * 定义assertValue属性名称
          */
         public static final String XML_ATTRI_ASSERT_VALUE = "assertValue";
+        /**
+         * 定义saveName属性名称
+         */
+        public static final String XML_ATTRI_SAVE_NAME = "saveName";
         /**
          * 定义search属性名称
          */
@@ -410,11 +561,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         /**
          * 定义lb属性名称
          */
-        public static final String XML_ATTRI_RB = "lb";
+        public static final String XML_ATTRI_RB = "rb";
         /**
          * 定义rb属性名称
          */
-        public static final String XML_ATTRI_LB = "rb";
+        public static final String XML_ATTRI_LB = "lb";
         /**
          * 定义paramName属性名称
          */
@@ -423,5 +574,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义ord属性名称
          */
         public static final String XML_ATTRI_ORD = "ord";
+        /**
+         * 定义environment属性名称
+         */
+        public static final String XML_ATTRI_ENVIRONMENT = "environment";
     }
 }
