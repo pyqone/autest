@@ -445,8 +445,6 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         return interElement;
     }
 
-    // TODO 考虑参数间关联
-
     /**
      * <p>
      * <b>文件名：ReadInterfaceFromXml.java</b>

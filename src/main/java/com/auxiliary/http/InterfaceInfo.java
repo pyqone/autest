@@ -134,6 +134,7 @@ public class InterfaceInfo implements Cloneable {
      */
     private HashMap<String, String> extractValueMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
+    // TODO 添加无参构造，并添加默认请求头
     /**
      * 该方法用于返回接口的url协议
      *
@@ -422,6 +423,7 @@ public class InterfaceInfo implements Cloneable {
      */
     public void setBody(String body) {
         this.body = Optional.ofNullable(body).orElseGet(() -> "");
+        // TODO 根据body的格式，自动添加相应的contentType请求头
     }
 
     /**
@@ -492,6 +494,16 @@ public class InterfaceInfo implements Cloneable {
      */
     public Set<ResponseContentType> getResponseContentType(int state) {
         return Optional.ofNullable(responseContentTypeMap.get(state)).orElseGet(() -> new HashSet<>());
+    }
+
+    /**
+     * 该方法用于返回已存储响应报文格式的响应状态码集合
+     *
+     * @return 响应状态码集合
+     * @since autest 3.3.0
+     */
+    public Set<Integer> getAllSaveState() {
+        return responseContentTypeMap.keySet();
     }
 
     /**
