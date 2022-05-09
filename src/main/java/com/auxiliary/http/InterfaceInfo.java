@@ -9,6 +9,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.testcase.TestCaseException;
 import com.auxiliary.tool.regex.ConstType;
@@ -119,7 +123,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口响应内容格式集合
      */
-    private HashMap<Integer, HashSet<ResponseContentType>> responseContentTypeMap = new HashMap<>(
+    private HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(
             ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文断言规则集合
@@ -134,7 +138,6 @@ public class InterfaceInfo implements Cloneable {
      */
     private HashMap<String, String> extractValueMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
-    // TODO 添加无参构造，并添加默认请求头
     /**
      * 该方法用于返回接口的url协议
      *
@@ -265,7 +268,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于清空当前接口的路径
-     * 
+     *
      * @since autest 3.3.0
      */
     public void clearPath() {
@@ -433,13 +436,40 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于设置接口的请求体
+     * <p>
+     * 该方法会根据请求报文的格式，自动添加相应的请求头
+     * </p>
      *
      * @param body 接口的请求体
      * @since autest 3.3.0
      */
     public void setBody(String body) {
         this.body = Optional.ofNullable(body).orElseGet(() -> "");
-        // TODO 根据body的格式，自动添加相应的contentType请求头
+        // 若body不为空，则根据body格式，自动设置请求头
+        if (!this.body.isEmpty()) {
+            try {
+                // 判断文本是否能被识别为json格式
+                JSONObject.parseObject(body);
+                requestHeaderMap.put(HeadType.CONTENT_TYPE_JSON.getHeadName(),
+                        HeadType.CONTENT_TYPE_JSON.getHeadValue());
+            } catch (JSONException jsonException) {
+                try {
+                    DocumentHelper.parseText(body);
+                    // 若相应参数开头的文本为<html>，则表示其相应参数为html形式，则以html形式进行转换
+                    if (body.indexOf("<html>") == 0) {
+                        requestHeaderMap.put(HeadType.CONTENT_TYPE_HTML.getHeadName(),
+                                HeadType.CONTENT_TYPE_HTML.getHeadValue());
+                    } else {
+                        requestHeaderMap.put(HeadType.CONTENT_TYPE_XML.getHeadName(),
+                                HeadType.CONTENT_TYPE_XML.getHeadValue());
+                    }
+
+                } catch (DocumentException domException) {
+                    requestHeaderMap.put(HeadType.CONTENT_TYPE_PLAIN.getHeadName(),
+                            HeadType.CONTENT_TYPE_PLAIN.getHeadValue());
+                }
+            }
+        }
     }
 
     /**
@@ -508,7 +538,7 @@ public class InterfaceInfo implements Cloneable {
      * @return 接口响应内容的格式枚举
      * @since autest 3.3.0
      */
-    public Set<ResponseContentType> getResponseContentType(int state) {
+    public Set<MessageType> getResponseContentType(int state) {
         return Optional.ofNullable(responseContentTypeMap.get(state)).orElseGet(() -> new HashSet<>());
     }
 
@@ -531,14 +561,14 @@ public class InterfaceInfo implements Cloneable {
      * @param responseContentTypes 响应内容格式数组
      * @since autest 3.3.0
      */
-    public void addResponseContentTypeSet(int state, ResponseContentType... responseContentTypes) {
+    public void addResponseContentTypeSet(int state, MessageType... responseContentTypes) {
         // 判断当前状态码是否存在，若不存在，则添加空集合
         if (!responseContentTypeMap.containsKey(state)) {
             responseContentTypeMap.put(state, new HashSet<>());
         }
 
         // 获取当前状态码中 存储的状态
-        HashSet<ResponseContentType> responseContentTypeSet = responseContentTypeMap.get(state);
+        HashSet<MessageType> responseContentTypeSet = responseContentTypeMap.get(state);
 
         // 过滤掉数组为null或为空的情况
         Optional.ofNullable(responseContentTypes).filter(types -> types.length != 0).ifPresent(types -> {
@@ -750,7 +780,7 @@ public class InterfaceInfo implements Cloneable {
             newInter.responseContentTypeMap = new HashMap<>();
             for (int key : responseContentTypeMap.keySet()) {
                 newInter.responseContentTypeMap.put(key,
-                        (HashSet<ResponseContentType>) responseContentTypeMap.get(key).clone());
+                        (HashSet<MessageType>) responseContentTypeMap.get(key).clone());
             }
             // 克隆接口响应报文断言规则信息
             newInter.assertRuleSet = new HashSet<>();

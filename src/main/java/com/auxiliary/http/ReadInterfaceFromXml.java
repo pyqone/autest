@@ -141,7 +141,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                     continue;
                 }
                 // 将响应报文格式进行转换，之后存储相应的内容
-                inter.addResponseContentTypeSet(state, ResponseContentType.valueOf(responeType));
+                inter.addResponseContentTypeSet(state, MessageType.valueOf(responeType));
             } catch (IllegalArgumentException e) {
                 continue;
             }

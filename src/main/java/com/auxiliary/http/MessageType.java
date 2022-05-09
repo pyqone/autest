@@ -20,6 +20,6 @@ package com.auxiliary.http;
  * @since JDK 1.8
  * @since autest 3.3.0
  */
-public enum ResponseContentType {
+public enum MessageType {
     JSON, XML, HTML, RAW, BINARY;
 }
