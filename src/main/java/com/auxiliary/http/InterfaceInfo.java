@@ -15,6 +15,7 @@ import org.dom4j.DocumentHelper;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.testcase.TestCaseException;
+import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -111,7 +112,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口请求体
      */
-    private String body = "";
+    private Entry<String, String> body;
     /**
      * 接口请求头
      */
@@ -425,51 +426,65 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于返回接口的请求体
+     * 该方法用于返回接口的请求报文与请求报文类型封装类
+     * <p>
+     * 封装类类似于于键值对，键为报文类型，值为报文内容
+     * </p>
      *
-     * @return 接口的请求体
+     * @return 接口的请求报文与请求报文类型封装类
      * @since autest 3.3.0
      */
-    public String getBody() {
-        return body;
+    public Entry<String, String> getBody() {
+        return Optional.ofNullable(body)
+                .orElseGet(() -> new Entry<>(MessageType.NONE.getMediaValue(), ""));
     }
 
     /**
-     * 该方法用于设置接口的请求体
+     * 该方法用于设置接口的请求体，根据报文的内容，自动设置相应的报文类型
      * <p>
-     * 该方法会根据请求报文的格式，自动添加相应的请求头
+     * <b>注意：</b>报文格式自动识别可能存在错误，若不符合预期，可调用{@link #setBody(MessageType, String)}方法对请求报文类型进行设置
      * </p>
      *
-     * @param body 接口的请求体
+     * @param bodyText 接口的请求体
      * @since autest 3.3.0
      */
-    public void setBody(String body) {
-        this.body = Optional.ofNullable(body).orElseGet(() -> "");
+    public void setBody(String bodyText) {
         // 若body不为空，则根据body格式，自动设置请求头
-        if (!this.body.isEmpty()) {
+        if (bodyText != null && !bodyText.isEmpty()) {
             try {
                 // 判断文本是否能被识别为json格式
-                JSONObject.parseObject(body);
-                requestHeaderMap.put(HeadType.CONTENT_TYPE_JSON.getHeadName(),
-                        HeadType.CONTENT_TYPE_JSON.getHeadValue());
+                JSONObject.parseObject(bodyText);
+                setBody(MessageType.JSON, bodyText);
             } catch (JSONException jsonException) {
                 try {
-                    DocumentHelper.parseText(body);
+                    DocumentHelper.parseText(bodyText);
                     // 若相应参数开头的文本为<html>，则表示其相应参数为html形式，则以html形式进行转换
-                    if (body.indexOf("<html>") == 0) {
-                        requestHeaderMap.put(HeadType.CONTENT_TYPE_HTML.getHeadName(),
-                                HeadType.CONTENT_TYPE_HTML.getHeadValue());
+                    if (bodyText.indexOf("<html>") == 0) {
+                        setBody(MessageType.HTML, bodyText);
                     } else {
-                        requestHeaderMap.put(HeadType.CONTENT_TYPE_XML.getHeadName(),
-                                HeadType.CONTENT_TYPE_XML.getHeadValue());
+                        setBody(MessageType.XML, bodyText);
                     }
 
                 } catch (DocumentException domException) {
-                    requestHeaderMap.put(HeadType.CONTENT_TYPE_PLAIN.getHeadName(),
-                            HeadType.CONTENT_TYPE_PLAIN.getHeadValue());
+                    setBody(MessageType.RAW, bodyText);
+                    ;
                 }
             }
+        } else {
+            setBody(MessageType.NONE, "");
         }
+    }
+
+    /**
+     * 该方法用于设置请求报文以及请求报文的类型
+     *
+     * @param messageType 报文类型枚举
+     * @param bodyText    报文内容
+     * @since autest 3.3.0
+     */
+    public void setBody(MessageType messageType, String bodyText) {
+        body = new Entry<>(messageType.getMediaValue(),
+                Optional.ofNullable(bodyText).orElseGet(() -> ""));
     }
 
     /**

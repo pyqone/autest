@@ -97,11 +97,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             }
 
             // 判断环境集合标签中是否指定默认环境，若存在，则将执行环境指向为默认环境；若不存在，则取环境集合的第一个元素
-            if (environmentMap.containsKey(environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT))) {
-                actionEnvironment = environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
-            } else {
-                actionEnvironment = environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
-            }
+            String defaultenvironmentName = environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
+            actionEnvironment = environmentMap.containsKey(defaultenvironmentName) ? defaultenvironmentName
+                    : environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_NAME);
         }
     }
 
