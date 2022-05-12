@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
+import com.auxiliary.datadriven.Functions;
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 import com.auxiliary.tool.regex.RegexType;
@@ -63,6 +65,24 @@ public class EasyHttp {
     private final String FUNCTION_END_SIGN = "\\}";
 
     /**
+     * 该方法用于添加数据处理函数
+     * <p>
+     * 可通过lambda添加公式对数据处理的方式，例如，将文本中的存在的方法"a()"全部替换为文本“test”，则可按如下写法： <code><pre>
+     * addFunction(new DataDriverFunction("a\\(\\)", text -> "test"));
+     * </pre></code>
+     * </p>
+     * <p>
+     * 可添加{@link Functions}类中预设的函数
+     * </p>
+     *
+     * @param function 数据处理函数
+     * @since autest 3.3.0
+     */
+    public void addFunction(DataDriverFunction function) {
+        functionMap.put(function.getRegex(), function.getFunction());
+    }
+
+    /**
      * 该方法用于根据接口信息，对接口进行请求，并返回响应内容
      *
      * @param interInfo 接口信息类对象
@@ -72,7 +92,7 @@ public class EasyHttp {
     public EasyResponse requst(InterfaceInfo interInfo) {
         OkHttpClient client = new OkHttpClient().newBuilder().build();
 
-        Builder requestBuilder = new Request.Builder().url(interInfo.toUrlString());
+        Builder requestBuilder = new Request.Builder().url(disposeContent(interInfo.toUrlString()));
         setRequstType(interInfo, requestBuilder);
         addHeader(interInfo, requestBuilder);
 
@@ -97,7 +117,7 @@ public class EasyHttp {
         // 获取接口信息中存储的请求头
         Map<String, String> headMap = interInfo.getRequestHeaderMap();
         if (!headMap.isEmpty()) {
-            headMap.forEach(requestBuilder::addHeader);
+            headMap.forEach((key, value) -> requestBuilder.addHeader(disposeContent(key), disposeContent(value)));
         }
     }
 
@@ -112,7 +132,7 @@ public class EasyHttp {
     private void setRequstType(InterfaceInfo interInfo, Builder requestBuilder) {
         // 获取接口的请求报文
         Entry<String, String> body = interInfo.getBody();
-        RequestBody requestBody = RequestBody.create(MediaType.parse(body.getKey()), body.getValue());
+        RequestBody requestBody = RequestBody.create(MediaType.parse(body.getKey()), disposeContent(body.getValue()));
 
         // 根据请求方式，对接口进行请求
         switch (interInfo.getRequestType()) {
@@ -149,7 +169,7 @@ public class EasyHttp {
      */
     private String disposeContent(String content) {
         // 判断需要才处理的内容是否为空或是否包含公式标志，若存在，则返回content
-        if (content == null || content.isEmpty() || !content.matches(FUNCTION_SIGN)) {
+        if (content == null || content.isEmpty() || !content.matches(".*" + FUNCTION_SIGN + ".*")) {
             return content;
         }
 
@@ -162,14 +182,14 @@ public class EasyHttp {
 
             // 判断关键词是否为已存储的词语
             if (extractMap.containsKey(key)) {
-                content.replaceAll(disposeKey(signKey), extractMap.get(key));
+                content = content.replaceAll(disposeKey(signKey), extractMap.get(key));
                 continue;
             }
 
             // 若不是存储的词语，则判断关键词是否符合公式集合中的内容，符合公式，则使用公式对内容进行替换
             for (String funKey : functionMap.keySet()) {
                 if (key.matches(funKey)) {
-                    content.replaceAll(disposeKey(signKey), functionMap.get(key).apply(key));
+                    content = content.replaceAll(disposeKey(signKey), functionMap.get(funKey).apply(key));
                     break;
                 }
             }
