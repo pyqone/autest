@@ -3,6 +3,7 @@ package com.auxiliary.http;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,7 +68,7 @@ public class EasyHttp {
     /**
      * 该方法用于添加数据处理函数
      * <p>
-     * 可通过lambda添加公式对数据处理的方式，例如，将文本中的存在的方法"a()"全部替换为文本“test”，则可按如下写法： <code><pre>
+     * 可通过lambda添加公式对数据处理的方式，例如，将文本中的存在的"a()"全部替换为文本“test”，则可按如下写法： <code><pre>
      * addFunction(new DataDriverFunction("a\\(\\)", text -> "test"));
      * </pre></code>
      * </p>
@@ -79,30 +80,113 @@ public class EasyHttp {
      * @since autest 3.3.0
      */
     public void addFunction(DataDriverFunction function) {
-        functionMap.put(function.getRegex(), function.getFunction());
+        if (function != null) {
+            functionMap.put(function.getRegex(), function.getFunction());
+        }
+    }
+
+    /**
+     * 该方法用于添加待替换的关键词及相应的替换内容
+     *
+     * @param key   待替换关键词
+     * @param value 替换内容
+     * @since autest 3.3.0
+     */
+    public void addReplaceKey(String key, String value) {
+        Optional.ofNullable(key).filter(k -> !k.isEmpty()).ifPresent(k -> {
+            extractMap.put(k, Optional.ofNullable(value).orElse(""));
+        });
+    }
+
+    /**
+     * 该方法用于返回指定待替换关键词的内容
+     *
+     * @param key 待替换关键词
+     * @return 替换内容
+     * @since autest 3.3.0
+     */
+    public String getReplaceKey(String key) {
+        return extractMap.get(key);
     }
 
     /**
      * 该方法用于根据接口信息，对接口进行请求，并返回响应内容
      *
      * @param interInfo 接口信息类对象
-     * @return 接口响应
+     * @return 接口响应类
      * @since autest 3.3.0
      */
     public EasyResponse requst(InterfaceInfo interInfo) {
+        // 定义请求客户端
         OkHttpClient client = new OkHttpClient().newBuilder().build();
 
+        // 构造请求体，并添加接口信息中的请求参数、请求头和请求体信息
         Builder requestBuilder = new Request.Builder().url(disposeContent(interInfo.toUrlString()));
         setRequstType(interInfo, requestBuilder);
         addHeader(interInfo, requestBuilder);
 
+        // 对接口进行请求
         Request request = requestBuilder.build();
         try {
+            // TODO 修改响应工具后，再来修改此处代码
             Response response = client.newCall(request).execute();
+            // TODO 修改响应工具后，添加自动断言和提词代码
             return new EasyResponse(response.body().string());
         } catch (IOException e) {
             throw new HttpRequestException(String.format("接口请求异常，接口信息：%s", interInfo.toString()), e);
         }
+    }
+
+    /**
+     * 该方法用于对接口进行快速请求
+     * <p>
+     * <b>注意：</b>该方法为静态方法，将不会使用类中（若已构造对象）存储替换词语和公式，若
+     * </p>
+     *
+     * @param requestType 请求类型
+     * @param url         接口url地址
+     * @param requestHead 请求头集合
+     * @param messageType 请求报文类型
+     * @param body        请求体
+     * @return 接口响应类
+     * @since autest 3.3.0
+     */
+    public static EasyResponse requst(RequestType requestType, String url, Map<String, String> requestHead,
+            MessageType messageType, String body) {
+        // 定义请求客户端
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+
+        // 构造请求体，并添加接口信息中的请求参数、请求头和请求体信息
+        RequestBody requestBody = null;
+        if (messageType != null && messageType != MessageType.NONE && body != null && requestType != RequestType.GET
+                && requestType != RequestType.HEAD && requestType != RequestType.DELETE) {
+            requestBody = RequestBody.create(MediaType.parse(messageType.getMediaValue()), body);
+        }
+        Builder requestBuilder = new Request.Builder().url(url).method(requestType.toString(), requestBody);
+        if (requestHead != null) {
+            requestHead.forEach(requestBuilder::addHeader);
+        }
+
+        // 对接口进行请求
+        Request request = requestBuilder.build();
+        try {
+            // TODO 修改响应工具后，再来修改此处代码
+            Response response = client.newCall(request).execute();
+            return new EasyResponse(response.body().string());
+        } catch (IOException e) {
+            throw new HttpRequestException(String.format("接口请求异常，接口信息：%s", url), e);
+        }
+    }
+
+    /**
+     * 该方法用于以get请求的方式对接口发起请求
+     *
+     * @param url 接口url地址
+     * @return 接口响应类
+     * @since autest 3.3.0
+     */
+    public static EasyResponse requst(String url) {
+        return requst(RequestType.GET, url, null, null, null);
     }
 
     /**

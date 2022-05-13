@@ -134,10 +134,6 @@ public class InterfaceInfo implements Cloneable {
      * 接口响应报文提词规则
      */
     private HashSet<JSONObject> extractRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
-     * 接口响应报文提词内容
-     */
-    private HashMap<String, String> extractValueMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 该方法用于返回接口的url协议
@@ -693,7 +689,6 @@ public class InterfaceInfo implements Cloneable {
                     .ifPresent(json -> {
                         // 存储规则，并在提词内容集合中，构造空值
                         extractRuleSet.add(json);
-                        extractValueMap.put(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME), "");
                     });
         } catch (Exception e) {
         }
@@ -717,8 +712,6 @@ public class InterfaceInfo implements Cloneable {
         JSONObject json = new JSONObject();
         extractRuleMap.forEach(json::put);
         extractRuleSet.add(json);
-        extractValueMap.put(extractRuleMap.get(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME), "");
-
     }
 
     /**
@@ -742,17 +735,6 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于向接口中添加提词内容
-     *
-     * @param paramName 提词保存名称
-     * @param value     提词内容
-     * @since autest 3.3.0
-     */
-    public void putExtractValue(String paramName, String value) {
-        extractValueMap.put(paramName, value);
-    }
-
-    /**
      * 该方法用于以字符串集合的形式，返回提词规则json
      * <p>
      * json字段可参考{@link ReadInterfaceFromAbstract}中“JSON_EXTRACT_XXX”常量
@@ -766,17 +748,6 @@ public class InterfaceInfo implements Cloneable {
         extractRuleSet.stream().map(json -> json.toJSONString()).forEach(extractRuleJsonText::add);
 
         return extractRuleJsonText;
-    }
-
-    /**
-     * 该方法用于返回提词的内容
-     *
-     * @param paramName 参数名称
-     * @return 提词的内容
-     * @since autest 3.3.0
-     */
-    public String getExtractValue(String paramName) {
-        return Optional.ofNullable(extractValueMap.get(paramName)).orElseGet(() -> "");
     }
 
     @SuppressWarnings("unchecked")
