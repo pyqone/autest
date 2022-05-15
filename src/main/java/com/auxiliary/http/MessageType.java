@@ -81,4 +81,21 @@ public enum MessageType {
     public String getMediaValue() {
         return mediaName;
     }
+
+    /**
+     * 该方法用于比对消息类型名称，返回对应的消息类型枚举
+     * 
+     * @param typeName 消息类型名称
+     * @return 消息类型枚举
+     * @since autest 3.3.0
+     */
+    public static MessageType typeOf(String typeName) {
+        for (MessageType type : values()) {
+            if (type.mediaName.equals(typeName)) {
+                return type;
+            }
+        }
+
+        return null;
+    }
 }

@@ -19,6 +19,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.auxiliary.tool.file.UnsupportedFileException;
 
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 /**
  * <p>
  * <b>文件名：</b>EasyResponse.java
@@ -58,10 +61,35 @@ public class EasyResponse {
 	 */
 	private org.jsoup.nodes.Document responseHtmlDom = null;
 
-	/**
-	 * 存储响应数据的类型
-	 */
-	private ResponseType responseType;
+    /**
+     * 接口响应报文内容
+     */
+    private byte[] responseBody;
+    /**
+     * 接口响应报文格式
+     */
+    private MessageType bodyType;
+    /**
+     * 响应报文字符集编码名称
+     */
+    private String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
+
+    /**
+     * 构造对象，指定OKHttp响应类
+     * 
+     * @param response OKHttp响应类
+     */
+    protected EasyResponse(Response response) {
+        ResponseBody body = response.body();
+        try {
+            responseBody = body.bytes();
+        } catch (IOException e) {
+        }
+        // TODO 将消息类型名称转换为消息类型枚举，存储返回的字符集编码
+        body.contentType();
+
+        response.headers();
+    }
 
 	/**
 	 * 构造类，传入接口的响应数据，并根据响应参数的类型对响应参数进行转换，指定响应参数的类型
@@ -209,46 +237,5 @@ public class EasyResponse {
 	 */
 	public ResponseType getResponseType() {
 		return responseType;
-	}
-
-	/**
-	 * <p>
-	 * <b>文件名：</b>EasyResponse.java
-	 * </p>
-	 * <p>
-	 * <b>用途：</b> 定义响应数据的所有格式
-	 * </p>
-	 * <p>
-	 * <b>编码时间：</b>2020年6月24日上午8:18:03
-	 * </p>
-	 * <p>
-	 * <b>修改时间：</b>2020年6月24日上午8:18:03
-	 * </p>
-	 * 
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 *
-	 */
-	public enum ResponseType {
-		/**
-		 * json格式响应数据
-		 */
-		JSON,
-		/**
-		 * html格式响应数据
-		 */
-		HTML,
-		/**
-		 * xml格式响应数据
-		 */
-		XML,
-		/**
-		 * 纯文本格式响应数据
-		 */
-		TEXT,
-		/**
-		 * 无响应数据
-		 */
-		EMPTY;
 	}
 }
