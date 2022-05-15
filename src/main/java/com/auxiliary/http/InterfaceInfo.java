@@ -112,7 +112,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口请求体
      */
-    private Entry<String, String> body;
+    private Entry<MessageType, String> body;
     /**
      * 接口请求头
      */
@@ -430,9 +430,9 @@ public class InterfaceInfo implements Cloneable {
      * @return 接口的请求报文与请求报文类型封装类
      * @since autest 3.3.0
      */
-    public Entry<String, String> getBody() {
+    public Entry<MessageType, String> getBody() {
         return Optional.ofNullable(body)
-                .orElseGet(() -> new Entry<>(MessageType.NONE.getMediaValue(), ""));
+                .orElseGet(() -> new Entry<>(MessageType.NONE, ""));
     }
 
     /**
@@ -479,8 +479,7 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public void setBody(MessageType messageType, String bodyText) {
-        body = new Entry<>(messageType.getMediaValue(),
-                Optional.ofNullable(bodyText).orElseGet(() -> ""));
+        body = new Entry<>(messageType, Optional.ofNullable(bodyText).orElseGet(() -> ""));
     }
 
     /**
