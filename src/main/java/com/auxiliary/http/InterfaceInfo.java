@@ -640,7 +640,7 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public void addAllAssertRule(Collection<String> rules) {
-        rules.stream().filter(rule -> rule != null && !rule.isEmpty()).map(rule -> {
+        rules.stream().filter(rule -> rule != null).map(rule -> {
             try {
                 return JSONObject.parseObject(rule);
             } catch (Exception e) {

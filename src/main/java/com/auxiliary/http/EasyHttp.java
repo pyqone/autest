@@ -10,15 +10,14 @@ import java.util.regex.Pattern;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
+import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.regex.ConstType;
-import com.auxiliary.tool.regex.RegexType;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 /**
  * <p>
@@ -123,7 +122,7 @@ public class EasyHttp {
         // 对接口进行请求，获取响应类
         EasyResponse response = requst(interInfo.getRequestType(), interInfo.toUrlString(), newHeadMap,
                 interInfo.getBody().getKey(), disposeContent(interInfo.getBody().getValue()));
-        
+
         // TODO 添加自动断言及提词逻辑
 
         return response;
@@ -163,10 +162,11 @@ public class EasyHttp {
         Request request = requestBuilder.build();
         try {
             // TODO 修改响应工具后，再来修改此处代码
-            Response response = client.newCall(request).execute();
-            return new EasyResponse(response.body().string());
+            return new EasyResponse(client.newCall(request).execute());
         } catch (IOException e) {
             throw new HttpRequestException(String.format("接口请求异常，接口信息为：%s", url), e);
+        } catch (HttpResponseException e) {
+            throw new HttpResponseException(String.format("%s，接口信息为：%s", e.getMessage(), url), e);
         }
     }
 
@@ -204,14 +204,15 @@ public class EasyHttp {
 
             // 判断关键词是否为已存储的词语
             if (extractMap.containsKey(key)) {
-                content = content.replaceAll(disposeKey(signKey), extractMap.get(key));
+                content = content.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey), extractMap.get(key));
                 continue;
             }
 
             // 若不是存储的词语，则判断关键词是否符合公式集合中的内容，符合公式，则使用公式对内容进行替换
             for (String funKey : functionMap.keySet()) {
                 if (key.matches(funKey)) {
-                    content = content.replaceAll(disposeKey(signKey), functionMap.get(funKey).apply(key));
+                    content = content.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey),
+                            functionMap.get(funKey).apply(key));
                     break;
                 }
             }
@@ -219,28 +220,5 @@ public class EasyHttp {
         }
 
         return content;
-    }
-
-    /**
-     * 该方法用于处理需要替换的关键词内容，在需要转义的字符前添加反斜杠，避免在替换词语时无法被正则识别
-     *
-     * @param key 关键词
-     * @return 添加转义符后的关键词
-     * @since autest 3.3.0
-     */
-    private String disposeKey(String key) {
-        StringBuilder newKey = new StringBuilder();
-        // 对当前字符串逐字遍历
-        for (int i = 0; i < key.length(); i++) {
-            String charStr = key.substring(i, i + 1);
-            // 若遍历的字符为正则中需要转义的特殊字符，则对该内容进行转义
-            if (charStr.matches(RegexType.REGEX_ESC.getRegex())) {
-                newKey.append("\\" + charStr);
-            } else {
-                newKey.append(charStr);
-            }
-        }
-
-        return newKey.toString();
     }
 }

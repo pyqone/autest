@@ -13,6 +13,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -57,7 +58,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     /**
      * 环境集合
      */
-    private HashMap<String, String> environmentMap = new HashMap<>();
+    private HashMap<String, String> environmentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 当前执行接口的环境
      */
@@ -301,13 +302,15 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         for (Element assertElement : assertElementList) {
             String assertValue = assertElement.attributeValue(XmlParamName.XML_ATTRI_ASSERT_VALUE);
             // 判断当前是否存在断言内容属性，若不存在，则不进行存储
-            if (assertValue == null || assertValue.isEmpty()) {
+            if (assertValue == null) {
                 continue;
             }
 
             // 存储断言信息，生成断言json
             JSONObject assertJson = new JSONObject();
             assertJson.put(JSON_ASSERT_ASSERT_VALUE, assertValue);
+            // TODO 需要增加判断断言内容是否为正则，并进行非正则字符串去正则处理（方法在请求工具中）
+
             assertJson.put(JSON_ASSERT_SEARCH,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
@@ -564,7 +567,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         /**
          * 定义assertValue属性名称
          */
-        public static final String XML_ATTRI_ASSERT_VALUE = "assertValue";
+        public static final String XML_ATTRI_ASSERT_VALUE = "assertRegex";
         /**
          * 定义saveName属性名称
          */

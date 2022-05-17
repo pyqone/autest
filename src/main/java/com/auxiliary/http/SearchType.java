@@ -26,7 +26,15 @@ public enum SearchType {
      */
     HEADER,
     /**
-     * 搜索响应报文信息
+     * 搜索响应体信息
      */
-    BODY;
+    BODY,
+    /**
+     * 搜索响应状态码
+     */
+    STATUS,
+    /**
+     * 搜索响应消息
+     */
+    MESSAGE;
 }

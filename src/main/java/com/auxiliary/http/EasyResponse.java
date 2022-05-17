@@ -1,24 +1,17 @@
 package com.auxiliary.http;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Optional;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
-import org.jsoup.Jsoup;
+import com.auxiliary.tool.regex.ConstType;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.auxiliary.tool.file.UnsupportedFileException;
-
+import okhttp3.Headers;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -35,207 +28,232 @@ import okhttp3.ResponseBody;
  * <p>
  * <b>修改时间：</b>2020年6月26日下午7:09:07
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  *
  */
 public class EasyResponse {
-	/**
-	 * 存储接口响应数据
-	 */
-	private String responseText = "";
-
-	/**
-	 * 以Json类的形式存储响应数据
-	 */
-	private JSONObject responseJson = null;
-
-	/**
-	 * 以XML的形式存储响应数据，通过DocumentHelper.parseText(String)方法可以转换
-	 */
-	private org.dom4j.Document responseXmlDom = null;
-
-	/**
-	 * 以HTML的形式存储响应数据，通过Jsoup.parse(String)方法可以转换
-	 */
-	private org.jsoup.nodes.Document responseHtmlDom = null;
-
     /**
-     * 接口响应报文内容
+     * 接口响应体内容
      */
     private byte[] responseBody;
     /**
-     * 接口响应报文格式
+     * 响应头集合
      */
-    private MessageType bodyType;
+    private HashMap<String, String> responseHeaderMap = new HashMap<>();
     /**
-     * 响应报文字符集编码名称
+     * 响应状态码
+     */
+    private int status = 200;
+    /**
+     * 响应消息
+     */
+    private String message = "";
+    /**
+     * 响应报文转义字符集
      */
     private String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
+    /**
+     * 存储响应报文的格式
+     */
+    private HashSet<MessageType> messageSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 构造对象，指定OKHttp响应类
-     * 
+     *
      * @param response OKHttp响应类
      */
     protected EasyResponse(Response response) {
+        // 存储响应内容
         ResponseBody body = response.body();
         try {
             responseBody = body.bytes();
         } catch (IOException e) {
         }
-        // TODO 将消息类型名称转换为消息类型枚举，存储返回的字符集编码
-        body.contentType();
 
-        response.headers();
+        // 存储响应头
+        Headers heads = response.headers();
+        for (String head : heads.names()) {
+            responseHeaderMap.put(head, heads.get(head));
+        }
+
+        // 存储响应状态及消息
+        status = response.code();
+        message = response.message();
     }
 
-	/**
-	 * 构造类，传入接口的响应数据，并根据响应参数的类型对响应参数进行转换，指定响应参数的类型
-	 * 
-	 * @param responseText 接口响应数据
-	 */
-	public EasyResponse(String responseText) {
-		// 判断响应数据是否为空，若为空，则无需做任何处理
-		if (responseText.isEmpty()) {
-			responseType = ResponseType.EMPTY;
-			return;
-		}
+    /**
+     * 该方法用于设置字符集名称
+     *
+     * @param charsetName 字符集名称
+     * @since autest 3.3.0
+     */
+    public void setCharsetName(String charsetName) {
+        this.charsetName = charsetName;
+    }
 
-		// 字符串形式存储
-		this.responseText = responseText;
+    /**
+     * 该方法用于以{@link #setCharsetName(String)}方法设定的编码格式，返回接口的响应报文字符串
+     *
+     * @param charsetName 编码格式名称
+     * @since autest 3.3.0
+     */
+    public String getResponseBodyText() {
+        try {
+            return new String(responseBody, charsetName);
+        } catch (UnsupportedEncodingException e) {
+            throw new HttpResponseException("报文无法转义为字符串", e);
+        }
+    }
 
-		// 转换为JSONObject格式，若不能转换，则responseJson为null
-		try {
-			responseJson = JSON.parseObject(responseText);
-			responseType = ResponseType.JSON;
-		} catch (JSONException jsonException) {
-			// 设置responseJson为null
-			responseJson = null;
+    /**
+     * 该方法用于返回响应体
+     *
+     * @return 响应体
+     * @since autest 3.3.0
+     */
+    public byte[] getResponseBody() {
+        return responseBody;
+    }
 
-			// 先通过dom4j的格式对数据进行转换，若不能转换，则表示其是文本形式
-			try {
-				responseXmlDom = DocumentHelper.parseText(responseText);
-				// 若相应参数开头的文本为<html>，则表示其相应参数为html形式，则以html形式进行转换
-				if (responseText.indexOf("<html>") == 0) {
-					// 存储html形式
-					responseType = ResponseType.HTML;
-					// 设置responseXmlDom为null，保证返回的数据正确
-					responseXmlDom = null;
-					// 将文本转换为HTML的形式
-					responseHtmlDom = Jsoup.parse(responseText);
-				} else {
-					responseType = ResponseType.XML;
-				}
-			} catch (DocumentException domExcepttion) {
-				responseXmlDom = null;
-				// 若响应数据无法转换成json或dom，则存储为纯文本形式
-				responseType = ResponseType.TEXT;
-			}
-		}
-	}
+    /**
+     * 该方法用于返回接口返回的响应头
+     *
+     * @return 响应头
+     * @since autest 3.3.0
+     */
+    public Map<String, String> getResponseHeaderMap() {
+        return responseHeaderMap;
+    }
 
-	/**
-	 * 用于以文本形式返回响应数据
-	 * 
-	 * @return 响应数据
-	 */
+    /**
+     * 该方法用于返回接口响应状态码
+     *
+     * @return 响应状态码
+     * @since autest 3.3.0
+     */
+    public int getStatus() {
+        return status;
+    }
 
-	public String getResponseText() {
-		return responseText;
-	}
+    /**
+     * 该方法用于返回接口响应消息
+     *
+     * @return 响应消息
+     * @since autest 3.3.0
+     */
+    public String getMessage() {
+        return message;
+    }
 
-	/**
-	 * 以格式化的形式输出响应数据。
-	 * 
-	 * @return 格式化后的响应数据
-	 */
-	public String getFormatResponseText() {
-		// 根据responseType存储的形式对格式进行转换
-		switch (responseType) {
-		case HTML:
-			return responseHtmlDom.html();
-		case JSON:
-			return JSON.toJSONString(responseJson, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
-		case XML:
-			OutputFormat format = OutputFormat.createPrettyPrint();
-			format.setEncoding(responseXmlDom.getXMLEncoding());
-			StringWriter stringWriter = new StringWriter();
-			XMLWriter writer = new XMLWriter(stringWriter, format);
-			try {
-				writer.write(responseXmlDom);
-				writer.close();
-			} catch (IOException e) {
-			}
-			return stringWriter.toString();
-		case EMPTY:
-		case TEXT:
-			return responseText;
-		default:
-			return "";
-		}
-	}
+    /**
+     * 该方法用于对接口响应的指定部分内容进行断言
+     *
+     * @param assertRegex   断言规则
+     * @param searchType    搜索响应内容枚举
+     * @param paramName     搜索变量
+     * @param leftBoundary  断言内容左边界
+     * @param rightBoundary 断言内容右边界
+     * @param index         指定下标内容
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, SearchType searchType, String paramName, String leftBoundary,
+            String rightBoundary, int index) {
+        String value = "";
+        switch (searchType) {
+        case STATUS:
+            value = String.valueOf(getStatus());
+            break;
+        case MESSAGE:
+            value = getMessage();
+            break;
+        case HEADER:
+            if (!responseHeaderMap.containsKey(paramName)) {
+                throw new HttpResponseException(String.format("响应头中不包含参数“%s”，无法断言", paramName));
+            }
+            value = responseHeaderMap.get(paramName);
+            break;
+        case BODY:
+            // TODO 对响应报文进行断言，若类型为图片或文件等，则不支持断言
+            break;
+        default:
+            throw new HttpResponseException("不支持的断言的接口响应内容：" + searchType);
+        }
 
-	/**
-	 * 用于将响应数据写入到文件中
-	 * 
-	 * @param outputFile 需要输出的文件
-	 * @param isFormat   是否格式化输出
-	 * @return 写入的文件
-	 * @throws IOException 写入文件有误时抛出的异常
-	 */
-	public File responseToFile(File outputFile, boolean isFormat) {
-		outputFile = Optional.ofNullable(outputFile).filter(File::isFile)
-				.orElseThrow(() -> new UnsupportedFileException("未指定结果存储文件"));
-		
-		// 创建文件夹
-		outputFile.getParentFile().mkdirs();
-		// 获取响应数据
-		String responseText = isFormat ? getFormatResponseText() : this.responseText;
+        return assertTextType(assertRegex, value, leftBoundary, rightBoundary, index);
+    }
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
-			bw.write(responseText);
-		} catch (IOException e) {
-			throw new UnsupportedFileException("文件异常，无法写入结果", e);
-		}
+    /**
+     * 该方法用于添加响应体的内容格式
+     *
+     * @param messageSet 内容格式集合
+     * @since autest 3.3.0
+     */
+    protected void setMessageType(HashSet<MessageType> messageSet) {
+        this.messageSet.addAll(messageSet);
+    }
 
-		return outputFile;
-	}
+    /**
+     * 该方法用于对文本内容进行断言
+     *
+     * @param assertRegex   断言规则
+     * @param value         待断言内容
+     * @param leftBoundary  取词左边界
+     * @param rightBoundary 取词右边界
+     * @param index         取词下标
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    private boolean assertTextType(String assertRegex, String value, String leftBoundary, String rightBoundary,
+            int index) {
+        // 判断左右边界是否都为空，若都为空，则只判内容是否符合断言规则
+        if (leftBoundary.isEmpty() && rightBoundary.isEmpty()) {
+            return value.matches(assertRegex);
+        }
 
-	/**
-	 * 用于以{@link JSONObject}类的形式返回响应数据，若响应数据不是json格式时，则返回null
-	 * 
-	 * @return {@link JSONObject}类形式的响应数据
-	 */
-	public JSONObject getResponseJson() {
-		return responseJson;
-	}
+        // 去除获取文本的左右边界，并对剩余内容进行断言规则判断
+        value = extractKey(value, leftBoundary, rightBoundary, index);
+        return value.substring(value.indexOf(leftBoundary.length()), value.indexOf(rightBoundary)).matches(assertRegex);
+    }
 
-	/**
-	 * 用于以{@link org.jsoup.nodes.Document}类的形式返回响应数据，若响应数据不是html格式时，则返回null
-	 * 
-	 * @return {@link org.jsoup.nodes.Document}类形式的响应数据
-	 */
-	public org.jsoup.nodes.Document getHtmlDocument() {
-		return responseHtmlDom;
-	}
+    /**
+     * 该方法用于对指定内容按照限定规则进行提取，返回提取到的内容
+     *
+     * @param value         待提取内容
+     * @param leftBoundary  提取左边界
+     * @param rightBoundary 提取右边界
+     * @param index         多词情况下提取下标
+     * @return 提取的内容
+     * @since autest 3.3.0
+     */
+    private String extractKey(String value, String leftBoundary, String rightBoundary, int index) {
+        // 若左右边界不为空，则将其拼接为边界正则
+        String boundaryRegex = rightBoundary + ".*?" + leftBoundary;
+        // 将断言内容在边界正则中进行提取
+        ArrayList<String> valueExtractList = new ArrayList<>();
+        Matcher match = Pattern.compile(boundaryRegex).matcher(value);
+        while (match.find()) {
+            valueExtractList.add(match.group());
+        }
 
-	/**
-	 * 用于以{@link org.dom4j.Document}类的形式返回响应数据，若响应数据不是html或xml格式时，则返回null
-	 * 
-	 * @return {@link org.dom4j.Document}类形式的响应数据
-	 */
-	public org.dom4j.Document getXmlDocument() {
-		return responseXmlDom;
-	}
+        // 判断是否提到内容，若不存在内容，则直接返回false
+        int size = valueExtractList.size();
+        if (size == 0) {
+            return "";
+        }
+        // 若存在提词内容，则对查找下标进行判断，获取到对应的词语
+        // 由于index下标从1开始，且可能传入其他有问题的数字，故需要对下标进行处理
+        if (index < 1) {
+            index = 0;
+        } else if (index >= 1 && index <= size) {
+            index -= 1;
+        } else {
+            index = size - 1;
+        }
 
-	/**
-	 * 用于返回响应数据的类型
-	 * 
-	 * @return 响应数据类型
-	 */
-	public ResponseType getResponseType() {
-		return responseType;
-	}
+        // 去除获取文本的左右边界，并对剩余内容进行断言规则判断
+        return valueExtractList.get(index);
+    }
 }
