@@ -6,9 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.StringJoiner;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.regex.ConstType;
 
 import okhttp3.Headers;
@@ -51,13 +56,13 @@ public class EasyResponse {
      */
     private String message = "";
     /**
-     * 响应报文转义字符集
+     * 响应体转义字符集
      */
     private String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
     /**
-     * 存储响应报文的格式
+     * 存储响应体的格式
      */
-    private HashSet<MessageType> messageSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    private HashSet<MessageType> bodyTypeSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 构造对象，指定OKHttp响应类
@@ -94,7 +99,18 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于以{@link #setCharsetName(String)}方法设定的编码格式，返回接口的响应报文字符串
+     * 该方法用于添加响应体的内容格式
+     *
+     * @param bodyTypeSet 内容格式集合
+     * @since autest 3.3.0
+     */
+    public void setMessageType(HashSet<MessageType> messageSet) {
+        this.bodyTypeSet.clear();
+        this.bodyTypeSet.addAll(messageSet);
+    }
+
+    /**
+     * 该方法用于以{@link #setCharsetName(String)}方法设定的编码格式，返回接口的响应体字符串
      *
      * @param charsetName 编码格式名称
      * @since autest 3.3.0
@@ -151,7 +167,7 @@ public class EasyResponse {
      * 该方法用于对接口响应的指定部分内容进行断言
      *
      * @param assertRegex   断言规则
-     * @param searchType    搜索响应内容枚举
+     * @param searchType    搜索范围枚举
      * @param paramName     搜索变量
      * @param leftBoundary  断言内容左边界
      * @param rightBoundary 断言内容右边界
@@ -161,6 +177,7 @@ public class EasyResponse {
      */
     public boolean assertResponse(String assertRegex, SearchType searchType, String paramName, String leftBoundary,
             String rightBoundary, int index) {
+        // 考虑searchType为null的情况
         String value = "";
         switch (searchType) {
         case STATUS:
@@ -176,7 +193,7 @@ public class EasyResponse {
             value = responseHeaderMap.get(paramName);
             break;
         case BODY:
-            // TODO 对响应报文进行断言，若类型为图片或文件等，则不支持断言
+            // TODO 对响应体进行断言，若类型为图片或文件等，则不支持断言
             break;
         default:
             throw new HttpResponseException("不支持的断言的接口响应内容：" + searchType);
@@ -185,14 +202,94 @@ public class EasyResponse {
         return assertTextType(assertRegex, value, leftBoundary, rightBoundary, index);
     }
 
+    private String analysisBody(String paramName, String xpath) {
+        // 获取响应体的字符串形式
+        String bodyText = getResponseBodyText();
+
+        // 若搜索变量名与path均为空，则直接返回响应体文本
+        if (paramName.isEmpty() && xpath.isEmpty()) {
+            return bodyText;
+        }
+
+        // 定义特殊符号随机替换符
+        String replaceSymbol = "#" + UUID.randomUUID().toString().replaceAll("-", "") + "#";
+        // 对paramName中需要转义的符号进行替换
+        paramName = paramName.replaceAll(AssertResponse.SEPARATE_TRANSFERRED_MEANING_REGEX, replaceSymbol);
+        // 对paramName按照切分符号进行切分
+        String[] paramNames = paramName.split(AssertResponse.SEPARATE_SPLIT_REGEX);
+
+        // 根据指定的响应体格式，对内容进行转换
+        if (bodyTypeSet.contains(MessageType.JSON)) {
+            try {
+                return disposeJsonParam(JSONObject.parseObject(bodyText), replaceSymbol, paramNames);
+            } catch (JSONException e) {
+            } catch (HttpResponseException e) {
+                // 当抛出HttpResponseException异常时，说明转换变量存在问题，则抛出带说明的异常
+                StringJoiner messageText = new StringJoiner("→");
+                for (String str : paramNames) {
+                    messageText.add(str.replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL));
+                }
+
+                throw new HttpResponseException("无法查找json类型的响应体变量链路：" + messageText.toString());
+            }
+        }
+    }
+
     /**
-     * 该方法用于添加响应体的内容格式
+     * 该方法用于处理响应体为json串时变量的获取
      *
-     * @param messageSet 内容格式集合
-     * @since autest 3.3.0
+     * @param bodyText
+     * @param replaceSymbol
+     * @param paramNames
+     * @return
+     * @since autest
      */
-    protected void setMessageType(HashSet<MessageType> messageSet) {
-        this.messageSet.addAll(messageSet);
+    private String disposeJsonParam(JSONObject json, String replaceSymbol, String[] paramNames) {
+        // 定义数组判断正则
+        String arrRegex = String.format(".*%s\\d+%s", AssertResponse.ARRAY_START_SYMBOL,
+                AssertResponse.ARRAY_END_SYMBOL);
+
+        // 对转换过程中的异常进行处理，替换为HttpResponseException异常
+        try {
+            // 按照参数名，向下获取json串，直至达到目标前一个json串
+            JSONObject paramJson = json;
+            int index = 0;
+            for (; index < paramNames.length - 1; index++) {
+                // 将被替换的转义符号还原为原来的符号
+                String name = paramNames[index].replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL);
+                // 判断当前是否需要查找数组（存在数组正则判定）
+                if (name.matches(arrRegex)) {
+                    // 获取需要切分数组下标
+                    int arrIndex = Integer.valueOf(name.substring(name.indexOf(AssertResponse.ARRAY_START_SYMBOL) + 1,
+                            name.indexOf(AssertResponse.ARRAY_END_SYMBOL)));
+                    // 按照数组方式，对元素进行获取
+                    JSONArray arr = paramJson
+                            .getJSONArray(name.substring(0, name.indexOf(AssertResponse.ARRAY_START_SYMBOL)));
+                    // 将paramJson指向获取的Json串
+                    paramJson = arr.getJSONObject(arrIndex);
+                } else {
+                    paramJson = paramJson.getJSONObject(name);
+                }
+            }
+
+            // 处理末尾的变量名
+            // 判断当前是否需要查找数组（存在数组正则判定）
+            String name = paramNames[index].replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL);
+            if (name.matches(arrRegex)) {
+                // 获取需要切分数组下标
+                int arrIndex = Integer.valueOf(name.substring(name.indexOf(AssertResponse.ARRAY_START_SYMBOL) + 1,
+                        name.indexOf(AssertResponse.ARRAY_END_SYMBOL)));
+                // 按照数组方式，对元素进行获取
+                JSONArray arr = paramJson
+                        .getJSONArray(name.substring(0, name.indexOf(AssertResponse.ARRAY_START_SYMBOL)));
+                // 将paramJson指向获取的Json串
+                return arr.getString(arrIndex);
+            } else {
+                return paramJson.getString(name);
+            }
+        } catch (Exception e) {
+            throw new HttpResponseException();
+        }
     }
 
     /**

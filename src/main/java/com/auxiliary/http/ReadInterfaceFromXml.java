@@ -320,6 +320,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
             assertJson.put(JSON_ASSERT_PARAM_NAME, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
+            assertJson.put(JSON_ASSERT_XPATH, Optional
+                    .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
             assertJson.put(JSON_ASSERT_ORD, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_ORD)).orElseGet(() -> DEFAULT_ORD));
 
@@ -588,6 +590,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义paramName属性名称
          */
         public static final String XML_ATTRI_PARAMNAME = "paramName";
+        /**
+         * 定义xpath属性名称
+         */
+        public static final String XML_ATTRI_XPATH = "xpath";
         /**
          * 定义ord属性名称
          */

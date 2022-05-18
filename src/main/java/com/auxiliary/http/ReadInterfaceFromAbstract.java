@@ -38,9 +38,13 @@ public abstract class ReadInterfaceFromAbstract {
      */
     public static final String JSON_ASSERT_SEARCH = "search";
     /**
-     * 定义断言json串中断言参数名称的键名称
+     * 定义断言json串中参数名称的键名称
      */
     public static final String JSON_ASSERT_PARAM_NAME = "paramName";
+    /**
+     * 定义断言json串中xpath的键名称
+     */
+    public static final String JSON_ASSERT_XPATH = "xpath";
     /**
      * 定义断言json串中剪切内容的左边界的键名称
      */
@@ -67,9 +71,13 @@ public abstract class ReadInterfaceFromAbstract {
      */
     public static final String JSON_EXTRACT_SEARCH = JSON_ASSERT_SEARCH;
     /**
-     * 定义提词json串中断言参数名称的键名称
+     * 定义提词json串中参数名称的键名称
      */
     public static final String JSON_EXTRACT_PARAM_NAME = JSON_ASSERT_PARAM_NAME;
+    /**
+     * 定义提词json串中参数名称的键名称
+     */
+    public static final String JSON_EXTRACT_XPATH = JSON_ASSERT_XPATH;
     /**
      * 定义提词json串中剪切内容的左边界的键名称
      */
