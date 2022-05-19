@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -62,7 +64,7 @@ public class EasyResponse {
     /**
      * 存储响应体的格式
      */
-    private HashSet<MessageType> bodyTypeSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    private HashMap<Integer, Set<MessageType>> bodyTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 构造对象，指定OKHttp响应类
@@ -104,9 +106,8 @@ public class EasyResponse {
      * @param bodyTypeSet 内容格式集合
      * @since autest 3.3.0
      */
-    public void setMessageType(HashSet<MessageType> messageSet) {
-        this.bodyTypeSet.clear();
-        this.bodyTypeSet.addAll(messageSet);
+    public void setMessageType(int status, Set<MessageType> messageSet) {
+        bodyTypeMap.put(status, new HashSet<>(messageSet));
     }
 
     /**
@@ -175,8 +176,8 @@ public class EasyResponse {
      * @return 断言结果
      * @since autest 3.3.0
      */
-    public boolean assertResponse(String assertRegex, SearchType searchType, String paramName, String leftBoundary,
-            String rightBoundary, int index) {
+    public boolean assertResponse(String assertRegex, SearchType searchType, String paramName, String xpath,
+            String leftBoundary, String rightBoundary, int index) {
         // 考虑searchType为null的情况
         String value = "";
         switch (searchType) {
@@ -193,7 +194,7 @@ public class EasyResponse {
             value = responseHeaderMap.get(paramName);
             break;
         case BODY:
-            // TODO 对响应体进行断言，若类型为图片或文件等，则不支持断言
+            value = analysisBody(paramName, xpath);
             break;
         default:
             throw new HttpResponseException("不支持的断言的接口响应内容：" + searchType);
@@ -202,9 +203,26 @@ public class EasyResponse {
         return assertTextType(assertRegex, value, leftBoundary, rightBoundary, index);
     }
 
+    /**
+     * 该方法用于根据指定的响应体内容格式，转义响应体，并根据查找参数或xpath对响应元素内容进行查找，返回找到的元素内容
+     *
+     * @param paramName 查找元素名称
+     * @param xpath     查找xml的xpath
+     * @return 查找到元素的内容
+     * @since autest 3.3.0
+     */
     private String analysisBody(String paramName, String xpath) {
+        // 根据响应状态，获取请求体类型
+        Set<MessageType> bodyTypeSet = Optional.ofNullable(bodyTypeMap.get(status))
+                .orElseGet(() -> new HashSet<>());
+
         // 获取响应体的字符串形式
         String bodyText = getResponseBodyText();
+
+        // 判断获取到的类型是否为空，若为空，则直接返回响应体文本
+        if (bodyTypeSet.isEmpty()) {
+            return bodyText;
+        }
 
         // 若搜索变量名与path均为空，则直接返回响应体文本
         if (paramName.isEmpty() && xpath.isEmpty()) {
@@ -233,6 +251,9 @@ public class EasyResponse {
                 throw new HttpResponseException("无法查找json类型的响应体变量链路：" + messageText.toString());
             }
         }
+
+
+        return bodyText;
     }
 
     /**

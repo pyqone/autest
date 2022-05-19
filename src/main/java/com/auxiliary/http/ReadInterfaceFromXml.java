@@ -278,6 +278,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
             extractJson.put(JSON_EXTRACT_PARAM_NAME, Optional
                     .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
+            extractJson.put(JSON_ASSERT_XPATH, Optional
+                    .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
             extractJson.put(JSON_EXTRACT_ORD,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_ORD))
                             .orElseGet(() -> DEFAULT_ORD));

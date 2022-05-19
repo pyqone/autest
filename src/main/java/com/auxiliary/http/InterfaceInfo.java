@@ -548,8 +548,8 @@ public class InterfaceInfo implements Cloneable {
      * @return 接口响应内容的格式枚举
      * @since autest 3.3.0
      */
-    public Set<MessageType> getResponseContentType(int state) {
-        return Optional.ofNullable(responseContentTypeMap.get(state)).orElseGet(() -> new HashSet<>());
+    public Set<MessageType> getResponseContentType(int status) {
+        return Optional.ofNullable(responseContentTypeMap.get(status)).orElseGet(() -> new HashSet<>());
     }
 
     /**

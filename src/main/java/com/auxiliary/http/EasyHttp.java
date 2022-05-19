@@ -122,6 +122,11 @@ public class EasyHttp {
         // 对接口进行请求，获取响应类
         EasyResponse response = requst(interInfo.getRequestType(), interInfo.toUrlString(), newHeadMap,
                 interInfo.getBody().getKey(), disposeContent(interInfo.getBody().getValue()));
+        // 设置响应体解析字符集
+        response.setCharsetName(interInfo.getCharsetname());
+        // 设置响应体内容格式
+        interInfo.getAllSaveState()
+                .forEach(status -> response.setMessageType(status, interInfo.getResponseContentType(status)));
 
         // TODO 添加自动断言及提词逻辑
 
