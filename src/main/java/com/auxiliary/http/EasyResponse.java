@@ -8,14 +8,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 
 import okhttp3.Headers;
@@ -237,80 +241,170 @@ public class EasyResponse {
         String[] paramNames = paramName.split(AssertResponse.SEPARATE_SPLIT_REGEX);
 
         // 根据指定的响应体格式，对内容进行转换
-        if (bodyTypeSet.contains(MessageType.JSON)) {
+        if (bodyTypeSet.contains(MessageType.JSON) && paramNames.length != 0) {
             try {
                 return disposeJsonParam(JSONObject.parseObject(bodyText), replaceSymbol, paramNames);
-            } catch (JSONException e) {
-            } catch (HttpResponseException e) {
-                // 当抛出HttpResponseException异常时，说明转换变量存在问题，则抛出带说明的异常
-                StringJoiner messageText = new StringJoiner("→");
-                for (String str : paramNames) {
-                    messageText.add(str.replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL));
-                }
-
-                throw new HttpResponseException("无法查找json类型的响应体变量链路：" + messageText.toString());
+            } catch (Exception e) {
             }
         }
 
+        if (bodyTypeSet.contains(MessageType.XML) || bodyTypeSet.contains(MessageType.HTML)) {
+            try {
+                return disposeXmlParam(DocumentHelper.parseText(bodyText), replaceSymbol, paramNames, xpath);
+            } catch (Exception e) {
+            }
+        }
 
         return bodyText;
     }
 
     /**
-     * 该方法用于处理响应体为json串时变量的获取
+     * 该方法用于处理响应体为xml或html串时变量指向内容的获取
      *
-     * @param bodyText
-     * @param replaceSymbol
-     * @param paramNames
-     * @return
-     * @since autest
+     * @param xml           响应体xml类对象
+     * @param replaceSymbol 替换符号
+     * @param paramNames    参数名称数组
+     * @return 搜索到的内容
+     * @since autest 3.3.0
+     */
+    private String disposeXmlParam(Document xml, String replaceSymbol, String[] paramNames, String xpath) {
+     // 对转换过程中的异常进行处理，若抛出异常，则直接返回空串
+        try {
+            // 先按照xpath方式对元素进行查找并进行转换，若未找到元素，则赋予空串
+            String value = Optional.ofNullable(xml.selectSingleNode("xpath")).map(ele -> ((Element) ele).getText()).orElse("");
+            // 判断value是否为空，若不为空，则返回value的内容
+            if (!value.isEmpty() || paramNames.length == 0) {
+                return value;
+            }
+            
+            // 若value为空，则进一步获取参数名中的内容
+            Element root = xml.getRootElement();
+            // 判断paramNames是否只包含一位数据，若只包含一位数据，则返回根元素的文本内容
+            if (paramNames.length == 1) {
+                if (paramNames[0].equals(root.getName())) {
+                    return root.getText();
+                } else {
+                    return "";
+                }
+            }
+            
+            // 若paramNames存在多位数据，则循环获取到倒数第二位的数据，并逐层向下获取
+            int index = 1;
+            Element paramElement = root;
+            for (; index < paramNames.length - 1; index++) {
+                paramElement = (Element) getElement(paramNames[index], replaceSymbol, paramElement, (short) 1, false);
+            }
+    
+            return (String) getElement(paramNames[index], replaceSymbol, paramElement, (short) 1, true);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * 该方法用于处理响应体为json串时变量指向内容的获取
+     *
+     * @param json          响应体json类对象
+     * @param replaceSymbol 替换符号
+     * @param paramNames    参数名称数组
+     * @return 搜索到的内容
+     * @since autest 3.3.0
      */
     private String disposeJsonParam(JSONObject json, String replaceSymbol, String[] paramNames) {
-        // 定义数组判断正则
-        String arrRegex = String.format(".*%s\\d+%s", AssertResponse.ARRAY_START_SYMBOL,
-                AssertResponse.ARRAY_END_SYMBOL);
-
-        // 对转换过程中的异常进行处理，替换为HttpResponseException异常
+        // 对转换过程中的异常进行处理，若抛出异常，则直接返回空串
         try {
             // 按照参数名，向下获取json串，直至达到目标前一个json串
             JSONObject paramJson = json;
             int index = 0;
             for (; index < paramNames.length - 1; index++) {
-                // 将被替换的转义符号还原为原来的符号
-                String name = paramNames[index].replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL);
-                // 判断当前是否需要查找数组（存在数组正则判定）
-                if (name.matches(arrRegex)) {
-                    // 获取需要切分数组下标
-                    int arrIndex = Integer.valueOf(name.substring(name.indexOf(AssertResponse.ARRAY_START_SYMBOL) + 1,
-                            name.indexOf(AssertResponse.ARRAY_END_SYMBOL)));
-                    // 按照数组方式，对元素进行获取
-                    JSONArray arr = paramJson
-                            .getJSONArray(name.substring(0, name.indexOf(AssertResponse.ARRAY_START_SYMBOL)));
-                    // 将paramJson指向获取的Json串
-                    paramJson = arr.getJSONObject(arrIndex);
-                } else {
-                    paramJson = paramJson.getJSONObject(name);
-                }
+                paramJson = (JSONObject) getElement(paramNames[index], replaceSymbol, paramJson, (short) 0, false);
             }
 
             // 处理末尾的变量名
-            // 判断当前是否需要查找数组（存在数组正则判定）
-            String name = paramNames[index].replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL);
-            if (name.matches(arrRegex)) {
-                // 获取需要切分数组下标
-                int arrIndex = Integer.valueOf(name.substring(name.indexOf(AssertResponse.ARRAY_START_SYMBOL) + 1,
-                        name.indexOf(AssertResponse.ARRAY_END_SYMBOL)));
-                // 按照数组方式，对元素进行获取
-                JSONArray arr = paramJson
-                        .getJSONArray(name.substring(0, name.indexOf(AssertResponse.ARRAY_START_SYMBOL)));
-                // 将paramJson指向获取的Json串
-                return arr.getString(arrIndex);
-            } else {
-                return paramJson.getString(name);
-            }
+            return (String) getElement(paramNames[index], replaceSymbol, paramJson, (short) 0, true);
         } catch (Exception e) {
-            throw new HttpResponseException();
+            return "";
         }
+    }
+
+    /**
+     * 该方法用于对元素内容进行解析，返回相应的下级元素或文本
+     * 
+     * @param paramArrayName 当前获取的元素名称
+     * @param replaceSymbol  替换符号
+     * @param parentElement  上级元素类对象
+     * @param elementType    查找下级元素对象的类型；0为json，1为xml或html
+     * @param isEndElement   是否为尾元素
+     * @return 相应的内容
+     * @since autest 3.3.0
+     */
+    private Object getElement(String paramArrayName, String replaceSymbol, Object parentElement, short elementType,
+            boolean isEndElement) {
+        // 定义数组判断正则
+        String arrRegex = String.format(".*\\%s\\d+\\%s", AssertResponse.ARRAY_START_SYMBOL,
+                AssertResponse.ARRAY_END_SYMBOL);
+        // 转换元素名称，将被替换的符号还原
+        String name = paramArrayName.replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL);
+        // 判断当前元素是否为数组元素，若为数组元素，则按照数组方式对元素进行切分
+        if (name.matches(arrRegex)) {
+            // 获取需要切分数组内容
+            Entry<String, Integer> arrData = valueOfArrIndex(name);
+            // 判断元素类型，根据不同的类型，对应不同的获取方式
+            if (elementType == 0) {
+                // 获取元素集合，并根据是否为尾元素，返回相应的内容
+                JSONArray arrJson = ((JSONObject) parentElement).getJSONArray(arrData.getKey());
+                if (isEndElement) {
+                    return arrJson.getString(arrData.getValue());
+                } else {
+                    return arrJson.getJSONObject(arrData.getValue());
+                }
+            } else if (elementType == 1) {
+                if (isEndElement) {
+                    return ((Element) parentElement).elements(arrData.getKey()).get(arrData.getValue()).getText();
+                } else {
+                    return ((Element) parentElement).elements(arrData.getKey()).get(arrData.getValue());
+                }
+            } else {
+                throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
+            }
+        } else {
+            // 判断元素类型，根据不同的类型，对应不同的获取方式
+            if (elementType == 0) {
+                if (isEndElement) {
+                    return Optional.ofNullable(((JSONObject) parentElement).getString(name)).orElse("");
+                } else {
+                    return ((JSONObject) parentElement).getJSONObject(name);
+                }
+            } else if (elementType == 1) {
+                if (isEndElement) {
+                    // 判断最后一位元素是否为属性，若能获取到属性，则返回属性值内容，若不为属性，则获取返回标签中存储的文本
+                    Attribute att = ((Element) parentElement).attribute(name);
+                    if (att != null) {
+                        return att.getText();
+                    }
+                    return ((Element) parentElement).elementText(name);
+                } else {
+                    return ((Element) parentElement).element(name);
+                }
+            } else {
+                throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
+            }
+        }
+    }
+
+    /**
+     * 该方法用于对变量名中的数组下标进行分离，并返回变量名与转换为整形的下标
+     * 
+     * @param name 待分离的表达式
+     * @return 变量名与下标键值对
+     * @since autest 3.3.0
+     */
+    private Entry<String, Integer> valueOfArrIndex(String name) {
+        Integer index = Integer.valueOf(name.substring(name.indexOf(AssertResponse.ARRAY_START_SYMBOL) + 1,
+                name.indexOf(AssertResponse.ARRAY_END_SYMBOL)));
+        String paramName = name.substring(0, name.indexOf(AssertResponse.ARRAY_START_SYMBOL));
+        
+        return new Entry<>(paramName, index);
     }
 
     /**
