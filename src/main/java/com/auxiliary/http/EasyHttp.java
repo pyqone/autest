@@ -2,11 +2,14 @@ package com.auxiliary.http;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
@@ -42,15 +45,6 @@ import okhttp3.RequestBody;
  */
 public class EasyHttp {
     /**
-     * 存储提词内容
-     */
-    private HashMap<String, String> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
-     * 存储公式内容
-     */
-    private HashMap<String, DataFunction> functionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-
-    /**
      * 占位符标记
      */
     private final String FUNCTION_SIGN = "@\\{.+?\\}";
@@ -62,6 +56,33 @@ public class EasyHttp {
      * 占位符结束符号
      */
     private final String FUNCTION_END_SIGN = "\\}";
+    
+    /**
+     * 定义断言结果json的接口信息字段名
+     */
+    public static final String ASSERT_RESULT_JSON_INTER_INFO = "interInfo";
+    /**
+     * 定义断言结果json的结果字段名
+     */
+    public static final String ASSERT_RESULT_JSON_RESULT = "result";
+
+    /**
+     * 存储提词内容
+     */
+    private HashMap<String, String> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储断言结果
+     */
+    private Set<String> assertResultSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储公式内容
+     */
+    private HashMap<String, DataFunction> functionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+    /**
+     * 断言失败是否抛出异常
+     */
+    private boolean isAssertFailThrowException = false;
 
     /**
      * 该方法用于添加数据处理函数
@@ -108,6 +129,26 @@ public class EasyHttp {
     }
 
     /**
+     * 该方法用于设置自动断言失败时，是否需要抛出异常
+     * 
+     * @param isAssertFailThrowException 断言失败是否抛出异常
+     * @since autest 3.3.0
+     */
+    public void isAssertFailThrowException(boolean isAssertFailThrowException) {
+        this.isAssertFailThrowException = isAssertFailThrowException;
+    }
+
+    /**
+     * 该方法用于返回请求接口后自动断言的结果集合
+     * 
+     * @return 断言结果集合
+     * @since autest 3.3.0
+     */
+    public Set<String> getAssertResult() {
+        return assertResultSet;
+    }
+
+    /**
      * 该方法用于根据接口信息，对接口进行请求，并返回响应内容
      *
      * @param interInfo 接口信息类对象
@@ -128,7 +169,48 @@ public class EasyHttp {
         interInfo.getAllSaveState()
                 .forEach(status -> response.setMessageType(status, interInfo.getResponseContentType(status)));
 
-        // TODO 添加自动断言及提词逻辑
+        // 对响应报文提词
+        interInfo.getExtractRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
+            // 获取传参
+            String saveName = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_SAVE_NAME);
+            SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_SEARCH));
+            String paramName = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME);
+            String xpath = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_XPATH);
+            String lb = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_LB);
+            String rb = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_RB);
+            int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_ORD));
+
+            // 存储提词结果
+            extractMap.put(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
+        });
+
+        // 自动断言
+        interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
+            // 获取传参
+            String assertRegex = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE);
+            SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_SEARCH));
+            String paramName = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_PARAM_NAME);
+            String xpath = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_XPATH);
+            String lb = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_LB);
+            String rb = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_RB);
+            int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ORD));
+
+            // 断言
+            boolean result = response.assertResponse(assertRegex, searchType, paramName, xpath, lb, rb, index);
+            // 判断是否需要抛出异常
+            if (!result && isAssertFailThrowException) {
+                String responseText = response.extractKey(searchType, paramName, xpath, lb, rb, index);
+                throw new HttpResponseException(
+                        String.format("接口相应信息断言失败，断言规则为“%s”，接口响应报文实际检索内容为“%s”，接口信息：“%s”", assertRegex, responseText,
+                                interInfo.toString()));
+            }
+
+            // 将断言结果和接口信息写入json中，并将其文本形式存储至assertResultSet中
+            json.put(ASSERT_RESULT_JSON_RESULT, result);
+            json.put(ASSERT_RESULT_JSON_INTER_INFO, JSONObject.parseObject(interInfo.toString()));
+            assertResultSet.add(json.toJSONString());
+        });
+
 
         return response;
     }
@@ -166,7 +248,6 @@ public class EasyHttp {
         // 对接口进行请求
         Request request = requestBuilder.build();
         try {
-            // TODO 修改响应工具后，再来修改此处代码
             return new EasyResponse(client.newCall(request).execute());
         } catch (IOException e) {
             throw new HttpRequestException(String.format("接口请求异常，接口信息为：%s", url), e);
