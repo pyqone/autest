@@ -169,11 +169,15 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于对接口响应的指定部分内容进行断言
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。方法中各个参数的解释，可参考{@link #extractKey(SearchType, String, String, String, String, int)}方法
+     * </p>
      *
      * @param assertRegex   断言规则
      * @param searchType    搜索范围枚举
      * @param paramName     搜索变量
+     * @param xpath         提取内容xpath
      * @param leftBoundary  断言内容左边界
      * @param rightBoundary 断言内容右边界
      * @param index         指定下标内容
@@ -182,7 +186,121 @@ public class EasyResponse {
      */
     public boolean assertResponse(String assertRegex, SearchType searchType, String paramName, String xpath,
             String leftBoundary, String rightBoundary, int index) {
-        // 考虑searchType为null的情况
+        return extractKey(searchType, paramName, xpath, leftBoundary, rightBoundary, index).matches(assertRegex);
+    }
+
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。
+     * 方法中各个参数的解释，可参考{@link #extractKey(SearchType, String, String, int)}方法
+     * </p>
+     *
+     * @param assertRegex   断言规则
+     * @param searchType    搜索范围枚举
+     * @param leftBoundary  断言内容左边界
+     * @param rightBoundary 断言内容右边界
+     * @param index         指定下标内容
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, SearchType searchType, String leftBoundary, String rightBoundary,
+            int index) {
+        return extractKey(searchType, leftBoundary, rightBoundary, index).matches(assertRegex);
+    }
+
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。
+     * 方法中各个参数的解释，可参考{@link #extractKey(SearchType, String, String)}方法
+     * </p>
+     *
+     * @param assertRegex 断言规则
+     * @param searchType  搜索范围枚举
+     * @param paramName   搜索变量
+     * @param xpath       提取内容xpath
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, SearchType searchType, String paramName, String xpath) {
+        return extractKey(searchType, paramName, xpath).matches(assertRegex);
+    }
+
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。
+     * 方法中各个参数的解释，可参考{@link #extractKey(SearchType, String)}方法
+     * </p>
+     *
+     * @param assertRegex   断言规则
+     * @param searchType    搜索范围枚举
+     * @param paramName     搜索变量
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, SearchType searchType, String paramName) {
+        return extractKey(searchType, paramName).matches(assertRegex);
+    }
+
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。
+     * 方法中各个参数的解释，可参考{@link #extractKey(String)}方法
+     * </p>
+     *
+     * @param assertRegex 断言规则
+     * @param paramName   搜索变量
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, String paramName) {
+        return extractKey(paramName).matches(assertRegex);
+    }
+
+    /**
+     * 该方法用于通过指定的条件对接口响应报文指定内容进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>必须指定搜索范围{@link SearchType}枚举，否则抛出{@link HttpResponseException}异常</li>
+     * <li>当搜索范围为{@link SearchType#MESSAGE}或{@link SearchType#STATUS}时，则paramName不生效</li>
+     * <li>当搜索范围为{@link SearchType#HEADER}时，若指定了paramName内容，则获取响应头对应键的内容（没有该键值则返回空串）；若未指定paramName参数，则将响应头以{@link HashMap#toString()}方法的形式返回</li>
+     * <li>当搜索范围为{@link SearchType#BODY}时，存在以下情况：
+     * <ol>
+     * <li>当响应体为{@link MessageType#JSON}类型时，其xpath参数不生效，判断paramName参数的方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为{@link MessageType#XML}或{@link MessageType#HTML}类型时，则优先判断xpath参数，若其为空时，则再判断paramName参数，其判断方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为其他类型时，则xpath与paramName参数均不生效</li>
+     * </ol>
+     * </li>
+     * <li>通过paramName或xpath提取后，仍会对内容进行指定边界的提取，其两种提取方式不独立</li>
+     * <li>若同时未指定左右边界，则不进行边界内容提取</li>
+     * <li>当边界提取到多条数据时，则根据指定的index进行提取，其下标从1开始计算（1为第一条元素），若值小于1，则获取第一条数据；若值大于提取到的数据集合数量，则返回最后一条数据</li>
+     * <li>左右边界允许为正则表达式</li>
+     * </ol>
+     * </p>
+     * 
+     * @param searchType    提词搜索范围枚举
+     * @param paramName     提取内容参数名
+     * @param xpath         提取内容xpath
+     * @param leftBoundary  提取内容左边界
+     * @param rightBoundary 提取内容右边界
+     * @param index         边界提取到多条内容时指定的获取下标
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(SearchType searchType, String paramName, String xpath, String leftBoundary,
+            String rightBoundary, int index) {
+        // 判断searchType参数是否为null
+        if (searchType == null) {
+            throw new HttpResponseException("未指定搜索范围，无法查找响应内容");
+        }
+
+        // 处理paramName参数，若其为null，则使其变为空串
+        paramName = Optional.ofNullable(paramName).orElse("");
+
         String value = "";
         switch (searchType) {
         case STATUS:
@@ -192,19 +310,126 @@ public class EasyResponse {
             value = getMessage();
             break;
         case HEADER:
-            if (!responseHeaderMap.containsKey(paramName)) {
-                throw new HttpResponseException(String.format("响应头中不包含参数“%s”，无法断言", paramName));
+            // 判断paramName参数是否为空串
+            if (paramName.isEmpty()) {
+                value = responseHeaderMap.toString();
+            } else {
+                value = Optional.ofNullable(responseHeaderMap.get(paramName)).orElse("");
             }
-            value = responseHeaderMap.get(paramName);
             break;
         case BODY:
-            value = analysisBody(paramName, xpath);
+            // 获取响应体的字符串形式
+            value = getResponseBodyText();
+            // 判断paramName参数是否为空串
+            if (!paramName.isEmpty()) {
+                value = analysisBody(value, paramName, xpath);
+            }
             break;
         default:
             throw new HttpResponseException("不支持的断言的接口响应内容：" + searchType);
         }
 
-        return assertTextType(assertRegex, value, leftBoundary, rightBoundary, index);
+        // 判断是否存在左右边界，若左右边界均不存在，则直接返回通过属性提取到的内容
+        if (!leftBoundary.isEmpty() || !rightBoundary.isEmpty()) {
+            value = disposeTextBoundary(value, leftBoundary, rightBoundary, index);
+        }
+
+        return value;
+    }
+
+    /**
+     * 该方法用于通过指定的边界条件对接口响应报文指定内容进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>通过paramName或xpath提取后，仍会对内容进行指定边界的提取，其两种提取方式不独立</li>
+     * <li>若同时未指定左右边界，则不进行边界内容提取</li>
+     * <li>当边界提取到多条数据时，则根据指定的index进行提取，其下标从1开始计算（1为第一条元素），若值小于1，则获取第一条数据；若值大于提取到的数据集合数量，则返回最后一条数据</li>
+     * <li>左右边界允许为正则表达式</li>
+     * </ol>
+     * </p>
+     * 
+     * @param searchType    提词搜索范围枚举
+     * @param leftBoundary  提取内容左边界
+     * @param rightBoundary 提取内容右边界
+     * @param index         边界提取到多条内容时指定的获取下标
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(SearchType searchType, String leftBoundary, String rightBoundary, int index) {
+        return extractKey(searchType, "", "", leftBoundary, rightBoundary, index);
+    }
+
+    /**
+     * 该方法用于通过指定的搜索参数对接口响应报文指定内容进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>必须指定搜索范围{@link SearchType}枚举，否则抛出{@link HttpResponseException}异常</li>
+     * <li>当搜索范围为{@link SearchType#MESSAGE}或{@link SearchType#STATUS}时，则paramName不生效</li>
+     * <li>当搜索范围为{@link SearchType#HEADER}时，若指定了paramName内容，则获取响应头对应键的内容（没有该键值则返回空串）；若未指定paramName参数，则将响应头以{@link HashMap#toString()}方法的形式返回</li>
+     * <li>当搜索范围为{@link SearchType#BODY}时，存在以下情况：
+     * <ol>
+     * <li>当响应体为{@link MessageType#JSON}类型时，其xpath参数不生效，判断paramName参数的方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为{@link MessageType#XML}或{@link MessageType#HTML}类型时，则优先判断xpath参数，若其为空时，则再判断paramName参数，其判断方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为其他类型时，则xpath与paramName参数均不生效</li>
+     * </ol>
+     * </li>
+     * </ol>
+     * </p>
+     * 
+     * @param searchType 提词搜索范围枚举
+     * @param paramName  提取内容参数名
+     * @param xpath      提取内容xpath
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(SearchType searchType, String paramName, String xpath) {
+        return extractKey(searchType, paramName, xpath, "", "", 0);
+    }
+
+    /**
+     * 该方法用于通过指定的搜索参数对接口响应报文指定内容进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>必须指定搜索范围{@link SearchType}枚举，否则抛出{@link HttpResponseException}异常</li>
+     * <li>当搜索范围为{@link SearchType#MESSAGE}或{@link SearchType#STATUS}时，则paramName不生效</li>
+     * <li>当搜索范围为{@link SearchType#HEADER}时，若指定了paramName内容，则获取响应头对应键的内容（没有该键值则返回空串）；若未指定paramName参数，则将响应头以{@link HashMap#toString()}方法的形式返回</li>
+     * <li>当搜索范围为{@link SearchType#BODY}时，存在以下情况：
+     * <ol>
+     * <li>当响应体为{@link MessageType#JSON}或{@link MessageType#XML}或{@link MessageType#HTML}类型时，其判断paramName参数的方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为其他类型时，则paramName参数均不生效</li>
+     * </ol>
+     * </li>
+     * </ol>
+     * </p>
+     * 
+     * @param searchType 提词搜索范围枚举
+     * @param paramName  提取内容参数名
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(SearchType searchType, String paramName) {
+        return extractKey(searchType, paramName, "", "", "", 0);
+    }
+
+    /**
+     * 该方法用于通过指定的搜索参数对响应体进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>当响应体为{@link MessageType#JSON}或{@link MessageType#XML}或{@link MessageType#HTML}类型时，其判断paramName参数的方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为其他类型时，则paramName参数均不生效</li>
+     * </ol>
+     * </p>
+     * 
+     * @param paramName     提取内容参数名
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(String paramName) {
+        return extractKey(SearchType.BODY, paramName, "", "", "", 0);
     }
 
     /**
@@ -215,13 +440,10 @@ public class EasyResponse {
      * @return 查找到元素的内容
      * @since autest 3.3.0
      */
-    private String analysisBody(String paramName, String xpath) {
+    private String analysisBody(String bodyText, String paramName, String xpath) {
         // 根据响应状态，获取请求体类型
         Set<MessageType> bodyTypeSet = Optional.ofNullable(bodyTypeMap.get(status))
                 .orElseGet(() -> new HashSet<>());
-
-        // 获取响应体的字符串形式
-        String bodyText = getResponseBodyText();
 
         // 判断获取到的类型是否为空，若为空，则直接返回响应体文本
         if (bodyTypeSet.isEmpty()) {
@@ -408,29 +630,6 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于对文本内容进行断言
-     *
-     * @param assertRegex   断言规则
-     * @param value         待断言内容
-     * @param leftBoundary  取词左边界
-     * @param rightBoundary 取词右边界
-     * @param index         取词下标
-     * @return 断言结果
-     * @since autest 3.3.0
-     */
-    private boolean assertTextType(String assertRegex, String value, String leftBoundary, String rightBoundary,
-            int index) {
-        // 判断左右边界是否都为空，若都为空，则只判内容是否符合断言规则
-        if (leftBoundary.isEmpty() && rightBoundary.isEmpty()) {
-            return value.matches(assertRegex);
-        }
-
-        // 去除获取文本的左右边界，并对剩余内容进行断言规则判断
-        value = extractKey(value, leftBoundary, rightBoundary, index);
-        return value.substring(value.indexOf(leftBoundary.length()), value.indexOf(rightBoundary)).matches(assertRegex);
-    }
-
-    /**
      * 该方法用于对指定内容按照限定规则进行提取，返回提取到的内容
      *
      * @param value         待提取内容
@@ -440,7 +639,12 @@ public class EasyResponse {
      * @return 提取的内容
      * @since autest 3.3.0
      */
-    private String extractKey(String value, String leftBoundary, String rightBoundary, int index) {
+    private String disposeTextBoundary(String value, String leftBoundary, String rightBoundary, int index) {
+        // 若value为空串，则直接返回，不做后续处理
+        if (value.isEmpty()) {
+            return value;
+        }
+
         // 若左右边界不为空，则将其拼接为边界正则
         String boundaryRegex = rightBoundary + ".*?" + leftBoundary;
         // 将断言内容在边界正则中进行提取
@@ -466,6 +670,7 @@ public class EasyResponse {
         }
 
         // 去除获取文本的左右边界，并对剩余内容进行断言规则判断
-        return valueExtractList.get(index);
+        String key = valueExtractList.get(index);
+        return key.substring(key.indexOf(leftBoundary.length()), key.indexOf(rightBoundary));
     }
 }
