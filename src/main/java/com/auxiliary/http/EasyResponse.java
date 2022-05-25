@@ -19,6 +19,7 @@ import org.dom4j.Element;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 
@@ -329,12 +330,16 @@ public class EasyResponse {
             throw new HttpResponseException("不支持的断言的接口响应内容：" + searchType);
         }
 
-        // 判断是否存在左右边界，若左右边界均不存在，则直接返回通过属性提取到的内容
-        if (!leftBoundary.isEmpty() || !rightBoundary.isEmpty()) {
-            value = disposeTextBoundary(value, leftBoundary, rightBoundary, index);
+        // 根据存在不同边界条件的情况，选择不同的处理方法
+        leftBoundary = Optional.ofNullable(leftBoundary).orElse("");
+        rightBoundary = Optional.ofNullable(rightBoundary).orElse("");
+        if (leftBoundary.isEmpty() && rightBoundary.isEmpty()) {
+            return value;
+        } else if (!leftBoundary.isEmpty() && !rightBoundary.isEmpty()) {
+            return disposeCompleteBoundaryText(value, leftBoundary, rightBoundary, index);
+        } else {
+            return disposeSingleBoundaryText(value, leftBoundary, rightBoundary, index);
         }
-
-        return value;
     }
 
     /**
@@ -630,7 +635,7 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于对指定内容按照限定规则进行提取，返回提取到的内容
+     * 该方法用于在存在完整边界的情况下，对文本的处理方法
      *
      * @param value         待提取内容
      * @param leftBoundary  提取左边界
@@ -639,14 +644,15 @@ public class EasyResponse {
      * @return 提取的内容
      * @since autest 3.3.0
      */
-    private String disposeTextBoundary(String value, String leftBoundary, String rightBoundary, int index) {
+    private String disposeCompleteBoundaryText(String value, String leftBoundary, String rightBoundary, int index) {
         // 若value为空串，则直接返回，不做后续处理
         if (value.isEmpty()) {
             return value;
         }
 
         // 若左右边界不为空，则将其拼接为边界正则
-        String boundaryRegex = rightBoundary + ".*?" + leftBoundary;
+        String boundaryRegex = String.format("%s.+?%s", DisposeCodeUtils.disposeRegexSpecialSymbol(leftBoundary),
+                DisposeCodeUtils.disposeRegexSpecialSymbol(rightBoundary));
         // 将断言内容在边界正则中进行提取
         ArrayList<String> valueExtractList = new ArrayList<>();
         Matcher match = Pattern.compile(boundaryRegex).matcher(value);
@@ -669,8 +675,50 @@ public class EasyResponse {
             index = size - 1;
         }
 
-        // 去除获取文本的左右边界，并对剩余内容进行断言规则判断
+        // 获取相应下标的文本
         String key = valueExtractList.get(index);
-        return key.substring(key.indexOf(leftBoundary.length()), key.indexOf(rightBoundary));
+        // 判断左右边界在文本中的位置，并对其进行去除
+        // 当不存在左边界时，则将左边界位置赋予字符串开头下标，即0
+        // 当不存在右边界时，则将右边界赋予字符串最后一个位下标，即key.length()
+        int leftIndex = leftBoundary.isEmpty() ? 0 : (key.indexOf(leftBoundary) + leftBoundary.length());
+        int rightIndex = rightBoundary.isEmpty() ? key.length() : key.indexOf(rightBoundary);
+        return key.substring(leftIndex, rightIndex);
+    }
+
+    /**
+     * 该方法用于在仅存在单个边界的情况下，对文本的处理方法
+     * 
+     * @param value         待提取内容
+     * @param leftBoundary  提取左边界
+     * @param rightBoundary 提取右边界
+     * @param index         多词情况下提取下标
+     * @return 提取的内容
+     * @since autest 3.3.0
+     */
+    private String disposeSingleBoundaryText(String value, String leftBoundary, String rightBoundary, int index) {
+        // 判断非空边界，并获取非空边界内容
+        boolean isLeftBoundary = leftBoundary.isEmpty();
+        String boundary = !isLeftBoundary ? leftBoundary : rightBoundary;
+        // 判断待判断的内容是否包含边界内容，若不包含，则直接返回空
+        if (!value.contains(boundary)) {
+            return "";
+        }
+        
+        // 将内容按照边界内容进行切分
+        String[] keys = value.split(DisposeCodeUtils.disposeRegexSpecialSymbol(boundary));
+        // 得到字符串数组后，若边界为左边界，则数组第一个元素不能作为值返回；若边界为右边界，则数组最后一个元素不能最为值返回
+        // 例如“123#456#789”，当用“#”作为左边界时，则“123”左边不存在“#”符号，故不能作为第一个元素，右边界类似
+        // 由于index下标从1开始，且可能传入其他有问题的数字，故需要对下标进行处理；不论边界为何种边界，其数组总数均需要减1
+        int size = keys.length - 1;
+        int minIndex = isLeftBoundary ? 1 : 0;
+        if (index < 1) {
+            index = minIndex;
+        } else if (index >= 1 && index <= size) {
+            index -= (1 - minIndex);
+        } else {
+            index = size - 1 + minIndex;
+        }
+
+        return keys[index];
     }
 }
