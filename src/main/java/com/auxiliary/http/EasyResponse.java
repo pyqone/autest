@@ -681,7 +681,7 @@ public class EasyResponse {
         // 当不存在左边界时，则将左边界位置赋予字符串开头下标，即0
         // 当不存在右边界时，则将右边界赋予字符串最后一个位下标，即key.length()
         int leftIndex = leftBoundary.isEmpty() ? 0 : (key.indexOf(leftBoundary) + leftBoundary.length());
-        int rightIndex = rightBoundary.isEmpty() ? key.length() : key.indexOf(rightBoundary);
+        int rightIndex = rightBoundary.isEmpty() ? key.length() : key.lastIndexOf(rightBoundary);
         return key.substring(leftIndex, rightIndex);
     }
 
@@ -697,8 +697,8 @@ public class EasyResponse {
      */
     private String disposeSingleBoundaryText(String value, String leftBoundary, String rightBoundary, int index) {
         // 判断非空边界，并获取非空边界内容
-        boolean isLeftBoundary = leftBoundary.isEmpty();
-        String boundary = !isLeftBoundary ? leftBoundary : rightBoundary;
+        boolean isLeftBoundary = !leftBoundary.isEmpty();
+        String boundary = isLeftBoundary ? leftBoundary : rightBoundary;
         // 判断待判断的内容是否包含边界内容，若不包含，则直接返回空
         if (!value.contains(boundary)) {
             return "";
