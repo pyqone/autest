@@ -108,8 +108,9 @@ public class EasyResponse {
 
     /**
      * 该方法用于添加响应体的内容格式
-     *
-     * @param bodyTypeSet 内容格式集合
+     * 
+     * @param status     状态
+     * @param messageSet 内容格式集合
      * @since autest 3.3.0
      */
     public void setMessageType(int status, Set<MessageType> messageSet) {
@@ -119,7 +120,6 @@ public class EasyResponse {
     /**
      * 该方法用于以{@link #setCharsetName(String)}方法设定的编码格式，返回接口的响应体字符串
      *
-     * @param charsetName 编码格式名称
      * @since autest 3.3.0
      */
     public String getResponseBodyText() {
@@ -236,9 +236,9 @@ public class EasyResponse {
      * 方法中各个参数的解释，可参考{@link #extractKey(SearchType, String)}方法
      * </p>
      *
-     * @param assertRegex   断言规则
-     * @param searchType    搜索范围枚举
-     * @param paramName     搜索变量
+     * @param assertRegex 断言规则
+     * @param searchType  搜索范围枚举
+     * @param paramName   搜索变量
      * @return 断言结果
      * @since autest 3.3.0
      */
@@ -431,7 +431,7 @@ public class EasyResponse {
      * </ol>
      * </p>
      * 
-     * @param paramName     提取内容参数名
+     * @param paramName 提取内容参数名
      * @return 对响应体提取到的内容
      * @since autest 3.3.0
      */
@@ -449,8 +449,7 @@ public class EasyResponse {
      */
     private String analysisBody(String bodyText, String paramName, String xpath) {
         // 根据响应状态，获取请求体类型
-        Set<MessageType> bodyTypeSet = Optional.ofNullable(bodyTypeMap.get(status))
-                .orElseGet(() -> new HashSet<>());
+        Set<MessageType> bodyTypeSet = Optional.ofNullable(bodyTypeMap.get(status)).orElseGet(() -> new HashSet<>());
 
         // 判断获取到的类型是否为空，若为空，则直接返回响应体文本
         if (bodyTypeSet.isEmpty()) {
@@ -500,7 +499,7 @@ public class EasyResponse {
      * @since autest 3.3.0
      */
     private String disposeXmlParam(Document xml, String replaceSymbol, String[] paramNames, String xpath) {
-     // 对转换过程中的异常进行处理，若抛出异常，则直接返回空串
+        // 对转换过程中的异常进行处理，若抛出异常，则直接返回空串
         try {
             // 先按照xpath方式对元素进行查找并进行转换，若未找到元素，则赋予空串
             String value = Optional.ofNullable(xpath).filter(x -> !x.isEmpty()).map(x -> {
@@ -516,7 +515,7 @@ public class EasyResponse {
             if (!value.isEmpty() || paramNames.length == 0) {
                 return value;
             }
-            
+
             // 若value为空，则进一步获取参数名中的内容
             Element root = xml.getRootElement();
             // 判断paramNames是否只包含一位数据，若只包含一位数据，则返回根元素的文本内容
@@ -527,7 +526,7 @@ public class EasyResponse {
                     return "";
                 }
             }
-            
+
             // 若paramNames存在多位数据，则循环获取到倒数第二位的数据，并逐层向下获取
             int index = 1;
             Element paramElement = root;
@@ -538,7 +537,7 @@ public class EasyResponse {
                     return "";
                 }
             }
-    
+
             return (String) getElement(paramNames[index], replaceSymbol, paramElement, (short) 1, true);
         } catch (Exception e) {
             return "";
@@ -656,18 +655,20 @@ public class EasyResponse {
         Integer index = Integer.valueOf(name.substring(name.indexOf(AssertResponse.ARRAY_START_SYMBOL) + 1,
                 name.indexOf(AssertResponse.ARRAY_END_SYMBOL)));
         String paramName = name.substring(0, name.indexOf(AssertResponse.ARRAY_START_SYMBOL));
-        
+
         return new Entry<>(paramName, index);
     }
 
     /**
      * 该方法用于处理数组下标，将真实下标转义为可使用的下标
-     * <p><b>注意：</b>该方法为临时对数组下标处理的方法，后续添加下标处理工具后，则将其弃用</p>
+     * <p>
+     * <b>注意：</b>该方法为临时对数组下标处理的方法，后续添加下标处理工具后，则将其弃用
+     * </p>
      * 
-     * @param index 真实下标
+     * @param index  真实下标
      * @param length 数组个数
      * @return 实际下标
-     * @since autest 3.3.0 
+     * @since autest 3.3.0
      */
     private int disposeArrIndex(int index, int length) {
         // TODO 临时处理方式，后续考虑重构
@@ -749,7 +750,7 @@ public class EasyResponse {
         if (!value.contains(boundary)) {
             return "";
         }
-        
+
         // 将内容按照边界内容进行切分
         String[] keys = value.split(DisposeCodeUtils.disposeRegexSpecialSymbol(boundary));
         // 得到字符串数组后，若边界为左边界，则数组第一个元素不能作为值返回；若边界为右边界，则数组最后一个元素不能最为值返回

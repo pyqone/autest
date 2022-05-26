@@ -290,7 +290,6 @@ public class InterfaceInfo implements Cloneable {
      * </p>
      *
      * @param url 接口请求url
-     * @return 类本身
      * @since autest 3.3.0
      */
     public void analysisUrl(String url) {
@@ -544,7 +543,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于返回接口响应内容的格式枚举，当状态码不存在时，则返回空集合
      *
-     * @param state 状态码
+     * @param status 状态码
      * @return 接口响应内容的格式枚举
      * @since autest 3.3.0
      */
@@ -616,7 +615,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储
      * </p>
      *
-     * @param ruleMap 断言规则集合
+     * @param assertRuleMap 断言规则集合
      * @since autest 3.3.0
      */
     public void addAssertRule(HashMap<String, String> assertRuleMap) {
@@ -699,7 +698,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_PARAM_NAME}字段，否则将不进行存储
      * </p>
      *
-     * @param ruleMap 提词规则集合
+     * @param extractRuleMap 提词规则集合
      * @since autest 3.3.0
      */
     public void addExtractRule(HashMap<String, String> extractRuleMap) {
