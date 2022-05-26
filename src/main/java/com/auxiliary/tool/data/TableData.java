@@ -607,7 +607,6 @@ public class TableData<T> {
      * @param columnIndexs 列下标数组
      * @return 根据列下标数组生成的新表格类对象
      * @since autest 3.3.0
-     * @throw IllegalDataException 列下标不存在时抛出的异常
      */
     public TableData<T> getTable(int... columnIndexs) {
         String[] columnNames = new String[columnIndexs.length];
@@ -632,7 +631,6 @@ public class TableData<T> {
      * @param columnNames 列名称数组
      * @return 根据列名称数组生成的新表格类对象
      * @since autest 3.3.0
-     * @throw IllegalDataException 列名称不存在时抛出的异常
      */
     public TableData<T> getTable(String... columnNames) {
         TableData<T> newTable = new TableData<>();

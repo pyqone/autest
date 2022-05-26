@@ -9,8 +9,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.testcase.TestCaseException;
+import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -107,7 +112,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口请求体
      */
-    private String body = "";
+    private Entry<MessageType, String> body;
     /**
      * 接口请求头
      */
@@ -119,7 +124,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口响应内容格式集合
      */
-    private HashMap<Integer, HashSet<ResponseContentType>> responseContentTypeMap = new HashMap<>(
+    private HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(
             ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文断言规则集合
@@ -129,12 +134,7 @@ public class InterfaceInfo implements Cloneable {
      * 接口响应报文提词规则
      */
     private HashSet<JSONObject> extractRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
-     * 接口响应报文提词内容
-     */
-    private HashMap<String, String> extractValueMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
-    // TODO 添加无参构造，并添加默认请求头
     /**
      * 该方法用于返回接口的url协议
      *
@@ -265,7 +265,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于清空当前接口的路径
-     * 
+     *
      * @since autest 3.3.0
      */
     public void clearPath() {
@@ -290,7 +290,6 @@ public class InterfaceInfo implements Cloneable {
      * </p>
      *
      * @param url 接口请求url
-     * @return 类本身
      * @since autest 3.3.0
      */
     public void analysisUrl(String url) {
@@ -422,24 +421,64 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于返回接口的请求体
+     * 该方法用于返回接口的请求报文与请求报文类型封装类
+     * <p>
+     * 封装类类似于于键值对，键为报文类型，值为报文内容
+     * </p>
      *
-     * @return 接口的请求体
+     * @return 接口的请求报文与请求报文类型封装类
      * @since autest 3.3.0
      */
-    public String getBody() {
-        return body;
+    public Entry<MessageType, String> getBody() {
+        return Optional.ofNullable(body)
+                .orElseGet(() -> new Entry<>(MessageType.NONE, ""));
     }
 
     /**
-     * 该方法用于设置接口的请求体
+     * 该方法用于设置接口的请求体，根据报文的内容，自动设置相应的报文类型
+     * <p>
+     * <b>注意：</b>报文格式自动识别可能存在错误，若不符合预期，可调用{@link #setBody(MessageType, String)}方法对请求报文类型进行设置
+     * </p>
      *
-     * @param body 接口的请求体
+     * @param bodyText 接口的请求体
      * @since autest 3.3.0
      */
-    public void setBody(String body) {
-        this.body = Optional.ofNullable(body).orElseGet(() -> "");
-        // TODO 根据body的格式，自动添加相应的contentType请求头
+    public void setBody(String bodyText) {
+        // 若body不为空，则根据body格式，自动设置请求头
+        if (bodyText != null && !bodyText.isEmpty()) {
+            try {
+                // 判断文本是否能被识别为json格式
+                JSONObject.parseObject(bodyText);
+                setBody(MessageType.JSON, bodyText);
+            } catch (JSONException jsonException) {
+                try {
+                    DocumentHelper.parseText(bodyText);
+                    // 若相应参数开头的文本为<html>，则表示其相应参数为html形式，则以html形式进行转换
+                    if (bodyText.indexOf("<html>") == 0) {
+                        setBody(MessageType.HTML, bodyText);
+                    } else {
+                        setBody(MessageType.XML, bodyText);
+                    }
+
+                } catch (DocumentException domException) {
+                    setBody(MessageType.RAW, bodyText);
+                    ;
+                }
+            }
+        } else {
+            setBody(MessageType.NONE, "");
+        }
+    }
+
+    /**
+     * 该方法用于设置请求报文以及请求报文的类型
+     *
+     * @param messageType 报文类型枚举
+     * @param bodyText    报文内容
+     * @since autest 3.3.0
+     */
+    public void setBody(MessageType messageType, String bodyText) {
+        body = new Entry<>(messageType, Optional.ofNullable(bodyText).orElseGet(() -> ""));
     }
 
     /**
@@ -504,12 +543,12 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于返回接口响应内容的格式枚举，当状态码不存在时，则返回空集合
      *
-     * @param state 状态码
+     * @param status 状态码
      * @return 接口响应内容的格式枚举
      * @since autest 3.3.0
      */
-    public Set<ResponseContentType> getResponseContentType(int state) {
-        return Optional.ofNullable(responseContentTypeMap.get(state)).orElseGet(() -> new HashSet<>());
+    public Set<MessageType> getResponseContentType(int status) {
+        return Optional.ofNullable(responseContentTypeMap.get(status)).orElseGet(() -> new HashSet<>());
     }
 
     /**
@@ -531,14 +570,14 @@ public class InterfaceInfo implements Cloneable {
      * @param responseContentTypes 响应内容格式数组
      * @since autest 3.3.0
      */
-    public void addResponseContentTypeSet(int state, ResponseContentType... responseContentTypes) {
+    public void addResponseContentTypeSet(int state, MessageType... responseContentTypes) {
         // 判断当前状态码是否存在，若不存在，则添加空集合
         if (!responseContentTypeMap.containsKey(state)) {
             responseContentTypeMap.put(state, new HashSet<>());
         }
 
         // 获取当前状态码中 存储的状态
-        HashSet<ResponseContentType> responseContentTypeSet = responseContentTypeMap.get(state);
+        HashSet<MessageType> responseContentTypeSet = responseContentTypeMap.get(state);
 
         // 过滤掉数组为null或为空的情况
         Optional.ofNullable(responseContentTypes).filter(types -> types.length != 0).ifPresent(types -> {
@@ -576,7 +615,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储
      * </p>
      *
-     * @param ruleMap 断言规则集合
+     * @param assertRuleMap 断言规则集合
      * @since autest 3.3.0
      */
     public void addAssertRule(HashMap<String, String> assertRuleMap) {
@@ -600,7 +639,7 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public void addAllAssertRule(Collection<String> rules) {
-        rules.stream().filter(rule -> rule != null && !rule.isEmpty()).map(rule -> {
+        rules.stream().filter(rule -> rule != null).map(rule -> {
             try {
                 return JSONObject.parseObject(rule);
             } catch (Exception e) {
@@ -648,7 +687,6 @@ public class InterfaceInfo implements Cloneable {
                     .ifPresent(json -> {
                         // 存储规则，并在提词内容集合中，构造空值
                         extractRuleSet.add(json);
-                        extractValueMap.put(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME), "");
                     });
         } catch (Exception e) {
         }
@@ -660,7 +698,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_PARAM_NAME}字段，否则将不进行存储
      * </p>
      *
-     * @param ruleMap 提词规则集合
+     * @param extractRuleMap 提词规则集合
      * @since autest 3.3.0
      */
     public void addExtractRule(HashMap<String, String> extractRuleMap) {
@@ -672,8 +710,6 @@ public class InterfaceInfo implements Cloneable {
         JSONObject json = new JSONObject();
         extractRuleMap.forEach(json::put);
         extractRuleSet.add(json);
-        extractValueMap.put(extractRuleMap.get(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME), "");
-
     }
 
     /**
@@ -697,17 +733,6 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于向接口中添加提词内容
-     *
-     * @param paramName 提词保存名称
-     * @param value     提词内容
-     * @since autest 3.3.0
-     */
-    public void putExtractValue(String paramName, String value) {
-        extractValueMap.put(paramName, value);
-    }
-
-    /**
      * 该方法用于以字符串集合的形式，返回提词规则json
      * <p>
      * json字段可参考{@link ReadInterfaceFromAbstract}中“JSON_EXTRACT_XXX”常量
@@ -723,17 +748,6 @@ public class InterfaceInfo implements Cloneable {
         return extractRuleJsonText;
     }
 
-    /**
-     * 该方法用于返回提词的内容
-     *
-     * @param paramName 参数名称
-     * @return 提词的内容
-     * @since autest 3.3.0
-     */
-    public String getExtractValue(String paramName) {
-        return Optional.ofNullable(extractValueMap.get(paramName)).orElseGet(() -> "");
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public InterfaceInfo clone() {
@@ -747,10 +761,10 @@ public class InterfaceInfo implements Cloneable {
             newInter.requestHeaderMap = (HashMap<String, String>) requestHeaderMap.clone();
 
             // 克隆接口响应报文格式信息
-            newInter.responseContentTypeMap = new HashMap<>();
+            newInter.responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
             for (int key : responseContentTypeMap.keySet()) {
                 newInter.responseContentTypeMap.put(key,
-                        (HashSet<ResponseContentType>) responseContentTypeMap.get(key).clone());
+                        (HashSet<MessageType>) responseContentTypeMap.get(key).clone());
             }
             // 克隆接口响应报文断言规则信息
             newInter.assertRuleSet = new HashSet<>();

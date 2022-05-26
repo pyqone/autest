@@ -15,33 +15,33 @@ public enum HeadType {
 	/**
 	 * json协议
 	 */
-	CONTENT_TYPE_JSON("Content-Type", "application/json"), 
+	CONTENT_TYPE_JSON("Content-Type", "application/json"),
 	/**
 	 * 表单
 	 */
-	CONTENT_TYPE_URLENCODED("Content-Type", "application/x-www-form-urlencoded"), 
+	CONTENT_TYPE_URLENCODED("Content-Type", "application/x-www-form-urlencoded"),
 	/**
 	 * 表单文件
 	 */
-	CONTENT_TYPE_FROM_DATA("Content-Type", "multipart/form-data"), 
+	CONTENT_TYPE_FROM_DATA("Content-Type", "multipart/form-data"),
 	/**
 	 * 纯文本
 	 */
-	CONTENT_TYPE_PLAIN("Content-Type", "text/plain"), 
+	CONTENT_TYPE_PLAIN("Content-Type", "text/plain"),
 	/**
 	 * html文本
 	 */
-	CONTENT_TYPE_HTML("Content-Type", "text/html"), 
+	CONTENT_TYPE_HTML("Content-Type", "text/html"),
 	/**
-	 * soap协议
-	 */
-	CONTENT_TYPE_SOAP("Content-Type", "application/soap+xml"), 
+     * xml报文
+     */
+    CONTENT_TYPE_XML("Content-Type", "application/xml"),
 	/**
 	 * 文件
 	 */
-	CONTENT_TYPE_FILE("Content-Type", "application/file"), 
+	CONTENT_TYPE_FILE("Content-Type", "application/file"),
 	;
-	
+
 	/**
 	 * 请求头名称
 	 */
@@ -54,9 +54,9 @@ public enum HeadType {
 	 * 文字编码
 	 */
 	String encoding ="";
-	
+
 	/**
-	 * 初始化枚举值 
+	 * 初始化枚举值
 	 * @param headName 请求头名称
 	 * @param headValue 请求头值
 	 */
@@ -80,7 +80,7 @@ public enum HeadType {
 	public String getHeadValue() {
 		return encoding.isEmpty() ? headValue : (headValue + ";" + encoding);
 	}
-	
+
 	/**
 	 * 用于设置请求的编码格式
 	 * @param encoding 编码格式
@@ -90,7 +90,7 @@ public enum HeadType {
 		this.encoding = "charset=" + encoding;
 		return this;
 	}
-	
+
 	/**
 	 * 用于清除当前设置的编码格式
 	 * @return 枚举本身

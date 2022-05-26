@@ -13,6 +13,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -57,7 +58,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     /**
      * 环境集合
      */
-    private HashMap<String, String> environmentMap = new HashMap<>();
+    private HashMap<String, String> environmentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 当前执行接口的环境
      */
@@ -97,11 +98,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             }
 
             // 判断环境集合标签中是否指定默认环境，若存在，则将执行环境指向为默认环境；若不存在，则取环境集合的第一个元素
-            if (environmentMap.containsKey(environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT))) {
-                actionEnvironment = environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
-            } else {
-                actionEnvironment = environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
-            }
+            String defaultenvironmentName = environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
+            actionEnvironment = environmentMap.containsKey(defaultenvironmentName) ? defaultenvironmentName
+                    : environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_NAME);
         }
     }
 
@@ -141,7 +140,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                     continue;
                 }
                 // 将响应报文格式进行转换，之后存储相应的内容
-                inter.addResponseContentTypeSet(state, ResponseContentType.valueOf(responeType));
+                inter.addResponseContentTypeSet(state, MessageType.valueOf(responeType));
             } catch (IllegalArgumentException e) {
                 continue;
             }
@@ -245,7 +244,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @return 接口标签中的url属性
      * @since autest 3.3.0
      */
-    private String readInterURL(Element interElement) {
+    private String readInterUrl(Element interElement) {
         return interElement.attributeValue(XmlParamName.XML_ATTRI_URL);
     }
 
@@ -279,6 +278,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
             extractJson.put(JSON_EXTRACT_PARAM_NAME, Optional
                     .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
+            extractJson.put(JSON_ASSERT_XPATH, Optional
+                    .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
             extractJson.put(JSON_EXTRACT_ORD,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_ORD))
                             .orElseGet(() -> DEFAULT_ORD));
@@ -301,9 +302,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 根据标签属性，生成断言json，并存储至集合中
         Set<String> assertSet = new HashSet<>();
         for (Element assertElement : assertElementList) {
-            String assertValue = assertElement.attributeValue(XmlParamName.XML_ATTRI_ASSERT_VALUE);
+            String assertValue = assertElement.attributeValue(XmlParamName.XML_ATTRI_ASSERT_REGEX);
             // 判断当前是否存在断言内容属性，若不存在，则不进行存储
-            if (assertValue == null || assertValue.isEmpty()) {
+            if (assertValue == null) {
                 continue;
             }
 
@@ -319,6 +320,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
             assertJson.put(JSON_ASSERT_PARAM_NAME, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
+            assertJson.put(JSON_ASSERT_XPATH, Optional
+                    .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
             assertJson.put(JSON_ASSERT_ORD, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_ORD)).orElseGet(() -> DEFAULT_ORD));
 
@@ -366,7 +369,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 查找元素
         Element interElement = findElement(interName);
         // 获取接口的url
-        inter.analysisUrl(readInterURL(interElement));
+        inter.analysisUrl(readInterUrl(interElement));
         // 获取接口的路径
         inter.setPath(readInterPath(interElement));
         // 获取接口的请求方式
@@ -566,7 +569,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         /**
          * 定义assertValue属性名称
          */
-        public static final String XML_ATTRI_ASSERT_VALUE = "assertValue";
+        public static final String XML_ATTRI_ASSERT_REGEX = "assertRegex";
         /**
          * 定义saveName属性名称
          */
@@ -587,6 +590,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义paramName属性名称
          */
         public static final String XML_ATTRI_PARAMNAME = "paramName";
+        /**
+         * 定义xpath属性名称
+         */
+        public static final String XML_ATTRI_XPATH = "xpath";
         /**
          * 定义ord属性名称
          */
