@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -301,6 +302,7 @@ public class EasyResponse {
 
         // 处理paramName参数，若其为null，则使其变为空串
         paramName = Optional.ofNullable(paramName).orElse("");
+        xpath = Optional.ofNullable(xpath).orElse("");
 
         String value = "";
         switch (searchType) {
@@ -321,8 +323,8 @@ public class EasyResponse {
         case BODY:
             // 获取响应体的字符串形式
             value = getResponseBodyText();
-            // 判断paramName参数是否为空串
-            if (!paramName.isEmpty()) {
+            // 判断paramName或xpath参数是否为空串
+            if (!paramName.isEmpty() || !xpath.isEmpty()) {
                 value = analysisBody(value, paramName, xpath);
             }
             break;
@@ -487,6 +489,9 @@ public class EasyResponse {
 
     /**
      * 该方法用于处理响应体为xml或html串时变量指向内容的获取
+     * <p>
+     * <b>注意：</b>当xml或html存在多个参数时，其根元素名称不进行判断
+     * </p>
      *
      * @param xml           响应体xml类对象
      * @param replaceSymbol 替换符号
@@ -498,7 +503,15 @@ public class EasyResponse {
      // 对转换过程中的异常进行处理，若抛出异常，则直接返回空串
         try {
             // 先按照xpath方式对元素进行查找并进行转换，若未找到元素，则赋予空串
-            String value = Optional.ofNullable(xml.selectSingleNode("xpath")).map(ele -> ((Element) ele).getText()).orElse("");
+            String value = Optional.ofNullable(xpath).filter(x -> !x.isEmpty()).map(x -> {
+                // 若查找xpath报错，则直接返回null
+                try {
+                    return xml.selectSingleNode(x);
+                } catch (Exception e) {
+                    return null;
+                }
+            }).map(ele -> ((Element) ele).getText()).orElse("");
+
             // 判断value是否为空，若不为空，则返回value的内容
             if (!value.isEmpty() || paramNames.length == 0) {
                 return value;
@@ -520,6 +533,10 @@ public class EasyResponse {
             Element paramElement = root;
             for (; index < paramNames.length - 1; index++) {
                 paramElement = (Element) getElement(paramNames[index], replaceSymbol, paramElement, (short) 1, false);
+                // 若当前未查找到元素，则返回空串
+                if (paramElement == null) {
+                    return "";
+                }
             }
     
             return (String) getElement(paramNames[index], replaceSymbol, paramElement, (short) 1, true);
@@ -545,6 +562,10 @@ public class EasyResponse {
             int index = 0;
             for (; index < paramNames.length - 1; index++) {
                 paramJson = (JSONObject) getElement(paramNames[index], replaceSymbol, paramJson, (short) 0, false);
+                // 若当前未查找到元素，则返回空串
+                if (paramJson == null) {
+                    return "";
+                }
             }
 
             // 处理末尾的变量名
@@ -572,6 +593,7 @@ public class EasyResponse {
                 AssertResponse.ARRAY_END_SYMBOL);
         // 转换元素名称，将被替换的符号还原
         String name = paramArrayName.replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL);
+
         // 判断当前元素是否为数组元素，若为数组元素，则按照数组方式对元素进行切分
         if (name.matches(arrRegex)) {
             // 获取需要切分数组内容
@@ -580,16 +602,20 @@ public class EasyResponse {
             if (elementType == 0) {
                 // 获取元素集合，并根据是否为尾元素，返回相应的内容
                 JSONArray arrJson = ((JSONObject) parentElement).getJSONArray(arrData.getKey());
+                int index = disposeArrIndex(arrData.getValue(), arrJson.size());
                 if (isEndElement) {
-                    return arrJson.getString(arrData.getValue());
+                    return arrJson.getString(index);
                 } else {
-                    return arrJson.getJSONObject(arrData.getValue());
+                    return arrJson.getJSONObject(index);
                 }
             } else if (elementType == 1) {
+                // 处理下标，并返回相应下标的内容
+                List<Element> elementList = ((Element) parentElement).elements(arrData.getKey());
+                int index = disposeArrIndex(arrData.getValue(), elementList.size());
                 if (isEndElement) {
-                    return ((Element) parentElement).elements(arrData.getKey()).get(arrData.getValue()).getText();
+                    return elementList.get(index).getText();
                 } else {
-                    return ((Element) parentElement).elements(arrData.getKey()).get(arrData.getValue());
+                    return elementList.get(index);
                 }
             } else {
                 throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
@@ -632,6 +658,26 @@ public class EasyResponse {
         String paramName = name.substring(0, name.indexOf(AssertResponse.ARRAY_START_SYMBOL));
         
         return new Entry<>(paramName, index);
+    }
+
+    /**
+     * 该方法用于处理数组下标，将真实下标转义为可使用的下标
+     * <p><b>注意：</b>该方法为临时对数组下标处理的方法，后续添加下标处理工具后，则将其弃用</p>
+     * 
+     * @param index 真实下标
+     * @param length 数组个数
+     * @return 实际下标
+     * @since autest 3.3.0 
+     */
+    private int disposeArrIndex(int index, int length) {
+        // TODO 临时处理方式，后续考虑重构
+        if (index > length) {
+            return length - 1;
+        } else if (index >= 1 && index <= length) {
+            return index - 1;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -721,4 +767,5 @@ public class EasyResponse {
 
         return keys[index];
     }
+
 }

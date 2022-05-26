@@ -762,7 +762,7 @@ public class InterfaceInfo implements Cloneable {
             newInter.requestHeaderMap = (HashMap<String, String>) requestHeaderMap.clone();
 
             // 克隆接口响应报文格式信息
-            newInter.responseContentTypeMap = new HashMap<>();
+            newInter.responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
             for (int key : responseContentTypeMap.keySet()) {
                 newInter.responseContentTypeMap.put(key,
                         (HashSet<MessageType>) responseContentTypeMap.get(key).clone());

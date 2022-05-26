@@ -244,7 +244,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @return 接口标签中的url属性
      * @since autest 3.3.0
      */
-    private String readInterURL(Element interElement) {
+    private String readInterUrl(Element interElement) {
         return interElement.attributeValue(XmlParamName.XML_ATTRI_URL);
     }
 
@@ -302,7 +302,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 根据标签属性，生成断言json，并存储至集合中
         Set<String> assertSet = new HashSet<>();
         for (Element assertElement : assertElementList) {
-            String assertValue = assertElement.attributeValue(XmlParamName.XML_ATTRI_ASSERT_VALUE);
+            String assertValue = assertElement.attributeValue(XmlParamName.XML_ATTRI_ASSERT_REGEX);
             // 判断当前是否存在断言内容属性，若不存在，则不进行存储
             if (assertValue == null) {
                 continue;
@@ -311,8 +311,6 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             // 存储断言信息，生成断言json
             JSONObject assertJson = new JSONObject();
             assertJson.put(JSON_ASSERT_ASSERT_VALUE, assertValue);
-            // TODO 需要增加判断断言内容是否为正则，并进行非正则字符串去正则处理（方法在请求工具中）
-
             assertJson.put(JSON_ASSERT_SEARCH,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
@@ -371,7 +369,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 查找元素
         Element interElement = findElement(interName);
         // 获取接口的url
-        inter.analysisUrl(readInterURL(interElement));
+        inter.analysisUrl(readInterUrl(interElement));
         // 获取接口的路径
         inter.setPath(readInterPath(interElement));
         // 获取接口的请求方式
@@ -571,7 +569,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         /**
          * 定义assertValue属性名称
          */
-        public static final String XML_ATTRI_ASSERT_VALUE = "assertRegex";
+        public static final String XML_ATTRI_ASSERT_REGEX = "assertRegex";
         /**
          * 定义saveName属性名称
          */

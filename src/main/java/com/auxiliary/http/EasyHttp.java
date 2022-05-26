@@ -181,10 +181,11 @@ public class EasyHttp {
             int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_ORD));
 
             // 存储提词结果
-            extractMap.put(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
+            addReplaceKey(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
         });
 
         // 自动断言
+        assertResultSet.clear();
         interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
             String assertRegex = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE);
@@ -201,7 +202,7 @@ public class EasyHttp {
             if (!result && isAssertFailThrowException) {
                 String responseText = response.extractKey(searchType, paramName, xpath, lb, rb, index);
                 throw new HttpResponseException(
-                        String.format("接口相应信息断言失败，断言规则为“%s”，接口响应报文实际检索内容为“%s”，接口信息：“%s”", assertRegex, responseText,
+                        String.format("接口响应报文断言失败，断言规则为“%s”，接口响应报文实际检索内容为“%s”，接口信息：“%s”", assertRegex, responseText,
                                 interInfo.toString()));
             }
 
@@ -235,11 +236,7 @@ public class EasyHttp {
         OkHttpClient client = new OkHttpClient().newBuilder().build();
 
         // 构造请求体，并添加接口信息中的请求参数、请求头和请求体信息
-        RequestBody requestBody = null;
-        if (messageType != null && messageType != MessageType.NONE && body != null && requestType != RequestType.GET
-                && requestType != RequestType.HEAD && requestType != RequestType.DELETE) {
-            requestBody = RequestBody.create(MediaType.parse(messageType.getMediaValue()), body);
-        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse(messageType.getMediaValue()), body);
         Builder requestBuilder = new Request.Builder().url(url).method(requestType.toString(), requestBody);
         if (requestHead != null) {
             requestHead.forEach(requestBuilder::addHeader);
