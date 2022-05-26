@@ -71,10 +71,25 @@ import com.auxiliary.tool.regex.RegexType;
  */
 public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> extends WriteMultipleTempletFile<T>
 		implements MarkComment<T>, MarkFieldBackground<T>, MarkTextColor<T>, MarkTextFont<T>, MarkFieldLink<T> {
+    /**
+     * 标记json中的wrapText字段
+     */
 	public static final String KEY_WRAP_TEXT = "wrapText";
+    /**
+     * 标记json中的background字段
+     */
 	public static final String KEY_BACKGROUND = "background";
+    /**
+     * 标记json中的work字段
+     */
 	public static final String KEY_WORK = "work";
+    /**
+     * 标记json中的type字段
+     */
 	public static final String KEY_TYPE = "type";
+    /**
+     * 标记json中的linkContent字段
+     */
 	public static final String KEY_LINK_CONTENT = "linkContent";
 
 	/**
@@ -188,7 +203,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 								.orElseThrow(() -> new WriteFileException(
 										String.format("无效的列下标：%s", e.attributeValue("column"))));
 						// 获取列数据
-						ArrayList<Optional<String>> dataList = tableData.getColumnList(columnName);
+                        List<Optional<String>> dataList = tableData.getColumnList(columnName);
 						// 根据列数据以及开始下标，生成序号
 						IntStream
 								.range(Optional.ofNullable(e.attributeValue("start_row"))

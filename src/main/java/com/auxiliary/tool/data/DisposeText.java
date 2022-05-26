@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
+import com.auxiliary.tool.regex.ConstType;
+
 /**
  * <p>
  * <b>文件名：</b>DisposeText.java
@@ -19,7 +21,7 @@ import java.util.Optional;
  * <p>
  * <b>修改时间：</b>2019年7月11日 09:12
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -27,7 +29,7 @@ import java.util.Optional;
 public class DisposeText {
 	/**
 	 * 用于将两个词语集合进行比较，并返回待测集合不在目标集合中的元素
-	 * 
+	 *
 	 * @param testList   待测试集合
 	 * @param targetList 目标集合
 	 * @return 待测集合不在目标集合中的元素
@@ -54,7 +56,7 @@ public class DisposeText {
 
 	/**
 	 * 该方法用于对文本进行去重，保留不重复的字符
-	 * 
+	 *
 	 * @param text 待去重的文本
 	 * @return 去重后的文本
 	 */
@@ -93,7 +95,7 @@ public class DisposeText {
 						wordList.stream().map(word -> word.split(regex))
 								//将且分后得到的数组转换为集合后并存储
 								.map(Arrays::asList).forEach(tempWordList::addAll);
-						
+
 						//清空wordList集合，并存储临时结合中的所有元素
 						wordList.clear();
 						wordList.addAll(tempWordList);
@@ -105,7 +107,7 @@ public class DisposeText {
 
 	/**
 	 * 该方法用于对文本中单词进行去重，输出不重复单词
-	 * 
+	 *
 	 * @param textList 待去重的词语集合
 	 * @return 去重后的单词数组
 	 */
@@ -114,18 +116,18 @@ public class DisposeText {
 		Optional.ofNullable(textList).filter(list -> !list.isEmpty()).ifPresent(list -> {
 			list.stream().filter(text -> !wordList.contains(text)).forEach(wordList::add);
 		});
-		
+
 		return wordList;
 	}
 
 	/**
 	 * 用于统计每个内容在集合中出现的次数
-	 * 
+	 *
 	 * @param wordList 需要统计的集合
 	 * @return 统计结果
 	 */
 	public static LinkedHashMap<String, Integer> statistics(List<String> wordList) {
-		LinkedHashMap<String, Integer> result = new LinkedHashMap<>(16);
+        LinkedHashMap<String, Integer> result = new LinkedHashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
 		// 存储不重复的单词，并存储其在文中出现的次数
 		Optional.ofNullable(wordList).filter(list -> !list.isEmpty()).ifPresent(list -> {

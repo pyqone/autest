@@ -11,8 +11,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
+import com.auxiliary.tool.common.VoidSupplier;
 import com.auxiliary.datadriven.Functions;
-import com.auxiliary.tool.funextend.VoidSupplier;
 import com.google.common.base.Objects;
 
 /**

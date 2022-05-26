@@ -1,345 +1,307 @@
 package com.auxiliary.http;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.datadriven.DataDriverFunction;
+import com.auxiliary.datadriven.DataFunction;
+import com.auxiliary.datadriven.Functions;
+import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.regex.ConstType;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Request.Builder;
+import okhttp3.RequestBody;
 
 /**
- * <p><b>文件名：</b>EasyHttp.java</p>
- * <p><b>用途：</b>
- * 可用于进行简单的接口请求
+ * <p>
+ * <b>文件名：AuHttp.java</b>
  * </p>
- * <p><b>编码时间：</b>2020年6月18日上午7:02:54</p>
- * <p><b>修改时间：</b>2020年6月18日上午7:02:54</p>
- * @author 彭宇琦
- * @version Ver1.0
+ * <p>
+ * <b>用途：</b>根据接口信息，对接口进行请求的工具，亦可通过类中的静态方法，对接口进行快速请求。
+ * 工具类允许对参数设置公式和提取词语等方法，并可以设置自动断言，方便接口自动化运行
+ * </p>
+ * <p>
+ * <b>编码时间：2020年6月18日上午7:02:54
+ * </p>
+ * <p>
+ * <b>修改时间：2022年5月9日 上午8:30:33
+ * </p>
  *
+ *
+ * @author 彭宇琦
+ * @version Ver2.0
+ * @since JDK 1.8
+ * @since autest 3.3.0
  */
-public class EasyHttp implements Cloneable {
-	/**
-	 * 存储指定的请求方式，默认get请求
-	 */
-	private RequestType requestType = RequestType.GET;
-	
-	/**
-	 * 存储接口请求地址，及相应拼接的参数，用于最终请求
-	 */
-	private StringBuilder url = new StringBuilder();
-	
-	/**
-	 * 存储接口请求协议
-	 */
-	private String agreement = "http://";
-	/**
-	 * 存储主机，IP或者域名
-	 */
-	private String host = "127.0.0.1";
-	/**
-	 * 存储端口
-	 */
-	private String port = "80";
-	/**
-	 * 存储接口路径
-	 */
-	private String address = "";
-	
-	/**
-	 * 存储接口请求的参数
-	 */
-	private HashMap<String, String> parameterMap = new HashMap<>(16);
-	
-	/**
-	 * 存储请求体
-	 */
-	private String body = "";
-	
-	/**
-	 * 存储字体编码
-	 */
-	private String encoding = "UTF-8";
-	
-	/**
-	 * 用于存储请求头
-	 */
-	private HashMap<String, String> headMap = new HashMap<>();
-	
-	/**
-	 * 用于设置请求方式，传入请求方式枚举类{@link RequestType}
-	 * @param requestType {@link RequestType}枚举类
-	 * @return 类本身
-	 */
-	public EasyHttp requestType(RequestType requestType) {
-		this.requestType = requestType;
-		return this;
-	}
-	
-	/**
-	 * 指定接口请求url，当未指定协议时，将默认以http为请求协议
-	 * @param url 请求url
-	 * @return 类本身
-	 */
-	public EasyHttp url(String url) {
-		String inter = "";
-		String param = "";
-		
-		//替换中文冒号为英文冒号
-		inter.replaceAll("：", ":");
-		//判断传入的url是否存在参数
-		if (url.indexOf("?") > -1) {
-			inter = url.substring(0, url.indexOf("?"));
-			param = url.substring(url.indexOf("?") + 1);
-		} else {
-			inter = url;
-		}
-		
-		//判断传参是否包含协议，若未包含，则默认拼接http
-		int index = inter.indexOf("://");
-		if (index > -1) {
-			agreement(inter.substring(0, index + "://".length()));
-			//裁剪协议
-			inter = inter.substring(index + "://".length());
-		} 
-		
-		//按照“/”符号，拆分IP及端口
-		if((index = inter.indexOf("/")) > -1) {
-			//获取接口地址
-			address(inter.substring(index));
-			//裁剪接口地址
-			inter = inter.substring(0, index);
-		}
-		
-		//判断获取的ip是否包含冒号，若包含冒号，则按照冒号切分ip及端口
-		if ((index = inter.indexOf(":")) > -1) {
-			port(Integer.valueOf(inter.substring(index + 1)));
-			host(inter.substring(0, index));
-		} else {
-			host(inter);
-		}
-		
-		//裁剪参数
-		if (!param.isEmpty()) {
-			Arrays.stream(param.split("&")).forEach(parameterText -> {
-				putParameter(parameterText);
-			});
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * 用于设置接口请求协议，默认为“http://”
-	 * @param agreement 协议
-	 * @return 类本身
-	 */
-	public EasyHttp agreement(String agreement) {
-		this.agreement = agreement;
-		return this;
-	}
-	
-	/**
-	 * 用于设置接口请求的IP或域名
-	 * @param host IP或域名
-	 * @return 类本身
-	 */
-	public EasyHttp host(String host) {
-		this.host = host;
-		return this;
-	}
-	
-	/**
-	 * 用于设置接口路径
-	 * @param address 接口路径
-	 * @return 类本身
-	 */
-	public EasyHttp address(String address) {
-		this.address = address;
-		return this;
-	}
-	
-	/**
-	 * 用于设置端口号
-	 * @param port 端口号
-	 * @return 类本身
-	 */
-	public EasyHttp port(int port) {
-		this.port = String.valueOf(port);
-		return this;
-	}
-	
-	/**
-	 * 用于设置请求参数，若参数名存在时，则覆盖上一次设置的值
-	 * @param key 参数名
-	 * @param value 参数值
-	 * @return 类本身
-	 */
-	public EasyHttp putParameter(String key, String value) {
-		parameterMap.put(key, value);
-		return this;
-	}
-	
-	/**
-	 * 用于设置“key=value”格式的参数，若参数名存在时，则覆盖上一次设置的值
-	 * @param parameterText 参数文本
-	 * @return 类本身
-	 * @see #putParameter(String, String)
-	 */
-	public EasyHttp putParameter(String parameterText) {
-		//判断parameterText是否包含等号，若不包含，则直接返回
-		if (parameterText.indexOf("=") < 0) {
-			return this;
-		}
-		
-		String[] parameter = parameterText.split("=");
-		//去空格后传入putParameter方法中
-		return putParameter(parameter[0].trim(), parameter[1].trim());
-	}
-	
-	/**
-	 * 用于清空设置的请求参数
-	 * @return 类本身
-	 */
-	public EasyHttp clearParameter() {
-		parameterMap.clear();
-		return this;
-	}
-	
-	/**
-	 * 用于设置接口的请求体
-	 * @param body 请求体
-	 * @return 类本身
-	 */
-	public EasyHttp body(String body) {
-		this.body = body;
-		return this;
-	}
-	
-	/**
-	 * 用于设置请求头，若请求头名存在时，则覆盖上一次设置的值
-	 * @param key 请求头名
-	 * @param value 请求头值
-	 * @return 类本身
-	 */
-	public EasyHttp putHead(String key, String value) {
-		headMap.put(key, value);
-		return this;
-	}
-	
-	/**
-	 * 用于根据请求头枚举类{@link HeadType}设置请求头，若请求头名存在时，则覆盖上一次设置的值
-	 * @param headType {@link HeadType}枚举类
-	 * @return 类本身
-	 */
-	public EasyHttp putHead(HeadType headType) {
-		putHead(headType.getHeadName(), headType.getHeadValue());
-		return this;
-	}
-	
-	/**
-	 * 用于清空设置的请求头
-	 * @return 类本身
-	 */
-	public EasyHttp clearHead() {
-		headMap.clear();
-		return this;
-	}
-	
-	/**
-	 * 用于设置字体编码，默认为UTF-8
-	 * @param encoding 字体编码
-	 * @return 类本身
-	 */
-	public EasyHttp encoding(String encoding) {
-		this.encoding = encoding;
-		return this;
-	}
-	
-	/**
-	 * 返回设置的url
-	 * @return url
-	 */
-	public String getUrlString() {
-		//删除已存储的url值
-		url.delete(0, url.length());
-		//拼接接口请求地址
-		url.append(agreement).append(host).append(":" + port).append(address).toString();
-		
-		//拼接接口请求参数，若无请求参数，则不拼接参数
-		if (!parameterMap.isEmpty()) {
-			url.append("?");
-			
-			//遍历parameterMap，获取参数值
-			parameterMap.forEach((key, value) -> {
-				url.append(key).append("=").append(value).append("&");
-			});
-			
-			//删除多余的&符号
-			url.delete(url.lastIndexOf("&"), url.length());
-		}
-		
-		//判断请求方式是否为get请求，若为get请求时，若设置了body，则将body拼接至末尾
-		if (requestType == RequestType.GET && !body.isEmpty()) {
-			//根据parameterMap是否为空判断，应拼接何种连接符，若parameterMap存在参数，则拼接"&"符号
-			url.append(parameterMap.isEmpty() ? "?" : "&");
-		}
-		
-		//返回参数，并将空格转换为%20
-		return url.toString().replaceAll(" ", "%20");
-	}
-	
-	/**
-	 * 根据设置的内容，对接口进行请求，返回{@link EasyResponse}类对象，可通过该类对响应结果进行返回
-	 * @return {@link EasyResponse}
-	 * @throws URISyntaxException 当url地址有误时抛出的异常
-	 * @throws IOException 
-	 * @throws ClientProtocolException 
-	 */
-	public EasyResponse response() throws URISyntaxException, ClientProtocolException, IOException {
-		//根据请求方式，构造相应的请求类对象
-		HttpRequestBase request = null;
-		switch (requestType) {
-		case POST:
-			request = new HttpPost(new URI(getUrlString()));
-			//由于在HttpRequestBase类中不存在设置请求体的参数，故若请求为post请求时，则先添加请求体
-			if (!body.isEmpty()) {
-				((HttpPost) request).setEntity(new StringEntity(body, encoding));
-			}
-			break;
-		case GET:
-			request = new HttpGet(new URI(getUrlString()));
-			break;
-		default:
-			break;
-		}
-		
-		//设置请求头
-		request = setHead(request);
-		//对接口进行请求，并存储响应结果
-		String responseText = EntityUtils.toString(HttpClients.createDefault().execute(request).getEntity(), encoding);
-		//通过响应结果构造EasyResponse类
-		return new EasyResponse(responseText);
-	}
-	
-	/**
-	 * 用于设置请求头
-	 * @param requestBase 请求类对象
-	 * @return 设置请求头的类对象
-	 */
-	public HttpRequestBase setHead(HttpRequestBase requestBase) {
-		//遍历headMap中的内容，将请求头逐个设置
-		headMap.forEach((key, value) -> {
-			requestBase.setHeader(key, value);
-		});
-		
-		return requestBase;
-	}
+public class EasyHttp {
+    /**
+     * 占位符标记
+     */
+    private final String FUNCTION_SIGN = "@\\{.+?\\}";
+    /**
+     * 占位符起始符号
+     */
+    private final String FUNCTION_START_SIGN = "@\\{";
+    /**
+     * 占位符结束符号
+     */
+    private final String FUNCTION_END_SIGN = "\\}";
+    
+    /**
+     * 定义断言结果json的接口信息字段名
+     */
+    public static final String ASSERT_RESULT_JSON_INTER_INFO = "interInfo";
+    /**
+     * 定义断言结果json的结果字段名
+     */
+    public static final String ASSERT_RESULT_JSON_RESULT = "result";
+
+    /**
+     * 存储提词内容
+     */
+    private HashMap<String, String> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储断言结果
+     */
+    private Set<String> assertResultSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储公式内容
+     */
+    private HashMap<String, DataFunction> functionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+    /**
+     * 断言失败是否抛出异常
+     */
+    private boolean isAssertFailThrowException = false;
+
+    /**
+     * 该方法用于添加数据处理函数
+     * <p>
+     * 可通过lambda添加公式对数据处理的方式，例如，将文本中的存在的"a()"全部替换为文本“test”，则可按如下写法： <code><pre>
+     * addFunction(new DataDriverFunction("a\\(\\)", text -> "test"));
+     * </pre></code>
+     * </p>
+     * <p>
+     * 可添加{@link Functions}类中预设的函数
+     * </p>
+     *
+     * @param function 数据处理函数
+     * @since autest 3.3.0
+     */
+    public void addFunction(DataDriverFunction function) {
+        if (function != null) {
+            functionMap.put(function.getRegex(), function.getFunction());
+        }
+    }
+
+    /**
+     * 该方法用于添加待替换的关键词及相应的替换内容
+     *
+     * @param key   待替换关键词
+     * @param value 替换内容
+     * @since autest 3.3.0
+     */
+    public void addReplaceKey(String key, String value) {
+        Optional.ofNullable(key).filter(k -> !k.isEmpty()).ifPresent(k -> {
+            extractMap.put(k, Optional.ofNullable(value).orElse(""));
+        });
+    }
+
+    /**
+     * 该方法用于返回指定待替换关键词的内容
+     *
+     * @param key 待替换关键词
+     * @return 替换内容
+     * @since autest 3.3.0
+     */
+    public String getReplaceKey(String key) {
+        return extractMap.get(key);
+    }
+
+    /**
+     * 该方法用于设置自动断言失败时，是否需要抛出异常
+     * 
+     * @param isAssertFailThrowException 断言失败是否抛出异常
+     * @since autest 3.3.0
+     */
+    public void isAssertFailThrowException(boolean isAssertFailThrowException) {
+        this.isAssertFailThrowException = isAssertFailThrowException;
+    }
+
+    /**
+     * 该方法用于返回请求接口后自动断言的结果集合
+     * 
+     * @return 断言结果集合
+     * @since autest 3.3.0
+     */
+    public Set<String> getAssertResult() {
+        return assertResultSet;
+    }
+
+    /**
+     * 该方法用于根据接口信息，对接口进行请求，并返回响应内容
+     *
+     * @param interInfo 接口信息类对象
+     * @return 接口响应类
+     * @since autest 3.3.0
+     */
+    public EasyResponse requst(InterfaceInfo interInfo) {
+        // 处理请求头信息
+        Map<String, String> newHeadMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        interInfo.getRequestHeaderMap()
+                .forEach((key, value) -> newHeadMap.put(disposeContent(key), disposeContent(value)));
+        // 对接口进行请求，获取响应类
+        EasyResponse response = requst(interInfo.getRequestType(), interInfo.toUrlString(), newHeadMap,
+                interInfo.getBody().getKey(), disposeContent(interInfo.getBody().getValue()));
+        // 设置响应体解析字符集
+        response.setCharsetName(interInfo.getCharsetname());
+        // 设置响应体内容格式
+        interInfo.getAllSaveState()
+                .forEach(status -> response.setMessageType(status, interInfo.getResponseContentType(status)));
+
+        // 对响应报文提词
+        interInfo.getExtractRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
+            // 获取传参
+            String saveName = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_SAVE_NAME);
+            SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_SEARCH));
+            String paramName = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME);
+            String xpath = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_XPATH);
+            String lb = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_LB);
+            String rb = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_RB);
+            int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_ORD));
+
+            // 存储提词结果
+            addReplaceKey(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
+        });
+
+        // 自动断言
+        assertResultSet.clear();
+        interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
+            // 获取传参
+            String assertRegex = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE);
+            SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_SEARCH));
+            String paramName = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_PARAM_NAME);
+            String xpath = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_XPATH);
+            String lb = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_LB);
+            String rb = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_RB);
+            int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ORD));
+
+            // 断言
+            boolean result = response.assertResponse(assertRegex, searchType, paramName, xpath, lb, rb, index);
+            // 判断是否需要抛出异常
+            if (!result && isAssertFailThrowException) {
+                String responseText = response.extractKey(searchType, paramName, xpath, lb, rb, index);
+                throw new HttpResponseException(
+                        String.format("接口响应报文断言失败，断言规则为“%s”，接口响应报文实际检索内容为“%s”，接口信息：“%s”", assertRegex, responseText,
+                                interInfo.toString()));
+            }
+
+            // 将断言结果和接口信息写入json中，并将其文本形式存储至assertResultSet中
+            json.put(ASSERT_RESULT_JSON_RESULT, result);
+            json.put(ASSERT_RESULT_JSON_INTER_INFO, JSONObject.parseObject(interInfo.toString()));
+            assertResultSet.add(json.toJSONString());
+        });
+
+
+        return response;
+    }
+
+    /**
+     * 该方法用于对接口进行快速请求
+     * <p>
+     * <b>注意：</b>该方法为静态方法，将不会使用类中（若已构造对象）存储替换词语和公式，若
+     * </p>
+     *
+     * @param requestType 请求类型
+     * @param url         接口url地址
+     * @param requestHead 请求头集合
+     * @param messageType 请求报文类型
+     * @param body        请求体
+     * @return 接口响应类
+     * @since autest 3.3.0
+     */
+    public static EasyResponse requst(RequestType requestType, String url, Map<String, String> requestHead,
+            MessageType messageType, String body) {
+        // 定义请求客户端
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+
+        // 构造请求体，并添加接口信息中的请求参数、请求头和请求体信息
+        RequestBody requestBody = RequestBody.create(MediaType.parse(messageType.getMediaValue()), body);
+        Builder requestBuilder = new Request.Builder().url(url).method(requestType.toString(), requestBody);
+        if (requestHead != null) {
+            requestHead.forEach(requestBuilder::addHeader);
+        }
+
+        // 对接口进行请求
+        Request request = requestBuilder.build();
+        try {
+            return new EasyResponse(client.newCall(request).execute());
+        } catch (IOException e) {
+            throw new HttpRequestException(String.format("接口请求异常，接口信息为：%s", url), e);
+        } catch (HttpResponseException e) {
+            throw new HttpResponseException(String.format("%s，接口信息为：%s", e.getMessage(), url), e);
+        }
+    }
+
+    /**
+     * 该方法用于以get请求的方式对接口发起请求
+     *
+     * @param url 接口url地址
+     * @return 接口响应类
+     * @since autest 3.3.0
+     */
+    public static EasyResponse requst(String url) {
+        return requst(RequestType.GET, url, null, null, null);
+    }
+
+    /**
+     * 该方法用于对所有可以使用公式的文本进行处理，返回处理后的文本
+     *
+     * @param content 待替换文本
+     * @return 处理后的文本
+     * @since autest 3.3.0
+     */
+    private String disposeContent(String content) {
+        // 判断需要才处理的内容是否为空或是否包含公式标志，若存在，则返回content
+        String matchPrefix = ".*";
+        if (content == null || content.isEmpty() || !content.matches(matchPrefix + FUNCTION_SIGN + matchPrefix)) {
+            return content;
+        }
+
+        // 通过函数标志对文本中的函数或方法进行提取
+        Matcher m = Pattern.compile(FUNCTION_SIGN).matcher(content);
+        while (m.find()) {
+            // 去除标记符号，获取关键词
+            String signKey = m.group();
+            String key = signKey.replaceAll(FUNCTION_START_SIGN, "").replaceAll(FUNCTION_END_SIGN, "");
+
+            // 判断关键词是否为已存储的词语
+            if (extractMap.containsKey(key)) {
+                content = content.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey), extractMap.get(key));
+                continue;
+            }
+
+            // 若不是存储的词语，则判断关键词是否符合公式集合中的内容，符合公式，则使用公式对内容进行替换
+            for (String funKey : functionMap.keySet()) {
+                if (key.matches(funKey)) {
+                    content = content.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey),
+                            functionMap.get(funKey).apply(key));
+                    break;
+                }
+            }
+
+        }
+
+        return content;
+    }
 }

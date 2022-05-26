@@ -10,6 +10,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 import com.auxiliary.testcase.TestCaseException;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -41,11 +42,11 @@ public class Flowcharting implements Cloneable {
     /**
      * 存储已添加的节点
      */
-    private HashMap<String, FlowchartNode> nodeMap = new HashMap<>(16);
+    private HashMap<String, FlowchartNode> nodeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储孤立的节点
      */
-    private HashSet<String> insularNodeSet = new HashSet<>(16);
+    private HashSet<String> insularNodeSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 起始节点的名称
@@ -463,7 +464,7 @@ public class Flowcharting implements Cloneable {
         /**
          * 子节点连线集合
          */
-        private HashMap<String, LineEntry> childNodeMap = new HashMap<>(16);
+        private HashMap<String, LineEntry> childNodeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         /**
          * 虚拟父层节点
@@ -847,7 +848,7 @@ public class Flowcharting implements Cloneable {
             FlowchartNode node = null;
             try {
                 node = (FlowchartNode) super.clone();
-                node.childNodeMap = new HashMap<>(16);
+                node.childNodeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
                 for (String key : childNodeMap.keySet()) {
                     node.childNodeMap.put(key, childNodeMap.get(key).clone());
                 }

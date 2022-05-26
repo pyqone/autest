@@ -9,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import com.alibaba.fastjson.JSONArray;
 import com.auxiliary.selenium.page.Page;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p><b>文件名：</b>ChromeBrower.java</p>
@@ -50,24 +51,24 @@ public class ChromeBrower extends AbstractWebBrower {
 	/**
 	 * 用于存储谷歌浏览器个性化配置
 	 */
-	HashMap<String, Object> chromePrefsMap = new HashMap<String, Object>(16);
+    HashMap<String, Object> chromePrefsMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 	/**
 	 * 用于存储谷歌浏览器对手机的配置
 	 */
-	HashMap<String, Object> mobileEmulationMap = new HashMap<String, Object>(16);
+    HashMap<String, Object> mobileEmulationMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 	/**
 	 * 用于指向当前配置中是否已打开控制当前浏览器模式
 	 */
 	boolean isContralOpenBrower = false;
-			
+
 	/**
 	 * 用于对谷歌浏览器的配置
 	 */
 	ChromeOptions chromeOption = new ChromeOptions();
-	
+
 	/**
 	 * 指定驱动文件路径并添加一个待测站点
-	 * 
+	 *
 	 * @param driverFile 驱动文件对象
 	 * @param page       {@link Page}类对象
 	 */
@@ -77,7 +78,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 	/**
 	 * 指定驱动文件路径并添加一个待测站点
-	 * 
+	 *
 	 * @param driverFile 驱动文件对象
 	 * @param url        待测站点
 	 * @param pageName   待测站点名称，用于切换页面
@@ -88,7 +89,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 	/**
 	 * 指定驱动文件所在路径
-	 * 
+	 *
 	 * @param driverFile 驱动文件对象
 	 */
 	public ChromeBrower(File driverFile) {
@@ -98,7 +99,7 @@ public class ChromeBrower extends AbstractWebBrower {
 	/**
 	 * 用于添加浏览器需要带参数的配置，参数需要严格按照枚举中的说明进行配置，否则配置不会生效。 若添加的配置是不需要传入参数的，
 	 * 则将忽略传入的参数，无参配置可以使用{@link #addConfig(ChromeOptionType)} 方法进行添加
-	 * 
+	 *
 	 * @param chromeOptionType 浏览器配置枚举（{@link ChromeOptionType}枚举类）
 	 * @param value      需要设置的值
 	 */
@@ -106,7 +107,7 @@ public class ChromeBrower extends AbstractWebBrower {
 		chromeOptionType.setValue(value);
 		addConfig(chromeOptionType);
 	}
-	
+
 	/**
 	 * 用于向浏览器中添加谷歌浏览器允许设置的个性化配置。
 	 * <p>
@@ -115,7 +116,7 @@ public class ChromeBrower extends AbstractWebBrower {
 	 * chrome.addPersonalityConfig("profile.managed_default_content_settings.popups", 2)
 	 * </pre></code>
 	 * </p>
-	 * 
+	 *
 	 * @param key 配置在浏览器对应的键值
 	 * @param value 其配置对应的传参
 	 */
@@ -124,16 +125,16 @@ public class ChromeBrower extends AbstractWebBrower {
 		chromeOption.setExperimentalOption("prefs", chromePrefsMap);
 		getConfigJsonArray().add(key);
 	}
-	
+
 	/**
 	 * 用于添加浏览器无需带参数的配置
-	 * 
+	 *
 	 * @param chromeOptionType 浏览器配置枚举（{@link ChromeOptionType}枚举类）
 	 */
 	public void addConfig(ChromeOptionType chromeOptionType) {
 		browerConfig(chromeOptionType);
 	}
-	
+
 	/**
 	 * <p>
 	 * 用于设置谷歌浏览器可执行文件路径，在启动浏览器时，将打开该路径下的浏览器。
@@ -158,7 +159,7 @@ public class ChromeBrower extends AbstractWebBrower {
 		mobileEmulationMap.clear();
 		chromeOption = new ChromeOptions();
 	}
-	
+
 	/**
 	 * 用于返回谷歌浏览器的配置，可通过此方法，获取到{@link ChromeOptions}对象后，在
 	 * 外部对浏览器进行配置
@@ -172,7 +173,7 @@ public class ChromeBrower extends AbstractWebBrower {
 	protected void openBrower() {
 		driver = new ChromeDriver(chromeOption);
 	}
-	
+
 	@Override
 	protected String getBrowerDriverSetName() {
 		return "webdriver.chrome.driver";
@@ -187,16 +188,16 @@ public class ChromeBrower extends AbstractWebBrower {
 		if (isContralOpenBrower) {
 			return;
 		}
-				
+
 		JSONArray configJsonArray = getConfigJsonArray();
-		
+
 		//若当前配置为控制已开启的浏览器，则清空之前的配置，以避免调用报错
 		if (configType == ChromeOptionType.CONTRAL_OPEN_BROWER) {
 			clearConfig();
 			chromeOption.setExperimentalOption(ChromeOptionType.CONTRAL_OPEN_BROWER.getKey(), String.valueOf(ChromeOptionType.CONTRAL_OPEN_BROWER.getValue()));
 			isContralOpenBrower = true;
 		}
-		
+
 		// 遍历所有的chromeConfigSet，对浏览器进行相应的设置
 		// 根据设置的类型来指定使用哪种方法
 		// 0表示使用addArguments（启动配置项）配置
@@ -232,7 +233,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 		return;
 	}
-	
+
 	/**
 	 * 用于返回配置信息集合
 	 * @return 配置信息集合
@@ -258,7 +259,7 @@ public class ChromeBrower extends AbstractWebBrower {
 	 * <p>
 	 * <b>修改时间：</b>2020年4月14日下午7:57:36
 	 * </p>
-	 * 
+	 *
 	 * @author 彭宇琦
 	 * @version Ver1.0
 	 * @since JDK 1.8
@@ -331,7 +332,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 		/**
 		 * 初始化配置
-		 * 
+		 *
 		 * @param key        谷歌设置的key值
 		 * @param name       操作的解释
 		 * @param optionType 操作的类型
@@ -344,7 +345,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 		/**
 		 * 初始化配置
-		 * 
+		 *
 		 * @param key        谷歌设置的key值
 		 * @param name       操作的解释
 		 * @param optionType 操作的类型
@@ -359,7 +360,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 		/**
 		 * 返回谷歌浏览器配置的key值
-		 * 
+		 *
 		 * @return 谷歌浏览器配置的key值
 		 */
 		public String getKey() {
@@ -368,7 +369,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 		/**
 		 * 返回谷歌浏览器配置的解释，用于存储至information中使用
-		 * 
+		 *
 		 * @return 谷歌浏览器配置的解释
 		 */
 		public String getName() {
@@ -383,7 +384,7 @@ public class ChromeBrower extends AbstractWebBrower {
 		 * <li>2表示setExperimentalOption（个性化配置）不需要存储至map的配置</li>
 		 * <li>3表示使用addArguments（启动配置项）配置，但需要拼接参数</li>
 		 * </ol>
-		 * 
+		 *
 		 * @return 浏览器配置的操作类型
 		 */
 		public short getOptionType() {
@@ -392,7 +393,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 		/**
 		 * 用于返回存储在枚举中需要对浏览器设置的值
-		 * 
+		 *
 		 * @return 需要对浏览器设置的值
 		 */
 		public Object getValue() {
@@ -401,7 +402,7 @@ public class ChromeBrower extends AbstractWebBrower {
 
 		/**
 		 * 用于对枚举对应的操作设置的值。注意，设置浏览器参数值的时候要传入正确的参数，否则设置无效
-		 * 
+		 *
 		 * @param value 对浏览器设置的值
 		 */
 		void setValue(Object value) {

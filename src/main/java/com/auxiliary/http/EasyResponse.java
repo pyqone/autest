@@ -1,23 +1,32 @@
 package com.auxiliary.http;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.dom4j.DocumentException;
+import org.dom4j.Attribute;
+import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
-import org.jsoup.Jsoup;
+import org.dom4j.Element;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.auxiliary.tool.file.UnsupportedFileException;
+import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.regex.ConstType;
+
+import okhttp3.Headers;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * <p>
@@ -32,223 +41,732 @@ import com.auxiliary.tool.file.UnsupportedFileException;
  * <p>
  * <b>修改时间：</b>2020年6月26日下午7:09:07
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  *
  */
 public class EasyResponse {
-	/**
-	 * 存储接口响应数据
-	 */
-	private String responseText = "";
+    /**
+     * 接口响应体内容
+     */
+    private byte[] responseBody;
+    /**
+     * 响应头集合
+     */
+    private HashMap<String, String> responseHeaderMap = new HashMap<>();
+    /**
+     * 响应状态码
+     */
+    private int status = 200;
+    /**
+     * 响应消息
+     */
+    private String message = "";
+    /**
+     * 响应体转义字符集
+     */
+    private String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
+    /**
+     * 存储响应体的格式
+     */
+    private HashMap<Integer, Set<MessageType>> bodyTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
-	/**
-	 * 以Json类的形式存储响应数据
-	 */
-	private JSONObject responseJson = null;
+    /**
+     * 构造对象，指定OKHttp响应类
+     *
+     * @param response OKHttp响应类
+     */
+    protected EasyResponse(Response response) {
+        // 存储响应内容
+        ResponseBody body = response.body();
+        try {
+            responseBody = body.bytes();
+        } catch (IOException e) {
+        }
 
-	/**
-	 * 以XML的形式存储响应数据，通过DocumentHelper.parseText(String)方法可以转换
-	 */
-	private org.dom4j.Document responseXmlDom = null;
+        // 存储响应头
+        Headers heads = response.headers();
+        for (String head : heads.names()) {
+            responseHeaderMap.put(head, heads.get(head));
+        }
 
-	/**
-	 * 以HTML的形式存储响应数据，通过Jsoup.parse(String)方法可以转换
-	 */
-	private org.jsoup.nodes.Document responseHtmlDom = null;
+        // 存储响应状态及消息
+        status = response.code();
+        message = response.message();
+    }
 
-	/**
-	 * 存储响应数据的类型
-	 */
-	private ResponseType responseType;
+    /**
+     * 该方法用于设置字符集名称
+     *
+     * @param charsetName 字符集名称
+     * @since autest 3.3.0
+     */
+    public void setCharsetName(String charsetName) {
+        this.charsetName = charsetName;
+    }
 
-	/**
-	 * 构造类，传入接口的响应数据，并根据响应参数的类型对响应参数进行转换，指定响应参数的类型
-	 * 
-	 * @param responseText 接口响应数据
-	 */
-	public EasyResponse(String responseText) {
-		// 判断响应数据是否为空，若为空，则无需做任何处理
-		if (responseText.isEmpty()) {
-			responseType = ResponseType.EMPTY;
-			return;
-		}
+    /**
+     * 该方法用于添加响应体的内容格式
+     * 
+     * @param status     状态
+     * @param messageSet 内容格式集合
+     * @since autest 3.3.0
+     */
+    public void setMessageType(int status, Set<MessageType> messageSet) {
+        bodyTypeMap.put(status, new HashSet<>(messageSet));
+    }
 
-		// 字符串形式存储
-		this.responseText = responseText;
+    /**
+     * 该方法用于以{@link #setCharsetName(String)}方法设定的编码格式，返回接口的响应体字符串
+     *
+     * @since autest 3.3.0
+     */
+    public String getResponseBodyText() {
+        try {
+            return new String(responseBody, charsetName);
+        } catch (UnsupportedEncodingException e) {
+            throw new HttpResponseException("报文无法转义为字符串", e);
+        }
+    }
 
-		// 转换为JSONObject格式，若不能转换，则responseJson为null
-		try {
-			responseJson = JSON.parseObject(responseText);
-			responseType = ResponseType.JSON;
-		} catch (JSONException jsonException) {
-			// 设置responseJson为null
-			responseJson = null;
+    /**
+     * 该方法用于返回响应体
+     *
+     * @return 响应体
+     * @since autest 3.3.0
+     */
+    public byte[] getResponseBody() {
+        return responseBody;
+    }
 
-			// 先通过dom4j的格式对数据进行转换，若不能转换，则表示其是文本形式
-			try {
-				responseXmlDom = DocumentHelper.parseText(responseText);
-				// 若相应参数开头的文本为<html>，则表示其相应参数为html形式，则以html形式进行转换
-				if (responseText.indexOf("<html>") == 0) {
-					// 存储html形式
-					responseType = ResponseType.HTML;
-					// 设置responseXmlDom为null，保证返回的数据正确
-					responseXmlDom = null;
-					// 将文本转换为HTML的形式
-					responseHtmlDom = Jsoup.parse(responseText);
-				} else {
-					responseType = ResponseType.XML;
-				}
-			} catch (DocumentException domExcepttion) {
-				responseXmlDom = null;
-				// 若响应数据无法转换成json或dom，则存储为纯文本形式
-				responseType = ResponseType.TEXT;
-			}
-		}
-	}
+    /**
+     * 该方法用于返回接口返回的响应头
+     *
+     * @return 响应头
+     * @since autest 3.3.0
+     */
+    public Map<String, String> getResponseHeaderMap() {
+        return responseHeaderMap;
+    }
 
-	/**
-	 * 用于以文本形式返回响应数据
-	 * 
-	 * @return 响应数据
-	 */
+    /**
+     * 该方法用于返回接口响应状态码
+     *
+     * @return 响应状态码
+     * @since autest 3.3.0
+     */
+    public int getStatus() {
+        return status;
+    }
 
-	public String getResponseText() {
-		return responseText;
-	}
+    /**
+     * 该方法用于返回接口响应消息
+     *
+     * @return 响应消息
+     * @since autest 3.3.0
+     */
+    public String getMessage() {
+        return message;
+    }
 
-	/**
-	 * 以格式化的形式输出响应数据。
-	 * 
-	 * @return 格式化后的响应数据
-	 */
-	public String getFormatResponseText() {
-		// 根据responseType存储的形式对格式进行转换
-		switch (responseType) {
-		case HTML:
-			return responseHtmlDom.html();
-		case JSON:
-			return JSON.toJSONString(responseJson, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
-		case XML:
-			OutputFormat format = OutputFormat.createPrettyPrint();
-			format.setEncoding(responseXmlDom.getXMLEncoding());
-			StringWriter stringWriter = new StringWriter();
-			XMLWriter writer = new XMLWriter(stringWriter, format);
-			try {
-				writer.write(responseXmlDom);
-				writer.close();
-			} catch (IOException e) {
-			}
-			return stringWriter.toString();
-		case EMPTY:
-		case TEXT:
-			return responseText;
-		default:
-			return "";
-		}
-	}
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。方法中各个参数的解释，可参考{@link #extractKey(SearchType, String, String, String, String, int)}方法
+     * </p>
+     *
+     * @param assertRegex   断言规则
+     * @param searchType    搜索范围枚举
+     * @param paramName     搜索变量
+     * @param xpath         提取内容xpath
+     * @param leftBoundary  断言内容左边界
+     * @param rightBoundary 断言内容右边界
+     * @param index         指定下标内容
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, SearchType searchType, String paramName, String xpath,
+            String leftBoundary, String rightBoundary, int index) {
+        return extractKey(searchType, paramName, xpath, leftBoundary, rightBoundary, index).matches(assertRegex);
+    }
 
-	/**
-	 * 用于将响应数据写入到文件中
-	 * 
-	 * @param outputFile 需要输出的文件
-	 * @param isFormat   是否格式化输出
-	 * @return 写入的文件
-	 * @throws IOException 写入文件有误时抛出的异常
-	 */
-	public File responseToFile(File outputFile, boolean isFormat) {
-		outputFile = Optional.ofNullable(outputFile).filter(File::isFile)
-				.orElseThrow(() -> new UnsupportedFileException("未指定结果存储文件"));
-		
-		// 创建文件夹
-		outputFile.getParentFile().mkdirs();
-		// 获取响应数据
-		String responseText = isFormat ? getFormatResponseText() : this.responseText;
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。
+     * 方法中各个参数的解释，可参考{@link #extractKey(SearchType, String, String, int)}方法
+     * </p>
+     *
+     * @param assertRegex   断言规则
+     * @param searchType    搜索范围枚举
+     * @param leftBoundary  断言内容左边界
+     * @param rightBoundary 断言内容右边界
+     * @param index         指定下标内容
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, SearchType searchType, String leftBoundary, String rightBoundary,
+            int index) {
+        return extractKey(searchType, leftBoundary, rightBoundary, index).matches(assertRegex);
+    }
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
-			bw.write(responseText);
-		} catch (IOException e) {
-			throw new UnsupportedFileException("文件异常，无法写入结果", e);
-		}
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。
+     * 方法中各个参数的解释，可参考{@link #extractKey(SearchType, String, String)}方法
+     * </p>
+     *
+     * @param assertRegex 断言规则
+     * @param searchType  搜索范围枚举
+     * @param paramName   搜索变量
+     * @param xpath       提取内容xpath
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, SearchType searchType, String paramName, String xpath) {
+        return extractKey(searchType, paramName, xpath).matches(assertRegex);
+    }
 
-		return outputFile;
-	}
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。
+     * 方法中各个参数的解释，可参考{@link #extractKey(SearchType, String)}方法
+     * </p>
+     *
+     * @param assertRegex 断言规则
+     * @param searchType  搜索范围枚举
+     * @param paramName   搜索变量
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, SearchType searchType, String paramName) {
+        return extractKey(searchType, paramName).matches(assertRegex);
+    }
 
-	/**
-	 * 用于以{@link JSONObject}类的形式返回响应数据，若响应数据不是json格式时，则返回null
-	 * 
-	 * @return {@link JSONObject}类形式的响应数据
-	 */
-	public JSONObject getResponseJson() {
-		return responseJson;
-	}
+    /**
+     * 该方法用于对接口响应报文的指定部分内容进行断言
+     * <p>
+     * <b>注意：</b>断言规则为正则表达式，若断言非正则表达式的内容，需要自行进行转义，例如断言“(”符号，则需要传入“\\(”。
+     * 方法中各个参数的解释，可参考{@link #extractKey(String)}方法
+     * </p>
+     *
+     * @param assertRegex 断言规则
+     * @param paramName   搜索变量
+     * @return 断言结果
+     * @since autest 3.3.0
+     */
+    public boolean assertResponse(String assertRegex, String paramName) {
+        return extractKey(paramName).matches(assertRegex);
+    }
 
-	/**
-	 * 用于以{@link org.jsoup.nodes.Document}类的形式返回响应数据，若响应数据不是html格式时，则返回null
-	 * 
-	 * @return {@link org.jsoup.nodes.Document}类形式的响应数据
-	 */
-	public org.jsoup.nodes.Document getHtmlDocument() {
-		return responseHtmlDom;
-	}
+    /**
+     * 该方法用于通过指定的条件对接口响应报文指定内容进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>必须指定搜索范围{@link SearchType}枚举，否则抛出{@link HttpResponseException}异常</li>
+     * <li>当搜索范围为{@link SearchType#MESSAGE}或{@link SearchType#STATUS}时，则paramName不生效</li>
+     * <li>当搜索范围为{@link SearchType#HEADER}时，若指定了paramName内容，则获取响应头对应键的内容（没有该键值则返回空串）；若未指定paramName参数，则将响应头以{@link HashMap#toString()}方法的形式返回</li>
+     * <li>当搜索范围为{@link SearchType#BODY}时，存在以下情况：
+     * <ol>
+     * <li>当响应体为{@link MessageType#JSON}类型时，其xpath参数不生效，判断paramName参数的方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为{@link MessageType#XML}或{@link MessageType#HTML}类型时，则优先判断xpath参数，若其为空时，则再判断paramName参数，其判断方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为其他类型时，则xpath与paramName参数均不生效</li>
+     * </ol>
+     * </li>
+     * <li>通过paramName或xpath提取后，仍会对内容进行指定边界的提取，其两种提取方式不独立</li>
+     * <li>若同时未指定左右边界，则不进行边界内容提取</li>
+     * <li>当边界提取到多条数据时，则根据指定的index进行提取，其下标从1开始计算（1为第一条元素），若值小于1，则获取第一条数据；若值大于提取到的数据集合数量，则返回最后一条数据</li>
+     * <li>左右边界允许为正则表达式</li>
+     * </ol>
+     * </p>
+     * 
+     * @param searchType    提词搜索范围枚举
+     * @param paramName     提取内容参数名
+     * @param xpath         提取内容xpath
+     * @param leftBoundary  提取内容左边界
+     * @param rightBoundary 提取内容右边界
+     * @param index         边界提取到多条内容时指定的获取下标
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(SearchType searchType, String paramName, String xpath, String leftBoundary,
+            String rightBoundary, int index) {
+        // 判断searchType参数是否为null
+        if (searchType == null) {
+            throw new HttpResponseException("未指定搜索范围，无法查找响应内容");
+        }
 
-	/**
-	 * 用于以{@link org.dom4j.Document}类的形式返回响应数据，若响应数据不是html或xml格式时，则返回null
-	 * 
-	 * @return {@link org.dom4j.Document}类形式的响应数据
-	 */
-	public org.dom4j.Document getXmlDocument() {
-		return responseXmlDom;
-	}
+        // 处理paramName参数，若其为null，则使其变为空串
+        paramName = Optional.ofNullable(paramName).orElse("");
+        xpath = Optional.ofNullable(xpath).orElse("");
 
-	/**
-	 * 用于返回响应数据的类型
-	 * 
-	 * @return 响应数据类型
-	 */
-	public ResponseType getResponseType() {
-		return responseType;
-	}
+        String value = "";
+        switch (searchType) {
+        case STATUS:
+            value = String.valueOf(getStatus());
+            break;
+        case MESSAGE:
+            value = getMessage();
+            break;
+        case HEADER:
+            // 判断paramName参数是否为空串
+            if (paramName.isEmpty()) {
+                value = responseHeaderMap.toString();
+            } else {
+                value = Optional.ofNullable(responseHeaderMap.get(paramName)).orElse("");
+            }
+            break;
+        case BODY:
+            // 获取响应体的字符串形式
+            value = getResponseBodyText();
+            // 判断paramName或xpath参数是否为空串
+            if (!paramName.isEmpty() || !xpath.isEmpty()) {
+                value = analysisBody(value, paramName, xpath);
+            }
+            break;
+        default:
+            throw new HttpResponseException("不支持的断言的接口响应内容：" + searchType);
+        }
 
-	/**
-	 * <p>
-	 * <b>文件名：</b>EasyResponse.java
-	 * </p>
-	 * <p>
-	 * <b>用途：</b> 定义响应数据的所有格式
-	 * </p>
-	 * <p>
-	 * <b>编码时间：</b>2020年6月24日上午8:18:03
-	 * </p>
-	 * <p>
-	 * <b>修改时间：</b>2020年6月24日上午8:18:03
-	 * </p>
-	 * 
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 *
-	 */
-	public enum ResponseType {
-		/**
-		 * json格式响应数据
-		 */
-		JSON,
-		/**
-		 * html格式响应数据
-		 */
-		HTML,
-		/**
-		 * xml格式响应数据
-		 */
-		XML,
-		/**
-		 * 纯文本格式响应数据
-		 */
-		TEXT,
-		/**
-		 * 无响应数据
-		 */
-		EMPTY;
-	}
+        // 根据存在不同边界条件的情况，选择不同的处理方法
+        leftBoundary = Optional.ofNullable(leftBoundary).orElse("");
+        rightBoundary = Optional.ofNullable(rightBoundary).orElse("");
+        if (leftBoundary.isEmpty() && rightBoundary.isEmpty()) {
+            return value;
+        } else if (!leftBoundary.isEmpty() && !rightBoundary.isEmpty()) {
+            return disposeCompleteBoundaryText(value, leftBoundary, rightBoundary, index);
+        } else {
+            return disposeSingleBoundaryText(value, leftBoundary, rightBoundary, index);
+        }
+    }
+
+    /**
+     * 该方法用于通过指定的边界条件对接口响应报文指定内容进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>通过paramName或xpath提取后，仍会对内容进行指定边界的提取，其两种提取方式不独立</li>
+     * <li>若同时未指定左右边界，则不进行边界内容提取</li>
+     * <li>当边界提取到多条数据时，则根据指定的index进行提取，其下标从1开始计算（1为第一条元素），若值小于1，则获取第一条数据；若值大于提取到的数据集合数量，则返回最后一条数据</li>
+     * <li>左右边界允许为正则表达式</li>
+     * </ol>
+     * </p>
+     * 
+     * @param searchType    提词搜索范围枚举
+     * @param leftBoundary  提取内容左边界
+     * @param rightBoundary 提取内容右边界
+     * @param index         边界提取到多条内容时指定的获取下标
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(SearchType searchType, String leftBoundary, String rightBoundary, int index) {
+        return extractKey(searchType, "", "", leftBoundary, rightBoundary, index);
+    }
+
+    /**
+     * 该方法用于通过指定的搜索参数对接口响应报文指定内容进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>必须指定搜索范围{@link SearchType}枚举，否则抛出{@link HttpResponseException}异常</li>
+     * <li>当搜索范围为{@link SearchType#MESSAGE}或{@link SearchType#STATUS}时，则paramName不生效</li>
+     * <li>当搜索范围为{@link SearchType#HEADER}时，若指定了paramName内容，则获取响应头对应键的内容（没有该键值则返回空串）；若未指定paramName参数，则将响应头以{@link HashMap#toString()}方法的形式返回</li>
+     * <li>当搜索范围为{@link SearchType#BODY}时，存在以下情况：
+     * <ol>
+     * <li>当响应体为{@link MessageType#JSON}类型时，其xpath参数不生效，判断paramName参数的方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为{@link MessageType#XML}或{@link MessageType#HTML}类型时，则优先判断xpath参数，若其为空时，则再判断paramName参数，其判断方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为其他类型时，则xpath与paramName参数均不生效</li>
+     * </ol>
+     * </li>
+     * </ol>
+     * </p>
+     * 
+     * @param searchType 提词搜索范围枚举
+     * @param paramName  提取内容参数名
+     * @param xpath      提取内容xpath
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(SearchType searchType, String paramName, String xpath) {
+        return extractKey(searchType, paramName, xpath, "", "", 0);
+    }
+
+    /**
+     * 该方法用于通过指定的搜索参数对接口响应报文指定内容进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>必须指定搜索范围{@link SearchType}枚举，否则抛出{@link HttpResponseException}异常</li>
+     * <li>当搜索范围为{@link SearchType#MESSAGE}或{@link SearchType#STATUS}时，则paramName不生效</li>
+     * <li>当搜索范围为{@link SearchType#HEADER}时，若指定了paramName内容，则获取响应头对应键的内容（没有该键值则返回空串）；若未指定paramName参数，则将响应头以{@link HashMap#toString()}方法的形式返回</li>
+     * <li>当搜索范围为{@link SearchType#BODY}时，存在以下情况：
+     * <ol>
+     * <li>当响应体为{@link MessageType#JSON}或{@link MessageType#XML}或{@link MessageType#HTML}类型时，其判断paramName参数的方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为其他类型时，则paramName参数均不生效</li>
+     * </ol>
+     * </li>
+     * </ol>
+     * </p>
+     * 
+     * @param searchType 提词搜索范围枚举
+     * @param paramName  提取内容参数名
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(SearchType searchType, String paramName) {
+        return extractKey(searchType, paramName, "", "", "", 0);
+    }
+
+    /**
+     * 该方法用于通过指定的搜索参数对响应体进行提取，返回提取到的内容
+     * <p>
+     * 提取规则如下：
+     * <ol>
+     * <li>当响应体为{@link MessageType#JSON}或{@link MessageType#XML}或{@link MessageType#HTML}类型时，其判断paramName参数的方式与{@link SearchType#HEADER}类似</li>
+     * <li>当响应体为其他类型时，则paramName参数均不生效</li>
+     * </ol>
+     * </p>
+     * 
+     * @param paramName 提取内容参数名
+     * @return 对响应体提取到的内容
+     * @since autest 3.3.0
+     */
+    public String extractKey(String paramName) {
+        return extractKey(SearchType.BODY, paramName, "", "", "", 0);
+    }
+
+    /**
+     * 该方法用于根据指定的响应体内容格式，转义响应体，并根据查找参数或xpath对响应元素内容进行查找，返回找到的元素内容
+     *
+     * @param paramName 查找元素名称
+     * @param xpath     查找xml的xpath
+     * @return 查找到元素的内容
+     * @since autest 3.3.0
+     */
+    private String analysisBody(String bodyText, String paramName, String xpath) {
+        // 根据响应状态，获取请求体类型
+        Set<MessageType> bodyTypeSet = Optional.ofNullable(bodyTypeMap.get(status)).orElseGet(() -> new HashSet<>());
+
+        // 判断获取到的类型是否为空，若为空，则直接返回响应体文本
+        if (bodyTypeSet.isEmpty()) {
+            return bodyText;
+        }
+
+        // 若搜索变量名与path均为空，则直接返回响应体文本
+        if (paramName.isEmpty() && xpath.isEmpty()) {
+            return bodyText;
+        }
+
+        // 定义特殊符号随机替换符
+        String replaceSymbol = "#" + UUID.randomUUID().toString().replaceAll("-", "") + "#";
+        // 对paramName中需要转义的符号进行替换
+        paramName = paramName.replaceAll(AssertResponse.SEPARATE_TRANSFERRED_MEANING_REGEX, replaceSymbol);
+        // 对paramName按照切分符号进行切分
+        String[] paramNames = paramName.split(AssertResponse.SEPARATE_SPLIT_REGEX);
+
+        // 根据指定的响应体格式，对内容进行转换
+        if (bodyTypeSet.contains(MessageType.JSON) && paramNames.length != 0) {
+            try {
+                return disposeJsonParam(JSONObject.parseObject(bodyText), replaceSymbol, paramNames);
+            } catch (Exception e) {
+            }
+        }
+
+        if (bodyTypeSet.contains(MessageType.XML) || bodyTypeSet.contains(MessageType.HTML)) {
+            try {
+                return disposeXmlParam(DocumentHelper.parseText(bodyText), replaceSymbol, paramNames, xpath);
+            } catch (Exception e) {
+            }
+        }
+
+        return bodyText;
+    }
+
+    /**
+     * 该方法用于处理响应体为xml或html串时变量指向内容的获取
+     * <p>
+     * <b>注意：</b>当xml或html存在多个参数时，其根元素名称不进行判断
+     * </p>
+     *
+     * @param xml           响应体xml类对象
+     * @param replaceSymbol 替换符号
+     * @param paramNames    参数名称数组
+     * @return 搜索到的内容
+     * @since autest 3.3.0
+     */
+    private String disposeXmlParam(Document xml, String replaceSymbol, String[] paramNames, String xpath) {
+        // 对转换过程中的异常进行处理，若抛出异常，则直接返回空串
+        try {
+            // 先按照xpath方式对元素进行查找并进行转换，若未找到元素，则赋予空串
+            String value = Optional.ofNullable(xpath).filter(x -> !x.isEmpty()).map(x -> {
+                // 若查找xpath报错，则直接返回null
+                try {
+                    return xml.selectSingleNode(x);
+                } catch (Exception e) {
+                    return null;
+                }
+            }).map(ele -> ((Element) ele).getText()).orElse("");
+
+            // 判断value是否为空，若不为空，则返回value的内容
+            if (!value.isEmpty() || paramNames.length == 0) {
+                return value;
+            }
+
+            // 若value为空，则进一步获取参数名中的内容
+            Element root = xml.getRootElement();
+            // 判断paramNames是否只包含一位数据，若只包含一位数据，则返回根元素的文本内容
+            if (paramNames.length == 1) {
+                if (paramNames[0].equals(root.getName())) {
+                    return root.getText();
+                } else {
+                    return "";
+                }
+            }
+
+            // 若paramNames存在多位数据，则循环获取到倒数第二位的数据，并逐层向下获取
+            int index = 1;
+            Element paramElement = root;
+            for (; index < paramNames.length - 1; index++) {
+                paramElement = (Element) getElement(paramNames[index], replaceSymbol, paramElement, (short) 1, false);
+                // 若当前未查找到元素，则返回空串
+                if (paramElement == null) {
+                    return "";
+                }
+            }
+
+            return (String) getElement(paramNames[index], replaceSymbol, paramElement, (short) 1, true);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * 该方法用于处理响应体为json串时变量指向内容的获取
+     *
+     * @param json          响应体json类对象
+     * @param replaceSymbol 替换符号
+     * @param paramNames    参数名称数组
+     * @return 搜索到的内容
+     * @since autest 3.3.0
+     */
+    private String disposeJsonParam(JSONObject json, String replaceSymbol, String[] paramNames) {
+        // 对转换过程中的异常进行处理，若抛出异常，则直接返回空串
+        try {
+            // 按照参数名，向下获取json串，直至达到目标前一个json串
+            JSONObject paramJson = json;
+            int index = 0;
+            for (; index < paramNames.length - 1; index++) {
+                paramJson = (JSONObject) getElement(paramNames[index], replaceSymbol, paramJson, (short) 0, false);
+                // 若当前未查找到元素，则返回空串
+                if (paramJson == null) {
+                    return "";
+                }
+            }
+
+            // 处理末尾的变量名
+            return (String) getElement(paramNames[index], replaceSymbol, paramJson, (short) 0, true);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * 该方法用于对元素内容进行解析，返回相应的下级元素或文本
+     * 
+     * @param paramArrayName 当前获取的元素名称
+     * @param replaceSymbol  替换符号
+     * @param parentElement  上级元素类对象
+     * @param elementType    查找下级元素对象的类型；0为json，1为xml或html
+     * @param isEndElement   是否为尾元素
+     * @return 相应的内容
+     * @since autest 3.3.0
+     */
+    private Object getElement(String paramArrayName, String replaceSymbol, Object parentElement, short elementType,
+            boolean isEndElement) {
+        // 定义数组判断正则
+        String arrRegex = String.format(".*\\%s\\d+\\%s", AssertResponse.ARRAY_START_SYMBOL,
+                AssertResponse.ARRAY_END_SYMBOL);
+        // 转换元素名称，将被替换的符号还原
+        String name = paramArrayName.replaceAll(replaceSymbol, AssertResponse.SEPARATE_SYMBOL);
+
+        // 判断当前元素是否为数组元素，若为数组元素，则按照数组方式对元素进行切分
+        if (name.matches(arrRegex)) {
+            // 获取需要切分数组内容
+            Entry<String, Integer> arrData = valueOfArrIndex(name);
+            // 判断元素类型，根据不同的类型，对应不同的获取方式
+            if (elementType == 0) {
+                // 获取元素集合，并根据是否为尾元素，返回相应的内容
+                JSONArray arrJson = ((JSONObject) parentElement).getJSONArray(arrData.getKey());
+                int index = disposeArrIndex(arrData.getValue(), arrJson.size());
+                if (isEndElement) {
+                    return arrJson.getString(index);
+                } else {
+                    return arrJson.getJSONObject(index);
+                }
+            } else if (elementType == 1) {
+                // 处理下标，并返回相应下标的内容
+                List<Element> elementList = ((Element) parentElement).elements(arrData.getKey());
+                int index = disposeArrIndex(arrData.getValue(), elementList.size());
+                if (isEndElement) {
+                    return elementList.get(index).getText();
+                } else {
+                    return elementList.get(index);
+                }
+            } else {
+                throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
+            }
+        } else {
+            // 判断元素类型，根据不同的类型，对应不同的获取方式
+            if (elementType == 0) {
+                if (isEndElement) {
+                    return Optional.ofNullable(((JSONObject) parentElement).getString(name)).orElse("");
+                } else {
+                    return ((JSONObject) parentElement).getJSONObject(name);
+                }
+            } else if (elementType == 1) {
+                if (isEndElement) {
+                    // 判断最后一位元素是否为属性，若能获取到属性，则返回属性值内容，若不为属性，则获取返回标签中存储的文本
+                    Attribute att = ((Element) parentElement).attribute(name);
+                    if (att != null) {
+                        return att.getText();
+                    }
+                    return ((Element) parentElement).elementText(name);
+                } else {
+                    return ((Element) parentElement).element(name);
+                }
+            } else {
+                throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
+            }
+        }
+    }
+
+    /**
+     * 该方法用于对变量名中的数组下标进行分离，并返回变量名与转换为整形的下标
+     * 
+     * @param name 待分离的表达式
+     * @return 变量名与下标键值对
+     * @since autest 3.3.0
+     */
+    private Entry<String, Integer> valueOfArrIndex(String name) {
+        Integer index = Integer.valueOf(name.substring(name.indexOf(AssertResponse.ARRAY_START_SYMBOL) + 1,
+                name.indexOf(AssertResponse.ARRAY_END_SYMBOL)));
+        String paramName = name.substring(0, name.indexOf(AssertResponse.ARRAY_START_SYMBOL));
+
+        return new Entry<>(paramName, index);
+    }
+
+    /**
+     * 该方法用于处理数组下标，将真实下标转义为可使用的下标
+     * <p>
+     * <b>注意：</b>该方法为临时对数组下标处理的方法，后续添加下标处理工具后，则将其弃用
+     * </p>
+     * 
+     * @param index  真实下标
+     * @param length 数组个数
+     * @return 实际下标
+     * @since autest 3.3.0
+     */
+    private int disposeArrIndex(int index, int length) {
+        // TODO 临时处理方式，后续考虑重构
+        if (index > length) {
+            return length - 1;
+        } else if (index >= 1 && index <= length) {
+            return index - 1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * 该方法用于在存在完整边界的情况下，对文本的处理方法
+     *
+     * @param value         待提取内容
+     * @param leftBoundary  提取左边界
+     * @param rightBoundary 提取右边界
+     * @param index         多词情况下提取下标
+     * @return 提取的内容
+     * @since autest 3.3.0
+     */
+    private String disposeCompleteBoundaryText(String value, String leftBoundary, String rightBoundary, int index) {
+        // 若value为空串，则直接返回，不做后续处理
+        if (value.isEmpty()) {
+            return value;
+        }
+
+        // 若左右边界不为空，则将其拼接为边界正则
+        String boundaryRegex = String.format("%s.+?%s", DisposeCodeUtils.disposeRegexSpecialSymbol(leftBoundary),
+                DisposeCodeUtils.disposeRegexSpecialSymbol(rightBoundary));
+        // 将断言内容在边界正则中进行提取
+        ArrayList<String> valueExtractList = new ArrayList<>();
+        Matcher match = Pattern.compile(boundaryRegex).matcher(value);
+        while (match.find()) {
+            valueExtractList.add(match.group());
+        }
+
+        // 判断是否提到内容，若不存在内容，则直接返回false
+        int size = valueExtractList.size();
+        if (size == 0) {
+            return "";
+        }
+        // 若存在提词内容，则对查找下标进行判断，获取到对应的词语
+        // 由于index下标从1开始，且可能传入其他有问题的数字，故需要对下标进行处理
+        if (index < 1) {
+            index = 0;
+        } else if (index >= 1 && index <= size) {
+            index -= 1;
+        } else {
+            index = size - 1;
+        }
+
+        // 获取相应下标的文本
+        String key = valueExtractList.get(index);
+        // 判断左右边界在文本中的位置，并对其进行去除
+        // 当不存在左边界时，则将左边界位置赋予字符串开头下标，即0
+        // 当不存在右边界时，则将右边界赋予字符串最后一个位下标，即key.length()
+        int leftIndex = leftBoundary.isEmpty() ? 0 : (key.indexOf(leftBoundary) + leftBoundary.length());
+        int rightIndex = rightBoundary.isEmpty() ? key.length() : key.lastIndexOf(rightBoundary);
+        return key.substring(leftIndex, rightIndex);
+    }
+
+    /**
+     * 该方法用于在仅存在单个边界的情况下，对文本的处理方法
+     * 
+     * @param value         待提取内容
+     * @param leftBoundary  提取左边界
+     * @param rightBoundary 提取右边界
+     * @param index         多词情况下提取下标
+     * @return 提取的内容
+     * @since autest 3.3.0
+     */
+    private String disposeSingleBoundaryText(String value, String leftBoundary, String rightBoundary, int index) {
+        // 判断非空边界，并获取非空边界内容
+        boolean isLeftBoundary = !leftBoundary.isEmpty();
+        String boundary = isLeftBoundary ? leftBoundary : rightBoundary;
+        // 判断待判断的内容是否包含边界内容，若不包含，则直接返回空
+        if (!value.contains(boundary)) {
+            return "";
+        }
+
+        // 将内容按照边界内容进行切分
+        String[] keys = value.split(DisposeCodeUtils.disposeRegexSpecialSymbol(boundary));
+        // 得到字符串数组后，若边界为左边界，则数组第一个元素不能作为值返回；若边界为右边界，则数组最后一个元素不能最为值返回
+        // 例如“123#456#789”，当用“#”作为左边界时，则“123”左边不存在“#”符号，故不能作为第一个元素，右边界类似
+        // 由于index下标从1开始，且可能传入其他有问题的数字，故需要对下标进行处理；不论边界为何种边界，其数组总数均需要减1
+        int size = keys.length - 1;
+        int minIndex = isLeftBoundary ? 1 : 0;
+        if (index < 1) {
+            index = minIndex;
+        } else if (index >= 1 && index <= size) {
+            index -= (1 - minIndex);
+        } else {
+            index = size - 1 + minIndex;
+        }
+
+        return keys[index];
+    }
+
 }
