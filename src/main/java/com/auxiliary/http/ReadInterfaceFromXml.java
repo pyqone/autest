@@ -351,20 +351,15 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
         // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
         if (interfaceMap.containsKey(interName)) {
-            return interfaceMap.get(interName).clone();
+            InterfaceInfo inter = interfaceMap.get(interName).clone();
+            inter.analysisUrl(environmentName);
+            return inter;
         }
 
         // 若未缓存信息，则构造接口信息对象，添加接口信息
         InterfaceInfo inter = new InterfaceInfo();
         // 解析环境，获取环境主机等信息
-        if (environmentMap.containsKey(environmentName)) {
-            // 解析环境信息
-            inter.analysisUrl(environmentMap.get(environmentName));
-        } else {
-            if (!actionEnvironment.isEmpty()) {
-                inter.analysisUrl(environmentMap.get(actionEnvironment));
-            }
-        }
+        inter.analysisUrl(environmentName);
 
         // 查找元素
         Element interElement = findElement(interName);
