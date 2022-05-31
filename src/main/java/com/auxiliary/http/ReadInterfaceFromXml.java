@@ -108,12 +108,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     public InterfaceInfo getInterface(String interName) {
         // 查找元素，并判断其是否指定环境属性
         Element interElement = findElement(interName);
-        String environmentName = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT)).orElse("");
-        if (environmentName.isEmpty()) {
-            return getInterface(interName, actionEnvironment);
-        } else {
-            return getInterface(interName, environmentName);
-        }
+        String environment = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT))
+                .filter(environmentMap::containsKey).map(environmentMap::get).orElse(actionEnvironment);
+        return raedInterInfo(interName, environment);
     }
 
     /**
@@ -345,6 +342,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     @Override
     public InterfaceInfo getInterface(String interName, String environmentName) {
+        return raedInterInfo(interName,
+                Optional.ofNullable(environmentMap.get(environmentName)).orElse(actionEnvironment));
+    }
+
+    /**
+     * 该方法用于根据指定的接口名称与执行的环境，构造相应的接口信息读取类对象
+     * 
+     * @param interName   接口名称
+     * @param environment 接口执行环境
+     * @return 接口信息类对象
+     * @since autest 3.4.0
+     */
+    private InterfaceInfo raedInterInfo(String interName, String environment) {
         if (interName == null || interName.isEmpty()) {
             throw new InterfaceReadToolsException("指定的接口名称为空或未指定接口名称：" + interName);
         }
@@ -352,14 +362,14 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
         if (interfaceMap.containsKey(interName)) {
             InterfaceInfo inter = interfaceMap.get(interName).clone();
-            inter.analysisUrl(environmentName);
+            inter.analysisUrl(environment);
             return inter;
         }
 
         // 若未缓存信息，则构造接口信息对象，添加接口信息
         InterfaceInfo inter = new InterfaceInfo();
         // 解析环境，获取环境主机等信息
-        inter.analysisUrl(environmentName);
+        inter.analysisUrl(environment);
 
         // 查找元素
         Element interElement = findElement(interName);

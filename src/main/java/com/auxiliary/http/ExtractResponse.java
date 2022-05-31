@@ -24,13 +24,13 @@ import java.util.Set;
  */
 public interface ExtractResponse {
     /**
-     * 该方法用于指定接口的报文提词内容json串
+     * 该方法用于指定接口的报文提词内容json串集合
      * <p>
      * json串的键值可通过静态属性获取，当没有断言内容时，则json中的键都为空值
      * </p>
      *
      * @param interName 接口名称
-     * @return 接口响应报文提词内容json串
+     * @return 接口响应报文提词内容json串集合
      * @since autest 3.3.0
      */
     public abstract Set<String> getExtractContent(String interName);
