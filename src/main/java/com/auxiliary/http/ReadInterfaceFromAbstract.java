@@ -26,10 +26,6 @@ import com.auxiliary.tool.regex.ConstType;
  */
 public abstract class ReadInterfaceFromAbstract {
     /**
-     * 定义断言json串中断言集合的键名称
-     */
-    public static final String JSON_ASSERT_ASSERT_LIST = "assertList";
-    /**
      * 定义断言json串中断言内容的键名称
      */
     public static final String JSON_ASSERT_ASSERT_VALUE = "assertValue";
@@ -58,10 +54,6 @@ public abstract class ReadInterfaceFromAbstract {
      */
     public static final String JSON_ASSERT_ORD = "ord";
 
-    /**
-     * 定义断言json串中提词集合的键名称
-     */
-    public static final String JSON_EXTRACT_EXTRACT_LIST = "extractList";
     /**
      * 定义提词json串中存储变量名称的键名称
      */
