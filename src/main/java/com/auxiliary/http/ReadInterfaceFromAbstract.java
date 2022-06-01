@@ -28,7 +28,7 @@ public abstract class ReadInterfaceFromAbstract {
     /**
      * 定义断言json串中断言内容的键名称
      */
-    public static final String JSON_ASSERT_ASSERT_VALUE = "assertValue";
+    public static final String JSON_ASSERT_ASSERT_VALUE = "assertRegex";
     /**
      * 定义断言json串中搜索范围的键名称
      */

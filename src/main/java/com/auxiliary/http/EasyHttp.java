@@ -236,7 +236,14 @@ public class EasyHttp {
         OkHttpClient client = new OkHttpClient().newBuilder().build();
 
         // 构造请求体，并添加接口信息中的请求参数、请求头和请求体信息
-        RequestBody requestBody = RequestBody.create(MediaType.parse(messageType.getMediaValue()), body);
+        RequestBody requestBody = null;
+        // 当请求方式为get或head时，则不需要添加请求体
+        if (requestType != RequestType.GET && requestType != RequestType.HEAD) {
+            requestBody = RequestBody.create(
+                    MediaType.parse(Optional.ofNullable(messageType).map(MessageType::getMediaValue).orElse("none")),
+                    Optional.ofNullable(body).orElse(""));
+        }
+        
         Builder requestBuilder = new Request.Builder().url(url).method(requestType.toString(), requestBody);
         if (requestHead != null) {
             requestHead.forEach(requestBuilder::addHeader);
