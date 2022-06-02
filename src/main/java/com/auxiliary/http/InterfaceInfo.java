@@ -884,7 +884,7 @@ public class InterfaceInfo implements Cloneable {
         JSONObject interInfoJson = new JSONObject();
         interInfoJson.put("url", toUrlString());
         interInfoJson.put("requestType", getRequestType());
-        interInfoJson.put("body", body);
+        interInfoJson.put("body", body.getValue());
         interInfoJson.put("requestHeader", headerJson);
 
         return interInfoJson.toJSONString();
