@@ -159,13 +159,7 @@ public class InterfaceInfo implements Cloneable {
     public void setProtocol(String protocol) {
         // 过滤协议为空以及只包含协议符号的情况
         this.protocol = Optional.ofNullable(protocol).filter(p -> !p.isEmpty()).filter(p -> p.matches(".+:\\/\\/"))
-                .map(p -> {
-                    // 判断协议内容末尾是否包含相应的符号，若不包含，则添加相应的符号
-                    if (p.lastIndexOf(SYMBOL_SPLIT_PROTOCOL) != p.length() - SYMBOL_SPLIT_PROTOCOL.length()) {
-                        p += SYMBOL_SPLIT_PROTOCOL;
-                    }
-                    return p;
-                }).orElseGet(() -> "");
+                .orElseGet(() -> "");
     }
 
     /**
