@@ -213,7 +213,7 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public void setPort(int port) {
-        if (port < 0 || port > 65535) {
+        if (port <= 0 || port >= 65535) {
             return;
         }
 
@@ -240,7 +240,7 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public void setPath(String path) {
-         path = Optional.ofNullable(path).map(p -> {
+        this.path = Optional.ofNullable(path).map(p -> {
             // 判断接口第一位是否为/，若不是，则添加
             if (p.indexOf(SYMBOL_SPLIT_PATH) != 0) {
                 p = SYMBOL_SPLIT_PATH + p;
@@ -251,17 +251,15 @@ public class InterfaceInfo implements Cloneable {
             }
             return p;
         }).orElse("");
-        // 判断path是否为空，不为空，则存储其内容
-        if (!path.isEmpty()) {
-            this.path = path;
-        }
     }
 
     /**
      * 该方法用于清空当前接口的路径
      *
      * @since autest 3.3.0
+     * @deprecated 方法已无意义，将在3.5.0版本中进行删除
      */
+    @Deprecated
     public void clearPath() {
         this.path = "";
     }
@@ -878,7 +876,7 @@ public class InterfaceInfo implements Cloneable {
         JSONObject interInfoJson = new JSONObject();
         interInfoJson.put("url", toUrlString());
         interInfoJson.put("requestType", getRequestType());
-        interInfoJson.put("body", body.getValue());
+        interInfoJson.put("body", Optional.ofNullable(body).map(Entry::getValue).orElse(""));
         interInfoJson.put("requestHeader", headerJson);
 
         return interInfoJson.toJSONString();
