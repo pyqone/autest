@@ -357,8 +357,9 @@ public class InterfaceInfo implements Cloneable {
      * @return 接口的请求参数
      * @since autest 3.3.0
      */
+    @SuppressWarnings("unchecked")
     public Map<String, String> getParamMap() {
-        return paramMap;
+        return (Map<String, String>) paramMap.clone();
     }
 
     /**
@@ -391,7 +392,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于根据url传入参数的表达式格式，向接口中添加参数
      * <p>
-     * <b>注意：</b>表达式的判断的正则格式为“\w+=\w*(&\w+=\w*)*”，若未按规则编写，则无法添加参数
+     * <b>注意：</b>表达式的判断的正则格式为“[\?？]?\w+=\w*(&\w+=\w*)*”，若未按规则编写，则无法添加参数
      * </p>
      *
      * @param expression 参数表达式
@@ -410,6 +411,18 @@ public class InterfaceInfo implements Cloneable {
                                 addParam(params[0], params[1]);
                             }
                         }));
+    }
+
+    /**
+     * 该方法用于清空存储的所有参数内容
+     * 
+     * @return 原有的参数内容
+     * @since autest 3.4.0
+     */
+    public Map<String, String> clearParam() {
+        Map<String, String> paramMap = getParamMap();
+        this.paramMap.clear();
+        return paramMap;
     }
 
     /**
@@ -479,8 +492,9 @@ public class InterfaceInfo implements Cloneable {
      * @return 接口的请求头
      * @since autest 3.3.0
      */
+    @SuppressWarnings("unchecked")
     public Map<String, String> getRequestHeaderMap() {
-        return requestHeaderMap;
+        return (Map<String, String>) requestHeaderMap.clone();
     }
 
     /**
@@ -507,6 +521,18 @@ public class InterfaceInfo implements Cloneable {
         Optional.ofNullable(headerName).filter(header -> !header.isEmpty()).ifPresent(name -> {
             requestHeaderMap.put(name, Optional.ofNullable(headerValue).orElseGet(() -> ""));
         });
+    }
+
+    /**
+     * 该方法用于清空存储的所有请求头内容
+     * 
+     * @return 原有的请求头内容
+     * @since autest 3.4.0
+     */
+    public Map<String, String> clearRequestHeaderMap() {
+        Map<String, String> requestHeaderMap = getRequestHeaderMap();
+        this.requestHeaderMap.clear();
+        return requestHeaderMap;
     }
 
     /**
