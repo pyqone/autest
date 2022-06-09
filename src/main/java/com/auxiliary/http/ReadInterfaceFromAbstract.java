@@ -28,7 +28,14 @@ public abstract class ReadInterfaceFromAbstract {
     /**
      * 定义断言json串中断言内容的键名称
      */
-    public static final String JSON_ASSERT_ASSERT_VALUE = "assertRegex";
+    public static final String JSON_ASSERT_ASSERT_REGEX = "assertRegex";
+    /**
+     * 定义断言json串中断言内容的键名称
+     * 
+     * @deprecated 已由常量{@link #JSON_ASSERT_ASSERT_REGEX}常量代替，将在3.5.0版本中删除
+     */
+    @Deprecated
+    public static final String JSON_ASSERT_ASSERT_VALUE = JSON_ASSERT_ASSERT_REGEX;
     /**
      * 定义断言json串中搜索范围的键名称
      */

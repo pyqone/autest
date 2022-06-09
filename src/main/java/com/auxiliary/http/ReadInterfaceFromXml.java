@@ -307,7 +307,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 存储断言信息，生成断言json
             JSONObject assertJson = new JSONObject();
-            assertJson.put(JSON_ASSERT_ASSERT_VALUE, assertValue);
+            assertJson.put(JSON_ASSERT_ASSERT_REGEX, assertValue);
             assertJson.put(JSON_ASSERT_SEARCH,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));

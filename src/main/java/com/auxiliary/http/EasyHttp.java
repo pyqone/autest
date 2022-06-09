@@ -188,7 +188,7 @@ public class EasyHttp {
         assertResultSet.clear();
         interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
-            String assertRegex = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE);
+            String assertRegex = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX);
             SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_SEARCH));
             String paramName = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_PARAM_NAME);
             String xpath = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_XPATH);

@@ -632,7 +632,7 @@ public class InterfaceInfo implements Cloneable {
         try {
             // 若json不包含断言内容字段，则亦不进行存储
             Optional.ofNullable(assertRuleJsonText).filter(text -> !text.isEmpty()).map(JSONObject::parseObject)
-                    .filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE))
+                    .filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX))
                     .ifPresent(assertRuleSet::add);
         } catch (Exception e) {
         }
@@ -649,7 +649,7 @@ public class InterfaceInfo implements Cloneable {
      */
     public void addAssertRule(HashMap<String, String> assertRuleMap) {
         // 判断集合是否存在断言内容字段
-        if (assertRuleMap == null || !assertRuleMap.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE)) {
+        if (assertRuleMap == null || !assertRuleMap.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX)) {
             return;
         }
 
@@ -674,7 +674,7 @@ public class InterfaceInfo implements Cloneable {
             } catch (Exception e) {
                 return new JSONObject();
             }
-        }).filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE))
+        }).filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX))
                 .forEach(assertRuleSet::add);
     }
 
