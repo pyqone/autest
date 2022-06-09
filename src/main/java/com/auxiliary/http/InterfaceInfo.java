@@ -566,7 +566,7 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public Set<MessageType> getResponseContentType(int status) {
-        return Optional.ofNullable(responseContentTypeMap.get(status)).orElseGet(() -> new HashSet<>());
+        return Optional.ofNullable(responseContentTypeMap.get(status)).map(HashSet::new).orElseGet(() -> new HashSet<>());
     }
 
     /**
@@ -580,27 +580,38 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于添加接口相应内容的格式
+     * 该方法用于添加接口响应体内容的格式
      * <p>
      * 格式允许添加多个，以应对在不同参数或不同响应状态下的情况
      * </p>
      *
-     * @param responseContentTypes 响应内容格式数组
+     * @param messageTypes 响应内容格式数组
      * @since autest 3.3.0
      */
-    public void addResponseContentTypeSet(int state, MessageType... responseContentTypes) {
-        // 判断当前状态码是否存在，若不存在，则添加空集合
-        if (!responseContentTypeMap.containsKey(state)) {
-            responseContentTypeMap.put(state, new HashSet<>());
-        }
-
-        // 获取当前状态码中 存储的状态
-        HashSet<MessageType> responseContentTypeSet = responseContentTypeMap.get(state);
-
+    public void addResponseContentTypeSet(int state, MessageType... messageTypes) {
         // 过滤掉数组为null或为空的情况
-        Optional.ofNullable(responseContentTypes).filter(types -> types.length != 0).ifPresent(types -> {
+        Optional.ofNullable(messageTypes).filter(types -> types.length != 0).ifPresent(types -> {
+            // 判断当前状态码是否存在，若不存在，则添加空集合
+            if (!responseContentTypeMap.containsKey(state)) {
+                responseContentTypeMap.put(state, new HashSet<>());
+            }
+
+            // 获取当前状态码中存储的状态
+            HashSet<MessageType> responseContentTypeSet = responseContentTypeMap.get(state);
+            // 遍历传入的内容，将其逐个添加至内容格式集合中
             Arrays.stream(types).filter(type -> type != null).forEach(responseContentTypeSet::add);
         });
+    }
+
+    /**
+     * 该方法用于移除指定状态码的响应体内容
+     * 
+     * @param status 状态码
+     * @return 状态码对应的原内容
+     * @since autest 3.4.0
+     */
+    public Set<MessageType> clearResponseContentType(int status) {
+        return Optional.ofNullable(responseContentTypeMap.remove(status)).orElseGet(() -> new HashSet<>());
     }
 
     /**
@@ -684,6 +695,18 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
+     * 该方法用于清空并返回存储的断言规则集合
+     * 
+     * @return 断言规则集合
+     * @since autest 3.4.0
+     */
+    public Set<String> claerAssertRuleJson() {
+        Set<String> assertRuleJsonText = getAssertRuleJson();
+        assertRuleSet.clear();
+        return assertRuleJsonText;
+    }
+
+    /**
      * 该方法用于存储提词规则
      * <p>
      * <b>注意：</b>
@@ -763,6 +786,18 @@ public class InterfaceInfo implements Cloneable {
         Set<String> extractRuleJsonText = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
         extractRuleSet.stream().map(json -> json.toJSONString()).forEach(extractRuleJsonText::add);
 
+        return extractRuleJsonText;
+    }
+
+    /**
+     * 该方法用于清空并返回存储的提词规则集合
+     * 
+     * @return 提词规则集合
+     * @since autest 3.4.0
+     */
+    public Set<String> clearExtractRuleJson() {
+        Set<String> extractRuleJsonText = getExtractRuleJson();
+        extractRuleSet.clear();
         return extractRuleJsonText;
     }
 
