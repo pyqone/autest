@@ -647,7 +647,7 @@ public class InterfaceInfo implements Cloneable {
      * @param assertRuleMap 断言规则集合
      * @since autest 3.3.0
      */
-    public void addAssertRule(HashMap<String, String> assertRuleMap) {
+    public void addAssertRule(Map<String, String> assertRuleMap) {
         // 判断集合是否存在断言内容字段
         if (assertRuleMap == null || !assertRuleMap.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX)) {
             return;
@@ -700,7 +700,7 @@ public class InterfaceInfo implements Cloneable {
      * @return 断言规则集合
      * @since autest 3.4.0
      */
-    public Set<String> claerAssertRuleJson() {
+    public Set<String> clearAssertRuleJson() {
         Set<String> assertRuleJsonText = getAssertRuleJson();
         assertRuleSet.clear();
         return assertRuleJsonText;
@@ -712,7 +712,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>
      * <ol>
      * <li>传入的json为空或不符合json格式时，将不进行存储</li>
-     * <li>json必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_PARAM_NAME}字段，否则将不进行存储</li>
+     * <li>json必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储</li>
      * </ol>
      * </p>
      *
@@ -724,7 +724,7 @@ public class InterfaceInfo implements Cloneable {
         try {
             // 若json不包含断言内容字段，则亦不进行存储
             Optional.ofNullable(extractRuleJsonText).filter(text -> !text.isEmpty()).map(JSONObject::parseObject)
-                    .filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME))
+                    .filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_EXTRACT_SAVE_NAME))
                     .ifPresent(json -> {
                         // 存储规则，并在提词内容集合中，构造空值
                         extractRuleSet.add(json);
@@ -742,7 +742,7 @@ public class InterfaceInfo implements Cloneable {
      * @param extractRuleMap 提词规则集合
      * @since autest 3.3.0
      */
-    public void addExtractRule(HashMap<String, String> extractRuleMap) {
+    public void addExtractRule(Map<String, String> extractRuleMap) {
         // 判断集合是否存在断言内容字段
         if (extractRuleMap == null || !extractRuleMap.containsKey(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME)) {
             return;
