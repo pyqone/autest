@@ -172,13 +172,13 @@ public class EasyHttp {
         // 对响应报文提词
         interInfo.getExtractRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
-            String saveName = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_SAVE_NAME);
-            SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_SEARCH));
-            String paramName = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME);
-            String xpath = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_XPATH);
-            String lb = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_LB);
-            String rb = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_RB);
-            int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_ORD));
+            String saveName = json.getString(ExtractResponse.JSON_EXTRACT_SAVE_NAME);
+            SearchType searchType = SearchType.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_SEARCH));
+            String paramName = json.getString(ExtractResponse.JSON_EXTRACT_PARAM_NAME);
+            String xpath = json.getString(ExtractResponse.JSON_EXTRACT_XPATH);
+            String lb = json.getString(ExtractResponse.JSON_EXTRACT_LB);
+            String rb = json.getString(ExtractResponse.JSON_EXTRACT_RB);
+            int index = Integer.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_ORD));
 
             // 存储提词结果
             addReplaceKey(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
@@ -188,13 +188,13 @@ public class EasyHttp {
         assertResultSet.clear();
         interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
-            String assertRegex = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX);
-            SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_SEARCH));
-            String paramName = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_PARAM_NAME);
-            String xpath = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_XPATH);
-            String lb = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_LB);
-            String rb = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_RB);
-            int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ORD));
+            String assertRegex = json.getString(AssertResponse.JSON_ASSERT_ASSERT_REGEX);
+            SearchType searchType = SearchType.valueOf(json.getString(AssertResponse.JSON_ASSERT_SEARCH));
+            String paramName = json.getString(AssertResponse.JSON_ASSERT_PARAM_NAME);
+            String xpath = json.getString(AssertResponse.JSON_ASSERT_XPATH);
+            String lb = json.getString(AssertResponse.JSON_ASSERT_LB);
+            String rb = json.getString(AssertResponse.JSON_ASSERT_RB);
+            int index = Integer.valueOf(json.getString(AssertResponse.JSON_ASSERT_ORD));
 
             // 断言
             boolean result = response.assertResponse(assertRegex, searchType, paramName, xpath, lb, rb, index);

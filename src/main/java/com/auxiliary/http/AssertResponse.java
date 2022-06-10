@@ -13,7 +13,7 @@ import java.util.Set;
  * <b>编码时间：2022年4月27日 上午8:00:18
  * </p>
  * <p>
- * <b>修改时间：2022年4月27日 上午8:00:18
+ * <b>修改时间：2022年6月10日 上午8:19:53
  * </p>
  *
  *
@@ -46,6 +46,34 @@ public interface AssertResponse {
      * 定义查找数组元素结束标志符号
      */
     public static final String ARRAY_END_SYMBOL = "]";
+    /**
+     * 定义断言json串中断言内容的键名称
+     */
+    public static final String JSON_ASSERT_ASSERT_REGEX = "assertRegex";
+    /**
+     * 定义断言json串中搜索范围的键名称
+     */
+    public static final String JSON_ASSERT_SEARCH = "search";
+    /**
+     * 定义断言json串中参数名称的键名称
+     */
+    public static final String JSON_ASSERT_PARAM_NAME = "paramName";
+    /**
+     * 定义断言json串中xpath的键名称
+     */
+    public static final String JSON_ASSERT_XPATH = "xpath";
+    /**
+     * 定义断言json串中剪切内容的左边界的键名称
+     */
+    public static final String JSON_ASSERT_LB = "lb";
+    /**
+     * 定义断言json串中剪切内容的右边界的键名称
+     */
+    public static final String JSON_ASSERT_RB = "rb";
+    /**
+     * 定义断言json串中返回的元素下标的键名称
+     */
+    public static final String JSON_ASSERT_ORD = "ord";
 
     /**
      * 该方法用于返回指定接口的断言内容json串

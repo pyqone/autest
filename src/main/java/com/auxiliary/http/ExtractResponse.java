@@ -13,7 +13,7 @@ import java.util.Set;
  * <b>编码时间：2022年4月27日 上午8:01:37
  * </p>
  * <p>
- * <b>修改时间：2022年4月27日 上午8:01:37
+ * <b>修改时间：2022年6月10日 上午8:19:53
  * </p>
  *
  *
@@ -46,6 +46,35 @@ public interface ExtractResponse {
      * 定义查找数组元素结束标志符号
      */
     public static final String ARRAY_END_SYMBOL = "]";
+
+    /**
+     * 定义提词json串中存储变量名称的键名称
+     */
+    public static final String JSON_EXTRACT_SAVE_NAME = "saveName";
+    /**
+     * 定义提词json串中搜索范围的键名称
+     */
+    public static final String JSON_EXTRACT_SEARCH = AssertResponse.JSON_ASSERT_SEARCH;
+    /**
+     * 定义提词json串中参数名称的键名称
+     */
+    public static final String JSON_EXTRACT_PARAM_NAME = AssertResponse.JSON_ASSERT_PARAM_NAME;
+    /**
+     * 定义提词json串中参数名称的键名称
+     */
+    public static final String JSON_EXTRACT_XPATH = AssertResponse.JSON_ASSERT_XPATH;
+    /**
+     * 定义提词json串中剪切内容的左边界的键名称
+     */
+    public static final String JSON_EXTRACT_LB = AssertResponse.JSON_ASSERT_LB;
+    /**
+     * 定义提词json串中剪切内容的右边界的键名称
+     */
+    public static final String JSON_EXTRACT_RB = AssertResponse.JSON_ASSERT_RB;
+    /**
+     * 定义提词json串中返回的元素下标的键名称
+     */
+    public static final String JSON_EXTRACT_ORD = AssertResponse.JSON_ASSERT_ORD;
 
     /**
      * 该方法用于指定接口的报文提词内容json串集合

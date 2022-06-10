@@ -632,7 +632,7 @@ public class InterfaceInfo implements Cloneable {
         try {
             // 若json不包含断言内容字段，则亦不进行存储
             Optional.ofNullable(assertRuleJsonText).filter(text -> !text.isEmpty()).map(JSONObject::parseObject)
-                    .filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX))
+                    .filter(json -> json.containsKey(AssertResponse.JSON_ASSERT_ASSERT_REGEX))
                     .ifPresent(assertRuleSet::add);
         } catch (Exception e) {
         }
@@ -649,7 +649,7 @@ public class InterfaceInfo implements Cloneable {
      */
     public void addAssertRule(Map<String, String> assertRuleMap) {
         // 判断集合是否存在断言内容字段
-        if (assertRuleMap == null || !assertRuleMap.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX)) {
+        if (assertRuleMap == null || !assertRuleMap.containsKey(AssertResponse.JSON_ASSERT_ASSERT_REGEX)) {
             return;
         }
 
@@ -674,7 +674,7 @@ public class InterfaceInfo implements Cloneable {
             } catch (Exception e) {
                 return new JSONObject();
             }
-        }).filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_REGEX))
+        }).filter(json -> json.containsKey(AssertResponse.JSON_ASSERT_ASSERT_REGEX))
                 .forEach(assertRuleSet::add);
     }
 
@@ -724,7 +724,7 @@ public class InterfaceInfo implements Cloneable {
         try {
             // 若json不包含断言内容字段，则亦不进行存储
             Optional.ofNullable(extractRuleJsonText).filter(text -> !text.isEmpty()).map(JSONObject::parseObject)
-                    .filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_EXTRACT_SAVE_NAME))
+                    .filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME))
                     .ifPresent(json -> {
                         // 存储规则，并在提词内容集合中，构造空值
                         extractRuleSet.add(json);
@@ -736,7 +736,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加提词规则
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_PARAM_NAME}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
      * </p>
      *
      * @param extractRuleMap 提词规则集合
@@ -744,7 +744,7 @@ public class InterfaceInfo implements Cloneable {
      */
     public void addExtractRule(Map<String, String> extractRuleMap) {
         // 判断集合是否存在断言内容字段
-        if (extractRuleMap == null || !extractRuleMap.containsKey(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME)) {
+        if (extractRuleMap == null || !extractRuleMap.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME)) {
             return;
         }
 
@@ -756,7 +756,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加多组提词规则json
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_PARAM_NAME}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
      * </p>
      *
      * @param rules 提词规则json集合
@@ -769,7 +769,7 @@ public class InterfaceInfo implements Cloneable {
             } catch (Exception e) {
                 return new JSONObject();
             }
-        }).filter(json -> json.containsKey(ReadInterfaceFromAbstract.JSON_ASSERT_PARAM_NAME))
+        }).filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME))
                 .forEach(extractRuleSet::add);
     }
 

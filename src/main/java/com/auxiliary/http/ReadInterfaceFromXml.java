@@ -164,7 +164,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @since autest 3.3.0
      */
     private String readInterPath(Element interElement) {
-        return interElement.attributeValue(XmlParamName.XML_ATTRI_PATH);
+        return Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_PATH)).orElse("");
     }
 
     /**
@@ -265,19 +265,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 存储断言信息，生成断言json
             JSONObject extractJson = new JSONObject();
-            extractJson.put(JSON_EXTRACT_SAVE_NAME, saveName);
-            extractJson.put(JSON_EXTRACT_SEARCH,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_SAVE_NAME, saveName);
+            extractJson.put(ExtractResponse.JSON_EXTRACT_SEARCH,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
-            extractJson.put(JSON_EXTRACT_LB,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_LB,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_RB,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_RB,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_PARAM_NAME, Optional
+            extractJson.put(ExtractResponse.JSON_EXTRACT_PARAM_NAME, Optional
                     .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
-            extractJson.put(JSON_ASSERT_XPATH, Optional
+            extractJson.put(ExtractResponse.JSON_EXTRACT_XPATH, Optional
                     .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_ORD,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_ORD,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_ORD))
                             .orElseGet(() -> DEFAULT_ORD));
 
@@ -307,19 +307,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 存储断言信息，生成断言json
             JSONObject assertJson = new JSONObject();
-            assertJson.put(JSON_ASSERT_ASSERT_REGEX, assertValue);
-            assertJson.put(JSON_ASSERT_SEARCH,
+            assertJson.put(AssertResponse.JSON_ASSERT_ASSERT_REGEX, assertValue);
+            assertJson.put(AssertResponse.JSON_ASSERT_SEARCH,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
-            assertJson.put(JSON_ASSERT_LB, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_LB, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_RB,
+            assertJson.put(AssertResponse.JSON_ASSERT_RB,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_PARAM_NAME, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_PARAM_NAME, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_XPATH, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_XPATH, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_ORD, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_ORD, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_ORD)).orElseGet(() -> DEFAULT_ORD));
 
             assertSet.add(assertJson.toJSONString());
@@ -376,7 +376,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 获取接口的url
         inter.analysisUrl(readInterUrl(interElement));
         // 获取接口的路径
-        inter.setPath(readInterPath(interElement));
+        String path = readInterPath(interElement);
+        if (!path.isEmpty()) {
+            inter.setPath(path);
+        }
         // 获取接口的请求方式
         inter.setRequestType(readInterRequestType(interElement));
         // 获取接口参数信息
