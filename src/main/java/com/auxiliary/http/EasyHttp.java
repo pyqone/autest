@@ -1,6 +1,7 @@
 package com.auxiliary.http;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -250,6 +251,8 @@ public class EasyHttp {
         Request request = requestBuilder.build();
         try {
             return new EasyResponse(client.newCall(request).execute());
+        } catch (SocketTimeoutException e) {
+            throw new HttpRequestException(String.format("接口请求超时，接口信息为：%s", url), e);
         } catch (IOException e) {
             throw new HttpRequestException(String.format("接口请求异常，接口信息为：%s", url), e);
         } catch (HttpResponseException e) {
