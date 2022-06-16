@@ -1,6 +1,7 @@
 package com.auxiliary.http;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -161,7 +162,7 @@ public class EasyHttp {
         interInfo.getRequestHeaderMap()
                 .forEach((key, value) -> newHeadMap.put(disposeContent(key), disposeContent(value)));
         // 对接口进行请求，获取响应类
-        EasyResponse response = requst(interInfo.getRequestType(), interInfo.toUrlString(), newHeadMap,
+        EasyResponse response = requst(interInfo.getRequestType(), disposeContent(interInfo.toUrlString()), newHeadMap,
                 interInfo.getBody().getKey(), disposeContent(interInfo.getBody().getValue()));
         // 设置响应体解析字符集
         response.setCharsetName(interInfo.getCharsetname());
@@ -172,13 +173,13 @@ public class EasyHttp {
         // 对响应报文提词
         interInfo.getExtractRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
-            String saveName = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_SAVE_NAME);
-            SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_SEARCH));
-            String paramName = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_PARAM_NAME);
-            String xpath = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_XPATH);
-            String lb = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_LB);
-            String rb = json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_RB);
-            int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_EXTRACT_ORD));
+            String saveName = json.getString(ExtractResponse.JSON_EXTRACT_SAVE_NAME);
+            SearchType searchType = SearchType.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_SEARCH));
+            String paramName = json.getString(ExtractResponse.JSON_EXTRACT_PARAM_NAME);
+            String xpath = json.getString(ExtractResponse.JSON_EXTRACT_XPATH);
+            String lb = json.getString(ExtractResponse.JSON_EXTRACT_LB);
+            String rb = json.getString(ExtractResponse.JSON_EXTRACT_RB);
+            int index = Integer.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_ORD));
 
             // 存储提词结果
             addReplaceKey(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
@@ -188,13 +189,13 @@ public class EasyHttp {
         assertResultSet.clear();
         interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
-            String assertRegex = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ASSERT_VALUE);
-            SearchType searchType = SearchType.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_SEARCH));
-            String paramName = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_PARAM_NAME);
-            String xpath = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_XPATH);
-            String lb = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_LB);
-            String rb = json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_RB);
-            int index = Integer.valueOf(json.getString(ReadInterfaceFromAbstract.JSON_ASSERT_ORD));
+            String assertRegex = json.getString(AssertResponse.JSON_ASSERT_ASSERT_REGEX);
+            SearchType searchType = SearchType.valueOf(json.getString(AssertResponse.JSON_ASSERT_SEARCH));
+            String paramName = json.getString(AssertResponse.JSON_ASSERT_PARAM_NAME);
+            String xpath = json.getString(AssertResponse.JSON_ASSERT_XPATH);
+            String lb = json.getString(AssertResponse.JSON_ASSERT_LB);
+            String rb = json.getString(AssertResponse.JSON_ASSERT_RB);
+            int index = Integer.valueOf(json.getString(AssertResponse.JSON_ASSERT_ORD));
 
             // 断言
             boolean result = response.assertResponse(assertRegex, searchType, paramName, xpath, lb, rb, index);
@@ -218,9 +219,6 @@ public class EasyHttp {
 
     /**
      * 该方法用于对接口进行快速请求
-     * <p>
-     * <b>注意：</b>该方法为静态方法，将不会使用类中（若已构造对象）存储替换词语和公式，若
-     * </p>
      *
      * @param requestType 请求类型
      * @param url         接口url地址
@@ -236,7 +234,14 @@ public class EasyHttp {
         OkHttpClient client = new OkHttpClient().newBuilder().build();
 
         // 构造请求体，并添加接口信息中的请求参数、请求头和请求体信息
-        RequestBody requestBody = RequestBody.create(MediaType.parse(messageType.getMediaValue()), body);
+        RequestBody requestBody = null;
+        // 当请求方式为get或head时，则不需要添加请求体
+        if (requestType != RequestType.GET && requestType != RequestType.HEAD) {
+            requestBody = RequestBody.create(
+                    MediaType.parse(Optional.ofNullable(messageType).map(MessageType::getMediaValue).orElse("none")),
+                    Optional.ofNullable(body).orElse(""));
+        }
+        
         Builder requestBuilder = new Request.Builder().url(url).method(requestType.toString(), requestBody);
         if (requestHead != null) {
             requestHead.forEach(requestBuilder::addHeader);
@@ -246,6 +251,8 @@ public class EasyHttp {
         Request request = requestBuilder.build();
         try {
             return new EasyResponse(client.newCall(request).execute());
+        } catch (SocketTimeoutException e) {
+            throw new HttpRequestException(String.format("接口请求超时，接口信息为：%s", url), e);
         } catch (IOException e) {
             throw new HttpRequestException(String.format("接口请求异常，接口信息为：%s", url), e);
         } catch (HttpResponseException e) {
@@ -254,7 +261,33 @@ public class EasyHttp {
     }
 
     /**
-     * 该方法用于以get请求的方式对接口发起请求
+     * 该方法用于对接口进行快速请求
+     *
+     * @param requestType 请求类型
+     * @param url         接口url地址
+     * @param messageType 请求报文类型
+     * @param body        请求体
+     * @return 接口响应类
+     * @since autest 3.4.0
+     */
+    public static EasyResponse requst(RequestType requestType, String url, MessageType messageType, String body) {
+        return requst(requestType, url, null, messageType, body);
+    }
+
+    /**
+     * 该方法用于对接口进行快速请求
+     *
+     * @param requestType 请求类型
+     * @param url         接口url地址
+     * @return 接口响应类
+     * @since autest 3.4.0
+     */
+    public static EasyResponse requst(RequestType requestType, String url) {
+        return requst(requestType, url, null, null, null);
+    }
+
+    /**
+     * 该方法用于以get请求的方式对接口进行快速请求
      *
      * @param url 接口url地址
      * @return 接口响应类

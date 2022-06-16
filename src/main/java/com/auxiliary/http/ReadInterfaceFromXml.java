@@ -99,8 +99,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 判断环境集合标签中是否指定默认环境，若存在，则将执行环境指向为默认环境；若不存在，则取环境集合的第一个元素
             String defaultenvironmentName = environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
-            actionEnvironment = environmentMap.containsKey(defaultenvironmentName) ? defaultenvironmentName
-                    : environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_NAME);
+            setActionEnvironment(environmentMap.containsKey(defaultenvironmentName) ? defaultenvironmentName
+                    : environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_NAME));
         }
     }
 
@@ -108,12 +108,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     public InterfaceInfo getInterface(String interName) {
         // 查找元素，并判断其是否指定环境属性
         Element interElement = findElement(interName);
-        String environmentName = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT)).orElse("");
-        if (environmentName.isEmpty()) {
-            return getInterface(interName, actionEnvironment);
-        } else {
-            return getInterface(interName, environmentName);
-        }
+        String environment = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT))
+                .filter(environmentMap::containsKey).map(environmentMap::get).orElse(actionEnvironment);
+        return raedInterInfo(interName, environment);
     }
 
     /**
@@ -167,7 +164,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @since autest 3.3.0
      */
     private String readInterPath(Element interElement) {
-        return interElement.attributeValue(XmlParamName.XML_ATTRI_PATH);
+        return Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_PATH)).orElse("");
     }
 
     /**
@@ -268,19 +265,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 存储断言信息，生成断言json
             JSONObject extractJson = new JSONObject();
-            extractJson.put(JSON_EXTRACT_SAVE_NAME, saveName);
-            extractJson.put(JSON_EXTRACT_SEARCH,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_SAVE_NAME, saveName);
+            extractJson.put(ExtractResponse.JSON_EXTRACT_SEARCH,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
-            extractJson.put(JSON_EXTRACT_LB,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_LB,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_RB,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_RB,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_PARAM_NAME, Optional
+            extractJson.put(ExtractResponse.JSON_EXTRACT_PARAM_NAME, Optional
                     .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
-            extractJson.put(JSON_ASSERT_XPATH, Optional
+            extractJson.put(ExtractResponse.JSON_EXTRACT_XPATH, Optional
                     .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_ORD,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_ORD,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_ORD))
                             .orElseGet(() -> DEFAULT_ORD));
 
@@ -310,19 +307,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 存储断言信息，生成断言json
             JSONObject assertJson = new JSONObject();
-            assertJson.put(JSON_ASSERT_ASSERT_VALUE, assertValue);
-            assertJson.put(JSON_ASSERT_SEARCH,
+            assertJson.put(AssertResponse.JSON_ASSERT_ASSERT_REGEX, assertValue);
+            assertJson.put(AssertResponse.JSON_ASSERT_SEARCH,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
-            assertJson.put(JSON_ASSERT_LB, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_LB, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_RB,
+            assertJson.put(AssertResponse.JSON_ASSERT_RB,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_PARAM_NAME, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_PARAM_NAME, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_XPATH, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_XPATH, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_ORD, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_ORD, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_ORD)).orElseGet(() -> DEFAULT_ORD));
 
             assertSet.add(assertJson.toJSONString());
@@ -345,33 +342,44 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     @Override
     public InterfaceInfo getInterface(String interName, String environmentName) {
+        return raedInterInfo(interName,
+                Optional.ofNullable(environmentMap.get(environmentName)).orElse(actionEnvironment));
+    }
+
+    /**
+     * 该方法用于根据指定的接口名称与执行的环境，构造相应的接口信息读取类对象
+     * 
+     * @param interName   接口名称
+     * @param environment 接口执行环境
+     * @return 接口信息类对象
+     * @since autest 3.4.0
+     */
+    private InterfaceInfo raedInterInfo(String interName, String environment) {
         if (interName == null || interName.isEmpty()) {
             throw new InterfaceReadToolsException("指定的接口名称为空或未指定接口名称：" + interName);
         }
 
         // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
         if (interfaceMap.containsKey(interName)) {
-            return interfaceMap.get(interName).clone();
+            InterfaceInfo inter = interfaceMap.get(interName).clone();
+            inter.analysisUrl(environment);
+            return inter;
         }
 
         // 若未缓存信息，则构造接口信息对象，添加接口信息
         InterfaceInfo inter = new InterfaceInfo();
         // 解析环境，获取环境主机等信息
-        if (environmentMap.containsKey(environmentName)) {
-            // 解析环境信息
-            inter.analysisUrl(environmentMap.get(environmentName));
-        } else {
-            if (!actionEnvironment.isEmpty()) {
-                inter.analysisUrl(environmentMap.get(actionEnvironment));
-            }
-        }
+        inter.analysisUrl(environment);
 
         // 查找元素
         Element interElement = findElement(interName);
         // 获取接口的url
         inter.analysisUrl(readInterUrl(interElement));
         // 获取接口的路径
-        inter.setPath(readInterPath(interElement));
+        String path = readInterPath(interElement);
+        if (!path.isEmpty()) {
+            inter.setPath(path);
+        }
         // 获取接口的请求方式
         inter.setRequestType(readInterRequestType(interElement));
         // 获取接口参数信息
