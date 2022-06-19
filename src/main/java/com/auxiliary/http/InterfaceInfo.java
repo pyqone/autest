@@ -112,7 +112,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口请求体
      */
-    private Entry<MessageType, String> body;
+    private Entry<MessageType, Object> body;
     /**
      * 接口请求头
      */
@@ -433,16 +433,31 @@ public class InterfaceInfo implements Cloneable {
      *
      * @return 接口的请求报文与请求报文类型封装类
      * @since autest 3.3.0
+     * @deprecated 已由{@link #getBodyContent()}方法代替，将在3.5.0版本中删除
      */
+    @Deprecated
     public Entry<MessageType, String> getBody() {
-        return Optional.ofNullable(body)
-                .orElseGet(() -> new Entry<>(MessageType.NONE, ""));
+        Entry<MessageType, Object> body = getBodyContent();
+        return new Entry<>(body.getKey(), body.getValue().toString());
+    }
+
+    /**
+     * 该方法用于返回接口的请求报文与请求报文类型封装类
+     * <p>
+     * 封装类类似于于键值对，键为报文类型，值为报文内容
+     * </p>
+     *
+     * @return 接口的请求报文与请求报文类型封装类
+     * @since autest 3.4.0
+     */
+    public Entry<MessageType, Object> getBodyContent() {
+        return Optional.ofNullable(body).orElseGet(() -> new Entry<>(MessageType.NONE, ""));
     }
 
     /**
      * 该方法用于设置接口的请求体，根据报文的内容，自动设置相应的报文类型
      * <p>
-     * <b>注意：</b>报文格式自动识别可能存在错误，若不符合预期，可调用{@link #setBody(MessageType, String)}方法对请求报文类型进行设置
+     * <b>注意：</b>报文格式自动识别可能存在错误，若不符合预期，可调用{@link #setBodyContent(MessageType, Object)}方法对请求报文类型进行设置
      * </p>
      *
      * @param bodyText 接口的请求体
@@ -454,24 +469,24 @@ public class InterfaceInfo implements Cloneable {
             try {
                 // 判断文本是否能被识别为json格式
                 JSONObject.parseObject(bodyText);
-                setBody(MessageType.JSON, bodyText);
+                setBodyContent(MessageType.JSON, bodyText);
             } catch (JSONException jsonException) {
                 try {
                     DocumentHelper.parseText(bodyText);
                     // 若相应参数开头的文本为<html>，则表示其相应参数为html形式，则以html形式进行转换
                     if (bodyText.indexOf("<html>") == 0) {
-                        setBody(MessageType.HTML, bodyText);
+                        setBodyContent(MessageType.HTML, bodyText);
                     } else {
-                        setBody(MessageType.XML, bodyText);
+                        setBodyContent(MessageType.XML, bodyText);
                     }
 
                 } catch (DocumentException domException) {
-                    setBody(MessageType.RAW, bodyText);
+                    setBodyContent(MessageType.RAW, bodyText);
                     ;
                 }
             }
         } else {
-            setBody(MessageType.NONE, "");
+            setBodyContent(MessageType.NONE, "");
         }
     }
 
@@ -481,9 +496,22 @@ public class InterfaceInfo implements Cloneable {
      * @param messageType 报文类型枚举
      * @param bodyText    报文内容
      * @since autest 3.3.0
+     * @deprecated 已由{@link #setBodyContent(MessageType, Object)}方法代替，将在3.5.0版本中删除
      */
+    @Deprecated
     public void setBody(MessageType messageType, String bodyText) {
-        body = new Entry<>(messageType, Optional.ofNullable(bodyText).orElseGet(() -> ""));
+        setBodyContent(messageType, Optional.ofNullable(bodyText).orElseGet(() -> ""));
+    }
+
+    /**
+     * 该方法用于设置请求报文以及请求报文的类型
+     * 
+     * @param messageType 报文类型枚举
+     * @param body        报文内容
+     * @since autest 3.4.0
+     */
+    public void setBodyContent(MessageType messageType, Object bodyObject) {
+        body = new Entry<>(messageType, bodyObject);
     }
 
     /**
