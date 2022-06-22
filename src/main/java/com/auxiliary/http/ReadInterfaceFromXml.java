@@ -84,7 +84,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
         // 读取环境集合
         Element environmentsElement = rootElement.element(XmlParamName.XML_LABEL_ENVIRONMENTS);
-        List<Element> environmentElementList = environmentsElement.elements();
+        List<Element> environmentElementList = Optional.ofNullable(environmentsElement).map(Element::elements)
+                .orElseGet(ArrayList::new);
         // 判断集合是否为空，若为不为空，则存储所有的环境，并设置默认环境
         if (!environmentElementList.isEmpty()) {
             // 获取所有得到环境，并存储所有的环境
