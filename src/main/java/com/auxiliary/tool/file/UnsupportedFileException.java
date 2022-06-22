@@ -1,5 +1,7 @@
 package com.auxiliary.tool.file;
 
+import com.auxiliary.AuxiliaryToolsException;
+
 /**
  * <p>
  * <b>文件名：</b>UnsupportedFileException.java
@@ -18,7 +20,7 @@ package com.auxiliary.tool.file;
  * @version Ver1.0
  * @since JDK 1.8
  */
-public class UnsupportedFileException extends RuntimeException {
+public class UnsupportedFileException extends AuxiliaryToolsException {
 
 	private static final long serialVersionUID = -5923843751831631669L;
 

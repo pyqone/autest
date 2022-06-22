@@ -13,6 +13,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.AuxiliaryToolsException;
+import com.auxiliary.tool.file.TextFileReadUtil;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -183,7 +185,16 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             String bodyText = Optional.ofNullable(bodyElement.getText()).orElse("");
             // 若获取到的文本内容为空，则判断其是否包含file属性，若存在，则读取其内容
             if (bodyText.isEmpty()) {
-                bodyText = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_FILE)).orElse("");
+                // 获取文件路径属性，并读取文件中的内容，若读取的内容存在问题，则设置bodyText为空
+                String filePath = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_FILE))
+                        .orElse("");
+                if (!filePath.isEmpty()) {
+                    try {
+                        bodyText = TextFileReadUtil.megerTextToTxt(new File(filePath), true);
+                    } catch (AuxiliaryToolsException e) {
+                        bodyText = "";
+                    }
+                }
             }
 
             // 获取消息类型属性
@@ -208,6 +219,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                 // 若文件存在，且文件非文件夹路径，则设置在接口信息中设置相应的内容
                 if (file.exists() && file.isFile()) {
                     inter.setBodyContent(MessageType.FILE, file);
+                    return;
                 }
             }
         }
