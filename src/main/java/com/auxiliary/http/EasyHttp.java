@@ -1,5 +1,6 @@
 package com.auxiliary.http;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
 import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 
 import okhttp3.MediaType;
@@ -57,6 +59,11 @@ public class EasyHttp {
      * 占位符结束符号
      */
     private final String FUNCTION_END_SIGN = "\\}";
+    /**
+     * 定义消息类型为NONE的请求体
+     */
+    private static final RequestBody NONE_REQUEST_BODY = RequestBody
+            .create(MediaType.parse(MessageType.NONE.getMediaValue()), "");
     
     /**
      * 定义断言结果json的接口信息字段名
@@ -162,8 +169,9 @@ public class EasyHttp {
         interInfo.getRequestHeaderMap()
                 .forEach((key, value) -> newHeadMap.put(disposeContent(key), disposeContent(value)));
         // 对接口进行请求，获取响应类
+        Entry<MessageType, Object> body = interInfo.getBodyContent();
         EasyResponse response = requst(interInfo.getRequestType(), disposeContent(interInfo.toUrlString()), newHeadMap,
-                interInfo.getBody().getKey(), disposeContent(interInfo.getBody().getValue()));
+                body.getKey(), body.getValue());
         // 设置响应体解析字符集
         response.setCharsetName(interInfo.getCharsetname());
         // 设置响应体内容格式
@@ -223,26 +231,46 @@ public class EasyHttp {
      * @param requestType 请求类型
      * @param url         接口url地址
      * @param requestHead 请求头集合
-     * @param messageType 请求报文类型
-     * @param body        请求体
+     * @param messageType 请求体内容格式类型
+     * @param body        请求体内容
      * @return 接口响应类
      * @since autest 3.3.0
      */
     public static EasyResponse requst(RequestType requestType, String url, Map<String, String> requestHead,
-            MessageType messageType, String body) {
+            MessageType messageType, Object body) {
         // 定义请求客户端
         OkHttpClient client = new OkHttpClient().newBuilder().build();
 
         // 构造请求体，并添加接口信息中的请求参数、请求头和请求体信息
         RequestBody requestBody = null;
-        // 当请求方式为get或head时，则不需要添加请求体
-        if (requestType != RequestType.GET && requestType != RequestType.HEAD) {
-            requestBody = RequestBody.create(
-                    MediaType.parse(Optional.ofNullable(messageType).map(MessageType::getMediaValue).orElse("none")),
-                    Optional.ofNullable(body).orElse(""));
+        // 判断当前请求类型是否需要添加请求体
+        if (isNoBodyRequest(requestType)) {
+            // 根据消息格式，创建RequestBody类对象
+            messageType = Optional.ofNullable(messageType).orElse(MessageType.NONE);
+            MediaType mediaType = MediaType.parse(messageType.getMediaValue());
+            switch (messageType) {
+            case JSON:
+            case XML:
+            case HTML:
+                requestBody = RequestBody.create(mediaType, Optional.ofNullable(body).map(Object::toString).orElse(""));
+                break;
+            case FILE:
+            case BINARY:
+                requestBody = RequestBody.create(mediaType, (File) body);
+                break;
+            case NONE:
+                requestBody = NONE_REQUEST_BODY;
+                break;
+            default:
+                throw new HttpRequestException(String.format("暂时不支持“%s”类型的消息格式，请求接口：%s", messageType, url));
+            }
         }
         
-        Builder requestBuilder = new Request.Builder().url(url).method(requestType.toString(), requestBody);
+        // 构造请求报文
+        Builder requestBuilder = new Request.Builder().url(url).method(
+                Optional.ofNullable(requestType).map(RequestType::toString)
+                        .orElseThrow(() -> new HttpRequestException("当前接口未指定请求类型：" + url)),
+                requestBody);
         if (requestHead != null) {
             requestHead.forEach(requestBuilder::addHeader);
         }
@@ -265,12 +293,12 @@ public class EasyHttp {
      *
      * @param requestType 请求类型
      * @param url         接口url地址
-     * @param messageType 请求报文类型
-     * @param body        请求体
+     * @param messageType 请求体内容格式类型
+     * @param body        请求体内容
      * @return 接口响应类
      * @since autest 3.4.0
      */
-    public static EasyResponse requst(RequestType requestType, String url, MessageType messageType, String body) {
+    public static EasyResponse requst(RequestType requestType, String url, MessageType messageType, Object body) {
         return requst(requestType, url, null, messageType, body);
     }
 
@@ -336,5 +364,17 @@ public class EasyHttp {
         }
 
         return content;
+    }
+
+    /**
+     * 该方法用于判断指定的请求类型是否需要请求体参数
+     * 
+     * @param requestType 请求类型枚举
+     * @return 对应的请求类型是否需要请求体
+     * @since autest 3.4.0
+     */
+    private static boolean isNoBodyRequest(RequestType requestType) {
+        return Optional.of(requestType).filter(type -> type != RequestType.GET)
+                .filter(type -> type != RequestType.HEAD).isPresent();
     }
 }

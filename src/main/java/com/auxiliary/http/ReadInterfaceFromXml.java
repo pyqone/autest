@@ -13,6 +13,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.AuxiliaryToolsException;
+import com.auxiliary.tool.file.TextFileReadUtil;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -82,7 +84,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
         // 读取环境集合
         Element environmentsElement = rootElement.element(XmlParamName.XML_LABEL_ENVIRONMENTS);
-        List<Element> environmentElementList = environmentsElement.elements();
+        List<Element> environmentElementList = Optional.ofNullable(environmentsElement).map(Element::elements)
+                .orElseGet(ArrayList::new);
         // 判断集合是否为空，若为不为空，则存储所有的环境，并设置默认环境
         if (!environmentElementList.isEmpty()) {
             // 获取所有得到环境，并存储所有的环境
@@ -174,8 +177,56 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @return 请求体信息
      * @since autest 3.3.0
      */
-    private String readInterBody(Element interElement) {
-        return interElement.elementText(XmlParamName.XML_LABEL_BODY);
+    private void readInterBody(InterfaceInfo inter, Element interElement) {
+        // 获取模板中普通body元素
+        Element bodyElement = interElement.element(XmlParamName.XML_LABEL_BODY);
+        // 若元素存在，则按照普通body进行读取
+        if (bodyElement != null) {
+            // 获取元素的文本节点
+            String bodyText = Optional.ofNullable(bodyElement.getText()).orElse("");
+            // 若获取到的文本内容为空，则判断其是否包含file属性，若存在，则读取其内容
+            if (bodyText.isEmpty()) {
+                // 获取文件路径属性，并读取文件中的内容，若读取的内容存在问题，则设置bodyText为空
+                String filePath = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_FILE))
+                        .orElse("");
+                if (!filePath.isEmpty()) {
+                    try {
+                        bodyText = TextFileReadUtil.megerTextToTxt(new File(filePath), true);
+                    } catch (AuxiliaryToolsException e) {
+                        bodyText = "";
+                    }
+                }
+            }
+
+            // 获取消息类型属性
+            String messageTypeText = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
+                    .map(String::toUpperCase).orElse("");
+            // 消息类型转换为消息类型枚举，若转换失败，则按照文本格式进行识别
+            try {
+                inter.setBodyContent(MessageType.valueOf(messageTypeText), bodyText);
+            } catch (Exception e) {
+                inter.setBody(bodyText);
+            }
+
+            return;
+        }
+
+        // 若不存在普通body，则读取文本body类型
+        if ((bodyElement = interElement.element(XmlParamName.XML_LABEL_FILE_BODY)) != null) {
+            String filePath = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_FILE)).orElse("");
+            // 若文件路径不为空，则定义文件类对象
+            if (!filePath.isEmpty()) {
+                File file = new File(filePath);
+                // 若文件存在，且文件非文件夹路径，则设置在接口信息中设置相应的内容
+                if (file.exists() && file.isFile()) {
+                    inter.setBodyContent(MessageType.FILE, file);
+                    return;
+                }
+            }
+        }
+
+        // 若不存在标签，或内容未通过判断，则添加请求体为none类型
+        inter.setBodyContent(MessageType.NONE, "");
     }
 
     /**
@@ -387,7 +438,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 设置请求头信息
         readHeader(inter, interElement);
         // 读取请求体信息
-        inter.setBody(readInterBody(interElement));
+        readInterBody(inter, interElement);
         // 读取响应体字符集
         inter.setCharsetname(readCharsetname(interElement));
         // 读取接口不同状态的响应报文格式
@@ -547,6 +598,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         public static final String XML_LABEL_BEFORE = "before";
         /**
+         * 定义file_body标签名称
+         */
+        public static final String XML_LABEL_FILE_BODY = "file_body";
+
+        /**
          * 定义name属性名称
          */
         public static final String XML_ATTRI_NAME = "name";
@@ -610,5 +666,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义environment属性名称
          */
         public static final String XML_ATTRI_ENVIRONMENT = "environment";
+        /**
+         * 定义file属性名称
+         */
+        public static final String XML_ATTRI_FILE = "file";
     }
 }
