@@ -48,6 +48,11 @@ import okhttp3.ResponseBody;
  */
 public class EasyResponse {
     /**
+     * 请求报文类对象
+     */
+    private Response response;
+
+    /**
      * 接口响应体内容
      */
     private byte[] responseBody;
@@ -71,6 +76,18 @@ public class EasyResponse {
      * 存储响应体的格式
      */
     private HashMap<Integer, Set<MessageType>> bodyTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 记录接口发送请求时的时间戳
+     */
+    private long sentRequestAtMillis = 0L;
+    /**
+     * 记录接口收到请求头时的时间戳
+     */
+    private long receivedResponseAtMillis = 0L;
+    /**
+     * 记录请求成功后的时间戳
+     */
+    private long timeAfterRequestAtMillis = 0L;
 
     /**
      * 构造对象，指定OKHttp响应类
@@ -78,6 +95,10 @@ public class EasyResponse {
      * @param response OKHttp响应类
      */
     protected EasyResponse(Response response) {
+        // 记录当前时间的时间戳
+        timeAfterRequestAtMillis = System.currentTimeMillis();
+
+        this.response = response;
         // 存储响应内容
         ResponseBody body = response.body();
         try {
@@ -94,6 +115,10 @@ public class EasyResponse {
         // 存储响应状态及消息
         status = response.code();
         message = response.message();
+        
+        // 存储请求时间
+        sentRequestAtMillis = response.sentRequestAtMillis();
+        receivedResponseAtMillis = response.receivedResponseAtMillis();
     }
 
     /**
@@ -157,7 +182,7 @@ public class EasyResponse {
      * @since autest 3.3.0
      */
     public int getStatus() {
-        return status;
+        return response.code();
     }
 
     /**
@@ -168,6 +193,52 @@ public class EasyResponse {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * 该方法用于返回从客户端发出请求时记录的时间戳
+     * 
+     * @return 从客户端发出请求的时刻记录的时间戳
+     * @since autest 3.4.0
+     */
+    public long getSentRequestAtMillis() {
+        return sentRequestAtMillis;
+    }
+
+    /**
+     * 该方法用于返回从服务器接收到请求头时记录的时间戳
+     * 
+     * @return 从服务器接收到请求头时记录的时间戳
+     * @since autest 3.4.0
+     */
+    public long getReceivedResponseAtMillis() {
+        return receivedResponseAtMillis;
+    }
+
+    /**
+     * 该方法用于返回接口请求成功后记录的时间戳
+     * 
+     * @return 接口请求成功后记录的时间戳
+     * @since autest 3.4.0
+     */
+    public long getTimeAfterRequestAtMillis() {
+        return timeAfterRequestAtMillis;
+    }
+
+    /**
+     * 该方法用于根据指定的接口开始请求时间与接口成功请求时间做差，返回其差值，单位为毫秒
+     * <p>
+     * 参数指定根据何种类型的时间计算，传入true表示以{@link #getSentRequestAtMillis()}方法返回的时间进行计算；传入false表示以
+     * {@link #getReceivedResponseAtMillis()}方法返回的时间进行计算
+     * </p>
+     * 
+     * @param isSentRequestTime 是否以从客户端发出请求时记录的时间戳进行计算
+     * @return 接口开始请求与结束请求之间的时间差
+     * @since autest 3.4.0
+     */
+    public long getResponseTimeDifferenceAtMillis(boolean isSentRequestTime) {
+        return getTimeAfterRequestAtMillis()
+                - (isSentRequestTime ? getSentRequestAtMillis() : getReceivedResponseAtMillis());
     }
 
     /**
@@ -768,5 +839,4 @@ public class EasyResponse {
 
         return keys[index];
     }
-
 }
