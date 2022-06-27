@@ -507,7 +507,7 @@ public class InterfaceInfo implements Cloneable {
      * 该方法用于设置请求报文以及请求报文的类型
      * 
      * @param messageType 报文类型枚举
-     * @param body        报文内容
+     * @param bodyObject  报文内容
      * @since autest 3.4.0
      */
     public void setBodyContent(MessageType messageType, Object bodyObject) {
