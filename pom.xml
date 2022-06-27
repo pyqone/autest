@@ -5,11 +5,11 @@
 
 	<groupId>com.gitee.pyqone</groupId>
 	<artifactId>autest</artifactId>
-	<version>3.3.0</version>
+	<version>3.4.0</version>
 	<packaging>jar</packaging>
 
 	<url>https://gitee.com/pyqone/autest</url>
-	<description>简化在测试工作中会使用到的代码，并提供工具类来辅助测试工作，提高测试工作的效率。</description>
+	<description>autest是一个测试辅助工具集，包括UI自动化工具、测试用例生成工具、接口测试工具以及数据生成和数据处理工具等等，通过代码的方式，辅助测试工作，使测试工作者尽可能从机械化的测试工作中解放，从而有时间做更多有意义的工作</description>
 	<name>autest</name>
 
 	<properties>

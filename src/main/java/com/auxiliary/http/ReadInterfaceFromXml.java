@@ -13,6 +13,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.AuxiliaryToolsException;
+import com.auxiliary.tool.file.TextFileReadUtil;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -82,7 +84,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
         // 读取环境集合
         Element environmentsElement = rootElement.element(XmlParamName.XML_LABEL_ENVIRONMENTS);
-        List<Element> environmentElementList = environmentsElement.elements();
+        List<Element> environmentElementList = Optional.ofNullable(environmentsElement).map(Element::elements)
+                .orElseGet(ArrayList::new);
         // 判断集合是否为空，若为不为空，则存储所有的环境，并设置默认环境
         if (!environmentElementList.isEmpty()) {
             // 获取所有得到环境，并存储所有的环境
@@ -99,8 +102,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 判断环境集合标签中是否指定默认环境，若存在，则将执行环境指向为默认环境；若不存在，则取环境集合的第一个元素
             String defaultenvironmentName = environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
-            actionEnvironment = environmentMap.containsKey(defaultenvironmentName) ? defaultenvironmentName
-                    : environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_NAME);
+            setActionEnvironment(environmentMap.containsKey(defaultenvironmentName) ? defaultenvironmentName
+                    : environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_NAME));
         }
     }
 
@@ -108,12 +111,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     public InterfaceInfo getInterface(String interName) {
         // 查找元素，并判断其是否指定环境属性
         Element interElement = findElement(interName);
-        String environmentName = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT)).orElse("");
-        if (environmentName.isEmpty()) {
-            return getInterface(interName, actionEnvironment);
-        } else {
-            return getInterface(interName, environmentName);
-        }
+        String environment = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT))
+                .filter(environmentMap::containsKey).map(environmentMap::get).orElse(actionEnvironment);
+        return raedInterInfo(interName, environment);
     }
 
     /**
@@ -167,7 +167,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @since autest 3.3.0
      */
     private String readInterPath(Element interElement) {
-        return interElement.attributeValue(XmlParamName.XML_ATTRI_PATH);
+        return Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_PATH)).orElse("");
     }
 
     /**
@@ -177,8 +177,56 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @return 请求体信息
      * @since autest 3.3.0
      */
-    private String readInterBody(Element interElement) {
-        return interElement.elementText(XmlParamName.XML_LABEL_BODY);
+    private void readInterBody(InterfaceInfo inter, Element interElement) {
+        // 获取模板中普通body元素
+        Element bodyElement = interElement.element(XmlParamName.XML_LABEL_BODY);
+        // 若元素存在，则按照普通body进行读取
+        if (bodyElement != null) {
+            // 获取元素的文本节点
+            String bodyText = Optional.ofNullable(bodyElement.getText()).orElse("");
+            // 若获取到的文本内容为空，则判断其是否包含file属性，若存在，则读取其内容
+            if (bodyText.isEmpty()) {
+                // 获取文件路径属性，并读取文件中的内容，若读取的内容存在问题，则设置bodyText为空
+                String filePath = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_FILE))
+                        .orElse("");
+                if (!filePath.isEmpty()) {
+                    try {
+                        bodyText = TextFileReadUtil.megerTextToTxt(new File(filePath), true);
+                    } catch (AuxiliaryToolsException e) {
+                        bodyText = "";
+                    }
+                }
+            }
+
+            // 获取消息类型属性
+            String messageTypeText = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
+                    .map(String::toUpperCase).orElse("");
+            // 消息类型转换为消息类型枚举，若转换失败，则按照文本格式进行识别
+            try {
+                inter.setBodyContent(MessageType.valueOf(messageTypeText), bodyText);
+            } catch (Exception e) {
+                inter.setBody(bodyText);
+            }
+
+            return;
+        }
+
+        // 若不存在普通body，则读取文本body类型
+        if ((bodyElement = interElement.element(XmlParamName.XML_LABEL_FILE_BODY)) != null) {
+            String filePath = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_FILE)).orElse("");
+            // 若文件路径不为空，则定义文件类对象
+            if (!filePath.isEmpty()) {
+                File file = new File(filePath);
+                // 若文件存在，且文件非文件夹路径，则设置在接口信息中设置相应的内容
+                if (file.exists() && file.isFile()) {
+                    inter.setBodyContent(MessageType.FILE, file);
+                    return;
+                }
+            }
+        }
+
+        // 若不存在标签，或内容未通过判断，则添加请求体为none类型
+        inter.setBodyContent(MessageType.NONE, "");
     }
 
     /**
@@ -268,19 +316,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 存储断言信息，生成断言json
             JSONObject extractJson = new JSONObject();
-            extractJson.put(JSON_EXTRACT_SAVE_NAME, saveName);
-            extractJson.put(JSON_EXTRACT_SEARCH,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_SAVE_NAME, saveName);
+            extractJson.put(ExtractResponse.JSON_EXTRACT_SEARCH,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
-            extractJson.put(JSON_EXTRACT_LB,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_LB,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_RB,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_RB,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_PARAM_NAME, Optional
+            extractJson.put(ExtractResponse.JSON_EXTRACT_PARAM_NAME, Optional
                     .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
-            extractJson.put(JSON_ASSERT_XPATH, Optional
+            extractJson.put(ExtractResponse.JSON_EXTRACT_XPATH, Optional
                     .ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
-            extractJson.put(JSON_EXTRACT_ORD,
+            extractJson.put(ExtractResponse.JSON_EXTRACT_ORD,
                     Optional.ofNullable(extractElement.attributeValue(XmlParamName.XML_ATTRI_ORD))
                             .orElseGet(() -> DEFAULT_ORD));
 
@@ -310,19 +358,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 存储断言信息，生成断言json
             JSONObject assertJson = new JSONObject();
-            assertJson.put(JSON_ASSERT_ASSERT_VALUE, assertValue);
-            assertJson.put(JSON_ASSERT_SEARCH,
+            assertJson.put(AssertResponse.JSON_ASSERT_ASSERT_REGEX, assertValue);
+            assertJson.put(AssertResponse.JSON_ASSERT_SEARCH,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
-            assertJson.put(JSON_ASSERT_LB, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_LB, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_RB,
+            assertJson.put(AssertResponse.JSON_ASSERT_RB,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_PARAM_NAME, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_PARAM_NAME, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_PARAMNAME)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_XPATH, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_XPATH, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_XPATH)).orElseGet(() -> ""));
-            assertJson.put(JSON_ASSERT_ORD, Optional
+            assertJson.put(AssertResponse.JSON_ASSERT_ORD, Optional
                     .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_ORD)).orElseGet(() -> DEFAULT_ORD));
 
             assertSet.add(assertJson.toJSONString());
@@ -345,33 +393,44 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     @Override
     public InterfaceInfo getInterface(String interName, String environmentName) {
+        return raedInterInfo(interName,
+                Optional.ofNullable(environmentMap.get(environmentName)).orElse(actionEnvironment));
+    }
+
+    /**
+     * 该方法用于根据指定的接口名称与执行的环境，构造相应的接口信息读取类对象
+     * 
+     * @param interName   接口名称
+     * @param environment 接口执行环境
+     * @return 接口信息类对象
+     * @since autest 3.4.0
+     */
+    private InterfaceInfo raedInterInfo(String interName, String environment) {
         if (interName == null || interName.isEmpty()) {
             throw new InterfaceReadToolsException("指定的接口名称为空或未指定接口名称：" + interName);
         }
 
         // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
         if (interfaceMap.containsKey(interName)) {
-            return interfaceMap.get(interName).clone();
+            InterfaceInfo inter = interfaceMap.get(interName).clone();
+            inter.analysisUrl(environment);
+            return inter;
         }
 
         // 若未缓存信息，则构造接口信息对象，添加接口信息
         InterfaceInfo inter = new InterfaceInfo();
         // 解析环境，获取环境主机等信息
-        if (environmentMap.containsKey(environmentName)) {
-            // 解析环境信息
-            inter.analysisUrl(environmentMap.get(environmentName));
-        } else {
-            if (!actionEnvironment.isEmpty()) {
-                inter.analysisUrl(environmentMap.get(actionEnvironment));
-            }
-        }
+        inter.analysisUrl(environment);
 
         // 查找元素
         Element interElement = findElement(interName);
         // 获取接口的url
         inter.analysisUrl(readInterUrl(interElement));
         // 获取接口的路径
-        inter.setPath(readInterPath(interElement));
+        String path = readInterPath(interElement);
+        if (!path.isEmpty()) {
+            inter.setPath(path);
+        }
         // 获取接口的请求方式
         inter.setRequestType(readInterRequestType(interElement));
         // 获取接口参数信息
@@ -379,7 +438,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 设置请求头信息
         readHeader(inter, interElement);
         // 读取请求体信息
-        inter.setBody(readInterBody(interElement));
+        readInterBody(inter, interElement);
         // 读取响应体字符集
         inter.setCharsetname(readCharsetname(interElement));
         // 读取接口不同状态的响应报文格式
@@ -539,6 +598,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         public static final String XML_LABEL_BEFORE = "before";
         /**
+         * 定义file_body标签名称
+         */
+        public static final String XML_LABEL_FILE_BODY = "file_body";
+
+        /**
          * 定义name属性名称
          */
         public static final String XML_ATTRI_NAME = "name";
@@ -602,5 +666,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义environment属性名称
          */
         public static final String XML_ATTRI_ENVIRONMENT = "environment";
+        /**
+         * 定义file属性名称
+         */
+        public static final String XML_ATTRI_FILE = "file";
     }
 }

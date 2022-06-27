@@ -96,4 +96,9 @@ public class Entry<K, V> {
     public Optional<K> getOptionalKey() {
         return Optional.ofNullable(key);
     }
+
+    @Override
+    public String toString() {
+        return "Entry [key=" + key + ", value=" + value + "]";
+    }
 }
