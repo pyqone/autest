@@ -53,75 +53,73 @@ public class DisposeCodeUtils {
         return newText.toString();
     }
 
-    public static int disposeIndex(int index, int maxIndex, int minIndex, boolean isArrayIndex,
+    public static int customizedIndex2ArrayIndex(int index, int minIndex, int maxIndex, int arrayIndexDiff,
             boolean isReverseOrderTraversal, boolean isMinEmptyIndexRandom, boolean isMaxEmptyIndexRandom,
             boolean isThrowException) {
         // 对下标进行初步判断
         if (maxIndex < minIndex) {
             throw new AuxiliaryToolsException(String.format("最大下标“%d”不能小于最小下标“%d”", maxIndex, minIndex));
         }
-        if (maxIndex <= 0) {
-            throw new AuxiliaryToolsException(String.format("最大下标“%d”不能小于等于0", maxIndex));
+        if (maxIndex <= 0 && minIndex <= 0) {
+            throw new AuxiliaryToolsException(String.format("最大或最小下标“%d”不能小于等于0", maxIndex));
         }
+        // 判断最小下标是否小于与数组下标的差值
+        if (minIndex < arrayIndexDiff) {
+            throw new AuxiliaryToolsException(String.format("最小下标“%d”不能小于下标差值“%d”", minIndex, arrayIndexDiff));
+        }
+
+        // 存储计算后的下标
+        int calcIndex = minIndex;
 
         // 计算随机数字
         int randomNumber = new Random().nextInt(maxIndex - minIndex + 1) + minIndex;
-        // 计算下标的绝对值， 并存储当前参数是否为负数
+        // 若允许反序遍历，则计算下标的绝对值， 并存储当前参数是否为负数
         boolean isMinusIndex = index < 0;
-        int absIndex = Math.abs(index);
-        // 若下标为数组下标，且下标为负数时，则下标绝对值需要+1，以满足反序遍历的需求
-        absIndex -= ((isMinusIndex && isArrayIndex) ? 1 : 0);
+        int absIndex = isReverseOrderTraversal ? Math.abs(index) : index;
 
-        // 当下标小于最大小标且大于最小小标时，则返回下标与最小下标的差值
+        // 判断下标绝对值小于最大小标且大于最小小标的情况
         if (absIndex <= maxIndex && absIndex >= minIndex) {
             // 判断指定下标是否为非负数
             if (!isMinusIndex) {
                 // 若下标为非负数，则根据下标是否为数组实际下标，对当前下标进行处理，并返回
-                return isArrayIndex ? index : (index - minIndex);
-            }
-
-            // 若下标为负数，则判断当前是否允许反序遍历
-            if (isReverseOrderTraversal) {
-
-            }
-        }
-
-        // 当下标大于最大下标时，则判断是否抛出异常，若不抛出异常，则取最大下标减去最小下标
-        if (index > maxIndex) {
-            if (isThrowException) {
-                throw new AuxiliaryToolsException(String.format("指定下标“%d”大于最大可用下标“%d”", index, maxIndex));
+                calcIndex = index;
             } else {
-                if (isMaxEmptyIndexRandom) {
-                    return randomNumber;
-                } else {
-                    return maxIndex;
-                }
+                calcIndex = maxIndex + index + minIndex;
             }
-        }
-
-        // 当下标小于最小下标，且不允许反序遍历时
-        if (index < minIndex && index >= (isReverseOrderTraversal ? 0 : Integer.MIN_VALUE)) {
+        } else if (absIndex > maxIndex) { // 判断下标绝对值大于最大下标的情况
             // 判断是否需要抛出异常
             if (isThrowException) {
-                throw new AuxiliaryToolsException(String.format("指定下标“%d”小于最小可用下标“%d”", index, minIndex));
+                throw new AuxiliaryToolsException(String.format("指定下标“%d”的绝对值大于最大可用下标“%d”", index, maxIndex));
+            }
+
+            // 判断当前下标是否为负数，大于最大值部分可不考虑
+            if (!isMinusIndex) {
+                // 若为非负数，则判断是否最大值随机，需要随机，则返回随机数；反之，返回最大下标
+                calcIndex = isMaxEmptyIndexRandom ? randomNumber : maxIndex;
             } else {
-                if (isMaxEmptyIndexRandom) {
-                    return randomNumber;
-                } else {
-                    return maxIndex;
-                }
+                // 若为负数，则判断是否最小值随机，则返回随机数；反之，返回最小下标
+                calcIndex = isMinEmptyIndexRandom ? randomNumber : minIndex;
+            }
+        } else { // 判断下标绝对值小于最小下标的情况
+            // 判断是否需要抛出异常
+            if (isThrowException) {
+                throw new AuxiliaryToolsException(String.format("指定下标“%d”的绝对值小于最小可用下标“%d”", index, minIndex));
+            }
+
+            // 判断当前下标是否为负数，并判断是否允许反序遍历
+            // 说明，此处存在以下情况：
+            // 1. 下标为正数，则不考虑是否允许反序遍历，直接按照最小值返回
+            // 2. 下标为负数，且不允许反序遍历，则按照最小值返回
+            // 3. 下标为负数，且允许反序遍历，则按照最大值返回
+            if (!isMinusIndex || !isReverseOrderTraversal) {
+                // 若为非负数，则判断是否最小值随机，需要随机，则返回随机数；反之，返回最小下标
+                calcIndex = isMinEmptyIndexRandom ? randomNumber : minIndex;
+            } else {
+                // 若为负数，则判断是否最大值随机，则返回随机数；反之，返回最大下标
+                calcIndex = isMaxEmptyIndexRandom ? randomNumber : maxIndex;
             }
         }
 
-        // 当允许反序遍历且下标小于0时
-        if (isReverseOrderTraversal && index < 0) {
-            // 获取下标的绝对值
-            int absIndex = Math.abs(index);
-
-            // 若绝对值大于介于最小和最大下标之间，则
-        }
-
-
-        return 0;
+        return calcIndex - arrayIndexDiff;
     }
 }
