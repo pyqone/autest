@@ -672,7 +672,8 @@ public class EasyResponse {
             if (elementType == 0) {
                 // 获取元素集合，并根据是否为尾元素，返回相应的内容
                 JSONArray arrJson = ((JSONObject) parentElement).getJSONArray(arrData.getKey());
-                int index = disposeArrIndex(arrData.getValue(), arrJson.size());
+                int index = DisposeCodeUtils.disposeArrayIndex(arrData.getValue(), 0, arrJson.size() - 1, false, false,
+                        false);
                 if (isEndElement) {
                     return arrJson.getString(index);
                 } else {
@@ -681,7 +682,8 @@ public class EasyResponse {
             } else if (elementType == 1) {
                 // 处理下标，并返回相应下标的内容
                 List<Element> elementList = ((Element) parentElement).elements(arrData.getKey());
-                int index = disposeArrIndex(arrData.getValue(), elementList.size());
+                int index = DisposeCodeUtils.disposeArrayIndex(arrData.getValue(), 0, elementList.size() - 1, false,
+                        false, false);
                 if (isEndElement) {
                     return elementList.get(index).getText();
                 } else {
@@ -731,28 +733,6 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于处理数组下标，将真实下标转义为可使用的下标
-     * <p>
-     * <b>注意：</b>该方法为临时对数组下标处理的方法，后续添加下标处理工具后，则将其弃用
-     * </p>
-     * 
-     * @param index  真实下标
-     * @param length 数组个数
-     * @return 实际下标
-     * @since autest 3.3.0
-     */
-    private int disposeArrIndex(int index, int length) {
-        // TODO 临时处理方式，后续考虑重构
-        if (index > length) {
-            return length - 1;
-        } else if (index >= 1 && index <= length) {
-            return index - 1;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
      * 该方法用于在存在完整边界的情况下，对文本的处理方法
      *
      * @param value         待提取内容
@@ -785,13 +765,7 @@ public class EasyResponse {
         }
         // 若存在提词内容，则对查找下标进行判断，获取到对应的词语
         // 由于index下标从1开始，且可能传入其他有问题的数字，故需要对下标进行处理
-        if (index < 1) {
-            index = 0;
-        } else if (index >= 1 && index <= size) {
-            index -= 1;
-        } else {
-            index = size - 1;
-        }
+        index = DisposeCodeUtils.customizedIndex2ArrayIndex(index, 1, size, 1, true, false, false, false);
 
         // 获取相应下标的文本
         String key = valueExtractList.get(index);

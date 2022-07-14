@@ -1,5 +1,8 @@
 package com.auxiliary.tool.common;
 
+import java.util.Random;
+
+import com.auxiliary.tool.common.enums.MathematicsSymbolType;
 import com.auxiliary.tool.regex.RegexType;
 
 /**
@@ -48,5 +51,143 @@ public class DisposeCodeUtils {
         }
 
         return newText.toString();
+    }
+
+    /**
+     * 该方法用于对自定义的下标进行处理，返回可用的数组下标的方法
+     * <p>
+     * 处理下标的规则如下：
+     * <ol>
+     * <li>当下标绝对值在最小下标与最大下标之间，且下标为正数时，则直接返回传入下标与数组下标的差值（下面简称真实下标）</li>
+     * <li>当下标绝对值在最小下标与最大下标之间，下标为负数，且不允许反序遍历时，则按照小于最小值处理</li>
+     * <li>当下标绝对值在最小下标与最大下标之间，下标为负数，且允许反序遍历时，则返回反序遍历后得到的真实下标</li>
+     * <li>当下标绝对值大于最大值，且下标为正数时，则根据大值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最大下标对应的真实下标</li>
+     * <li>当下标绝对值大于最大值，且下标为负数时，则根据小值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最小下标对应的真实下标</li>
+     * <li>当下标绝对值小于最小值，且下标为正数时，则根据小值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最小下标对应的真实下标</li>
+     * <li>当下标绝对值小于最小值，下标为负数，且不允许反序遍历时，则根据小值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最小下标对应的真实下标</li>
+     * <li>当下标绝对值小于最小值，下标为负数，且允许反序遍历时，则根据大值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最大下标对应的真实下标</li>
+     * </ol>
+     * </p>
+     * <p>
+     * <b>注意：</b>最大、最小或下标差值小于等于0，且最小下标不能小于差值，否则将抛出异常
+     * </p>
+     * 
+     * @param index                   待处理下标
+     * @param minIndex                自定义最小下标
+     * @param maxIndex                自定义最大下标
+     * @param arrayIndexDiff          自定义下标与数组下标的差值
+     * @param isReverseOrderTraversal 是否允许反序遍历
+     * @param isMinEmptyIndexRandom   小于最小下标时是否返回随机下标
+     * @param isMaxEmptyIndexRandom   大于最大下标时是否返回随机下标
+     * @param isThrowException        超出下标界限时是否抛出异常
+     * @return 程序可处理的数组下标
+     * @since autest 3.5.0
+     * @throws DisposeNumberException 非正常下标或最大、最小、下标差值传入有误时抛出的异常
+     */
+    public static int customizedIndex2ArrayIndex(int index, int minIndex, int maxIndex, int arrayIndexDiff,
+            boolean isReverseOrderTraversal, boolean isMinEmptyIndexRandom, boolean isMaxEmptyIndexRandom,
+            boolean isThrowException) {
+        // 对下标进行初步判断
+        DisposeNumberException.compareNumber("最大下标", maxIndex, "最小下标", minIndex, MathematicsSymbolType.LESS);
+        DisposeNumberException.compareNumber("最大下标", maxIndex, "", 0, MathematicsSymbolType.LESS_AND_EQUALS);
+        DisposeNumberException.compareNumber("最小下标", minIndex, "", 0, MathematicsSymbolType.LESS_AND_EQUALS);
+        DisposeNumberException.compareNumber("数组差值", arrayIndexDiff, "", 0, MathematicsSymbolType.LESS_AND_EQUALS);
+        DisposeNumberException.compareNumber("最小下标", minIndex, "数组差值", arrayIndexDiff,
+                MathematicsSymbolType.LESS);
+
+        // 存储计算后的下标
+        int calcIndex = minIndex;
+
+        // 计算随机数字
+        int randomNumber = new Random().nextInt(maxIndex - minIndex + 1) + minIndex;
+        // 若允许反序遍历，则计算下标的绝对值， 并存储当前参数是否为负数
+        boolean isMinusIndex = index < 0;
+        int absIndex = isReverseOrderTraversal ? Math.abs(index) : index;
+
+        // 判断下标绝对值小于最大小标且大于最小小标的情况
+        if (absIndex <= maxIndex && absIndex >= minIndex) {
+            // 判断指定下标是否为非负数
+            if (!isMinusIndex) {
+                // 若下标为非负数，则根据下标是否为数组实际下标，对当前下标进行处理，并返回
+                calcIndex = index;
+            } else {
+                calcIndex = maxIndex + index + minIndex;
+            }
+        } else if (absIndex > maxIndex) { // 判断下标绝对值大于最大下标的情况
+            // 判断是否需要抛出异常
+            if (isThrowException) {
+                throw new DisposeNumberException(String.format("指定下标“%d”的绝对值大于最大可用下标“%d”", index, maxIndex));
+            }
+            calcIndex = isMaxEmptyIndexRandom ? randomNumber : maxIndex;
+        } else { // 判断下标绝对值小于最小下标的情况
+            // 判断是否需要抛出异常
+            if (isThrowException) {
+                throw new DisposeNumberException(String.format("指定下标“%d”的绝对值小于最小可用下标“%d”", index, minIndex));
+            }
+
+            // 判断当前下标是否为负数，并判断是否允许反序遍历
+            // 说明，此处存在以下情况：
+            // 1. 下标为正数，则不考虑是否允许反序遍历，直接按照最小值返回
+            // 2. 下标为负数，且不允许反序遍历，则按照最小值返回
+            // 3. 下标为负数，且允许反序遍历，则按照最大值返回
+            if (!isMinusIndex || !isReverseOrderTraversal) {
+                // 若为非负数，则判断是否最小值随机，需要随机，则返回随机数；反之，返回最小下标
+                calcIndex = isMinEmptyIndexRandom ? randomNumber : minIndex;
+            } else {
+                // 若为负数，则判断是否最大值随机，则返回随机数；反之，返回最大下标
+                calcIndex = isMaxEmptyIndexRandom ? randomNumber : maxIndex;
+            }
+        }
+
+        return calcIndex - arrayIndexDiff;
+    }
+
+    /**
+     * 该方法用于对数组下标进行处理的方式
+     * <p>
+     * 处理下标的规则如下：
+     * <ol>
+     * <li>当下标在最小下标与最大下标之间时，则直接返回传入下标</li>
+     * <li>当下标大于最大值时，则根据大值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最大下标对应的真实下标</li>
+     * <li>当下标小于最小值时，则根据小值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最小下标对应的真实下标</li>
+     * </ol>
+     * </p>
+     * <p>
+     * <b>注意：</b>最大小于等于0，或最小值小于0，或最大值小于最小值时，将抛出异常
+     * </p>
+     * 
+     * @param index                 指定下标
+     * @param length                数组长度
+     * @param isMinEmptyIndexRandom 是否最小值随机
+     * @param isMaxEmptyIndexRandom 是否最大值随机
+     * @param isThrowException      是否抛出异常
+     * @return 处理后的下标
+     * @since autest 3.5.0
+     */
+    public static int disposeArrayIndex(int index, int minIndex, int maxIndex, boolean isMinEmptyIndexRandom,
+            boolean isMaxEmptyIndexRandom, boolean isThrowException) {
+        // 对最大、最小下标进行简单的判断
+        DisposeNumberException.compareNumber("最大下标", maxIndex, "最小下标", minIndex, MathematicsSymbolType.LESS);
+        DisposeNumberException.compareNumber("最大下标", maxIndex, "", 0, MathematicsSymbolType.LESS_AND_EQUALS);
+        DisposeNumberException.compareNumber("最小下标", minIndex, "", 0, MathematicsSymbolType.LESS);
+
+        int randomNum = new Random().nextInt(maxIndex - minIndex + 1) + minIndex;
+
+        // 判断下标在0之间的情况
+        if (index >= minIndex && index <= maxIndex) {
+            return index;
+        } else if (index > maxIndex) { // 判断大于最大下标的情况
+            if (isThrowException) {
+                throw new DisposeNumberException(String.format("指定下标“%d”超出数组最大下标“%d”", index, maxIndex));
+            } else {
+                return isMaxEmptyIndexRandom ? randomNum : maxIndex;
+            }
+        } else { // 判断小于0的情况
+            if (isThrowException) {
+                throw new DisposeNumberException(String.format("指定下标“%d”小于数组最小下标“%d”", index, minIndex));
+            } else {
+                return isMinEmptyIndexRandom ? randomNum : minIndex;
+            }
+        }
     }
 }
