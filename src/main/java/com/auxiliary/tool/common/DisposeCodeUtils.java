@@ -2,7 +2,6 @@ package com.auxiliary.tool.common;
 
 import java.util.Random;
 
-import com.auxiliary.AuxiliaryToolsException;
 import com.auxiliary.tool.common.enums.MathematicsSymbolType;
 import com.auxiliary.tool.regex.RegexType;
 
@@ -70,7 +69,8 @@ public class DisposeCodeUtils {
      * </ol>
      * </p>
      * <p>
-     * <b>注意：</b>最大、最小或下标差值小于等于0，且最小下标不能小于差值，否则将抛出异常/p>
+     * <b>注意：</b>最大、最小或下标差值小于等于0，且最小下标不能小于差值，否则将抛出异常
+     * </p>
      * 
      * @param index                   待处理下标
      * @param minIndex                自定义最小下标
@@ -82,7 +82,7 @@ public class DisposeCodeUtils {
      * @param isThrowException        超出下标界限时是否抛出异常
      * @return 程序可处理的数组下标
      * @since autest 3.5.0
-     * @throws AuxiliaryToolsException 非正常下标或最大、最小、下标差值传入有误时抛出的异常
+     * @throws DisposeNumberException 非正常下标或最大、最小、下标差值传入有误时抛出的异常
      */
     public static int customizedIndex2ArrayIndex(int index, int minIndex, int maxIndex, int arrayIndexDiff,
             boolean isReverseOrderTraversal, boolean isMinEmptyIndexRandom, boolean isMaxEmptyIndexRandom,
@@ -144,6 +144,17 @@ public class DisposeCodeUtils {
 
     /**
      * 该方法用于对数组下标进行处理的方式
+     * <p>
+     * 处理下标的规则如下：
+     * <ol>
+     * <li>当下标在最小下标与最大下标之间时，则直接返回传入下标</li>
+     * <li>当下标大于最大值时，则根据大值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最大下标对应的真实下标</li>
+     * <li>当下标小于最小值时，则根据小值是否随机返回，允许随机，则返回随机的真实下标；否则，返回最小下标对应的真实下标</li>
+     * </ol>
+     * </p>
+     * <p>
+     * <b>注意：</b>最大小于等于0，或最小值小于0，或最大值小于最小值时，将抛出异常
+     * </p>
      * 
      * @param index                 指定下标
      * @param length                数组长度
