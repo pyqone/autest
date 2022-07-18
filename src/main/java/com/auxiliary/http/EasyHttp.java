@@ -48,10 +48,6 @@ import okhttp3.RequestBody;
  */
 public class EasyHttp {
     /**
-     * 占位符标记
-     */
-    private final String FUNCTION_SIGN = "@\\{.+?\\}";
-    /**
      * 占位符起始符号
      */
     private final String FUNCTION_START_SIGN = "@\\{";
@@ -59,6 +55,11 @@ public class EasyHttp {
      * 占位符结束符号
      */
     private final String FUNCTION_END_SIGN = "\\}";
+    /**
+     * 占位符标记
+     */
+    private final String FUNCTION_SIGN = FUNCTION_START_SIGN + ".+?" + FUNCTION_END_SIGN;
+
     /**
      * 定义消息类型为NONE的请求体
      */
@@ -170,8 +171,14 @@ public class EasyHttp {
                 .forEach((key, value) -> newHeadMap.put(disposeContent(key), disposeContent(value)));
         // 对接口进行请求，获取响应类
         Entry<MessageType, Object> body = interInfo.getBodyContent();
+        // 获取请求体内容，若请求体为字符串，则对请求体进行处理
+        Object bodyContent = body.getValue();
+        if (bodyContent instanceof String) {
+            bodyContent = disposeContent((String) bodyContent);
+        }
+
         EasyResponse response = requst(interInfo.getRequestType(), disposeContent(interInfo.toUrlString()), newHeadMap,
-                body.getKey(), body.getValue());
+                body.getKey(), bodyContent);
         // 设置响应体解析字符集
         response.setCharsetName(interInfo.getCharsetname());
         // 设置响应体内容格式
@@ -278,7 +285,12 @@ public class EasyHttp {
         // 对接口进行请求
         Request request = requestBuilder.build();
         try {
-            return new EasyResponse(client.newCall(request).execute());
+            InterfaceInfo info = new InterfaceInfo();
+            info.analysisUrl(url);
+            info.setRequestType(requestType);
+            info.setBodyContent(messageType, body);
+            info.addRequestHeaderMap(requestHead);
+            return new EasyResponse(client.newCall(request).execute(), info);
         } catch (SocketTimeoutException e) {
             throw new HttpRequestException(String.format("接口请求超时，接口信息为：%s", url), e);
         } catch (IOException e) {

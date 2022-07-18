@@ -48,77 +48,44 @@ import okhttp3.ResponseBody;
  */
 public class EasyResponse {
     /**
-     * 请求报文类对象
+     * 存储接口响应信息
      */
-    private Response response;
-
-    /**
-     * 接口响应体内容
-     */
-    private byte[] responseBody;
-    /**
-     * 响应头集合
-     */
-    private HashMap<String, String> responseHeaderMap = new HashMap<>();
-    /**
-     * 响应状态码
-     */
-    private int status = 200;
-    /**
-     * 响应消息
-     */
-    private String message = "";
-    /**
-     * 响应体转义字符集
-     */
-    private String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
-    /**
-     * 存储响应体的格式
-     */
-    private HashMap<Integer, Set<MessageType>> bodyTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
-     * 记录接口发送请求时的时间戳
-     */
-    private long sentRequestAtMillis = 0L;
-    /**
-     * 记录接口收到请求头时的时间戳
-     */
-    private long receivedResponseAtMillis = 0L;
-    /**
-     * 记录请求成功后的时间戳
-     */
-    private long timeAfterRequestAtMillis = 0L;
+    ResponseInfo info = new ResponseInfo();
 
     /**
      * 构造对象，指定OKHttp响应类
      *
-     * @param response OKHttp响应类
+     * @param response  OKHttp响应类
+     * @param interInfo
      */
-    protected EasyResponse(Response response) {
+    protected EasyResponse(Response response, InterfaceInfo interInfo) {
         // 记录当前时间的时间戳
-        timeAfterRequestAtMillis = System.currentTimeMillis();
+        info.timeAfterRequestAtMillis = System.currentTimeMillis();
 
-        this.response = response;
+        // 记录接口实际请求信息
+        info.requestInterInfo = interInfo;
+        // 记录请求结果
+        info.response = response;
         // 存储响应内容
         ResponseBody body = response.body();
         try {
-            responseBody = body.bytes();
+            info.responseBody = body.bytes();
         } catch (IOException e) {
         }
 
         // 存储响应头
         Headers heads = response.headers();
         for (String head : heads.names()) {
-            responseHeaderMap.put(head, heads.get(head));
+            info.responseHeaderMap.put(head, heads.get(head));
         }
 
         // 存储响应状态及消息
-        status = response.code();
-        message = response.message();
+        info.status = response.code();
+        info.message = response.message();
         
         // 存储请求时间
-        sentRequestAtMillis = response.sentRequestAtMillis();
-        receivedResponseAtMillis = response.receivedResponseAtMillis();
+        info.sentRequestAtMillis = response.sentRequestAtMillis();
+        info.receivedResponseAtMillis = response.receivedResponseAtMillis();
     }
 
     /**
@@ -128,7 +95,7 @@ public class EasyResponse {
      * @since autest 3.3.0
      */
     public void setCharsetName(String charsetName) {
-        this.charsetName = charsetName;
+        info.charsetName = charsetName;
     }
 
     /**
@@ -139,7 +106,7 @@ public class EasyResponse {
      * @since autest 3.3.0
      */
     public void setMessageType(int status, Set<MessageType> messageSet) {
-        bodyTypeMap.put(status, new HashSet<>(messageSet));
+        info.bodyTypeMap.put(status, new HashSet<>(messageSet));
     }
 
     /**
@@ -149,7 +116,7 @@ public class EasyResponse {
      */
     public String getResponseBodyText() {
         try {
-            return new String(responseBody, charsetName);
+            return new String(info.responseBody, info.charsetName);
         } catch (UnsupportedEncodingException e) {
             throw new HttpResponseException("报文无法转义为字符串", e);
         }
@@ -162,7 +129,7 @@ public class EasyResponse {
      * @since autest 3.3.0
      */
     public byte[] getResponseBody() {
-        return responseBody;
+        return info.responseBody;
     }
 
     /**
@@ -172,7 +139,7 @@ public class EasyResponse {
      * @since autest 3.3.0
      */
     public Map<String, String> getResponseHeaderMap() {
-        return responseHeaderMap;
+        return info.responseHeaderMap;
     }
 
     /**
@@ -182,7 +149,7 @@ public class EasyResponse {
      * @since autest 3.3.0
      */
     public int getStatus() {
-        return response.code();
+        return info.response.code();
     }
 
     /**
@@ -192,7 +159,7 @@ public class EasyResponse {
      * @since autest 3.3.0
      */
     public String getMessage() {
-        return message;
+        return info.message;
     }
 
     /**
@@ -202,7 +169,7 @@ public class EasyResponse {
      * @since autest 3.4.0
      */
     public long getSentRequestAtMillis() {
-        return sentRequestAtMillis;
+        return info.sentRequestAtMillis;
     }
 
     /**
@@ -212,7 +179,7 @@ public class EasyResponse {
      * @since autest 3.4.0
      */
     public long getReceivedResponseAtMillis() {
-        return receivedResponseAtMillis;
+        return info.receivedResponseAtMillis;
     }
 
     /**
@@ -222,7 +189,7 @@ public class EasyResponse {
      * @since autest 3.4.0
      */
     public long getTimeAfterRequestAtMillis() {
-        return timeAfterRequestAtMillis;
+        return info.timeAfterRequestAtMillis;
     }
 
     /**
@@ -239,6 +206,20 @@ public class EasyResponse {
     public long getResponseTimeDifferenceAtMillis(boolean isSentRequestTime) {
         return getTimeAfterRequestAtMillis()
                 - (isSentRequestTime ? getSentRequestAtMillis() : getReceivedResponseAtMillis());
+    }
+
+    /**
+     * 该方法用于返回接口的实际请求信息
+     * <p>
+     * <b>注意：</b>返回的信息类仅存储请求接口的地址、请求类型、请求头和请求体信息，若通过{@link EasyHttp#requst(InterfaceInfo)}请求接口时，其除前面提到的信息外，
+     * 其他在{@link InterfaceInfo}参数中的信息将不会被存储
+     * </p>
+     * 
+     * @return 接口实际请求信息
+     * @since autest 3.5.0
+     */
+    public InterfaceInfo getRequestInterfaceInfo() {
+        return info.requestInterInfo.clone();
     }
 
     /**
@@ -386,9 +367,9 @@ public class EasyResponse {
         case HEADER:
             // 判断paramName参数是否为空串
             if (paramName.isEmpty()) {
-                value = responseHeaderMap.toString();
+                value = info.responseHeaderMap.toString();
             } else {
-                value = Optional.ofNullable(responseHeaderMap.get(paramName)).orElse("");
+                value = Optional.ofNullable(info.responseHeaderMap.get(paramName)).orElse("");
             }
             break;
         case BODY:
@@ -520,7 +501,8 @@ public class EasyResponse {
      */
     private String analysisBody(String bodyText, String paramName, String xpath) {
         // 根据响应状态，获取请求体类型
-        Set<MessageType> bodyTypeSet = Optional.ofNullable(bodyTypeMap.get(status)).orElseGet(() -> new HashSet<>());
+        Set<MessageType> bodyTypeSet = Optional.ofNullable(info.bodyTypeMap.get(info.status))
+                .orElseGet(() -> new HashSet<>());
 
         // 判断获取到的类型是否为空，若为空，则直接返回响应体文本
         if (bodyTypeSet.isEmpty()) {
@@ -812,5 +794,73 @@ public class EasyResponse {
         }
 
         return keys[index];
+    }
+
+    /**
+     * <p>
+     * <b>文件名：EasyResponse.java</b>
+     * </p>
+     * <p>
+     * <b>用途：</b> 定义接口响应的信息类，用于对接口响应工具的数据返回
+     * </p>
+     * <p>
+     * <b>编码时间：2022年7月15日 上午8:16:23
+     * </p>
+     * <p>
+     * <b>修改时间：2022年7月15日 上午8:16:23
+     * </p>
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     * @since autest 3.5.0
+     */
+    private class ResponseInfo {
+        /**
+         * 请求报文类对象
+         */
+        public Response response;
+
+        /**
+         * 接口响应体内容
+         */
+        public byte[] responseBody;
+        /**
+         * 响应头集合
+         */
+        public HashMap<String, String> responseHeaderMap = new HashMap<>();
+        /**
+         * 响应状态码
+         */
+        public int status = 200;
+        /**
+         * 响应消息
+         */
+        public String message = "";
+        /**
+         * 响应体转义字符集
+         */
+        public String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
+        /**
+         * 存储响应体的格式
+         */
+        public HashMap<Integer, Set<MessageType>> bodyTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        /**
+         * 记录接口发送请求时的时间戳
+         */
+        public long sentRequestAtMillis = 0L;
+        /**
+         * 记录接口收到请求头时的时间戳
+         */
+        public long receivedResponseAtMillis = 0L;
+        /**
+         * 记录请求成功后的时间戳
+         */
+        public long timeAfterRequestAtMillis = 0L;
+
+        /**
+         * 记录接口的实际请求
+         */
+        public InterfaceInfo requestInterInfo = new InterfaceInfo();
     }
 }

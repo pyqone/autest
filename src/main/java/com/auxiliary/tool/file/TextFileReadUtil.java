@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
 import org.apache.poi.hwpf.HWPFDocument;
@@ -282,8 +283,8 @@ public class TextFileReadUtil {
 	 * @return 拼接后的文本
 	 */
 	private static String megerText(List<String> textList, boolean isLine) {
-		StringBuilder megerText = new StringBuilder();
-		textList.stream().map(str -> str += (isLine ? "\n" : "")).forEach(megerText::append);
+        StringJoiner megerText = new StringJoiner("\n");
+        textList.forEach(megerText::add);
 		return megerText.toString();
 	}
 }
