@@ -1,7 +1,10 @@
 package com.auxiliary.tool.common;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
+import com.auxiliary.AuxiliaryToolsException;
 import com.auxiliary.tool.common.enums.MathematicsSymbolType;
 import com.auxiliary.tool.regex.RegexType;
 
@@ -189,5 +192,49 @@ public class DisposeCodeUtils {
                 return isMinEmptyIndexRandom ? randomNum : minIndex;
             }
         }
+    }
+
+    /**
+     * 该方法用于查找符号的在字符串中的下标值
+     * 
+     * @param text                  查找字符串
+     * @param findStr               待查找字符
+     * @param transferredMeaningStr 转义字符
+     * @return 待查找字符在字符串中的位置
+     * @since autest 3.5.0
+     */
+    public static int calcExtendStrIndex(String text, String findStr, String transferredMeaningStr) {
+        Optional.ofNullable(text).filter(s -> !s.isEmpty()).orElseThrow(() -> new AuxiliaryToolsException("未指定待查找字符串"));
+        Optional.ofNullable(findStr).filter(s -> !s.isEmpty())
+                .orElseThrow(() -> new AuxiliaryToolsException("未指定待查找符号"));
+        Optional.ofNullable(transferredMeaningStr).filter(s -> !s.isEmpty())
+                .orElseThrow(() -> new AuxiliaryToolsException("未指定转义字符"));
+
+        // 获取待查找符号在字符串中的下标
+        int index = text.indexOf(findStr);
+        // 定义累计下标值
+        int sumIndex = 0;
+
+        // 循环，直到查找下标小于0为止
+        while (index >= 0) {
+            // 判断当前下标是否在第一位，若为第一位，则直接返回累计下标
+            if (index == 0) {
+                return sumIndex;
+            }
+            // 判断当前下标前一个字符是否为转义字符，若不为转义字符，则返回累计下标加上获取到的下标
+            if (!Objects.equals(String.valueOf(text.charAt(index - 1)), transferredMeaningStr)) {
+                return sumIndex + index;
+            }
+
+            // 若未返回下标，则从当前获取到的下标处，截取字符串，形成新的判断字符串
+            text = text.substring(index + findStr.length());
+            // 累计下标值，“-1”表示由于获取的为下标，故再加上长度时，需要减去1才能得到下标；“+1”表示每次获取下标值时，都从0开始计算，故累计时需要加上1
+            sumIndex += ((index + findStr.length() - 1) + 1);
+            // 获取新串中查找字符串的位置
+            index = text.indexOf(findStr);
+        }
+
+        // 若通过循环仍未返回下标值，则返回-1，表示不存在需要查找的内容
+        return -1;
     }
 }

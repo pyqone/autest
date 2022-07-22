@@ -44,7 +44,7 @@ import okhttp3.ResponseBody;
  *
  * @author 彭宇琦
  * @version Ver1.0
- *
+ * @since autest 3.3.0
  */
 public class EasyResponse {
     /**

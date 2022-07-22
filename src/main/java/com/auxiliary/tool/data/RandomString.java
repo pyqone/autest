@@ -17,15 +17,28 @@ import java.util.stream.IntStream;
  * <b>编码时间：</b>2019年2月13日下午19:53:01
  * </p>
  * <p>
- * <b>修改时间：</b>2021年1月16日下午12:53:01
+ * <b>修改时间：</b>2022年7月19日 上午8:16:26
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.10
+ * @version Ver 1.20
  * @since JDK 1.8
- *
+ * @since autest 2.0.0
  */
 public class RandomString {
+    /**
+     * 定义种子扩展起始标识
+     */
+    private String SEED_EXPAND_START = "[";
+    /**
+     * 定义种子扩展结束标识
+     */
+    private String SEED_EXPAND_END = "]";
+    /**
+     * 定义种子扩展转义字符
+     */
+    private char SEED_EXPAND_TRANSFERRED_MEANING = '\\';
+
 	/**
 	 * 字符串池
 	 */
@@ -423,6 +436,8 @@ public class RandomString {
 	private void joinStringSeed(boolean isRepeat, String mode) {
 		// 过滤掉null与空串后，若存在数据，则根据条件，向字符串池中添加数据
 		Optional.ofNullable(mode).filter(text -> !text.isEmpty()).ifPresent(text -> {
+            // 对字符串种子的扩展识别
+            text = disponseModeExpand(text);
 			// 判断传入的参数是否允许字符串池中元素重复，若为true，则等同于调用addMode(StringMode... modes)
 			if (!isRepeat) {
 				// 判断字符串整串是否都在stringSeed中
@@ -444,15 +459,19 @@ public class RandomString {
 		});
 	}
 
-	/**
-	 * 用于根据字符串池，生成随机字符串
-	 * 
-	 * @param length     生成的字符串长度
-	 * @param stringSeed 字符串池
-	 * @return 生成的随机字符串
-	 * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
-	 *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
-	 */
+    private String disponseModeExpand(String text) {
+
+    }
+
+    /**
+     * 用于根据字符串池，生成随机字符串
+     * 
+     * @param length     生成的字符串长度
+     * @param stringSeed 字符串池
+     * @return 生成的随机字符串
+     * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
+     *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
+     */
 	private String createRandomString(int length, String stringSeed) {
 		// 判断需要生成的字符串长度是否小于1位长度
 		if (length < 1) {
