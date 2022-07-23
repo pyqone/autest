@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import com.auxiliary.tool.common.DisposeCodeUtils;
+
 /**
  * <p>
  * <b>文件名：</b>RandomString.java
@@ -37,7 +39,7 @@ public class RandomString {
     /**
      * 定义种子扩展转义字符
      */
-    private char SEED_EXPAND_TRANSFERRED_MEANING = '\\';
+    private String SEED_EXPAND_TRANSFERRED_MEANING = "\\";
 
 	/**
 	 * 字符串池
@@ -459,8 +461,55 @@ public class RandomString {
 		});
 	}
 
+    /**
+     * 该方法用于字符串模型中的扩展内容进行处理
+     * 
+     * @param text 字符串模型文本
+     * @return 处理后的模型文本
+     * @since autest 3.5.0
+     */
     private String disponseModeExpand(String text) {
+        StringBuilder newText = new StringBuilder();
+        // 循环，对扩展中的内容进行处理，直到文本中不存在起始扩展位置为止
+        while (true) {
+            // 获取起始位置
+            int expandStartIndex = DisposeCodeUtils.calcExtendStrIndex(text, SEED_EXPAND_START,
+                    SEED_EXPAND_TRANSFERRED_MEANING);
+            // 判断起始标志是否存在，若不存在，则拼接剩余文本，并结束循环
+            if (expandStartIndex == -1) {
+                newText.append(text);
+                break;
+            }
 
+            // 将text文本中的起始位置到扩展初始标识符位置截取，拼接至newText上
+            newText.append(text.substring(0, expandStartIndex));
+            // 将text文本从起始位置截取到结束位置，以便于获取扩展结束位置
+            text = text.substring(expandStartIndex);
+
+            // 获取截取后字符串中的扩展结束位置
+            int expandEndIndex = DisposeCodeUtils.calcExtendStrIndex(text, SEED_EXPAND_END,
+                    SEED_EXPAND_TRANSFERRED_MEANING);
+            // 判断是否存在结束位置，若不存在结束位置，则拼接剩余文本，并结束循环
+            if (expandEndIndex == -1) {
+                newText.append(text);
+                break;
+            }
+
+            // 若存在结束位置，则获取并处理
+            String expandText = text.substring(0, expandEndIndex);
+            // TODO 处理扩展方法
+
+            // 拼接扩展文本
+            newText.append(expandText);
+            // 判断扩展终止位置是否为文本末尾，若为文本末尾，则结束循环
+            if (expandEndIndex == text.length() - 1) {
+                break;
+            }
+            // 若不为文本末尾，则从结束位置后一个单位截取生成新字符串
+            text = text.substring(expandEndIndex + 1);
+        }
+
+        return newText.toString();
     }
 
     /**
