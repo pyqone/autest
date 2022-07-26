@@ -1,6 +1,7 @@
 package com.auxiliary.tool.data;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 
 import org.apache.commons.lang3.RandomUtils;
@@ -310,5 +311,83 @@ public class PresetString {
 
 		// 判断生成的随机数字是否小于0，若小于0，则在负号后面补0
 		return randomNumText.substring(0, randomNumText.indexOf(".") + length + 1);
+	}
+
+    /**
+     * 该方法用于根据指定的起始字符与结束字符，通过在{@link StringMode}中找到其字符对应的模型，之后按照顺序，根据指定的步长，截取模型对应的文本内容进行返回
+     * <ul>
+     * 根据字符查找模型的机制为，将字符与{@link StringMode}枚举中的所有模型进行对比，直到找到字符所在的模型为止，则存在以下几种情况：
+     * <li>获取到的起始模型与结束模型相同时，此时存在以下4种情况：
+     * <ol>
+     * <li>当开始下标不存在时，则获取模型字符串的第一位到结束下标的字符串，例如，传入{@code createOrderlyText(";", "c", 1)}</li>
+     * <li></li>
+     * <li></li>
+     * <li></li>
+     * </ol>
+     * </li>
+     * <li></li>
+     * <li></li>
+     * </ul>
+     * 
+     * @param startChar 起始字符
+     * @param endChar   结束字符
+     * @param step      步长
+     * @return 通过查找模型根据步长拼接的字符串
+     * @since autest 3.5.0
+     */
+    public static String createOrderlyText(String startChar, String endChar, int step) {
+        // 获取开始与结束字符串模型
+        StringMode startMode = StringMode.judgeMode(startChar);
+        StringMode endMode = StringMode.judgeMode(endChar);
+
+        // 获取开始与结束字符在模型中的位置
+        int startModeIndex = Optional.ofNullable(startMode).map(mode -> mode.getSeed().indexOf(startChar)).orElse(-1);
+        int endModeIndex = Optional.ofNullable(endMode).map(mode -> mode.getSeed().indexOf(endChar)).orElse(-1);
+
+        // 存储截取后的字符串
+        String modeText = "";
+
+        // 若两模型相同，则根据模型所在的位置，截取相应的字符串
+        if (startMode == endMode) {
+            String seed = startMode.getSeed();
+            // 判断下标存在以下四种情况：
+            // 1. 当开始与结束下标均不存在时，则不进行获取
+            // 2. 当开始下标与结束下标均存在时，则存在以下两种情况：
+            // 2.1 起始下标等于结束下标时，则存储字符串模型中该下标对应的字符
+            // 2.2 起始下标小于结束下标时，则获取字符串模型中从起始下标到结束下标的字符串
+            // 2.3 起始下标大于结束下标时，则将字符串模型反序，再获取反序后的模型中从起始下标到结束下标的字符串
+            if (startModeIndex != -1 && endModeIndex != -1) {
+                if (startModeIndex == endModeIndex) {
+                    modeText = String.valueOf(seed.charAt(startModeIndex));
+                } else if (startModeIndex < endModeIndex) {
+                    modeText = seed.substring(startModeIndex, endModeIndex + 1);
+                } else {
+                    modeText = new StringBuilder(seed).reverse().substring(endModeIndex, startModeIndex);
+                }
+            } else {
+                modeText = "";
+            }
+        } else {
+            // 若两模型不相同，则获取起始模型从起始下标（如果存在），直至起始模型结尾；获取结束模型开始，直至结束下标（如果存在）
+            if (startModeIndex != -1) {
+                modeText = startMode.getSeed().substring(startModeIndex);
+            }
+            if (endModeIndex != -1) {
+                modeText += startMode.getSeed().substring(0, endModeIndex + 1);
+            }
+        }
+        
+        // 若组合的模型文本长度小于2或者步长小于2，则直接返回模型文本
+        if (modeText.length() < 2 || step < 2) {
+            return modeText;
+        }
+
+        // 根据步长，对模型文本进行分解，得到最终返回的模型文本
+        StringBuilder returnText = new StringBuilder();
+        for (int i = 0; i < modeText.length(); i += 2) {
+            returnText.append(modeText.charAt(i));
+        }
+
+        return returnText.toString();
 	}
 }

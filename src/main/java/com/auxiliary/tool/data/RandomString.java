@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.tool.common.DisposeCodeUtils;
 
 /**
@@ -59,6 +60,21 @@ public class RandomString {
 	 * 控制在需要生成的字符串大于字符串池时的处理方式
 	 */
 	private RepeatDisposeType dispose = RepeatDisposeType.DISPOSE_REPEAT;
+
+    /**
+     * 用于存储扩展判定正则表达式
+     */
+    private static ArrayList<DataDriverFunction> expandRegexList = new ArrayList<>();
+    // 录入支持的扩展正则表示
+    static {
+        String str = "[0-9a-zA-Z]";
+        expandRegexList.add(new DataDriverFunction(String.format("%s-%s", str, str), text -> {
+            // 按照“-”符号进行切分，得到需要
+            String[] dataTexts = text.split("-");
+
+            return text;
+        }));
+    }
 
 	/**
 	 * 初始化字符串池，使其不包含任何元素
@@ -496,7 +512,7 @@ public class RandomString {
             }
 
             // 若存在结束位置，则获取并处理
-            String expandText = text.substring(0, expandEndIndex);
+            String expandText = text.substring(1, expandEndIndex);
             // TODO 处理扩展方法
 
             // 拼接扩展文本
@@ -510,6 +526,10 @@ public class RandomString {
         }
 
         return newText.toString();
+    }
+
+    private String translateExpand(String expandText) {
+
     }
 
     /**

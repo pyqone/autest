@@ -82,4 +82,27 @@ public enum StringMode {
 	public String getSeed() {
 		return seed;
 	}
+
+    /**
+     * 该方法用于根据指定的字符串，判断其在哪类枚举中，并返回查找到的枚举值
+     * 
+     * @param text 判定文本
+     * @return 判定文本所在的枚举
+     * @since autest 3.5.0
+     */
+    public static StringMode judgeMode(String text) {
+        for (StringMode type : values()) {
+            // 若遍历到枚举ALL，则不进行判断
+            if (type == ALL) {
+                continue;
+            }
+
+            // 若传入的内容在枚举中，则返回相应枚举内容
+            if (type.getSeed().contains(text)) {
+                return type;
+            }
+        }
+        
+        return null;
+    }
 }
