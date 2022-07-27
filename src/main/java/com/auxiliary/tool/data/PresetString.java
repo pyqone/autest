@@ -317,17 +317,20 @@ public class PresetString {
      * 该方法用于根据指定的起始字符与结束字符，通过在{@link StringMode}中找到其字符对应的模型，之后按照顺序，根据指定的步长，截取模型对应的文本内容进行返回
      * <ul>
      * 根据字符查找模型的机制为，将字符与{@link StringMode}枚举中的所有模型进行对比，直到找到字符所在的模型为止，则存在以下几种情况：
-     * <li>获取到的起始模型与结束模型相同时，此时存在以下4种情况：
+     * <li>获取到的起始模型与结束模型相同，且均能找到模型时，此时存在以下3种情况：
      * <ol>
-     * <li>当开始下标不存在时，则获取模型字符串的第一位到结束下标的字符串，例如，传入{@code createOrderlyText(";", "c", 1)}</li>
-     * <li></li>
-     * <li></li>
-     * <li></li>
+     * <li>当起始字符与结束字符相同时，则返回该字符</li>
+     * <li>当起始字符所在位置小于结束字符所在位置时，则按照模型顺序截取相应段落的字符串，例如，传入{@code createOrderlyText("b", "d", 1)}，则返回“bcd”</li>
+     * <li>当起始字符所在位置大于结束字符所在位置时，则将模型反序，再按照顺序截取相应段落的字符串，例如，传入{@code createOrderlyText("d", "b", 1)}，则返回“dcb”</li>
      * </ol>
      * </li>
-     * <li></li>
-     * <li></li>
+     * <li>获取到的起始模型与结束模型不相同，且均能找到模型时，则截取起始字符所在模型从起始字符开始到模型末尾，再截取结束字符所在模型的开头到结束字符，将其拼接，例如，传入{@code createOrderlyText("w", "3", 1)}，则返回“wxyz123”</li>
+     * <li>当起始字符未找对应模型时，则获取模型字符串的第一位到结束下标的字符串，例如，传入{@code createOrderlyText(";", "c", 1)}，则返回“abc”</li>
+     * <li>当结束字符未找对应模型时，则获取模型字符串的起始字符到末尾的字符串，例如，传入{@code createOrderlyText("x", ";", 1)}，则返回“xyz”</li>
      * </ul>
+     * <p>
+     * 步长表示在截取到的字符串中，再取相应间隔的字符再次组成字符串，例如，传入{@code createOrderlyText("1", "9", 2)}，则返回“13579”
+     * </p>
      * 
      * @param startChar 起始字符
      * @param endChar   结束字符
@@ -347,25 +350,23 @@ public class PresetString {
         // 存储截取后的字符串
         String modeText = "";
 
-        // 若两模型相同，则根据模型所在的位置，截取相应的字符串
-        if (startMode == endMode) {
+        // 若两模型相同，且均不为null时（下标为-1），则根据模型所在的位置，截取相应的字符串
+        if (startMode == endMode && startModeIndex != -1) {
             String seed = startMode.getSeed();
-            // 判断下标存在以下四种情况：
-            // 1. 当开始与结束下标均不存在时，则不进行获取
-            // 2. 当开始下标与结束下标均存在时，则存在以下两种情况：
-            // 2.1 起始下标等于结束下标时，则存储字符串模型中该下标对应的字符
-            // 2.2 起始下标小于结束下标时，则获取字符串模型中从起始下标到结束下标的字符串
-            // 2.3 起始下标大于结束下标时，则将字符串模型反序，再获取反序后的模型中从起始下标到结束下标的字符串
-            if (startModeIndex != -1 && endModeIndex != -1) {
-                if (startModeIndex == endModeIndex) {
-                    modeText = String.valueOf(seed.charAt(startModeIndex));
-                } else if (startModeIndex < endModeIndex) {
-                    modeText = seed.substring(startModeIndex, endModeIndex + 1);
-                } else {
-                    modeText = new StringBuilder(seed).reverse().substring(endModeIndex, startModeIndex);
-                }
+            // 判断下标存在以下三种情况：
+            // 1 起始下标等于结束下标时，则存储字符串模型中该下标对应的字符
+            // 2 起始下标小于结束下标时，则获取字符串模型中从起始下标到结束下标的字符串
+            // 3 起始下标大于结束下标时，则将字符串模型反序，再获取反序后的模型中从起始下标到结束下标的字符串
+            if (startModeIndex == endModeIndex) {
+                modeText = String.valueOf(seed.charAt(startModeIndex));
+            } else if (startModeIndex < endModeIndex) {
+                modeText = seed.substring(startModeIndex, endModeIndex + 1);
             } else {
-                modeText = "";
+                StringBuilder reverseSeed = new StringBuilder(seed).reverse();
+                endModeIndex = reverseSeed.indexOf(endChar);
+                startModeIndex = reverseSeed.indexOf(startChar);
+
+                modeText = new StringBuilder(seed).reverse().substring(startModeIndex, endModeIndex + 1);
             }
         } else {
             // 若两模型不相同，则获取起始模型从起始下标（如果存在），直至起始模型结尾；获取结束模型开始，直至结束下标（如果存在）
@@ -373,7 +374,7 @@ public class PresetString {
                 modeText = startMode.getSeed().substring(startModeIndex);
             }
             if (endModeIndex != -1) {
-                modeText += startMode.getSeed().substring(0, endModeIndex + 1);
+                modeText += endMode.getSeed().substring(0, endModeIndex + 1);
             }
         }
         
@@ -384,7 +385,7 @@ public class PresetString {
 
         // 根据步长，对模型文本进行分解，得到最终返回的模型文本
         StringBuilder returnText = new StringBuilder();
-        for (int i = 0; i < modeText.length(); i += 2) {
+        for (int i = 0; i < modeText.length(); i += step) {
             returnText.append(modeText.charAt(i));
         }
 
