@@ -160,7 +160,8 @@ public class DisposeCodeUtils {
      * </p>
      * 
      * @param index                 指定下标
-     * @param length                数组长度
+     * @param minIndex              最小下标
+     * @param maxIndex              最大下标
      * @param isMinEmptyIndexRandom 是否最小值随机
      * @param isMaxEmptyIndexRandom 是否最大值随机
      * @param isThrowException      是否抛出异常
