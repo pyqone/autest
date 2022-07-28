@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import com.auxiliary.datadriven.DataDriverFunction;
+import com.auxiliary.tool.common.DisposeCodeUtils;
+
 /**
  * <p>
  * <b>文件名：</b>RandomString.java
@@ -17,15 +20,28 @@ import java.util.stream.IntStream;
  * <b>编码时间：</b>2019年2月13日下午19:53:01
  * </p>
  * <p>
- * <b>修改时间：</b>2021年1月16日下午12:53:01
+ * <b>修改时间：</b>2022年7月19日 上午8:16:26
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.10
+ * @version Ver 1.20
  * @since JDK 1.8
- *
+ * @since autest 2.0.0
  */
 public class RandomString {
+    /**
+     * 定义种子扩展起始标识
+     */
+    private String SEED_EXPAND_START = "[";
+    /**
+     * 定义种子扩展结束标识
+     */
+    private String SEED_EXPAND_END = "]";
+    /**
+     * 定义种子扩展转义字符
+     */
+    private String SEED_EXPAND_TRANSFERRED_MEANING = "\\";
+
 	/**
 	 * 字符串池
 	 */
@@ -45,10 +61,44 @@ public class RandomString {
 	 */
 	private RepeatDisposeType dispose = RepeatDisposeType.DISPOSE_REPEAT;
 
-	/**
-	 * 初始化字符串池，使其不包含任何元素
-	 */
-	public RandomString() {
+    /**
+     * 用于存储扩展判定正则表达式
+     */
+    private ArrayList<DataDriverFunction> expandRegexList = new ArrayList<>();
+
+    /**
+     * 初始化字符串池，使其不包含任何元素
+     */
+    public RandomString() {
+        String str = "[0-9a-zA-Z]";
+        // 添加按照字母或数字顺序生成模型的方法
+        expandRegexList.add(new DataDriverFunction(String.format("%s-%s", str, str), text -> {
+            String[] dataTexts = text.split("-");
+            return PresetString.createOrderlyText(dataTexts[0], dataTexts[1], 1);
+        }));
+
+        // 添加按照字母顺序，根据步长生成模型的方法
+        expandRegexList.add(new DataDriverFunction(String.format("%s~%s~%s", str, str, "\\d"), text -> {
+            String[] dataTexts = text.split("~");
+            return PresetString.createOrderlyText(dataTexts[0], dataTexts[1], Integer.valueOf(dataTexts[2]));
+        }));
+
+        // 添加生成指定个数的重复字符的方法
+        expandRegexList.add(new DataDriverFunction(".\\*\\d+", text -> {
+            String[] dataTexts = text.split("\\*");
+            StringBuilder newText = new StringBuilder();
+            for (int i = 0; i < Integer.valueOf(dataTexts[1]); i++) {
+                newText.append(dataTexts[0]);
+            }
+
+            return newText.toString();
+        }));
+
+        // 添加生成指定个数的中文方法
+        expandRegexList.add(new DataDriverFunction("(c|C)(h|H)\\*\\d+", text -> {
+            // 从第4位开始截取，“CH*”直接抛弃
+            return StringMode.CH.getSeed().substring(0, Integer.valueOf(text.substring(3, text.length())));
+        }));
 	}
 
 	/**
@@ -57,6 +107,7 @@ public class RandomString {
 	 * @param stringModes 需要加入字符串池中的模型（为{@link StringMode}枚举对象）
 	 */
 	public RandomString(StringMode... stringModes) {
+        this();
 		addMode(stringModes);
 	}
 
@@ -66,8 +117,19 @@ public class RandomString {
 	 * @param mode 需要加入字符串池中的模型
 	 */
 	public RandomString(String mode) {
+        this();
 		addMode(mode);
 	}
+
+    /**
+     * 该方法用于添加自定义的扩展方法
+     * 
+     * @param function 扩展方法
+     * @since autest 3.5.0
+     */
+    public void addExtend(DataDriverFunction function) {
+        Optional.ofNullable(function).ifPresent(expandRegexList::add);
+    }
 
 	/**
 	 * 设置产生的随机字符串中是否允许存在重复的字符，默认为允许重复。
@@ -145,12 +207,25 @@ public class RandomString {
 	}
 
 	/**
-	 * 用于向字符串池中添加自定义的字符串，通过该方法添加的字符串将不检查字符串池中是否存在与之重复的元素
-	 * 
-	 * @param mode 需要加入到字符串池中的模型
-	 * 
-	 * @return 类本身
-	 */
+     * 用于向字符串池中添加自定义的字符串，通过该方法添加的字符串将不检查字符串池中是否存在与之重复的元素
+     * <p>
+     * 字符串模型支持扩展方法，可通过{@link #addExtend(DataDriverFunction)}方法，对字符串扩展方法进行添加，亦可使用默认的扩展方法。其扩展需要使用中括号“[]”
+     * 表示，其中括号中的内容为进行识别的扩展内容。默认的扩展方法包括：
+     * <ul>
+     * <li>按照{@link StringMode}中各个枚举定义的字符顺序，添加字符串模型，如传入“[a-c]”，则生成的字符串模型为“abc”</li>
+     * <li>按照{@link StringMode}中各个枚举定义的字符顺序，根据步长生成字符串模型，如传入“[1~9~2]”，则生成的模型为“13579”</li>
+     * <li>生成指定个数的字符模型，如传入“[a*3]”，则生成的模型为“aaa”</li>
+     * <li>按照{@link StringMode#CH}中定义的汉字顺序，取指定个数的中文字符，如传入“[ch*3]”，则生成的模型为“早晨我”</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <b>注意：</b>若
+     * </p>
+     * 
+     * @param mode 需要加入到字符串池中的模型
+     * 
+     * @return 类本身
+     */
 	public RandomString addMode(String mode) {
 		return addMode(true, mode);
 	}
@@ -423,6 +498,8 @@ public class RandomString {
 	private void joinStringSeed(boolean isRepeat, String mode) {
 		// 过滤掉null与空串后，若存在数据，则根据条件，向字符串池中添加数据
 		Optional.ofNullable(mode).filter(text -> !text.isEmpty()).ifPresent(text -> {
+            // 对字符串种子的扩展识别
+            text = disponseModeExpand(text);
 			// 判断传入的参数是否允许字符串池中元素重复，若为true，则等同于调用addMode(StringMode... modes)
 			if (!isRepeat) {
 				// 判断字符串整串是否都在stringSeed中
@@ -444,15 +521,89 @@ public class RandomString {
 		});
 	}
 
-	/**
-	 * 用于根据字符串池，生成随机字符串
-	 * 
-	 * @param length     生成的字符串长度
-	 * @param stringSeed 字符串池
-	 * @return 生成的随机字符串
-	 * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
-	 *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
-	 */
+    /**
+     * 该方法用于字符串模型中的扩展内容进行处理
+     * 
+     * @param text 字符串模型文本
+     * @return 处理后的模型文本
+     * @since autest 3.5.0
+     */
+    private String disponseModeExpand(String text) {
+        StringBuilder newText = new StringBuilder();
+        // 循环，对扩展中的内容进行处理，直到文本中不存在起始扩展位置为止
+        while (true) {
+            // 获取起始位置
+            int expandStartIndex = DisposeCodeUtils.calcExtendStrIndex(text, SEED_EXPAND_START,
+                    SEED_EXPAND_TRANSFERRED_MEANING);
+            // 判断起始标志是否存在，若不存在，则拼接剩余文本，并结束循环
+            if (expandStartIndex == -1) {
+                newText.append(deleteTransferred(text));
+                break;
+            }
+
+            // 将text文本中的起始位置到扩展初始标识符位置截取，拼接至newText上
+            newText.append(deleteTransferred(text.substring(0, expandStartIndex)));
+            // 将text文本从起始位置截取到结束位置，以便于获取扩展结束位置
+            text = text.substring(expandStartIndex);
+
+            // 获取截取后字符串中的扩展结束位置
+            int expandEndIndex = DisposeCodeUtils.calcExtendStrIndex(text, SEED_EXPAND_END,
+                    SEED_EXPAND_TRANSFERRED_MEANING);
+            // 判断是否存在结束位置，若不存在结束位置，则拼接剩余文本，并结束循环
+            if (expandEndIndex == -1) {
+                newText.append(deleteTransferred(text));
+                break;
+            }
+
+            // 若存在结束位置，则获取并处理
+            String expandText = text.substring(1, expandEndIndex);
+            // 循环，将扩展文本与扩展公式集合进行对比，若符合对比的正则，则对扩展文本进行处理
+            for (DataDriverFunction function : expandRegexList) {
+                if (function.matchRegex(expandText)) {
+                    expandText = function.getFunction().apply(expandText);
+                    break;
+                }
+            }
+            // 拼接扩展文本
+            newText.append(expandText);
+
+            // 判断扩展终止位置是否为文本末尾，若为文本末尾，则结束循环
+            if (expandEndIndex == text.length() - 1) {
+                break;
+            }
+            // 若不为文本末尾，则从结束位置后一个单位截取生成新字符串
+            text = text.substring(expandEndIndex + 1);
+        }
+
+        return newText.toString();
+    }
+
+    /**
+     * 该方法用于对非扩展符号进行处理，去除其转义符号
+     * 
+     * @param text 原文本
+     * @return 处理后的文本
+     * @since autest 3.5.0
+     */
+    private String deleteTransferred(String text) {
+        return text
+                .replaceAll(
+                        DisposeCodeUtils.disposeRegexSpecialSymbol(SEED_EXPAND_TRANSFERRED_MEANING + SEED_EXPAND_START),
+                        SEED_EXPAND_START)
+                .replaceAll(
+                        DisposeCodeUtils.disposeRegexSpecialSymbol(SEED_EXPAND_TRANSFERRED_MEANING + SEED_EXPAND_END),
+                        SEED_EXPAND_END);
+    }
+
+    /**
+     * 用于根据字符串池，生成随机字符串
+     * 
+     * @param length     生成的字符串长度
+     * @param stringSeed 字符串池
+     * @return 生成的随机字符串
+     * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
+     *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
+     */
 	private String createRandomString(int length, String stringSeed) {
 		// 判断需要生成的字符串长度是否小于1位长度
 		if (length < 1) {
