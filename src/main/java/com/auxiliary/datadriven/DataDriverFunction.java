@@ -3,15 +3,42 @@ package com.auxiliary.datadriven;
 import java.util.Optional;
 
 /**
- * <p><b>文件名：</b>DataDriverFunction.java</p>
- * <p><b>用途：</b>
- * 用于存储数据驱动中处理数据的公式
+ * <p>
+ * <b>文件名：</b>DataDriverFunction.java
  * </p>
- * <p><b>编码时间：</b>2020年6月12日上午8:27:04</p>
- * <p><b>修改时间：</b>2020年6月12日上午8:27:04</p>
+ * <p>
+ * <b>用途：</b> 用于存储数据驱动中处理数据的公式
+ * <p>
+ * 可使用lambda表达式来简化添加公式的写法，例如，在集合中添加一个重复生成指定个数字符的方法，则可写作如下的形式：
+ * 
+ * <pre>
+ * <code>
+ * ArrayList<DataDriverFunction> funList = new ArrayList<>();
+ * funList.add(new DataDriverFunction(".*\\d", text -> {
+ *      String[] dataTexts = text.split("\\*");
+ *      StringBuilder newText = new StringBuilder();
+ *      
+ *      for (int i = 0; i < Integer.valueOf(dataTexts[1]); i++) {
+ *          newText.append(dataTexts[0]);
+ *      }
+ *      
+ *      return newText.toString();
+ *  }));
+ * </code>
+ * </pre>
+ * </p>
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2020年6月12日上午8:27:04
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2020年6月12日上午8:27:04
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
- *
+ * @since JDK 1.8
+ * @since autest 2.0.0
  */
 public class DataDriverFunction {
 	/**
@@ -70,18 +97,23 @@ public class DataDriverFunction {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		DataDriverFunction other = (DataDriverFunction) obj;
 		if (regex == null) {
-			if (other.regex != null)
-				return false;
-		} else if (!regex.equals(other.regex))
-			return false;
+			if (other.regex != null) {
+                return false;
+            }
+		} else if (!regex.equals(other.regex)) {
+            return false;
+        }
 		return true;
 	}
 
