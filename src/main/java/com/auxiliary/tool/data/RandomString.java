@@ -68,11 +68,32 @@ public class RandomString {
     // 录入支持的扩展正则表示
     static {
         String str = "[0-9a-zA-Z]";
+        // 添加按照字母或数字顺序生成模型的方法
         expandRegexList.add(new DataDriverFunction(String.format("%s-%s", str, str), text -> {
-            // 按照“-”符号进行切分，得到需要
             String[] dataTexts = text.split("-");
+            return PresetString.createOrderlyText(dataTexts[0], dataTexts[1], 1);
+        }));
 
-            return text;
+        // 添加按照字母顺序，根据步长生成模型的方法
+        expandRegexList.add(new DataDriverFunction(String.format("%s~%s~%s", str, "\\d"), text -> {
+            String[] dataTexts = text.split("~");
+            return PresetString.createOrderlyText(dataTexts[0], dataTexts[1], Integer.valueOf(dataTexts[2]));
+        }));
+
+        // 添加生成指定个数的重复字符的方法
+        expandRegexList.add(new DataDriverFunction(".*\\d", text -> {
+            String[] dataTexts = text.split("\\*");
+            StringBuilder newText = new StringBuilder();
+            for (int i = 0; i < Integer.valueOf(dataTexts[1]); i++) {
+                newText.append(dataTexts[0]);
+            }
+
+            return newText.toString();
+        }));
+
+        // 添加生成指定个数的中文方法
+        expandRegexList.add(new DataDriverFunction("(c|C)\\d+", text -> {
+            return StringMode.CH.getSeed().substring(0, Integer.valueOf(text.substring(1, text.length())));
         }));
     }
 
@@ -99,6 +120,16 @@ public class RandomString {
 	public RandomString(String mode) {
 		addMode(mode);
 	}
+
+    /**
+     * 该方法用于添加自定义的扩展方法
+     * 
+     * @param function 扩展方法
+     * @since autest 3.5.0
+     */
+    public static void addExtend(DataDriverFunction function) {
+        Optional.ofNullable(function).ifPresent(expandRegexList::add);
+    }
 
 	/**
 	 * 设置产生的随机字符串中是否允许存在重复的字符，默认为允许重复。
