@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -794,7 +795,48 @@ public class InterfaceInfo implements Cloneable {
         return extractRuleJsonText;
     }
 
+    /**
+     * 该方法用于添加前置操作方法
+     * 
+     * @param operation 前置操作封装类对象
+     * @since autest 3.6.0
+     */
     public void addBeforeOperation(BeforeInterfaceOperation operation) {
+        beforeOperationList.add(operation);
+    }
+
+    /**
+     * 该方法用于添加一组前置操作方法
+     * 
+     * @param operations 前置操作封装类集合
+     * @since autest 3.6.0
+     */
+    public void addAllBeforeOperation(Collection<BeforeInterfaceOperation> operations) {
+        beforeOperationList.addAll(operations);
+    }
+
+    /**
+     * 该方法用于返回添加的所有前置执行操作
+     * 
+     * @return 前置操作封装类集合
+     * @since autest 3.6.0
+     */
+    public List<BeforeInterfaceOperation> getBeforeOperationList() {
+        List<BeforeInterfaceOperation> beforeOperationList = new ArrayList<>();
+        beforeOperationList.addAll(this.beforeOperationList);
+        return beforeOperationList;
+    }
+
+    /**
+     * 该方法用于清除添加的前置操作
+     * 
+     * @return 前置操作封装类集合
+     * @since autest 3.6.0
+     */
+    public List<BeforeInterfaceOperation> clearBeforeOperation() {
+        List<BeforeInterfaceOperation> beforeOperationList = getBeforeOperationList();
+        this.beforeOperationList.clear();
+        return beforeOperationList;
     }
 
     @SuppressWarnings("unchecked")
