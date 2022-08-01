@@ -1,5 +1,6 @@
 package com.auxiliary.http;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -134,6 +135,10 @@ public class InterfaceInfo implements Cloneable {
      * 接口响应报文提词规则
      */
     private HashSet<JSONObject> extractRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储接口前置操作内容
+     */
+    private ArrayList<BeforeInterfaceOperation> beforeOperationList = new ArrayList<>();
 
     /**
      * 该方法用于返回接口的url协议
@@ -251,17 +256,6 @@ public class InterfaceInfo implements Cloneable {
             }
             return p;
         }).orElse("");
-    }
-
-    /**
-     * 该方法用于清空当前接口的路径
-     *
-     * @since autest 3.3.0
-     * @deprecated 方法已无意义，将在3.5.0版本中进行删除
-     */
-    @Deprecated
-    public void clearPath() {
-        this.path = "";
     }
 
     /**
@@ -432,22 +426,6 @@ public class InterfaceInfo implements Cloneable {
      * </p>
      *
      * @return 接口的请求报文与请求报文类型封装类
-     * @since autest 3.3.0
-     * @deprecated 已由{@link #getBodyContent()}方法代替，将在3.5.0版本中删除
-     */
-    @Deprecated
-    public Entry<MessageType, String> getBody() {
-        Entry<MessageType, Object> body = getBodyContent();
-        return new Entry<>(body.getKey(), body.getValue().toString());
-    }
-
-    /**
-     * 该方法用于返回接口的请求报文与请求报文类型封装类
-     * <p>
-     * 封装类类似于于键值对，键为报文类型，值为报文内容
-     * </p>
-     *
-     * @return 接口的请求报文与请求报文类型封装类
      * @since autest 3.4.0
      */
     public Entry<MessageType, Object> getBodyContent() {
@@ -488,19 +466,6 @@ public class InterfaceInfo implements Cloneable {
         } else {
             setBodyContent(MessageType.NONE, "");
         }
-    }
-
-    /**
-     * 该方法用于设置请求报文以及请求报文的类型
-     *
-     * @param messageType 报文类型枚举
-     * @param bodyText    报文内容
-     * @since autest 3.3.0
-     * @deprecated 已由{@link #setBodyContent(MessageType, Object)}方法代替，将在3.5.0版本中删除
-     */
-    @Deprecated
-    public void setBody(MessageType messageType, String bodyText) {
-        setBodyContent(messageType, Optional.ofNullable(bodyText).orElseGet(() -> ""));
     }
 
     /**
@@ -827,6 +792,9 @@ public class InterfaceInfo implements Cloneable {
         Set<String> extractRuleJsonText = getExtractRuleJson();
         extractRuleSet.clear();
         return extractRuleJsonText;
+    }
+
+    public void addBeforeOperation(BeforeInterfaceOperation operation) {
     }
 
     @SuppressWarnings("unchecked")
