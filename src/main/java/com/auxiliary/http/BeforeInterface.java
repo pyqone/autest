@@ -21,7 +21,9 @@ import java.util.List;
  * @version Ver1.0
  * @since JDK 1.8
  * @since autest 3.3.0
+ * @deprecated 该接口已由{@link BeforeOperation}接口替换，将在3.7.0或以上版本删除
  */
+@Deprecated
 public interface BeforeInterface {
     /**
      * 该方法用于返回接口的所有父层接口名称（不包括当前接口名称）
@@ -29,6 +31,8 @@ public interface BeforeInterface {
      * @param interName 接口名称
      * @return 父层接口名称集合
      * @since autest 3.3.0
+     * @deprecated 该方法已由{@link BeforeOperation#getParentInterfaceName(String)}方法替换，将在3.7.0或以上版本删除
      */
+    @Deprecated
     public List<String> getParentInterfaceName(String interName);
 }
