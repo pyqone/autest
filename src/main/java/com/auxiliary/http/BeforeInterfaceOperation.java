@@ -56,7 +56,7 @@ public class BeforeInterfaceOperation {
      * @return 前置操作类型枚举
      * @since autest 3.6.0
      */
-    public BeforeInterfaceOperationType getOptionalType() {
+    public BeforeInterfaceOperationType getOperationType() {
         return operationType;
     }
 

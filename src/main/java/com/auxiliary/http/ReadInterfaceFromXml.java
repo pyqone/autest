@@ -38,7 +38,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since autest 3.3.0
  */
 public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
-        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeInterface, BeforeOperation {
+        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeOperation {
     /**
      * 存储xml元素文件类对象
      */
@@ -447,6 +447,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         inter.addAllAssertRule(getAssertContent(interName));
         // 读取接口提词规则信息
         inter.addAllExtractRule(getExtractContent(interName));
+        // 添加前置操作集合
+        inter.addAllBeforeOperation(getBeforeOperation(interName));
 
         // 缓存读取的接口
         interfaceMap.put(interName, inter);
@@ -506,9 +508,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     private BeforeInterfaceOperation getBeforeInterface(String interName, Element beforeElement) {
         String name = beforeElement.attributeValue(XmlParamName.XML_ATTRI_NAME);
         try {
-            return new BeforeInterfaceOperation(getInterface(beforeElement.attributeValue(name)));
+            return new BeforeInterfaceOperation(getInterface(name));
         } catch (InterfaceReadToolsException e) {
-            throw new InterfaceReadToolsException(String.format("接口“%s”不存在相应的父层接口“%s”", interName, name));
+            throw new InterfaceReadToolsException(String.format("接口“%s”不存在相应的父层接口“%s”", interName, name), e);
         }
     }
 
