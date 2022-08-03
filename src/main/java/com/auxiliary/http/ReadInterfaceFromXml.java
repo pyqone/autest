@@ -38,7 +38,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since autest 3.3.0
  */
 public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
-        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeInterface {
+        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeOperation {
     /**
      * 存储xml元素文件类对象
      */
@@ -447,6 +447,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         inter.addAllAssertRule(getAssertContent(interName));
         // 读取接口提词规则信息
         inter.addAllExtractRule(getExtractContent(interName));
+        // 添加前置操作集合
+        inter.addAllBeforeOperation(getBeforeOperation(interName));
 
         // 缓存读取的接口
         interfaceMap.put(interName, inter);
@@ -471,6 +473,45 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         }
 
         return interNameList;
+    }
+
+    @Override
+    public List<BeforeInterfaceOperation> getBeforeOperation(String interName) {
+        List<BeforeInterfaceOperation> operationList = new ArrayList<>();
+
+        // 查找元素
+        Element element = findElement(interName);
+        // 获取所有前置操作标签并进行遍历
+        List<Element> beforeElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_BEFORE))
+                .map(Element::elements).orElseGet(ArrayList::new);
+        for (Element beforeElement : beforeElementList) {
+            // 根据标签名称，定义相应的前置操作封装类
+            switch (beforeElement.getName()) {
+            case XmlParamName.XML_LABEL_INTERFACE:
+                operationList.add(getBeforeInterface(interName, beforeElement));
+                break;
+            default:
+                continue; // 若非指定的封装类，则不进行解析
+            }
+        }
+
+        return operationList;
+    }
+
+    /**
+     * 该方法用于返回包含接口信息的前置操作封装类
+     * 
+     * @param interName 接口名称
+     * @return 前置操作封装类
+     * @since autest 3.6.0
+     */
+    private BeforeInterfaceOperation getBeforeInterface(String interName, Element beforeElement) {
+        String name = beforeElement.attributeValue(XmlParamName.XML_ATTRI_NAME);
+        try {
+            return new BeforeInterfaceOperation(getInterface(name));
+        } catch (InterfaceReadToolsException e) {
+            throw new InterfaceReadToolsException(String.format("接口“%s”不存在相应的父层接口“%s”", interName, name), e);
+        }
     }
 
     /**
