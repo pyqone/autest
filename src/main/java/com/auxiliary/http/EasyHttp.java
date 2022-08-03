@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -165,6 +166,18 @@ public class EasyHttp {
      * @since autest 3.3.0
      */
     public EasyResponse requst(InterfaceInfo interInfo) {
+        // 获取接口的前置操作，并根据操作枚举，执行相应的前置操作
+        List<BeforeInterfaceOperation> beforeOperation = interInfo.getBeforeOperationList();
+        for (BeforeInterfaceOperation before : beforeOperation) {
+            switch (before.getOperationType()) {
+            case INTERFACE:
+                before.actionInterface(this);
+                break;
+            default:
+                continue;
+            }
+        }
+
         // 处理请求头信息
         Map<String, String> newHeadMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         interInfo.getRequestHeaderMap()
