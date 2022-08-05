@@ -20,5 +20,5 @@ package com.auxiliary.http;
  * @since autest 3.6.0
  */
 public enum ResourceType {
-    FETCH, XHR, SCRIPT, STYLESHEET, FONT, DOCUMENT, MEDIA, OTHER;
+    FETCH, XHR, SCRIPT, STYLESHEET, FONT, DOCUMENT, MEDIA, OTHER, IMAGE;
 }
