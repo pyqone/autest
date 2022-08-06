@@ -252,6 +252,28 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     }
 
     /**
+     * 该方法用于读取接口需要设置的cookie信息，并存储至接口信息类对象中
+     *
+     * @param inter        接口信息类对象
+     * @param interElement 接口元素
+     * @since autest 3.3.0
+     */
+    private void readCookies(InterfaceInfo inter, Element interElement) {
+        // 获取所有的请求头元素
+        List<Element> cookieElementList = Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_COOKIES))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_COOKIE)).orElseGet(() -> new ArrayList<>());
+        for (Element cookieElement : cookieElementList) {
+            // 判断当前标签是否存储参数名称，若为空，则不进行存储
+            Optional.ofNullable(cookieElement.attributeValue(XmlParamName.XML_ATTRI_NAME))
+                    .filter(name -> !name.isEmpty()).ifPresent(name -> {
+                        inter.addCookies(name,
+                                Optional.ofNullable(cookieElement.attributeValue(XmlParamName.XML_ATTRI_VALUE))
+                                        .orElseGet(() -> ""));
+                    });
+        }
+    }
+
+    /**
      * 该方法用于读取接口的参数信息，并存储至接口信息类对象中
      *
      * @param inter        接口信息类对象
@@ -437,6 +459,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         readParams(inter, interElement);
         // 设置请求头信息
         readHeader(inter, interElement);
+        // 设置cookie信息
+        readCookies(inter, interElement);
         // 读取请求体信息
         readInterBody(inter, interElement);
         // 读取响应体字符集
@@ -602,6 +626,14 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义header标签名称
          */
         public static final String XML_LABEL_HEADER = "header";
+        /**
+         * 定义cookies标签名称
+         */
+        public static final String XML_LABEL_COOKIES = "cookies";
+        /**
+         * 定义cookie标签名称
+         */
+        public static final String XML_LABEL_COOKIE = "cookie";
         /**
          * 定义body标签名称
          */

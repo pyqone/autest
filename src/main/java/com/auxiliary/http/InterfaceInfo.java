@@ -83,9 +83,17 @@ public class InterfaceInfo implements Cloneable {
      */
     protected final String SYMBOL_SPLIT_PARAM_VALUE = "=";
     /**
+     * 定义cookies键值之间的分隔符号
+     */
+    protected final String SYMBOL_SPLIT_COOKIES_VALUE = "=";
+    /**
      * 定义接口参数与参数间的分隔符号
      */
     protected final String SYMBOL_SPLIT_PARAM = "&";
+    /**
+     * 定义cookies间的分隔符号
+     */
+    protected final String SYMBOL_SPLIT_COOKIES = ";";
 
     /**
      * 接口协议
@@ -140,6 +148,10 @@ public class InterfaceInfo implements Cloneable {
      * 存储接口前置操作内容
      */
     private ArrayList<BeforeInterfaceOperation> beforeOperationList = new ArrayList<>();
+    /**
+     * 存储cookie
+     */
+    private HashMap<String, String> cookiesMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 该方法用于返回接口的url协议
@@ -839,6 +851,96 @@ public class InterfaceInfo implements Cloneable {
         return beforeOperationList;
     }
 
+    /**
+     * 该方法用于返回接口的需要设置的cookies
+     *
+     * @return cookies
+     * @since autest 3.6.0
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getCookiesMap() {
+        return (Map<String, String>) cookiesMap.clone();
+    }
+
+    /**
+     * 该方法用于返回已存储的Cookie的表达式，即以“xxx=xxx;xxx=xxx”的格式返回Cookie字符串
+     * 
+     * @return Cookie的表达式
+     * @since autest 3.6.0
+     */
+    public String getCookiesExpression() {
+        StringJoiner cookiesExpression = new StringJoiner(";");
+        if (!cookiesMap.isEmpty()) {
+            cookiesMap.forEach((key, value) -> cookiesExpression.add(String.format("%s=%s", key, value)));
+        }
+        
+        return cookiesExpression.toString();
+    }
+
+    /**
+     * 该方法用于添加一组需要设置的cookies
+     *
+     * @param paramMap cookies集合
+     * @since autest 3.6.0
+     */
+    public void addCookies(Map<String, String> cookiesMap) {
+        // 过滤掉map为空的情况
+        Optional.ofNullable(cookiesMap).filter(map -> !map.isEmpty()).ifPresent(map -> {
+            map.forEach(this::addCookies);
+        });
+    }
+
+    /**
+     * 该方法用于添加单个需要设置的cookies
+     *
+     * @param cookiesName  cookies参数名称
+     * @param cookiesValue cookies参数值
+     * @since autest 3.6.0
+     */
+    public void addCookies(String cookiesName, String cookiesValue) {
+        // 过滤参数名称为空的情况，并且当参数值为null时，则处理为空串
+        Optional.ofNullable(cookiesName).filter(key -> !key.isEmpty()).ifPresent(key -> {
+            cookiesMap.put(key, Optional.ofNullable(cookiesValue).orElseGet(() -> ""));
+        });
+    }
+
+    /**
+     * 该方法用于根据url传入参数的表达式格式，向接口中添加参数
+     * <p>
+     * <b>注意：</b>表达式的判断的正则格式为“\w+=\w*(;\w+=\w*)*”，若未按规则编写，则无法添加参数
+     * </p>
+     *
+     * @param expression 参数表达式
+     * @since autest 3.6.0
+     */
+    public void addCookies(String expression) {
+        // 过滤不符合正则的表达式，之后按照分隔符号切分，得到每个参数的表达式后，再按照参数与值的符号切分
+        Optional.ofNullable(expression)
+                .filter(exp -> exp.matches(String.format("\\w+%s\\w*(%s;\\w+%s\\w*)*", SYMBOL_SPLIT_COOKIES_VALUE,
+                        SYMBOL_SPLIT_COOKIES, SYMBOL_SPLIT_COOKIES_VALUE)))
+                .map(exp -> exp.split(SYMBOL_SPLIT_COOKIES)).map(Arrays::stream)
+                .ifPresent(expStream -> expStream.filter(pramExp -> pramExp.contains(SYMBOL_SPLIT_COOKIES_VALUE))
+                        .map(pramExp -> pramExp.split(SYMBOL_SPLIT_COOKIES_VALUE)).forEach(cookies -> {
+                            if (cookies.length == 1) {
+                                addCookies(cookies[0], "");
+                            } else {
+                                addCookies(cookies[0], cookies[1]);
+                            }
+                        }));
+    }
+
+    /**
+     * 该方法用于清空存储的所有cookies内容
+     * 
+     * @return 原有的cookies内容
+     * @since autest 3.6.0
+     */
+    public Map<String, String> clearCookies() {
+        Map<String, String> cookiesMap = getCookiesMap();
+        this.cookiesMap.clear();
+        return cookiesMap;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public InterfaceInfo clone() {
@@ -850,6 +952,8 @@ public class InterfaceInfo implements Cloneable {
             newInter.paramMap = (HashMap<String, String>) paramMap.clone();
             // 克隆接口请求头信息
             newInter.requestHeaderMap = (HashMap<String, String>) requestHeaderMap.clone();
+            // 克隆cookie信息
+            newInter.cookiesMap = (HashMap<String, String>) cookiesMap.clone();
 
             // 克隆接口响应报文格式信息
             newInter.responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
@@ -970,6 +1074,10 @@ public class InterfaceInfo implements Cloneable {
         // 添加请求头参数
         JSONObject headerJson = new JSONObject();
         requestHeaderMap.forEach(headerJson::put);
+        String cookieExperssion = getCookiesExpression();
+        if (!cookieExperssion.isEmpty()) {
+            headerJson.put("Cookie", cookieExperssion);
+        }
 
         // 添加接口整体参数
         JSONObject interInfoJson = new JSONObject();

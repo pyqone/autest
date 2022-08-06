@@ -38,7 +38,7 @@ import okhttp3.RequestBody;
  * <b>编码时间：2020年6月18日上午7:02:54
  * </p>
  * <p>
- * <b>修改时间：2022年5月9日 上午8:30:33
+ * <b>修改时间：2022年8月5日 下午3:50:31
  * </p>
  *
  *
@@ -182,6 +182,13 @@ public class EasyHttp {
         Map<String, String> newHeadMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         interInfo.getRequestHeaderMap()
                 .forEach((key, value) -> newHeadMap.put(disposeContent(key), disposeContent(value)));
+
+        // 添加cookies信息
+        String cookiesExpression = interInfo.getCookiesExpression();
+        if (!cookiesExpression.isEmpty()) {
+            newHeadMap.put("Cookie", cookiesExpression);
+        }
+
         // 对接口进行请求，获取响应类
         Entry<MessageType, Object> body = interInfo.getBodyContent();
         // 获取请求体内容，若请求体为字符串，则对请求体进行处理
