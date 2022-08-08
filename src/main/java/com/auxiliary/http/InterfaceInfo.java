@@ -151,7 +151,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 存储cookie
      */
-    private HashMap<String, String> cookiesMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    private HashMap<String, String> cookieMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 该方法用于返回接口的url协议
@@ -858,8 +858,8 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.6.0
      */
     @SuppressWarnings("unchecked")
-    public Map<String, String> getCookiesMap() {
-        return (Map<String, String>) cookiesMap.clone();
+    public Map<String, String> getCookieMap() {
+        return (Map<String, String>) cookieMap.clone();
     }
 
     /**
@@ -868,13 +868,13 @@ public class InterfaceInfo implements Cloneable {
      * @return Cookie的表达式
      * @since autest 3.6.0
      */
-    public String getCookiesExpression() {
-        StringJoiner cookiesExpression = new StringJoiner(";");
-        if (!cookiesMap.isEmpty()) {
-            cookiesMap.forEach((key, value) -> cookiesExpression.add(String.format("%s=%s", key, value)));
+    public String getCookieExpression() {
+        StringJoiner cookieExpression = new StringJoiner(";");
+        if (!cookieMap.isEmpty()) {
+            cookieMap.forEach((key, value) -> cookieExpression.add(String.format("%s=%s", key, value)));
         }
         
-        return cookiesExpression.toString();
+        return cookieExpression.toString();
     }
 
     /**
@@ -886,21 +886,21 @@ public class InterfaceInfo implements Cloneable {
     public void addCookies(Map<String, String> cookiesMap) {
         // 过滤掉map为空的情况
         Optional.ofNullable(cookiesMap).filter(map -> !map.isEmpty()).ifPresent(map -> {
-            map.forEach(this::addCookies);
+            map.forEach(this::addCookie);
         });
     }
 
     /**
-     * 该方法用于添加单个需要设置的cookies
+     * 该方法用于添加单个需要设置的cookie
      *
-     * @param cookiesName  cookies参数名称
-     * @param cookiesValue cookies参数值
+     * @param cookieName  cookie参数名称
+     * @param cookieValue cookie参数值
      * @since autest 3.6.0
      */
-    public void addCookies(String cookiesName, String cookiesValue) {
+    public void addCookie(String cookiesName, String cookiesValue) {
         // 过滤参数名称为空的情况，并且当参数值为null时，则处理为空串
         Optional.ofNullable(cookiesName).filter(key -> !key.isEmpty()).ifPresent(key -> {
-            cookiesMap.put(key, Optional.ofNullable(cookiesValue).orElseGet(() -> ""));
+            cookieMap.put(key, Optional.ofNullable(cookiesValue).orElseGet(() -> ""));
         });
     }
 
@@ -913,7 +913,7 @@ public class InterfaceInfo implements Cloneable {
      * @param expression 参数表达式
      * @since autest 3.6.0
      */
-    public void addCookies(String expression) {
+    public void addCookie(String expression) {
         // 过滤不符合正则的表达式，之后按照分隔符号切分，得到每个参数的表达式后，再按照参数与值的符号切分
         Optional.ofNullable(expression)
                 .filter(exp -> exp.matches(String.format("\\w+%s\\w*(%s;\\w+%s\\w*)*", SYMBOL_SPLIT_COOKIES_VALUE,
@@ -922,22 +922,22 @@ public class InterfaceInfo implements Cloneable {
                 .ifPresent(expStream -> expStream.filter(pramExp -> pramExp.contains(SYMBOL_SPLIT_COOKIES_VALUE))
                         .map(pramExp -> pramExp.split(SYMBOL_SPLIT_COOKIES_VALUE)).forEach(cookies -> {
                             if (cookies.length == 1) {
-                                addCookies(cookies[0], "");
+                                addCookie(cookies[0], "");
                             } else {
-                                addCookies(cookies[0], cookies[1]);
+                                addCookie(cookies[0], cookies[1]);
                             }
                         }));
     }
 
     /**
-     * 该方法用于清空存储的所有cookies内容
+     * 该方法用于清空存储的所有cookie内容
      * 
-     * @return 原有的cookies内容
+     * @return 原有的cookie内容
      * @since autest 3.6.0
      */
     public Map<String, String> clearCookies() {
-        Map<String, String> cookiesMap = getCookiesMap();
-        this.cookiesMap.clear();
+        Map<String, String> cookiesMap = getCookieMap();
+        this.cookieMap.clear();
         return cookiesMap;
     }
 
@@ -953,7 +953,7 @@ public class InterfaceInfo implements Cloneable {
             // 克隆接口请求头信息
             newInter.requestHeaderMap = (HashMap<String, String>) requestHeaderMap.clone();
             // 克隆cookie信息
-            newInter.cookiesMap = (HashMap<String, String>) cookiesMap.clone();
+            newInter.cookieMap = (HashMap<String, String>) cookieMap.clone();
 
             // 克隆接口响应报文格式信息
             newInter.responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
@@ -1074,7 +1074,7 @@ public class InterfaceInfo implements Cloneable {
         // 添加请求头参数
         JSONObject headerJson = new JSONObject();
         requestHeaderMap.forEach(headerJson::put);
-        String cookieExperssion = getCookiesExpression();
+        String cookieExperssion = getCookieExpression();
         if (!cookieExperssion.isEmpty()) {
             headerJson.put("Cookie", cookieExperssion);
         }

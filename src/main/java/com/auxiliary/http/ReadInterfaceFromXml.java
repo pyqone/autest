@@ -266,7 +266,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             // 判断当前标签是否存储参数名称，若为空，则不进行存储
             Optional.ofNullable(cookieElement.attributeValue(XmlParamName.XML_ATTRI_NAME))
                     .filter(name -> !name.isEmpty()).ifPresent(name -> {
-                        inter.addCookies(name,
+                        inter.addCookie(name,
                                 Optional.ofNullable(cookieElement.attributeValue(XmlParamName.XML_ATTRI_VALUE))
                                         .orElseGet(() -> ""));
                     });

@@ -28,7 +28,7 @@ import okhttp3.RequestBody;
 
 /**
  * <p>
- * <b>文件名：AuHttp.java</b>
+ * <b>文件名：EasyHttp.java</b>
  * </p>
  * <p>
  * <b>用途：</b>根据接口信息，对接口进行请求的工具，亦可通过类中的静态方法，对接口进行快速请求。
@@ -184,7 +184,7 @@ public class EasyHttp {
                 .forEach((key, value) -> newHeadMap.put(disposeContent(key), disposeContent(value)));
 
         // 添加cookies信息
-        String cookiesExpression = interInfo.getCookiesExpression();
+        String cookiesExpression = interInfo.getCookieExpression();
         if (!cookiesExpression.isEmpty()) {
             newHeadMap.put("Cookie", cookiesExpression);
         }
