@@ -21,6 +21,7 @@ import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Request.Builder;
@@ -66,7 +67,7 @@ public class EasyHttp {
      */
     private static final RequestBody NONE_REQUEST_BODY = RequestBody
             .create(MediaType.parse(MessageType.NONE.getMediaValue()), "");
-    
+
     /**
      * 定义断言结果json的接口信息字段名
      */
@@ -237,9 +238,8 @@ public class EasyHttp {
             // 判断是否需要抛出异常
             if (!result && isAssertFailThrowException) {
                 String responseText = response.extractKey(searchType, paramName, xpath, lb, rb, index);
-                throw new HttpResponseException(
-                        String.format("接口响应报文断言失败，断言规则为“%s”，接口响应报文实际检索内容为“%s”，接口信息：“%s”", assertRegex, responseText,
-                                interInfo.toString()));
+                throw new HttpResponseException(String.format("接口响应报文断言失败，断言规则为“%s”，接口响应报文实际检索内容为“%s”，接口信息：“%s”",
+                        assertRegex, responseText, interInfo.toString()));
             }
 
             // 将断言结果和接口信息写入json中，并将其文本形式存储至assertResultSet中
@@ -248,12 +248,15 @@ public class EasyHttp {
             assertResultSet.add(json.toJSONString());
         });
 
-
         return response;
     }
 
     /**
      * 该方法用于对接口进行快速请求
+     * <p>
+     * <b>注意：</b> 当请求体为表单类型时，其body必须是“List<Entry<String,
+     * Object>>”类型；当请求体为文件类型时，则body必须是“File”类型
+     * </p>
      *
      * @param requestType 请求类型
      * @param url         接口url地址
@@ -263,6 +266,7 @@ public class EasyHttp {
      * @return 接口响应类
      * @since autest 3.3.0
      */
+    @SuppressWarnings("unchecked")
     public static EasyResponse requst(RequestType requestType, String url, Map<String, String> requestHead,
             MessageType messageType, Object body) {
         // 定义请求客户端
@@ -274,7 +278,7 @@ public class EasyHttp {
         if (isNoBodyRequest(requestType)) {
             // 根据消息格式，创建RequestBody类对象
             messageType = Optional.ofNullable(messageType).orElse(MessageType.NONE);
-            MediaType mediaType = MediaType.parse(messageType.getMediaValue());
+            MediaType mediaType = MediaType.parse(messageType.toMessageTypeString());
             switch (messageType) {
             case JSON:
             case XML:
@@ -288,15 +292,40 @@ public class EasyHttp {
             case NONE:
                 requestBody = NONE_REQUEST_BODY;
                 break;
+            case FORM_DATA:
+                // 定义表单请求体构造类
+                MultipartBody.Builder builder = new MultipartBody.Builder();
+                // 获取表单数据
+                List<Entry<String, Object>> fromDataList = (List<Entry<String, Object>>) body;
+
+                // 遍历所有的数据，并将其添加到表单构造类中
+                for (Entry<String, Object> data : fromDataList) {
+                    Object value = data.getValue();
+                    // 判断值类型是否为文件类型，若为文件类型，则需要进行特殊处理
+                    if (value instanceof File) {
+                        File file = (File) value;
+                        builder.addFormDataPart(data.getKey(), file.getAbsolutePath(),
+                                RequestBody.create(MediaType.parse("application/octet-stream"), file));
+                    }
+
+                    // 若不为文件类型，则直接存储相应的文本内容
+                    builder.addFormDataPart(data.getKey(), value.toString());
+                }
+                // 遍历所有数据后，构造请求体对象
+                requestBody = builder.build();
+                break;
+            case X_WWW_FORM_URLENCODED:
+                requestBody = RequestBody.create(mediaType,
+                        HttpUtil.fromUrlencoded2Extract((List<Entry<String, Object>>) body));
+                break;
             default:
                 throw new HttpRequestException(String.format("暂时不支持“%s”类型的消息格式，请求接口：%s", messageType, url));
             }
         }
-        
+
         // 构造请求报文
-        Builder requestBuilder = new Request.Builder().url(url).method(
-                Optional.ofNullable(requestType).map(RequestType::toString)
-                        .orElseThrow(() -> new HttpRequestException("当前接口未指定请求类型：" + url)),
+        Builder requestBuilder = new Request.Builder().url(url).method(Optional.ofNullable(requestType)
+                .map(RequestType::toString).orElseThrow(() -> new HttpRequestException("当前接口未指定请求类型：" + url)),
                 requestBody);
         if (requestHead != null) {
             requestHead.forEach(requestBuilder::addHeader);
@@ -406,7 +435,7 @@ public class EasyHttp {
      * @since autest 3.4.0
      */
     private static boolean isNoBodyRequest(RequestType requestType) {
-        return Optional.of(requestType).filter(type -> type != RequestType.GET)
-                .filter(type -> type != RequestType.HEAD).isPresent();
+        return Optional.of(requestType).filter(type -> type != RequestType.GET).filter(type -> type != RequestType.HEAD)
+                .isPresent();
     }
 }

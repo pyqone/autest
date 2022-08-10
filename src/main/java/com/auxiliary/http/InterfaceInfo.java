@@ -1,5 +1,6 @@
 package com.auxiliary.http;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -134,8 +135,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口响应内容格式集合
      */
-    private HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(
-            ConstType.DEFAULT_MAP_SIZE);
+    private HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文断言规则集合
      */
@@ -482,14 +482,71 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于设置请求报文以及请求报文的类型
+     * 该方法用于设置请求体以及请求体的类型
      * 
-     * @param messageType 报文类型枚举
-     * @param bodyObject  报文内容
+     * @param messageType 请求体类型枚举
+     * @param bodyObject  请求体内容
      * @since autest 3.4.0
      */
     public void setBodyContent(MessageType messageType, Object bodyObject) {
+        // 判断请求体类型是否为表单格式
+        if (messageType == MessageType.X_WWW_FORM_URLENCODED || messageType == MessageType.FORM_DATA) {
+            try {
+
+            } catch (ClassCastException e) {
+                throw new InterfaceReadToolsException(
+                        "表单类型，其请求体必须是“List<Entry<String, Object>>”类型，错误的接口信息为：" + toUrlString(), e);
+            }
+        }
         body = new Entry<>(messageType, bodyObject);
+    }
+
+    /**
+     * 该方法用于设置表单格式类型的请求体
+     * <p>
+     * <b>注意：</b>表单每一个元素为一个键值对类型
+     * </p>
+     * 
+     * @param messageType 请求体类型枚举
+     * @param dataList    请求体内容
+     * @since autest 3.6.0
+     * @throws InterfaceReadToolsException 当消息类型枚举不为表单格式或传入的表单值为错误的类型时，抛出的异常
+     */
+    public void setFromBody(MessageType messageType, List<Entry<String, Object>> dataList) {
+        // 判断请求体类型是否为表单格式
+        if (messageType != MessageType.X_WWW_FORM_URLENCODED || messageType != MessageType.FORM_DATA) {
+            throw new InterfaceReadToolsException(String.format("添加表单类型请求体，其类型必须为“%s”或“%s”，错误的接口信息为：%s",
+                    MessageType.X_WWW_FORM_URLENCODED.getMediaValue(), MessageType.FORM_DATA.getMediaValue(),
+                    toUrlString()));
+        }
+
+        // 判断是否传入表单内容
+        if (dataList == null || dataList.isEmpty()) {
+            throw new InterfaceReadToolsException("表单参数不能为空");
+        }
+
+        // 将表单数据重新存储，并对每个元素的类型进行判断
+        List<Entry<String, Object>> list = new ArrayList<>();
+        for (Entry<String, Object> data : dataList) {
+            Object value = data.getValue();
+            // 判断表单的值类型，若非指定的表单类型，则抛出异常
+            if (messageType == MessageType.X_WWW_FORM_URLENCODED
+                    && !(value instanceof String || value instanceof Number)) {
+                throw new InterfaceReadToolsException(String.format("错误的表单值类型“%s”，“%s”类型的表单值只支持字符串或数字类型，错误的接口信息为：%s",
+                        value.getClass().getSimpleName(), MessageType.X_WWW_FORM_URLENCODED.getMediaValue(),
+                        toUrlString()));
+            } 
+            if (messageType == MessageType.FORM_DATA
+                    && !(value instanceof String || value instanceof Number || value instanceof File)) {
+                throw new InterfaceReadToolsException(String.format(
+                        "错误的表单值类型“%s”，“%s”类型的表单值只支持字符串、或数字或文件类型，错误的接口信息为：%s", value.getClass().getSimpleName(),
+                        MessageType.FORM_DATA.getMediaValue(), toUrlString()));
+            }
+
+            list.add(data);
+        }
+
+        body = new Entry<>(messageType, list);
     }
 
     /**
@@ -572,7 +629,8 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public Set<MessageType> getResponseContentType(int status) {
-        return Optional.ofNullable(responseContentTypeMap.get(status)).map(HashSet::new).orElseGet(() -> new HashSet<>());
+        return Optional.ofNullable(responseContentTypeMap.get(status)).map(HashSet::new)
+                .orElseGet(() -> new HashSet<>());
     }
 
     /**
@@ -680,8 +738,7 @@ public class InterfaceInfo implements Cloneable {
             } catch (Exception e) {
                 return new JSONObject();
             }
-        }).filter(json -> json.containsKey(AssertResponse.JSON_ASSERT_ASSERT_REGEX))
-                .forEach(assertRuleSet::add);
+        }).filter(json -> json.containsKey(AssertResponse.JSON_ASSERT_ASSERT_REGEX)).forEach(assertRuleSet::add);
     }
 
     /**
@@ -730,8 +787,7 @@ public class InterfaceInfo implements Cloneable {
         try {
             // 若json不包含断言内容字段，则亦不进行存储
             Optional.ofNullable(extractRuleJsonText).filter(text -> !text.isEmpty()).map(JSONObject::parseObject)
-                    .filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME))
-                    .ifPresent(json -> {
+                    .filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME)).ifPresent(json -> {
                         // 存储规则，并在提词内容集合中，构造空值
                         extractRuleSet.add(json);
                     });
@@ -775,8 +831,7 @@ public class InterfaceInfo implements Cloneable {
             } catch (Exception e) {
                 return new JSONObject();
             }
-        }).filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME))
-                .forEach(extractRuleSet::add);
+        }).filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME)).forEach(extractRuleSet::add);
     }
 
     /**
@@ -873,7 +928,7 @@ public class InterfaceInfo implements Cloneable {
         if (!cookieMap.isEmpty()) {
             cookieMap.forEach((key, value) -> cookieExpression.add(String.format("%s=%s", key, value)));
         }
-        
+
         return cookieExpression.toString();
     }
 
@@ -1083,6 +1138,7 @@ public class InterfaceInfo implements Cloneable {
         JSONObject interInfoJson = new JSONObject();
         interInfoJson.put("url", toUrlString());
         interInfoJson.put("requestType", getRequestType());
+        // TODO 使body的返回兼容表单格式
         interInfoJson.put("body", Optional.ofNullable(body).map(Entry::getValue).orElse(""));
         interInfoJson.put("requestHeader", headerJson);
 
