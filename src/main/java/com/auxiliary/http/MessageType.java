@@ -42,9 +42,17 @@ public enum MessageType {
      */
     FORM_DATA("multipart/form-data"),
     /**
+     * 表单类型，与{@link #FORM_DATA}一致
+     */
+    FD(FORM_DATA.mediaName),
+    /**
      * 表单上传编码类型
      */
     X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded"),
+    /**
+     * 表单上传编码类型，与{@link #X_WWW_FORM_URLENCODED}一致
+     */
+    FU(X_WWW_FORM_URLENCODED.mediaName),
     /**
      * 二进制编码类型
      */

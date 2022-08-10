@@ -316,7 +316,7 @@ public class EasyHttp {
                 break;
             case X_WWW_FORM_URLENCODED:
                 requestBody = RequestBody.create(mediaType,
-                        HttpUtil.fromUrlencoded2Extract((List<Entry<String, Object>>) body));
+                        HttpUtil.formUrlencoded2Extract((List<Entry<String, Object>>) body));
                 break;
             default:
                 throw new HttpRequestException(String.format("暂时不支持“%s”类型的消息格式，请求接口：%s", messageType, url));

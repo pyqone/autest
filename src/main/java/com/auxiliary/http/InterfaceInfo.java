@@ -512,9 +512,10 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.6.0
      * @throws InterfaceReadToolsException 当消息类型枚举不为表单格式或传入的表单值为错误的类型时，抛出的异常
      */
-    public void setFromBody(MessageType messageType, List<Entry<String, Object>> dataList) {
+    public void setFormBody(MessageType messageType, List<Entry<String, Object>> dataList) {
         // 判断请求体类型是否为表单格式
-        if (messageType != MessageType.X_WWW_FORM_URLENCODED || messageType != MessageType.FORM_DATA) {
+        if (messageType != MessageType.X_WWW_FORM_URLENCODED && messageType != MessageType.FORM_DATA
+                && messageType != MessageType.FD && messageType != MessageType.FU) {
             throw new InterfaceReadToolsException(String.format("添加表单类型请求体，其类型必须为“%s”或“%s”，错误的接口信息为：%s",
                     MessageType.X_WWW_FORM_URLENCODED.getMediaValue(), MessageType.FORM_DATA.getMediaValue(),
                     toUrlString()));
@@ -1124,6 +1125,7 @@ public class InterfaceInfo implements Cloneable {
                 (paramInfo.length() != 0 ? (SYMBOL_SPLIT_START_PARAM + paramInfo.toString()) : ""));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String toString() {
         // 添加请求头参数
@@ -1138,8 +1140,19 @@ public class InterfaceInfo implements Cloneable {
         JSONObject interInfoJson = new JSONObject();
         interInfoJson.put("url", toUrlString());
         interInfoJson.put("requestType", getRequestType());
-        // TODO 使body的返回兼容表单格式
-        interInfoJson.put("body", Optional.ofNullable(body).map(Entry::getValue).orElse(""));
+
+        // 将请求体的内容转换为字符串输出
+        String bodyText = "";
+        Object value = body.getValue();
+        if (value instanceof File) {
+            bodyText = ((File) value).getAbsolutePath();
+        } else if (value instanceof List) {
+            bodyText = HttpUtil.formUrlencoded2Extract((List<Entry<String, Object>>) value);
+        } else {
+            bodyText = value.toString();
+        }
+        interInfoJson.put("body", bodyText);
+        
         interInfoJson.put("requestHeader", headerJson);
 
         return interInfoJson.toJSONString();
