@@ -57,6 +57,9 @@
       
       <!-- 表单类型请求体标签 -->
       <!-- type：表示表单请求的类型，可选值为“fd（或form_data）” 和“fu（或x_www_form_urlencoded）”，忽略大小写 -->
+      <!-- name：表单键名 -->
+      <!-- value：表单普通类型的值 -->
+      <!-- file：表单文件类型的值 -->
       <form_body type='fd'>
         <data name='adk' value='adv' />
         <data name='bdk' file='resource/test.txt' />

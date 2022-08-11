@@ -166,6 +166,7 @@ public class EasyHttp {
      * @return 接口响应类
      * @since autest 3.3.0
      */
+    @SuppressWarnings("unchecked")
     public EasyResponse requst(InterfaceInfo interInfo) {
         // 获取接口的前置操作，并根据操作枚举，执行相应的前置操作
         List<BeforeInterfaceOperation> beforeOperation = interInfo.getBeforeOperationList();
@@ -187,7 +188,7 @@ public class EasyHttp {
         // 添加cookies信息
         String cookiesExpression = interInfo.getCookieExpression();
         if (!cookiesExpression.isEmpty()) {
-            newHeadMap.put("Cookie", cookiesExpression);
+            newHeadMap.put("Cookie", disposeContent(cookiesExpression));
         }
 
         // 对接口进行请求，获取响应类
@@ -196,6 +197,13 @@ public class EasyHttp {
         Object bodyContent = body.getValue();
         if (bodyContent instanceof String) {
             bodyContent = disposeContent((String) bodyContent);
+        } else if (bodyContent instanceof List) {
+            for (Entry<String, Object> data : (List<Entry<String, Object>>) bodyContent) {
+                Object dataValue = data.getValue();
+                if (!(dataValue instanceof File)) {
+                    data.setValue(disposeContent(dataValue.toString()));
+                }
+            }
         }
 
         EasyResponse response = requst(interInfo.getRequestType(), disposeContent(interInfo.toUrlString()), newHeadMap,
@@ -293,6 +301,7 @@ public class EasyHttp {
                 requestBody = NONE_REQUEST_BODY;
                 break;
             case FORM_DATA:
+            case FD:
                 // 定义表单请求体构造类
                 MultipartBody.Builder builder = new MultipartBody.Builder();
                 // 获取表单数据
@@ -315,6 +324,7 @@ public class EasyHttp {
                 requestBody = builder.build();
                 break;
             case X_WWW_FORM_URLENCODED:
+            case FU:
                 requestBody = RequestBody.create(mediaType,
                         HttpUtil.formUrlencoded2Extract((List<Entry<String, Object>>) body));
                 break;
