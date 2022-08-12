@@ -315,10 +315,10 @@ public class EasyHttp {
                         File file = (File) value;
                         builder.addFormDataPart(data.getKey(), file.getAbsolutePath(),
                                 RequestBody.create(MediaType.parse("application/octet-stream"), file));
+                    } else {
+                        // 若不为文件类型，则直接存储相应的文本内容
+                        builder.addFormDataPart(data.getKey(), value.toString());
                     }
-
-                    // 若不为文件类型，则直接存储相应的文本内容
-                    builder.addFormDataPart(data.getKey(), value.toString());
                 }
                 // 遍历所有数据后，构造请求体对象
                 requestBody = builder.build();
