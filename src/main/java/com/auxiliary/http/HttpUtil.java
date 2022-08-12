@@ -42,7 +42,7 @@ public class HttpUtil {
      * @return 转换后的接口信息类集合
      * @since autest 3.6.0
      */
-    public static List<InterfaceInfo> HarFile2InterfaceInfo(File harFile, ResourceType... resourceTypes) {
+    public static List<InterfaceInfo> harFile2InterfaceInfo(File harFile, ResourceType... resourceTypes) {
         List<InterfaceInfo> interList = new ArrayList<>();
         // 将需要过滤的接口类型数组转换为Set集合
         Set<ResourceType> typeSet = new HashSet<>(Arrays.asList(resourceTypes));
