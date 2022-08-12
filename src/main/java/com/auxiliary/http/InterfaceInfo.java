@@ -1142,16 +1142,18 @@ public class InterfaceInfo implements Cloneable {
         interInfoJson.put("requestType", getRequestType());
 
         // 将请求体的内容转换为字符串输出
-        String bodyText = "";
-        Object value = body.getValue();
-        if (value instanceof File) {
-            bodyText = ((File) value).getAbsolutePath();
-        } else if (value instanceof List) {
-            bodyText = HttpUtil.formUrlencoded2Extract((List<Entry<String, Object>>) value);
-        } else {
-            bodyText = value.toString();
+        if (body != null) {
+            String bodyText = "";
+            Object value = body.getValue();
+            if (value instanceof File) {
+                bodyText = ((File) value).getAbsolutePath();
+            } else if (value instanceof List) {
+                bodyText = HttpUtil.formUrlencoded2Extract((List<Entry<String, Object>>) value);
+            } else {
+                bodyText = value.toString();
+            }
+            interInfoJson.put("body", bodyText);
         }
-        interInfoJson.put("body", bodyText);
         
         interInfoJson.put("requestHeader", headerJson);
 
