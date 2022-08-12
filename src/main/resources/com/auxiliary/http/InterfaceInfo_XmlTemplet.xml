@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interfaceInfo>
+  <!-- 接口所在的环境 -->
+  <!-- default：默认环境名称 -->
+  <environments default='环境1'>
+    <!-- name：环境名称 -->
+    <!-- text：环境域名或IP（包括协议） -->
+    <environment name='环境1'>https://192.168.1.1</environment>
+    <environment name='环境2'>100.200.168.120</environment>
+  </environments>
+
+  <!-- 接口信息，可存放多个接口信息 -->
+  <interfaces>
+    <!-- name：接口名称 -->
+    <!-- environment：环境名称，通过该属性，可指定读取的环境，若无该属性，则按照解析的默认环境 -->
+    <!-- url：接口url地址，可指定接口某一段url，但需要以相应的分隔符开头或结尾，如只指定接口路径时，则需要在路径前加上“/”符号 -->
+    <!-- path：接口路径，当同时指定url与path属性，且都包含接口路径时，则按照先分析url内容，再存储path内容的顺序 -->
+    <!-- type：请求类型，可选范围如下：GET,POST,PUT,DELETE,OPTIONS,HEAD,PATCH,TRACE,CONNECT,COPY,LINK,UNLINK,PURGE,LOCK,UNLOCK,MKCOL,MOVE,PROPFIND,VIEW（忽略大小写） -->
+    <interface name='接口2' environment='环境1'
+      url='http://192.168.3.3' path='a/b/c' type='post'>
+      <!-- 前置执行操作，当执行该接口时，将按顺序先执行前置操作，待操作执行完毕后，再执行当前接口 -->
+      <before>
+        <!-- name：前置接口名称 -->
+        <interface name='接口1' />
+      </before>
+      <!-- 接口请求头 -->
+      <!-- name：请求头名称 -->
+      <!-- value：请求头内容 -->
+      <headers>
+        <header name='ahk' value='ahv' />
+        <header name='bhk' value='bhv' />
+      </headers>
+      <!-- 读取的cookie信息 -->
+      <!-- name：cookies名称 -->
+      <!-- value：cookies内容 -->
+      <cookies>
+        <cookie name='ack' value='acv' />
+      </cookies>
+      <!-- 接口参数 -->
+      <!-- name：参数名称 -->
+      <!-- value：参数内容 -->
+      <params>
+        <!-- 值中可设置公式，公式可通过类中的方法进行设置 -->
+        <param name='apk' value='@{randomString()}' />
+        <param name='bpk' value='bpv' />
+      </params>
+      <!-- 以下是请求体标签的介绍，需要注意，body、file_body和form_body标签三者只有一个能生效，生效顺序按照body、from_body、file_body -->
+      <!-- 接口普通请求体标签 -->
+      <!-- type：指定请求体的文本内容格式类型 -->
+      <!-- file：表示请求体内容在文件中 -->
+      <body type='json'>{'ak':'av', 'bk':'bv'}</body>
+      <body file='resource/test.txt' type='json' />
+
+      <!-- 接口文件型请求体标签 -->
+      <!-- file：表示需要请求的文件 -->
+      <file_body file='resource/test.txt' />
+      
+      <!-- 表单类型请求体标签 -->
+      <!-- type：表示表单请求的类型，可选值为“fd（或form_data）” 和“fu（或x_www_form_urlencoded）”，忽略大小写 -->
+      <!-- name：表单键名 -->
+      <!-- value：表单普通类型的值 -->
+      <!-- file：表单文件类型的值 -->
+      <form_body type='fd'>
+        <data name='adk' value='adv' />
+        <data name='bdk' file='resource/test.txt' />
+      </form_body>
+      
+      <!-- 接口响应内容 -->
+      <!-- charset：响应内容字符集编码 -->
+      <response charset='GBK'>
+        <!-- 报文格式，可根据不同的状态码，设置不同的响应格式，允许同一状态码设置一样的格式 -->
+        <responseTypes>
+          <!-- status：接口返回状态码 -->
+          <!-- type：报文格式，可选范围如下：json, xml, html, raw, binary（忽略大小写） -->
+          <responseType status='200' type='json' />
+          <responseType status='500' type='raw' />
+        </responseTypes>
+        <!-- 报文内容断言 -->
+        <asserts>
+          <!-- assertValue：断言内容正则表达式 -->
+          <!-- search：搜索范围，可选范围如下： body：表示搜索响应报文 header：表示搜索响应头 state：表示搜索状态码，当断言该参数时，其paramName、lb、rb、ord参数均不生效 -->
+          <!-- paramName：搜索参数名称，该参数仅在报文为json、html以及xml的格式时生效 -->
+          <!-- xpath：搜索xpath，该参数仅在报文为html以及xml的格式时生效 -->
+          <!-- lb：搜索文本的左边界，可以与paramName与attribute参数共存 -->
+          <!-- rb：搜索文本的右边界，可以与paramName与attribute参数共存 -->
+          <!-- ord：该参数仅在搜索出多个值时生效，表示获取到多条数据的下标 -->
+          <assert assertValue='test' search='body' paramName='apn' xpath='//*[@a="test"]' lb='alb' rb='arb' ord='1' />
+        </asserts>
+        <!-- 根据条件提取报文内容，并存储至参数中，便于后续使用 -->
+        <extracts>
+          <!-- assertValue：断言内容 -->
+          <!-- saveName：保存参数的名称 -->
+          <!-- search：搜索范围，可选范围如下： body：表示搜索响应报文 header：表示搜索响应头 -->
+          <!-- paramName：搜索参数名称，该参数仅在报文为json、html以及xml的格式时生效 -->
+          <!-- xpath：搜索xpath，该参数仅在报文为html以及xml的格式时生效 -->
+          <!-- lb：搜索文本的左边界，可以与paramName与attribute参数共存 -->
+          <!-- rb：搜索文本的右边界，可以与paramName与attribute参数共存 -->
+          <!-- ord：该参数仅在搜索出多个值时生效，表示获取到多条数据的下标 -->
+          <extract search='header' saveName='aapk' paramName='apn'  xpath='//*[@a="test"]'
+            lb='alb' rb='arb' ord='1' />
+          <extract search='body' saveName='bbpk' paramName='bpn'
+            lb='blb' rb='brb' />
+        </extracts>
+      </response>
+    </interface>
+  </interfaces>
+</interfaceInfo>

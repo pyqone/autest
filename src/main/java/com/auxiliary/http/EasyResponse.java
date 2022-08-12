@@ -76,7 +76,12 @@ public class EasyResponse {
         // 存储响应头
         Headers heads = response.headers();
         for (String head : heads.names()) {
-            info.responseHeaderMap.put(head, heads.get(head));
+            List<String> valueList = heads.values(head);
+            if (valueList.size() < 2) {
+                info.responseHeaderMap.put(head, valueList.get(0));
+            } else {
+                info.responseHeaderMap.put(head, valueList.toString());
+            }
         }
 
         // 存储响应状态及消息

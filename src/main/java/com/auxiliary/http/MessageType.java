@@ -11,7 +11,7 @@ package com.auxiliary.http;
  * <b>编码时间：2022年4月12日 上午8:57:02
  * </p>
  * <p>
- * <b>修改时间：2022年4月12日 上午8:57:02
+ * <b>修改时间：2022年8月8日 下午4:10:29
  * </p>
  *
  *
@@ -42,9 +42,17 @@ public enum MessageType {
      */
     FORM_DATA("multipart/form-data"),
     /**
+     * 表单类型，与{@link #FORM_DATA}一致
+     */
+    FD(FORM_DATA.mediaName),
+    /**
      * 表单上传编码类型
      */
     X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded"),
+    /**
+     * 表单上传编码类型，与{@link #X_WWW_FORM_URLENCODED}一致
+     */
+    FU(X_WWW_FORM_URLENCODED.mediaName),
     /**
      * 二进制编码类型
      */
@@ -62,6 +70,10 @@ public enum MessageType {
      * 报文类型名称
      */
     private String mediaName;
+    /**
+     * 格式编码
+     */
+    private String charset = "";
 
     /**
      * 初始化报文类型名称
@@ -90,12 +102,58 @@ public enum MessageType {
      * @since autest 3.3.0
      */
     public static MessageType typeOf(String typeName) {
+        String mediaName = "";
+        String charset = "";
+        // 根据传入的内容，将其分解为类型文本及字符串编码类型
+        if (typeName.contains(";")) {
+            String[] texts = typeName.split(";");
+            mediaName = texts[0];
+            if (texts[1].contains("=")) {
+                charset = texts[1].split("=")[1];
+            }
+        }
+
+        if (mediaName.isEmpty()) {
+            return null;
+        }
+
+        // 根据类型文本，判断相应的枚举
         for (MessageType type : values()) {
-            if (type.mediaName.equals(typeName)) {
+            if (type.mediaName.equals(mediaName)) {
+                if (!charset.isEmpty()) {
+                    type.setCharset(charset);
+                }
                 return type;
             }
         }
 
         return null;
+    }
+
+    /**
+     * 该方法用于设置报文类型的编码格式
+     * 
+     * @param charset 编码格式名称字符串
+     * @return 枚举本身
+     * @since autest 3.6.0
+     */
+    public MessageType setCharset(String charset) {
+        this.charset = charset;
+        return this;
+    }
+
+    /**
+     * 该方法用于返回报文类型的详细文本内容（包含编码）
+     * 
+     * @return 报文类型的详细文本内容
+     * @since autest 3.6.0
+     */
+    public String toMessageTypeString() {
+        String text = mediaName;
+        if (!charset.isEmpty()) {
+            text += (";charset=" + charset);
+        }
+
+        return text;
     }
 }
