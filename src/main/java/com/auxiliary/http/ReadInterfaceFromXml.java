@@ -354,6 +354,17 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         return interElement.attributeValue(XmlParamName.XML_ATTRI_URL);
     }
 
+    /**
+     * 该方法用于读取接口标签中的conntect属性
+     * 
+     * @param interElement 接口元素
+     * @return 接口标签中的conntect属性
+     * @since autest 3.6.0
+     */
+    private String readConnectTime(Element interElement) {
+        return interElement.attributeValue(XmlParamName.XML_ATTRI_CONNECT);
+    }
+
     @Override
     public Set<String> getExtractContent(String interName) {
         // 查找元素
@@ -488,6 +499,12 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         String path = readInterPath(interElement);
         if (!path.isEmpty()) {
             inter.setPath(path);
+        }
+        // 获取接口请求时间
+        try {
+            inter.setConnectTime(readConnectTime(interElement));
+        } catch (Exception e) {
+            throw new InterfaceReadToolsException(String.format("接口元素“%s”设置接口超时时间表达式错误", interName), e);
         }
         // 获取接口的请求方式
         inter.setRequestType(readInterRequestType(interElement));
@@ -787,5 +804,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义file属性名称
          */
         public static final String XML_ATTRI_FILE = "file";
+        /**
+         * 定义connect属性
+         */
+        public static final String XML_ATTRI_CONNECT = "connect";
     }
 }

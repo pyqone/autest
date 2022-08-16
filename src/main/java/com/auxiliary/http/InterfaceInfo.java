@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.testcase.TestCaseException;
 import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.date.TimeUnit;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -152,6 +153,10 @@ public class InterfaceInfo implements Cloneable {
      * 存储cookie
      */
     private HashMap<String, String> cookieMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储接口的请求时间
+     */
+    private Entry<Long, TimeUnit> connectTime = EasyHttp.connectTime;
 
     /**
      * 该方法用于返回接口的url协议
@@ -995,6 +1000,96 @@ public class InterfaceInfo implements Cloneable {
         Map<String, String> cookiesMap = getCookieMap();
         this.cookieMap.clear();
         return cookiesMap;
+    }
+
+    /**
+     * 该方法用于设置接口的连接超时时间
+     * 
+     * @param connectTime 接口超时时间
+     * @param timeUnit    时间单位枚举
+     * @since autest 3.6.0
+     */
+    public void setConnectTime(long connectTime, TimeUnit timeUnit) {
+        this.connectTime = new Entry<>(connectTime, timeUnit);
+    }
+
+    /**
+     * 该方法用于通过传入时间块表达式，设置接口的超时时间
+     * <p>
+     * 传入的时间块单位可参考{@link TimeUnit}中每个枚举对应的正则判断，其传入的时间块表达式案例如下：
+     * <ul>
+     * <li>传入“1min”表示设置接口超时时间为1分钟</li>
+     * <li>传入“1.5H”表示设置接口超时时间为1小时30分钟</li>
+     * <li>传入“1min30s”表示设置接口超时时间为1分30秒</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <b>注意：</b>建议不要使用月和年为单位，其单位为取近似值，在计算时可能不准确；时间块表达式不允许传入负号，传入的每个时间块只做加法处理
+     * </p>
+     * 
+     * @param timeExpression 时间块表达式
+     * @since autest 3.6.0
+     */
+    public void setConnectTime(String timeExpression) {
+        // 存储计算的时间
+        long time = 0L;
+
+        // 计算思路参考Time类中的addTime(String)方法
+        char[] chars = Optional.ofNullable(timeExpression).filter(text -> !text.isEmpty())
+                .map(text -> text + "-").map(String::toCharArray)
+                .orElseThrow(() -> new InterfaceReadToolsException("必须指定时间参数"));
+
+        // 遍历所有的字符，区别存储单位与增减的数值，参考Time类中的时间计算方法
+        StringBuilder numText = new StringBuilder();
+        StringBuilder unitText = new StringBuilder();
+        boolean isUnit = false;
+        for (char ch : chars) {
+            if (Character.isDigit(ch) || ch == '.') {
+                if (isUnit) {
+                    // 获取单位
+                    TimeUnit timeUnit = Arrays.stream(TimeUnit.values()).filter(unit -> unit.isTimeUnit(unitText.toString()))
+                            .findFirst().orElseThrow(
+                                    () -> new InterfaceReadToolsException("无法识别的时间单位块：" + numText + unitText));
+                    // 获取需要计算的数值
+                    double timeNum = 0.0;
+                    int index = numText.toString().indexOf(".");
+                    if (index == numText.toString().length() - 1) {
+                        timeNum = Double.valueOf(numText.toString() + "0");
+                    } else if (index == 0) {
+                        timeNum = Double.valueOf("0" + numText.toString());
+                    } else {
+                        timeNum = Double.valueOf(numText.toString());
+                    }
+
+                    // 将数值转换成毫秒值进行计算，并存储
+                    time += (timeNum * timeUnit.getToMillisNum());
+
+                    numText.delete(0, numText.length());
+                    unitText.delete(0, unitText.length());
+                }
+
+                numText.append(ch);
+                isUnit = false;
+            } else {
+                isUnit = true;
+                unitText.append(ch);
+            }
+        }
+
+        // 判断time是否被赋值
+        if (time != 0L) {
+            setConnectTime(time, TimeUnit.MILLISECOND);
+        }
+    }
+
+    /**
+     * 该方法用于返回当前接口设置的请求超时时间
+     * 
+     * @return 接口请求超时时间
+     * @since autest 3.6.0
+     */
+    public Entry<Long, TimeUnit> getConnectTime() {
+        return new Entry<>(connectTime.getKey(), connectTime.getValue());
     }
 
     @SuppressWarnings("unchecked")

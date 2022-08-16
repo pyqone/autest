@@ -16,8 +16,9 @@
     <!-- url：接口url地址，可指定接口某一段url，但需要以相应的分隔符开头或结尾，如只指定接口路径时，则需要在路径前加上“/”符号 -->
     <!-- path：接口路径，当同时指定url与path属性，且都包含接口路径时，则按照先分析url内容，再存储path内容的顺序 -->
     <!-- type：请求类型，可选范围如下：GET,POST,PUT,DELETE,OPTIONS,HEAD,PATCH,TRACE,CONNECT,COPY,LINK,UNLINK,PURGE,LOCK,UNLOCK,MKCOL,MOVE,PROPFIND,VIEW（忽略大小写） -->
+    <!-- connect：接口超时时间块表达式（其单位使用标准的时间单位） -->
     <interface name='接口2' environment='环境1'
-      url='http://192.168.3.3' path='a/b/c' type='post'>
+      url='http://192.168.3.3' path='a/b/c' type='post' connect='1min'>
       <!-- 前置执行操作，当执行该接口时，将按顺序先执行前置操作，待操作执行完毕后，再执行当前接口 -->
       <before>
         <!-- name：前置接口名称 -->
