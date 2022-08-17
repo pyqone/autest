@@ -421,7 +421,9 @@ public class EasyHttp {
 
         // 定义请求客户端
         OkHttpClient client = new OkHttpClient().newBuilder()
-                .connectTimeout(connectTime, java.util.concurrent.TimeUnit.MILLISECONDS).build();
+                .connectTimeout(connectTime, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .readTimeout(connectTime, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .writeTimeout(connectTime, java.util.concurrent.TimeUnit.MILLISECONDS).build();
 
         // 构造请求体，并添加接口信息中的请求参数、请求头和请求体信息
         RequestBody requestBody = null;
@@ -494,7 +496,7 @@ public class EasyHttp {
             info.addRequestHeaderMap(requestHead);
             return new EasyResponse(client.newCall(request).execute(), info);
         } catch (SocketTimeoutException e) {
-            throw new HttpRequestException(String.format("接口请求超时，接口信息为：%s", url), e);
+            throw new HttpRequestException(String.format("接口请求超时，请求设置超时时间为%d毫秒，接口信息为：%s", connectTime, url), e);
         } catch (IOException e) {
             throw new HttpRequestException(String.format("接口请求异常，接口信息为：%s", url), e);
         } catch (HttpResponseException e) {

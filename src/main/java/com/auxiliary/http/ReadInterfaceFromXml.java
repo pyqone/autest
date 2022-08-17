@@ -500,9 +500,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         if (!path.isEmpty()) {
             inter.setPath(path);
         }
-        // 获取接口请求时间
+        // 获取接口请求时间，若不存在则不进行设置
         try {
-            inter.setConnectTime(readConnectTime(interElement));
+            Optional.ofNullable(readConnectTime(interElement)).filter(expression -> !expression.isEmpty())
+                    .ifPresent(inter::setConnectTime);
         } catch (Exception e) {
             throw new InterfaceReadToolsException(String.format("接口元素“%s”设置接口超时时间表达式错误", interName), e);
         }
