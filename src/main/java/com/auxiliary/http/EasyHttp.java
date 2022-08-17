@@ -246,10 +246,10 @@ public class EasyHttp {
             // 获取传参
             String saveName = json.getString(ExtractResponse.JSON_EXTRACT_SAVE_NAME);
             SearchType searchType = SearchType.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_SEARCH));
-            String paramName = json.getString(ExtractResponse.JSON_EXTRACT_PARAM_NAME);
-            String xpath = json.getString(ExtractResponse.JSON_EXTRACT_XPATH);
-            String lb = json.getString(ExtractResponse.JSON_EXTRACT_LB);
-            String rb = json.getString(ExtractResponse.JSON_EXTRACT_RB);
+            String paramName = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_PARAM_NAME));
+            String xpath = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_XPATH));
+            String lb = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_LB));
+            String rb = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_RB));
             int index = Integer.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_ORD));
 
             // 存储提词结果
@@ -260,12 +260,12 @@ public class EasyHttp {
         assertResultSet.clear();
         interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
-            String assertRegex = json.getString(AssertResponse.JSON_ASSERT_ASSERT_REGEX);
+            String assertRegex = disposeContent(json.getString(AssertResponse.JSON_ASSERT_ASSERT_REGEX));
             SearchType searchType = SearchType.valueOf(json.getString(AssertResponse.JSON_ASSERT_SEARCH));
-            String paramName = json.getString(AssertResponse.JSON_ASSERT_PARAM_NAME);
-            String xpath = json.getString(AssertResponse.JSON_ASSERT_XPATH);
-            String lb = json.getString(AssertResponse.JSON_ASSERT_LB);
-            String rb = json.getString(AssertResponse.JSON_ASSERT_RB);
+            String paramName = disposeContent(json.getString(AssertResponse.JSON_ASSERT_PARAM_NAME));
+            String xpath = disposeContent(json.getString(AssertResponse.JSON_ASSERT_XPATH));
+            String lb = disposeContent(json.getString(AssertResponse.JSON_ASSERT_LB));
+            String rb = disposeContent(json.getString(AssertResponse.JSON_ASSERT_RB));
             int index = Integer.valueOf(json.getString(AssertResponse.JSON_ASSERT_ORD));
 
             // 断言

@@ -588,7 +588,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         try {
             return new BeforeInterfaceOperation(getInterface(name));
         } catch (InterfaceReadToolsException e) {
-            throw new InterfaceReadToolsException(String.format("接口“%s”的父层接口“%s”存在错误", interName, name), e);
+            throw new InterfaceReadToolsException(
+                    String.format("接口“%s”的父层接口“%s”存在错误，错误信息为：%s", interName, name, e.getMessage()), e);
         }
     }
 

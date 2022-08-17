@@ -85,7 +85,7 @@
           <!-- lb：搜索文本的左边界，可以与paramName与attribute参数共存 -->
           <!-- rb：搜索文本的右边界，可以与paramName与attribute参数共存 -->
           <!-- ord：该参数仅在搜索出多个值时生效，表示获取到多条数据的下标 -->
-          <assert assertValue='test' search='body' paramName='apn' xpath='//*[@a="test"]' lb='alb' rb='arb' ord='1' />
+          <assert assertRegex='test' search='body' paramName='apn' xpath='//*[@a="test"]' lb='alb' rb='arb' ord='1' />
         </asserts>
         <!-- 根据条件提取报文内容，并存储至参数中，便于后续使用 -->
         <extracts>
