@@ -354,6 +354,17 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         return interElement.attributeValue(XmlParamName.XML_ATTRI_URL);
     }
 
+    /**
+     * 该方法用于读取接口标签中的conntect属性
+     * 
+     * @param interElement 接口元素
+     * @return 接口标签中的conntect属性
+     * @since autest 3.6.0
+     */
+    private String readConnectTime(Element interElement) {
+        return interElement.attributeValue(XmlParamName.XML_ATTRI_CONNECT);
+    }
+
     @Override
     public Set<String> getExtractContent(String interName) {
         // 查找元素
@@ -489,6 +500,13 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         if (!path.isEmpty()) {
             inter.setPath(path);
         }
+        // 获取接口请求时间，若不存在则不进行设置
+        try {
+            Optional.ofNullable(readConnectTime(interElement)).filter(expression -> !expression.isEmpty())
+                    .ifPresent(inter::setConnectTime);
+        } catch (Exception e) {
+            throw new InterfaceReadToolsException(String.format("接口元素“%s”设置接口超时时间表达式错误", interName), e);
+        }
         // 获取接口的请求方式
         inter.setRequestType(readInterRequestType(interElement));
         // 获取接口参数信息
@@ -570,7 +588,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         try {
             return new BeforeInterfaceOperation(getInterface(name));
         } catch (InterfaceReadToolsException e) {
-            throw new InterfaceReadToolsException(String.format("接口“%s”不存在相应的父层接口“%s”", interName, name), e);
+            throw new InterfaceReadToolsException(
+                    String.format("接口“%s”的父层接口“%s”存在错误，错误信息为：%s", interName, name, e.getMessage()), e);
         }
     }
 
@@ -787,5 +806,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义file属性名称
          */
         public static final String XML_ATTRI_FILE = "file";
+        /**
+         * 定义connect属性
+         */
+        public static final String XML_ATTRI_CONNECT = "connect";
     }
 }

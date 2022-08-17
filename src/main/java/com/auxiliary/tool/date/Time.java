@@ -342,7 +342,7 @@ public class Time implements Comparable<Time> {
 	public Time addTime(String calculateTimeText) {
 		// 将字符串转换为char[]数组
 		char[] chars = Optional.ofNullable(calculateTimeText).filter(text -> !text.isEmpty())
-				// 为保证最后一位能进行计算，在字符串末尾拼接一个“-”符号
+                // 由于需要在获取到当前字段后才能计算已保存的内容，为保证最后一位能进行计算，在字符串末尾拼接一个“-”符号
 				.map(text -> text + "-").map(String::toCharArray)
 				.orElseThrow(() -> new IncorrectConditionException("必须指定修改时间的参数"));
 
@@ -350,10 +350,13 @@ public class Time implements Comparable<Time> {
 		LocalDateTime nowTime = calculateTime;
 
 		/*
-		 * 判断单位思路： 1.遍历通过calculateTimeText得到的每一个字符 2.判断当前字符是否为数字：
-		 * a.若为数字，则判断上一次读取的内容是否为字符： I.若为字符，则表示上一个单位及计算数值已读取完毕，则先对上一次的数值对日期时间进行一次计算
-		 * II.若为数字，则表示当前正在读取计算的数值，则不进行操作 判断结束后，记录isUnit为false，表示当前字符为数字，并拼接到numText中
-		 * b.若为非数字，则将isUnit设置为true，并拼接计算单位
+		 * 判断单位思路： 
+		 * 1.遍历通过calculateTimeText得到的每一个字符 
+		 * 2.判断当前字符是否为数字：
+		 *    a.若为数字，则判断上一次读取的内容是否为字符： 
+		 *        I.若为字符，则表示上一个单位及计算数值已读取完毕，则先对上一次的数值对日期时间进行一次计算
+		 *        II.若为数字，则表示当前正在读取计算的数值，则不进行操作 判断结束后，记录isUnit为false，表示当前字符为数字，并拼接到numText中
+		 *    b.若为非数字，则将isUnit设置为true，并拼接计算单位
 		 */
 		// 遍历所有的字符，区别存储单位与增减的数值
 		StringBuilder numText = new StringBuilder();
@@ -387,11 +390,11 @@ public class Time implements Comparable<Time> {
 	}
 	
 	/**
-	 * 用于对计算的double数值进行处理，不全小数点前后缺失的内容
-	 * 
-	 * @param doubleText 数值文本
-	 * @return 转换后的double类型
-	 */
+     * 用于对计算的double数值进行处理，补全小数点前后缺失的内容
+     * 
+     * @param doubleText 数值文本
+     * @return 转换后的double类型
+     */
 	private Double disposeDoubleText(String doubleText) {
 		int index = doubleText.indexOf(".");
 		if (index == doubleText.length() - 1) {
@@ -514,18 +517,23 @@ public class Time implements Comparable<Time> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		Time other = (Time) obj;
 		if (calculateTime == null) {
-			if (other.calculateTime != null)
-				return false;
-		} else if (!calculateTime.equals(other.calculateTime))
-			return false;
+			if (other.calculateTime != null) {
+                return false;
+            }
+		} else if (!calculateTime.equals(other.calculateTime)) {
+            return false;
+        }
 		return true;
 	}
 	
