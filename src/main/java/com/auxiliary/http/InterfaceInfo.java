@@ -375,6 +375,16 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
+     * 该方法用于返回是否存在参数数据
+     * 
+     * @return 是否存在参数数据
+     * @since autest 3.6.0
+     */
+    public boolean isEmptyParam() {
+        return paramMap.isEmpty();
+    }
+
+    /**
      * 该方法用于添加一组请求参数（传参）
      *
      * @param paramMap 请求参数集合
@@ -564,6 +574,16 @@ public class InterfaceInfo implements Cloneable {
     @SuppressWarnings("unchecked")
     public Map<String, String> getRequestHeaderMap() {
         return (Map<String, String>) requestHeaderMap.clone();
+    }
+
+    /**
+     * 该方法用于返回是否存在请求头数据
+     * 
+     * @return 是否存在请求头
+     * @since autest 3.6.0
+     */
+    public boolean isEmptyHeader() {
+        return requestHeaderMap.isEmpty();
     }
 
     /**
@@ -936,6 +956,16 @@ public class InterfaceInfo implements Cloneable {
         }
 
         return cookieExpression.toString();
+    }
+
+    /**
+     * 该方法用于返回是否存在cookie数据
+     * 
+     * @return 是否存在cookie数据
+     * @since autest 3.6.0
+     */
+    public boolean isEmptyCookie() {
+        return cookieMap.isEmpty();
     }
 
     /**

@@ -1,8 +1,11 @@
 package com.auxiliary.tool.common;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.auxiliary.AuxiliaryToolsException;
 import com.auxiliary.tool.common.enums.MathematicsSymbolType;
@@ -237,5 +240,59 @@ public class DisposeCodeUtils {
 
         // 若通过循环仍未返回下标值，则返回-1，表示不存在需要查找的内容
         return -1;
+    }
+
+    /**
+     * 该方法用于对文本中的占位符进行替换的方法
+     * 
+     * @param startSign     占位符起始标识
+     * @param endSign       占位符结束标识
+     * @param text          待替换的文本
+     * @param replaceKeyMap 待替换的占位符及相应的词语
+     * @return 替换后的文本
+     * @since autest 3.6.0
+     */
+    public static String replacePlaceholder(String startSign, String endSign, String text,
+            Map<String, String> replaceKeyMap) {
+        // 判断需要才处理的内容是否为空或是否包含公式标志，若存在，则返回content
+        String startSignRegex = disposeRegexSpecialSymbol(startSign);
+        String endSignRegex = disposeRegexSpecialSymbol(endSign);
+        String placeholder = startSignRegex + ".+?" + endSignRegex;
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+
+        // 通过函数标志对文本中的函数或方法进行提取
+        Matcher m = Pattern.compile(placeholder).matcher(text);
+        while (m.find()) {
+            // 去除标记符号，获取关键词
+            String signKey = m.group();
+            String key = signKey.substring((signKey.indexOf(startSign) + startSign.length()),
+                    signKey.lastIndexOf(endSign));
+
+            // 判断关键词是否为已存储的词语
+            if (replaceKeyMap.containsKey(key)) {
+                text = text.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey), replaceKeyMap.get(key));
+                continue;
+            }
+        }
+
+        return text;
+    }
+
+    public static String extractPlaceholderContent(String startSign, String endSign, String keyRegex,
+            String text) {
+        String placeholder = disposeRegexSpecialSymbol(startSign) + keyRegex + disposeRegexSpecialSymbol(endSign);
+
+        // 通过函数标志对文本中的函数或方法进行提取
+        Matcher m = Pattern.compile(placeholder).matcher(text);
+        if (m.find()) {
+            // 获取关键词
+            String key = m.group();
+            // 去除标记符号并进行存储
+            return key.substring((key.indexOf(startSign) + startSign.length()), key.lastIndexOf(endSign));
+        }
+
+        return "";
     }
 }

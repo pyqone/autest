@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templets>
+    <templet name='getMethod'>
+@{header @{beforeTab}web.add_header("@{headerName}", "@{headerValue}");}
+@{cookie @{beforeTab}web.add_cookie("@{cookieName}=@{cookieValue}; DOMAIN=@{host}");}
+@{extract @{beforeTab}web.reg_save_param("@{extractParamName}", new String[] { @{line}@{beforeTab}@{tab}"LB=@{extractLb}", @{line}@{beforeTab}@{tab}"RB=@{extractRb}", @{line}@{beforeTab}@{tab}"Search=@{extractSearch}", @{line}@{beforeTab}LAST});}
+@{beforeTab}@{tab}web.url("@{path}", 
+@{beforeTab}@{tab}"URL=@{url}", new String[] {
+@{beforeTab}@{tab}"Resource=0",
+@{beforeTab}@{tab}"RecContentType=text/html",
+@{beforeTab}@{tab}"Referer=",
+@{beforeTab}@{tab}"Snapshot=t1.inf",
+@{beforeTab}@{tab}"Mode=HTML",
+@{beforeTab}LAST});@{line}
+<!--  
+    @{resources @{beforeTab}EXTRARES, @{line}
+    @{resource @{beforeTab}"Url=@{resourceUrl}", "Referer=@{resourceRefererUrl}", ENDITEM,@{line}}}
+-->
+    </templet>
+</templets>
