@@ -18,11 +18,11 @@ public enum TimeUnit {
 	/**
 	 * 指向计算单位“<b>年</b>”，对应的时间单位为：年、y、Y
 	 */
-	YEAR("[年yY]", ChronoUnit.YEARS, (long)(365.25 * 1000L * 24L * 60L * 60L)), 
+    YEAR("[年yY]", ChronoUnit.YEARS, (long) (365.25 * 24L * 60L * 60L * 1000L)),
 	/**
 	 * 指向计算单位“<b>月</b>”，对应的时间单位为：月、m、M
 	 */
-	MONTH("[月mM]", ChronoUnit.MONTHS, (long)(30.4375 * 1000L * 24L * 60L * 60L)), 
+    MONTH("[月mM]", ChronoUnit.MONTHS, (long) (30.4375 * 24L * 60L * 60L * 1000L)),
 	/**
 	 * 指向计算单位“<b>周</b>”，对应的时间单位为：周、w、W
 	 */
@@ -38,11 +38,17 @@ public enum TimeUnit {
 	/**
 	 * 指向计算单位“<b>分</b>”，对应的时间单位为：分、min（所有字母不区分大小写）
 	 */
-	MINUTE("分|((m|M)(i|I)(n|N))", ChronoUnit.MINUTES, (60L * 1000L)), 
+    MINUTE("分|((m|M)(i|I)(n|N))", ChronoUnit.MINUTES, (60L * 1000L)),
 	/**
 	 * 指向计算单位“<b>秒</b>”，对应的时间单位为：秒、s、S
 	 */
 	SECOND("[秒sS]", ChronoUnit.SECONDS, (1000L)), 
+    /**
+     * 指向计算单位“<b>毫秒</b>”，对应的时间单位为：毫秒、ms（所有字母不区分大小写）
+     * 
+     * @since autest 3.6.0
+     */
+    MILLISECOND("(毫秒)|((M|m)(s|S))", ChronoUnit.MILLIS, 1L)
 	;
 	/**
 	 * 指定判断当前单位的正则

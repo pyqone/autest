@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -14,6 +15,7 @@ import org.dom4j.io.SAXReader;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.AuxiliaryToolsException;
+import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.file.TextFileReadUtil;
 import com.auxiliary.tool.regex.ConstType;
 
@@ -38,7 +40,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since autest 3.3.0
  */
 public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
-        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeInterface {
+        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeOperation {
     /**
      * 存储xml元素文件类对象
      */
@@ -178,6 +180,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @since autest 3.3.0
      */
     private void readInterBody(InterfaceInfo inter, Element interElement) {
+        // 读取请求体的顺序：普通请求体、表单请求体、文件请求体
         // 获取模板中普通body元素
         Element bodyElement = interElement.element(XmlParamName.XML_LABEL_BODY);
         // 若元素存在，则按照普通body进行读取
@@ -211,7 +214,40 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             return;
         }
 
-        // 若不存在普通body，则读取文本body类型
+        // 若不存在普通body，则读取表单body类型
+        if ((bodyElement = interElement.element(XmlParamName.XML_LABEL_FORM_BODY)) != null) {
+            // 获取表单类型，并转换为枚举
+            MessageType type = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
+                    .map(String::toUpperCase).map(MessageType::valueOf)
+                    .orElseThrow(() -> new InterfaceReadToolsException(
+                            String.format("接口“%s”必须指定表单类型请求的“%s”属性", nowElementName, XmlParamName.XML_ATTRI_TYPE)));
+
+            // 获取其下的所有表单数据标签，遍历并转换为指定标签
+            List<Entry<String, Object>> dataList = bodyElement.elements(XmlParamName.XML_LABEL_DATA).stream()
+                    .filter(element -> Optional.ofNullable(element.attributeValue(XmlParamName.XML_ATTRI_NAME))
+                            .filter(att -> !att.isEmpty()).isPresent())
+                    .map(element -> {
+                        // 根据表单数据的类型，对表单值进行赋值
+                        Object value;
+                        if (Optional.ofNullable(element.attribute(XmlParamName.XML_ATTRI_VALUE)).isPresent()) {
+                            value = element.attributeValue(XmlParamName.XML_ATTRI_VALUE);
+                        } else if (Optional.ofNullable(element.attribute(XmlParamName.XML_ATTRI_FILE)).isPresent()) {
+                            value = new File(element.attributeValue(XmlParamName.XML_ATTRI_FILE));
+                        } else {
+                            value = "";
+                        }
+
+                        return new Entry<>(element.attributeValue(XmlParamName.XML_ATTRI_NAME), value);
+                    }).collect(Collectors.toList());
+            // 判断数据是否为空
+            if (!dataList.isEmpty()) {
+                // 添加表单数据
+                inter.setFormBody(type, dataList);
+                return;
+            }
+        }
+
+        // 若不存在表单body，则读取文本body类型
         if ((bodyElement = interElement.element(XmlParamName.XML_LABEL_FILE_BODY)) != null) {
             String filePath = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_FILE)).orElse("");
             // 若文件路径不为空，则定义文件类对象
@@ -246,6 +282,28 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                     .filter(name -> !name.isEmpty()).ifPresent(name -> {
                         inter.addRequestHeader(name,
                                 Optional.ofNullable(headerElement.attributeValue(XmlParamName.XML_ATTRI_VALUE))
+                                        .orElseGet(() -> ""));
+                    });
+        }
+    }
+
+    /**
+     * 该方法用于读取接口需要设置的cookie信息，并存储至接口信息类对象中
+     *
+     * @param inter        接口信息类对象
+     * @param interElement 接口元素
+     * @since autest 3.3.0
+     */
+    private void readCookies(InterfaceInfo inter, Element interElement) {
+        // 获取所有的请求头元素
+        List<Element> cookieElementList = Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_COOKIES))
+                .map(ele -> ele.elements(XmlParamName.XML_LABEL_COOKIE)).orElseGet(() -> new ArrayList<>());
+        for (Element cookieElement : cookieElementList) {
+            // 判断当前标签是否存储参数名称，若为空，则不进行存储
+            Optional.ofNullable(cookieElement.attributeValue(XmlParamName.XML_ATTRI_NAME))
+                    .filter(name -> !name.isEmpty()).ifPresent(name -> {
+                        inter.addCookie(name,
+                                Optional.ofNullable(cookieElement.attributeValue(XmlParamName.XML_ATTRI_VALUE))
                                         .orElseGet(() -> ""));
                     });
         }
@@ -294,6 +352,17 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      */
     private String readInterUrl(Element interElement) {
         return interElement.attributeValue(XmlParamName.XML_ATTRI_URL);
+    }
+
+    /**
+     * 该方法用于读取接口标签中的conntect属性
+     * 
+     * @param interElement 接口元素
+     * @return 接口标签中的conntect属性
+     * @since autest 3.6.0
+     */
+    private String readConnectTime(Element interElement) {
+        return interElement.attributeValue(XmlParamName.XML_ATTRI_CONNECT);
     }
 
     @Override
@@ -362,8 +431,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             assertJson.put(AssertResponse.JSON_ASSERT_SEARCH,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_SEARCH))
                             .map(String::toUpperCase).orElseGet(() -> DEFAULT_SEARCH));
-            assertJson.put(AssertResponse.JSON_ASSERT_LB, Optional
-                    .ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
+            assertJson.put(AssertResponse.JSON_ASSERT_LB,
+                    Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_LB)).orElseGet(() -> ""));
             assertJson.put(AssertResponse.JSON_ASSERT_RB,
                     Optional.ofNullable(assertElement.attributeValue(XmlParamName.XML_ATTRI_RB)).orElseGet(() -> ""));
             assertJson.put(AssertResponse.JSON_ASSERT_PARAM_NAME, Optional
@@ -431,12 +500,21 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         if (!path.isEmpty()) {
             inter.setPath(path);
         }
+        // 获取接口请求时间，若不存在则不进行设置
+        try {
+            Optional.ofNullable(readConnectTime(interElement)).filter(expression -> !expression.isEmpty())
+                    .ifPresent(inter::setConnectTime);
+        } catch (Exception e) {
+            throw new InterfaceReadToolsException(String.format("接口元素“%s”设置接口超时时间表达式错误", interName), e);
+        }
         // 获取接口的请求方式
         inter.setRequestType(readInterRequestType(interElement));
         // 获取接口参数信息
         readParams(inter, interElement);
         // 设置请求头信息
         readHeader(inter, interElement);
+        // 设置cookie信息
+        readCookies(inter, interElement);
         // 读取请求体信息
         readInterBody(inter, interElement);
         // 读取响应体字符集
@@ -447,6 +525,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         inter.addAllAssertRule(getAssertContent(interName));
         // 读取接口提词规则信息
         inter.addAllExtractRule(getExtractContent(interName));
+        // 添加前置操作集合
+        inter.addAllBeforeOperation(getBeforeOperation(interName));
 
         // 缓存读取的接口
         interfaceMap.put(interName, inter);
@@ -471,6 +551,46 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         }
 
         return interNameList;
+    }
+
+    @Override
+    public List<BeforeInterfaceOperation> getBeforeOperation(String interName) {
+        List<BeforeInterfaceOperation> operationList = new ArrayList<>();
+
+        // 查找元素
+        Element element = findElement(interName);
+        // 获取所有前置操作标签并进行遍历
+        List<Element> beforeElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_BEFORE))
+                .map(Element::elements).orElseGet(ArrayList::new);
+        for (Element beforeElement : beforeElementList) {
+            // 根据标签名称，定义相应的前置操作封装类
+            switch (beforeElement.getName()) {
+            case XmlParamName.XML_LABEL_INTERFACE:
+                operationList.add(getBeforeInterface(interName, beforeElement));
+                break;
+            default:
+                continue; // 若非指定的封装类，则不进行解析
+            }
+        }
+
+        return operationList;
+    }
+
+    /**
+     * 该方法用于返回包含接口信息的前置操作封装类
+     * 
+     * @param interName 接口名称
+     * @return 前置操作封装类
+     * @since autest 3.6.0
+     */
+    private BeforeInterfaceOperation getBeforeInterface(String interName, Element beforeElement) {
+        String name = beforeElement.attributeValue(XmlParamName.XML_ATTRI_NAME);
+        try {
+            return new BeforeInterfaceOperation(getInterface(name));
+        } catch (InterfaceReadToolsException e) {
+            throw new InterfaceReadToolsException(
+                    String.format("接口“%s”的父层接口“%s”存在错误，错误信息为：%s", interName, name, e.getMessage()), e);
+        }
     }
 
     /**
@@ -562,6 +682,14 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         public static final String XML_LABEL_HEADER = "header";
         /**
+         * 定义cookies标签名称
+         */
+        public static final String XML_LABEL_COOKIES = "cookies";
+        /**
+         * 定义cookie标签名称
+         */
+        public static final String XML_LABEL_COOKIE = "cookie";
+        /**
          * 定义body标签名称
          */
         public static final String XML_LABEL_BODY = "body";
@@ -601,6 +729,14 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义file_body标签名称
          */
         public static final String XML_LABEL_FILE_BODY = "file_body";
+        /**
+         * 定义form_body标签名称
+         */
+        public static final String XML_LABEL_FORM_BODY = "form_body";
+        /**
+         * 定义data标签名称
+         */
+        public static final String XML_LABEL_DATA = "data";
 
         /**
          * 定义name属性名称
@@ -670,5 +806,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义file属性名称
          */
         public static final String XML_ATTRI_FILE = "file";
+        /**
+         * 定义connect属性
+         */
+        public static final String XML_ATTRI_CONNECT = "connect";
     }
 }

@@ -1,16 +1,24 @@
 package com.auxiliary.http;
 
 /**
- * <p><b>文件名：</b>HeadType.java</p>
- * <p><b>用途：</b>
- * 枚举部分请求头配置
+ * <p>
+ * <b>文件名：</b>HeadType.java
  * </p>
- * <p><b>编码时间：</b>2020年6月22日上午9:05:07</p>
- * <p><b>修改时间：</b>2020年6月22日上午9:05:07</p>
+ * <p>
+ * <b>用途：</b> 枚举部分请求头配置
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2020年6月22日上午9:05:07
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2020年6月22日上午9:05:07
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
- *
+ * @deprecated 该枚举已无意义，将在3.7.0或以上版本删除
  */
+@Deprecated
 public enum HeadType {
 	/**
 	 * json协议

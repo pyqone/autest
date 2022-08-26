@@ -1,9 +1,12 @@
 package com.auxiliary.http;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -16,6 +19,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.testcase.TestCaseException;
 import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.date.TimeUnit;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -81,9 +85,17 @@ public class InterfaceInfo implements Cloneable {
      */
     protected final String SYMBOL_SPLIT_PARAM_VALUE = "=";
     /**
+     * 定义cookies键值之间的分隔符号
+     */
+    protected final String SYMBOL_SPLIT_COOKIES_VALUE = "=";
+    /**
      * 定义接口参数与参数间的分隔符号
      */
     protected final String SYMBOL_SPLIT_PARAM = "&";
+    /**
+     * 定义cookies间的分隔符号
+     */
+    protected final String SYMBOL_SPLIT_COOKIES = ";";
 
     /**
      * 接口协议
@@ -124,8 +136,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 接口响应内容格式集合
      */
-    private HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(
-            ConstType.DEFAULT_MAP_SIZE);
+    private HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文断言规则集合
      */
@@ -134,6 +145,18 @@ public class InterfaceInfo implements Cloneable {
      * 接口响应报文提词规则
      */
     private HashSet<JSONObject> extractRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储接口前置操作内容
+     */
+    private ArrayList<BeforeInterfaceOperation> beforeOperationList = new ArrayList<>();
+    /**
+     * 存储cookie
+     */
+    private HashMap<String, String> cookieMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储接口的请求时间
+     */
+    private Entry<Long, TimeUnit> connectTime = EasyHttp.connectTime;
 
     /**
      * 该方法用于返回接口的url协议
@@ -231,10 +254,7 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于设置接口的路径
-     * <p>
-     * <b>注意：</b>该方法不接受为空的接口路径，若需要清除当前的接口路径，需要调用{@link #clearPath()}方法
-     * </p>
+     * 该方法用于设置接口的路径，可传入空串，表示无接口路径
      *
      * @param path 接口的路径
      * @since autest 3.3.0
@@ -251,17 +271,6 @@ public class InterfaceInfo implements Cloneable {
             }
             return p;
         }).orElse("");
-    }
-
-    /**
-     * 该方法用于清空当前接口的路径
-     *
-     * @since autest 3.3.0
-     * @deprecated 方法已无意义，将在3.5.0版本中进行删除
-     */
-    @Deprecated
-    public void clearPath() {
-        this.path = "";
     }
 
     /**
@@ -363,6 +372,16 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
+     * 该方法用于返回是否存在参数数据
+     * 
+     * @return 是否存在参数数据
+     * @since autest 3.6.0
+     */
+    public boolean isEmptyParam() {
+        return paramMap.isEmpty();
+    }
+
+    /**
      * 该方法用于添加一组请求参数（传参）
      *
      * @param paramMap 请求参数集合
@@ -432,22 +451,6 @@ public class InterfaceInfo implements Cloneable {
      * </p>
      *
      * @return 接口的请求报文与请求报文类型封装类
-     * @since autest 3.3.0
-     * @deprecated 已由{@link #getBodyContent()}方法代替，将在3.5.0版本中删除
-     */
-    @Deprecated
-    public Entry<MessageType, String> getBody() {
-        Entry<MessageType, Object> body = getBodyContent();
-        return new Entry<>(body.getKey(), body.getValue().toString());
-    }
-
-    /**
-     * 该方法用于返回接口的请求报文与请求报文类型封装类
-     * <p>
-     * 封装类类似于于键值对，键为报文类型，值为报文内容
-     * </p>
-     *
-     * @return 接口的请求报文与请求报文类型封装类
      * @since autest 3.4.0
      */
     public Entry<MessageType, Object> getBodyContent() {
@@ -491,27 +494,72 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于设置请求报文以及请求报文的类型
-     *
-     * @param messageType 报文类型枚举
-     * @param bodyText    报文内容
-     * @since autest 3.3.0
-     * @deprecated 已由{@link #setBodyContent(MessageType, Object)}方法代替，将在3.5.0版本中删除
-     */
-    @Deprecated
-    public void setBody(MessageType messageType, String bodyText) {
-        setBodyContent(messageType, Optional.ofNullable(bodyText).orElseGet(() -> ""));
-    }
-
-    /**
-     * 该方法用于设置请求报文以及请求报文的类型
+     * 该方法用于设置请求体以及请求体的类型
      * 
-     * @param messageType 报文类型枚举
-     * @param bodyObject  报文内容
+     * @param messageType 请求体类型枚举
+     * @param bodyObject  请求体内容
      * @since autest 3.4.0
      */
     public void setBodyContent(MessageType messageType, Object bodyObject) {
+        // 判断请求体类型是否为表单格式
+        if (messageType == MessageType.X_WWW_FORM_URLENCODED || messageType == MessageType.FORM_DATA) {
+            try {
+
+            } catch (ClassCastException e) {
+                throw new InterfaceReadToolsException(
+                        "表单类型，其请求体必须是“List<Entry<String, Object>>”类型，错误的接口信息为：" + toUrlString(), e);
+            }
+        }
         body = new Entry<>(messageType, bodyObject);
+    }
+
+    /**
+     * 该方法用于设置表单格式类型的请求体
+     * <p>
+     * <b>注意：</b>表单每一个元素为一个键值对类型
+     * </p>
+     * 
+     * @param messageType 请求体类型枚举
+     * @param dataList    请求体内容
+     * @since autest 3.6.0
+     * @throws InterfaceReadToolsException 当消息类型枚举不为表单格式或传入的表单值为错误的类型时，抛出的异常
+     */
+    public void setFormBody(MessageType messageType, List<Entry<String, Object>> dataList) {
+        // 判断请求体类型是否为表单格式
+        if (messageType != MessageType.X_WWW_FORM_URLENCODED && messageType != MessageType.FORM_DATA
+                && messageType != MessageType.FD && messageType != MessageType.FU) {
+            throw new InterfaceReadToolsException(String.format("添加表单类型请求体，其类型必须为“%s”或“%s”，错误的接口信息为：%s",
+                    MessageType.X_WWW_FORM_URLENCODED.getMediaValue(), MessageType.FORM_DATA.getMediaValue(),
+                    toUrlString()));
+        }
+
+        // 判断是否传入表单内容
+        if (dataList == null || dataList.isEmpty()) {
+            throw new InterfaceReadToolsException("表单参数不能为空");
+        }
+
+        // 将表单数据重新存储，并对每个元素的类型进行判断
+        List<Entry<String, Object>> list = new ArrayList<>();
+        for (Entry<String, Object> data : dataList) {
+            Object value = data.getValue();
+            // 判断表单的值类型，若非指定的表单类型，则抛出异常
+            if (messageType == MessageType.X_WWW_FORM_URLENCODED
+                    && !(value instanceof String || value instanceof Number)) {
+                throw new InterfaceReadToolsException(String.format("错误的表单值类型“%s”，“%s”类型的表单值只支持字符串或数字类型，错误的接口信息为：%s",
+                        value.getClass().getSimpleName(), MessageType.X_WWW_FORM_URLENCODED.getMediaValue(),
+                        toUrlString()));
+            } 
+            if (messageType == MessageType.FORM_DATA
+                    && !(value instanceof String || value instanceof Number || value instanceof File)) {
+                throw new InterfaceReadToolsException(String.format(
+                        "错误的表单值类型“%s”，“%s”类型的表单值只支持字符串、或数字或文件类型，错误的接口信息为：%s", value.getClass().getSimpleName(),
+                        MessageType.FORM_DATA.getMediaValue(), toUrlString()));
+            }
+
+            list.add(data);
+        }
+
+        body = new Entry<>(messageType, list);
     }
 
     /**
@@ -523,6 +571,16 @@ public class InterfaceInfo implements Cloneable {
     @SuppressWarnings("unchecked")
     public Map<String, String> getRequestHeaderMap() {
         return (Map<String, String>) requestHeaderMap.clone();
+    }
+
+    /**
+     * 该方法用于返回是否存在请求头数据
+     * 
+     * @return 是否存在请求头
+     * @since autest 3.6.0
+     */
+    public boolean isEmptyHeader() {
+        return requestHeaderMap.isEmpty();
     }
 
     /**
@@ -594,7 +652,8 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public Set<MessageType> getResponseContentType(int status) {
-        return Optional.ofNullable(responseContentTypeMap.get(status)).map(HashSet::new).orElseGet(() -> new HashSet<>());
+        return Optional.ofNullable(responseContentTypeMap.get(status)).map(HashSet::new)
+                .orElseGet(() -> new HashSet<>());
     }
 
     /**
@@ -648,7 +707,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>
      * <ol>
      * <li>传入的json为空或不符合json格式时，将不进行存储</li>
-     * <li>json必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储</li>
+     * <li>json必须包含{@link AssertResponse#JSON_ASSERT_ASSERT_REGEX}字段，否则将不进行存储</li>
      * </ol>
      * </p>
      *
@@ -669,7 +728,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加断言规则集合
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link AssertResponse#JSON_ASSERT_ASSERT_REGEX}字段，否则将不进行存储
      * </p>
      *
      * @param assertRuleMap 断言规则集合
@@ -689,7 +748,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加多组断言规则json
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link AssertResponse#JSON_ASSERT_ASSERT_REGEX}字段，否则将不进行存储
      * </p>
      *
      * @param rules 断言规则json集合
@@ -702,14 +761,13 @@ public class InterfaceInfo implements Cloneable {
             } catch (Exception e) {
                 return new JSONObject();
             }
-        }).filter(json -> json.containsKey(AssertResponse.JSON_ASSERT_ASSERT_REGEX))
-                .forEach(assertRuleSet::add);
+        }).filter(json -> json.containsKey(AssertResponse.JSON_ASSERT_ASSERT_REGEX)).forEach(assertRuleSet::add);
     }
 
     /**
      * 该方法用于以字符串集合的形式，返回断言规则json
      * <p>
-     * json字段可参考{@link ReadInterfaceFromAbstract}中“JSON_ASSERT_XXX”常量
+     * json字段可参考{@link AssertResponse}中“JSON_ASSERT_XXX”常量
      * </p>
      *
      * @return 断言规则json集合
@@ -740,7 +798,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>
      * <ol>
      * <li>传入的json为空或不符合json格式时，将不进行存储</li>
-     * <li>json必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储</li>
+     * <li>json必须包含{@link ExtractResponse#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储</li>
      * </ol>
      * </p>
      *
@@ -752,8 +810,7 @@ public class InterfaceInfo implements Cloneable {
         try {
             // 若json不包含断言内容字段，则亦不进行存储
             Optional.ofNullable(extractRuleJsonText).filter(text -> !text.isEmpty()).map(JSONObject::parseObject)
-                    .filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME))
-                    .ifPresent(json -> {
+                    .filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME)).ifPresent(json -> {
                         // 存储规则，并在提词内容集合中，构造空值
                         extractRuleSet.add(json);
                     });
@@ -764,7 +821,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加提词规则
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link ExtractResponse#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
      * </p>
      *
      * @param extractRuleMap 提词规则集合
@@ -784,7 +841,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加多组提词规则json
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link ExtractResponse#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
      * </p>
      *
      * @param rules 提词规则json集合
@@ -797,14 +854,13 @@ public class InterfaceInfo implements Cloneable {
             } catch (Exception e) {
                 return new JSONObject();
             }
-        }).filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME))
-                .forEach(extractRuleSet::add);
+        }).filter(json -> json.containsKey(ExtractResponse.JSON_EXTRACT_SAVE_NAME)).forEach(extractRuleSet::add);
     }
 
     /**
      * 该方法用于以字符串集合的形式，返回提词规则json
      * <p>
-     * json字段可参考{@link ReadInterfaceFromAbstract}中“JSON_EXTRACT_XXX”常量
+     * json字段可参考{@link ExtractResponse}中“JSON_EXTRACT_XXX”常量
      * </p>
      *
      * @return 提词规则json集合
@@ -829,6 +885,240 @@ public class InterfaceInfo implements Cloneable {
         return extractRuleJsonText;
     }
 
+    /**
+     * 该方法用于添加前置操作方法
+     * 
+     * @param operation 前置操作封装类对象
+     * @since autest 3.6.0
+     */
+    public void addBeforeOperation(BeforeInterfaceOperation operation) {
+        beforeOperationList.add(operation);
+    }
+
+    /**
+     * 该方法用于添加一组前置操作方法
+     * 
+     * @param operations 前置操作封装类集合
+     * @since autest 3.6.0
+     */
+    public void addAllBeforeOperation(Collection<BeforeInterfaceOperation> operations) {
+        beforeOperationList.addAll(operations);
+    }
+
+    /**
+     * 该方法用于返回添加的所有前置执行操作
+     * 
+     * @return 前置操作封装类集合
+     * @since autest 3.6.0
+     */
+    public List<BeforeInterfaceOperation> getBeforeOperationList() {
+        List<BeforeInterfaceOperation> beforeOperationList = new ArrayList<>();
+        beforeOperationList.addAll(this.beforeOperationList);
+        return beforeOperationList;
+    }
+
+    /**
+     * 该方法用于清除添加的前置操作
+     * 
+     * @return 前置操作封装类集合
+     * @since autest 3.6.0
+     */
+    public List<BeforeInterfaceOperation> clearBeforeOperation() {
+        List<BeforeInterfaceOperation> beforeOperationList = getBeforeOperationList();
+        this.beforeOperationList.clear();
+        return beforeOperationList;
+    }
+
+    /**
+     * 该方法用于返回接口的需要设置的cookies
+     *
+     * @return cookies
+     * @since autest 3.6.0
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getCookieMap() {
+        return (Map<String, String>) cookieMap.clone();
+    }
+
+    /**
+     * 该方法用于返回已存储的Cookie的表达式，即以“xxx=xxx;xxx=xxx”的格式返回Cookie字符串
+     * 
+     * @return Cookie的表达式
+     * @since autest 3.6.0
+     */
+    public String getCookieExpression() {
+        StringJoiner cookieExpression = new StringJoiner(";");
+        if (!cookieMap.isEmpty()) {
+            cookieMap.forEach((key, value) -> cookieExpression.add(String.format("%s=%s", key, value)));
+        }
+
+        return cookieExpression.toString();
+    }
+
+    /**
+     * 该方法用于返回是否存在cookie数据
+     * 
+     * @return 是否存在cookie数据
+     * @since autest 3.6.0
+     */
+    public boolean isEmptyCookie() {
+        return cookieMap.isEmpty();
+    }
+
+    /**
+     * 该方法用于添加一组需要设置的cookies
+     *
+     * @param cookiesMap cookies集合
+     * @since autest 3.6.0
+     */
+    public void addCookies(Map<String, String> cookiesMap) {
+        // 过滤掉map为空的情况
+        Optional.ofNullable(cookiesMap).filter(map -> !map.isEmpty()).ifPresent(map -> {
+            map.forEach(this::addCookie);
+        });
+    }
+
+    /**
+     * 该方法用于添加单个需要设置的cookie
+     *
+     * @param cookieName  cookie参数名称
+     * @param cookieValue cookie参数值
+     * @since autest 3.6.0
+     */
+    public void addCookie(String cookieName, String cookieValue) {
+        // 过滤参数名称为空的情况，并且当参数值为null时，则处理为空串
+        Optional.ofNullable(cookieName).filter(key -> !key.isEmpty()).ifPresent(key -> {
+            cookieMap.put(key, Optional.ofNullable(cookieValue).orElseGet(() -> ""));
+        });
+    }
+
+    /**
+     * 该方法用于根据url传入参数的表达式格式，向接口中添加参数
+     * <p>
+     * <b>注意：</b>表达式的判断的正则格式为“\w+=\w*(;\w+=\w*)*”，若未按规则编写，则无法添加参数
+     * </p>
+     *
+     * @param expression 参数表达式
+     * @since autest 3.6.0
+     */
+    public void addCookie(String expression) {
+        // 过滤不符合正则的表达式，之后按照分隔符号切分，得到每个参数的表达式后，再按照参数与值的符号切分
+        Optional.ofNullable(expression)
+                .filter(exp -> exp.matches(String.format("\\w+%s\\w*(%s;\\w+%s\\w*)*", SYMBOL_SPLIT_COOKIES_VALUE,
+                        SYMBOL_SPLIT_COOKIES, SYMBOL_SPLIT_COOKIES_VALUE)))
+                .map(exp -> exp.split(SYMBOL_SPLIT_COOKIES)).map(Arrays::stream)
+                .ifPresent(expStream -> expStream.filter(pramExp -> pramExp.contains(SYMBOL_SPLIT_COOKIES_VALUE))
+                        .map(pramExp -> pramExp.split(SYMBOL_SPLIT_COOKIES_VALUE)).forEach(cookies -> {
+                            if (cookies.length == 1) {
+                                addCookie(cookies[0], "");
+                            } else {
+                                addCookie(cookies[0], cookies[1]);
+                            }
+                        }));
+    }
+
+    /**
+     * 该方法用于清空存储的所有cookie内容
+     * 
+     * @return 原有的cookie内容
+     * @since autest 3.6.0
+     */
+    public Map<String, String> clearCookies() {
+        Map<String, String> cookiesMap = getCookieMap();
+        this.cookieMap.clear();
+        return cookiesMap;
+    }
+
+    /**
+     * 该方法用于设置接口的连接超时时间
+     * 
+     * @param connectTime 接口超时时间
+     * @param timeUnit    时间单位枚举
+     * @since autest 3.6.0
+     */
+    public void setConnectTime(long connectTime, TimeUnit timeUnit) {
+        this.connectTime = new Entry<>(connectTime, timeUnit);
+    }
+
+    /**
+     * 该方法用于通过传入时间块表达式，设置接口的超时时间
+     * <p>
+     * 传入的时间块单位可参考{@link TimeUnit}中每个枚举对应的正则判断，其传入的时间块表达式案例如下：
+     * <ul>
+     * <li>传入“1min”表示设置接口超时时间为1分钟</li>
+     * <li>传入“1.5H”表示设置接口超时时间为1小时30分钟</li>
+     * <li>传入“1min30s”表示设置接口超时时间为1分30秒</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <b>注意：</b>建议不要使用月和年为单位，其单位为取近似值，在计算时可能不准确；时间块表达式不允许传入负号，传入的每个时间块只做加法处理
+     * </p>
+     * 
+     * @param timeExpression 时间块表达式
+     * @since autest 3.6.0
+     */
+    public void setConnectTime(String timeExpression) {
+        // 存储计算的时间
+        long time = 0L;
+
+        // 计算思路参考Time类中的addTime(String)方法
+        char[] chars = Optional.ofNullable(timeExpression).filter(text -> !text.isEmpty())
+                .map(text -> text + ".").map(String::toCharArray)
+                .orElseThrow(() -> new InterfaceReadToolsException("必须指定时间参数"));
+
+        // 遍历所有的字符，区别存储单位与增减的数值，参考Time类中的时间计算方法
+        StringBuilder numText = new StringBuilder();
+        StringBuilder unitText = new StringBuilder();
+        boolean isUnit = false;
+        for (char ch : chars) {
+            if (Character.isDigit(ch) || ch == '.') {
+                if (isUnit) {
+                    // 获取单位
+                    TimeUnit timeUnit = Arrays.stream(TimeUnit.values()).filter(unit -> unit.isTimeUnit(unitText.toString()))
+                            .findFirst().orElseThrow(
+                                    () -> new InterfaceReadToolsException("无法识别的时间单位块：" + numText + unitText));
+                    // 获取需要计算的数值
+                    double timeNum = 0.0;
+                    int index = numText.toString().indexOf(".");
+                    if (index == numText.toString().length() - 1) {
+                        timeNum = Double.valueOf(numText.toString() + "0");
+                    } else if (index == 0) {
+                        timeNum = Double.valueOf("0" + numText.toString());
+                    } else {
+                        timeNum = Double.valueOf(numText.toString());
+                    }
+
+                    // 将数值转换成毫秒值进行计算，并存储
+                    time += (timeNum * timeUnit.getToMillisNum());
+
+                    numText.delete(0, numText.length());
+                    unitText.delete(0, unitText.length());
+                }
+
+                numText.append(ch);
+                isUnit = false;
+            } else {
+                isUnit = true;
+                unitText.append(ch);
+            }
+        }
+
+        // 判断time是否被赋值
+        if (time != 0L) {
+            setConnectTime(time, TimeUnit.MILLISECOND);
+        }
+    }
+
+    /**
+     * 该方法用于返回当前接口设置的请求超时时间
+     * 
+     * @return 接口请求超时时间
+     * @since autest 3.6.0
+     */
+    public Entry<Long, TimeUnit> getConnectTime() {
+        return new Entry<>(connectTime.getKey(), connectTime.getValue());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public InterfaceInfo clone() {
@@ -840,6 +1130,8 @@ public class InterfaceInfo implements Cloneable {
             newInter.paramMap = (HashMap<String, String>) paramMap.clone();
             // 克隆接口请求头信息
             newInter.requestHeaderMap = (HashMap<String, String>) requestHeaderMap.clone();
+            // 克隆cookie信息
+            newInter.cookieMap = (HashMap<String, String>) cookieMap.clone();
 
             // 克隆接口响应报文格式信息
             newInter.responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
@@ -955,17 +1247,36 @@ public class InterfaceInfo implements Cloneable {
                 (paramInfo.length() != 0 ? (SYMBOL_SPLIT_START_PARAM + paramInfo.toString()) : ""));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String toString() {
         // 添加请求头参数
         JSONObject headerJson = new JSONObject();
         requestHeaderMap.forEach(headerJson::put);
+        String cookieExperssion = getCookieExpression();
+        if (!cookieExperssion.isEmpty()) {
+            headerJson.put("Cookie", cookieExperssion);
+        }
 
         // 添加接口整体参数
         JSONObject interInfoJson = new JSONObject();
         interInfoJson.put("url", toUrlString());
         interInfoJson.put("requestType", getRequestType());
-        interInfoJson.put("body", Optional.ofNullable(body).map(Entry::getValue).orElse(""));
+
+        // 将请求体的内容转换为字符串输出
+        if (body != null) {
+            String bodyText = "";
+            Object value = body.getValue();
+            if (value instanceof File) {
+                bodyText = ((File) value).getAbsolutePath();
+            } else if (value instanceof List) {
+                bodyText = HttpUtil.formUrlencoded2Extract((List<Entry<String, Object>>) value);
+            } else {
+                bodyText = value.toString();
+            }
+            interInfoJson.put("body", bodyText);
+        }
+        
         interInfoJson.put("requestHeader", headerJson);
 
         return interInfoJson.toJSONString();
