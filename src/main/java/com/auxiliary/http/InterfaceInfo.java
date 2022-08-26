@@ -254,10 +254,7 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于设置接口的路径
-     * <p>
-     * <b>注意：</b>该方法不接受为空的接口路径，若需要清除当前的接口路径，需要调用{@link #clearPath()}方法
-     * </p>
+     * 该方法用于设置接口的路径，可传入空串，表示无接口路径
      *
      * @param path 接口的路径
      * @since autest 3.3.0
@@ -710,7 +707,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>
      * <ol>
      * <li>传入的json为空或不符合json格式时，将不进行存储</li>
-     * <li>json必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储</li>
+     * <li>json必须包含{@link AssertResponse#JSON_ASSERT_ASSERT_REGEX}字段，否则将不进行存储</li>
      * </ol>
      * </p>
      *
@@ -731,7 +728,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加断言规则集合
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link AssertResponse#JSON_ASSERT_ASSERT_REGEX}字段，否则将不进行存储
      * </p>
      *
      * @param assertRuleMap 断言规则集合
@@ -751,7 +748,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加多组断言规则json
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_ASSERT_ASSERT_VALUE}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link AssertResponse#JSON_ASSERT_ASSERT_REGEX}字段，否则将不进行存储
      * </p>
      *
      * @param rules 断言规则json集合
@@ -770,7 +767,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于以字符串集合的形式，返回断言规则json
      * <p>
-     * json字段可参考{@link ReadInterfaceFromAbstract}中“JSON_ASSERT_XXX”常量
+     * json字段可参考{@link AssertResponse}中“JSON_ASSERT_XXX”常量
      * </p>
      *
      * @return 断言规则json集合
@@ -801,7 +798,7 @@ public class InterfaceInfo implements Cloneable {
      * <b>注意：</b>
      * <ol>
      * <li>传入的json为空或不符合json格式时，将不进行存储</li>
-     * <li>json必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储</li>
+     * <li>json必须包含{@link ExtractResponse#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储</li>
      * </ol>
      * </p>
      *
@@ -824,7 +821,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加提词规则
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link ExtractResponse#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
      * </p>
      *
      * @param extractRuleMap 提词规则集合
@@ -844,7 +841,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加多组提词规则json
      * <p>
-     * <b>注意：</b>集合必须包含{@link ReadInterfaceFromAbstract#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
+     * <b>注意：</b>集合必须包含{@link ExtractResponse#JSON_EXTRACT_SAVE_NAME}字段，否则将不进行存储
      * </p>
      *
      * @param rules 提词规则json集合
@@ -863,7 +860,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于以字符串集合的形式，返回提词规则json
      * <p>
-     * json字段可参考{@link ReadInterfaceFromAbstract}中“JSON_EXTRACT_XXX”常量
+     * json字段可参考{@link ExtractResponse}中“JSON_EXTRACT_XXX”常量
      * </p>
      *
      * @return 提词规则json集合
@@ -971,7 +968,7 @@ public class InterfaceInfo implements Cloneable {
     /**
      * 该方法用于添加一组需要设置的cookies
      *
-     * @param paramMap cookies集合
+     * @param cookiesMap cookies集合
      * @since autest 3.6.0
      */
     public void addCookies(Map<String, String> cookiesMap) {
@@ -988,10 +985,10 @@ public class InterfaceInfo implements Cloneable {
      * @param cookieValue cookie参数值
      * @since autest 3.6.0
      */
-    public void addCookie(String cookiesName, String cookiesValue) {
+    public void addCookie(String cookieName, String cookieValue) {
         // 过滤参数名称为空的情况，并且当参数值为null时，则处理为空串
-        Optional.ofNullable(cookiesName).filter(key -> !key.isEmpty()).ifPresent(key -> {
-            cookieMap.put(key, Optional.ofNullable(cookiesValue).orElseGet(() -> ""));
+        Optional.ofNullable(cookieName).filter(key -> !key.isEmpty()).ifPresent(key -> {
+            cookieMap.put(key, Optional.ofNullable(cookieValue).orElseGet(() -> ""));
         });
     }
 

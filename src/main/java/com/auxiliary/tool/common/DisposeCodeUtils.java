@@ -280,6 +280,16 @@ public class DisposeCodeUtils {
         return text;
     }
 
+    /**
+     * 该方法用于获取指定占位符中的内容
+     * 
+     * @param startSign 占位符开始标志
+     * @param endSign   占位符结束标志
+     * @param keyRegex  占位符中的关键词正则表达式
+     * @param text      查找的文本
+     * @return 占位符中的内容
+     * @since autest 3.6.0
+     */
     public static String extractPlaceholderContent(String startSign, String endSign, String keyRegex,
             String text) {
         String placeholder = disposeRegexSpecialSymbol(startSign) + keyRegex + disposeRegexSpecialSymbol(endSign);
