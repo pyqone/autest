@@ -167,7 +167,7 @@ public class XmlSikuliLocation extends AbstractSikuliLocation {
 
                 point = new Location(x, y);
             } catch (NumberFormatException e) {
-                throw new UndefinedElementException(String.format("“%s”元素指定的坐标存在异常，无法转换为数字：(%s, %s)",
+                throw new UndefinedElementException(String.format("“%s”元素指定的坐标存在异常，无法转换为数字：(%s, %s)", name,
                         Double.valueOf(elementDataMap.get(ElementInfoDataType.X)),
                         Double.valueOf(elementDataMap.get(ElementInfoDataType.Y))));
             }
