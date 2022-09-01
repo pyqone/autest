@@ -498,7 +498,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 获取接口的路径
         String path = readInterPath(interElement);
         if (!path.isEmpty()) {
+            // 获取通过环境参数解析到的接口路径信息
+            String environmentPath = inter.getPath();
+            // 为保证接口路径信息的统一，故将新的接口信息设置入接口信息类，之后再获取，以保证接口的路径信息格式的正确性
             inter.setPath(path);
+            inter.setPath(environmentPath + inter.getPath());
         }
         // 获取接口请求时间，若不存在则不进行设置
         try {
