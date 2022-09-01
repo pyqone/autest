@@ -96,6 +96,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	@SuppressWarnings("unchecked")
 	@Override
 	public T end(int contentIndex) {
+        String nowTempName = data.getTempName();
 		for (String tempName : dataMap.keySet()) {
 			data = dataMap.get(tempName);
 			super.end(contentIndex);
@@ -103,6 +104,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 			dataMap.get(tempName).setNowCaseNum(data.getNowCaseNum());
 		}
 		
+        data = dataMap.get(nowTempName);
 		return (T) this;
 	}
 
