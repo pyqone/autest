@@ -773,35 +773,35 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         /**
          * 定义assertValue属性名称
          */
-        public static final String XML_ATTRI_ASSERT_REGEX = "assertRegex";
+        public static final String XML_ATTRI_ASSERT_REGEX = AssertResponse.JSON_ASSERT_ASSERT_REGEX;
         /**
          * 定义saveName属性名称
          */
-        public static final String XML_ATTRI_SAVE_NAME = "saveName";
+        public static final String XML_ATTRI_SAVE_NAME = ExtractResponse.JSON_EXTRACT_SAVE_NAME;
         /**
          * 定义search属性名称
          */
-        public static final String XML_ATTRI_SEARCH = "search";
+        public static final String XML_ATTRI_SEARCH = AssertResponse.JSON_ASSERT_SEARCH;
         /**
          * 定义lb属性名称
          */
-        public static final String XML_ATTRI_RB = "rb";
+        public static final String XML_ATTRI_RB = AssertResponse.JSON_ASSERT_RB;
         /**
          * 定义rb属性名称
          */
-        public static final String XML_ATTRI_LB = "lb";
+        public static final String XML_ATTRI_LB = AssertResponse.JSON_ASSERT_LB;
         /**
          * 定义paramName属性名称
          */
-        public static final String XML_ATTRI_PARAMNAME = "paramName";
+        public static final String XML_ATTRI_PARAMNAME = AssertResponse.JSON_ASSERT_PARAM_NAME;
         /**
          * 定义xpath属性名称
          */
-        public static final String XML_ATTRI_XPATH = "xpath";
+        public static final String XML_ATTRI_XPATH = AssertResponse.JSON_ASSERT_XPATH;
         /**
          * 定义ord属性名称
          */
-        public static final String XML_ATTRI_ORD = "ord";
+        public static final String XML_ATTRI_ORD = AssertResponse.JSON_ASSERT_ORD;
         /**
          * 定义environment属性名称
          */
