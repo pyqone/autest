@@ -498,7 +498,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 获取接口的路径
         String path = readInterPath(interElement);
         if (!path.isEmpty()) {
+            // 获取通过环境参数解析到的接口路径信息
+            String environmentPath = inter.getPath();
+            // 为保证接口路径信息的统一，故将新的接口信息设置入接口信息类，之后再获取，以保证接口的路径信息格式的正确性
             inter.setPath(path);
+            inter.setPath(environmentPath + inter.getPath());
         }
         // 获取接口请求时间，若不存在则不进行设置
         try {
@@ -769,35 +773,35 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         /**
          * 定义assertValue属性名称
          */
-        public static final String XML_ATTRI_ASSERT_REGEX = "assertRegex";
+        public static final String XML_ATTRI_ASSERT_REGEX = AssertResponse.JSON_ASSERT_ASSERT_REGEX;
         /**
          * 定义saveName属性名称
          */
-        public static final String XML_ATTRI_SAVE_NAME = "saveName";
+        public static final String XML_ATTRI_SAVE_NAME = ExtractResponse.JSON_EXTRACT_SAVE_NAME;
         /**
          * 定义search属性名称
          */
-        public static final String XML_ATTRI_SEARCH = "search";
+        public static final String XML_ATTRI_SEARCH = AssertResponse.JSON_ASSERT_SEARCH;
         /**
          * 定义lb属性名称
          */
-        public static final String XML_ATTRI_RB = "rb";
+        public static final String XML_ATTRI_RB = AssertResponse.JSON_ASSERT_RB;
         /**
          * 定义rb属性名称
          */
-        public static final String XML_ATTRI_LB = "lb";
+        public static final String XML_ATTRI_LB = AssertResponse.JSON_ASSERT_LB;
         /**
          * 定义paramName属性名称
          */
-        public static final String XML_ATTRI_PARAMNAME = "paramName";
+        public static final String XML_ATTRI_PARAMNAME = AssertResponse.JSON_ASSERT_PARAM_NAME;
         /**
          * 定义xpath属性名称
          */
-        public static final String XML_ATTRI_XPATH = "xpath";
+        public static final String XML_ATTRI_XPATH = AssertResponse.JSON_ASSERT_XPATH;
         /**
          * 定义ord属性名称
          */
-        public static final String XML_ATTRI_ORD = "ord";
+        public static final String XML_ATTRI_ORD = AssertResponse.JSON_ASSERT_ORD;
         /**
          * 定义environment属性名称
          */

@@ -25,6 +25,10 @@ public enum DataBaseType {
 	 * 连接SQL Server数据库
 	 */
 	SQL_SERVER("jdbc:sqlserver://%s;DataBaseName=%s", "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
+    /**
+     * 连接Access数据库
+     */
+    ACCESS("jdbc:ucanaccess://%s", "net.ucanaccess.jdbc.UcanaccessDriver"),
 	;
 	
 	/**
