@@ -94,9 +94,9 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
     private HashMap<String, Entry<Integer, Integer>> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
-     * 当前执行接口的环境
+     * 当前执行接口的环境名称
      */
-    private String actionEnvironment = "";
+    private String actionEnvironmentName = "";
 
     /**
      * 构造对象，读取模板文件，并初始化各个参数
@@ -192,7 +192,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
                             isSaveDefaultEnv = true;
                         }
                         // 存储当前环境
-                        actionEnvironment = envMap.get(envName);
+                        actionEnvironmentName = envName;
                     }
                 }
             }
@@ -201,26 +201,44 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
     }
 
     @Override
-    public InterfaceInfo getInterface(String interName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    @Override
     public void setActionEnvironment(String environmentName) {
-        // TODO Auto-generated method stub
-        
+        // 若环境集合中不存在该环境，则不进行存储
+        if (envMap.containsKey(environmentName)) {
+            actionEnvironmentName = environmentName;
+        }
     }
 
     @Override
     public HashMap<String, String> getActionEnvironment() {
-        // TODO Auto-generated method stub
+        return envMap;
+    }
+
+    @Override
+    public InterfaceInfo getInterface(String interName) {
+        // TODO 先读取接口的环境，若无环境则取当前执行环境
         return null;
     }
 
     @Override
     public InterfaceInfo getInterface(String interName, String environmentName) {
-        // TODO Auto-generated method stub
+        String env = "";
+        if (envMap.containsKey(environmentName)) {
+            env = envMap.get(environmentName);
+        }
+
+        // 判断接口是否缓存，若已缓存，则直接返回
+        if (interfaceMap.containsKey(interName)) {
+            InterfaceInfo inter = interfaceMap.get(interName).clone();
+            if (!env.isEmpty()) {
+                inter.setHost(env);
+            }
+            return inter;
+        }
+
+        InterfaceInfo inter = new InterfaceInfo();
+
+
+
         return null;
     }
     
