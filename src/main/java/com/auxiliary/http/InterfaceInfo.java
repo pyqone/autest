@@ -211,6 +211,12 @@ public class InterfaceInfo implements Cloneable {
             if (h.lastIndexOf(SYMBOL_SPLIT_PATH) == h.length() - 1) {
                 h = h.substring(0, h.length() - 1);
             }
+
+            // 若设置的主机包含协议分隔符，则将协议设置到接口后，再在主机中内容进行去除
+            if (h.contains(SYMBOL_SPLIT_PROTOCOL)) {
+                setProtocol(h.substring(0, h.indexOf(SYMBOL_SPLIT_PROTOCOL) + SYMBOL_SPLIT_PROTOCOL.length() + 1));
+                h = h.substring(h.indexOf(SYMBOL_SPLIT_PROTOCOL) + SYMBOL_SPLIT_PROTOCOL.length());
+            }
             return h;
         }).orElseGet(() -> "");
     }
