@@ -124,44 +124,44 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
         }
         
         // 读取接口数据
-        addInterNameRowIndex(interMap, ExcelField.INTER_INTER_NAME.getValue(),
+        addInterNameRowIndex(interMap, ExcelField.INTER_INTER_NAME,
                 Optional.ofNullable(excel.getSheet(ExcelField.SHEET_INTER.getKey()))
                 .orElseThrow(() -> new InterfaceReadToolsException(
                                 String.format("文件中不存在“%s”sheet页", ExcelField.SHEET_INTER.getKey()))));
         // 读取接口参数数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_INTER_PARAM.getKey()))
                 .ifPresent(dataSheet -> addInterNameRowIndex(interParamMap,
-                        ExcelField.INTER_PARAM_INTER_NAME.getValue(), dataSheet));
+                        ExcelField.INTER_PARAM_INTER_NAME, dataSheet));
         // 读取前置接口操作数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_BEFORE_INTER_OPEARTE.getKey()))
                 .ifPresent(dataSheet -> addInterNameRowIndex(beforeInterMap,
-                        ExcelField.BEFORE_INTER_OPEARTE_INTER_NAME.getValue(), dataSheet));
+                        ExcelField.BEFORE_INTER_OPEARTE_INTER_NAME, dataSheet));
         // 读取普通类型请求体数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_NORMAL_BODY.getKey()))
                 .ifPresent(dataSheet -> addInterNameRowIndex(normalBodyMap,
-                        ExcelField.NORMAL_BODY_INTER_NAME.getValue(), dataSheet));
+                        ExcelField.NORMAL_BODY_INTER_NAME, dataSheet));
         // 读取文件类型请求体数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_FILE_BODY.getKey())).ifPresent(
-                dataSheet -> addInterNameRowIndex(fileBodyMap, ExcelField.FILE_BODY_INTER_NAME.getValue(), dataSheet));
+                dataSheet -> addInterNameRowIndex(fileBodyMap, ExcelField.FILE_BODY_INTER_NAME, dataSheet));
         // 读取表单类型请求体数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_FORM_BODY.getKey())).ifPresent(
-                dataSheet -> addInterNameRowIndex(formBodyMap, ExcelField.FORM_BODY_INTER_NAME.getValue(), dataSheet));
+                dataSheet -> addInterNameRowIndex(formBodyMap, ExcelField.FORM_BODY_INTER_NAME, dataSheet));
         // 读取请求头数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_REQUEST_HEADER.getKey()))
                 .ifPresent(dataSheet -> addInterNameRowIndex(requestHeaderMap,
-                        ExcelField.REQUEST_HEADER_INTER_NAME.getValue(), dataSheet));
+                        ExcelField.REQUEST_HEADER_INTER_NAME, dataSheet));
         // 读取cookie数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_COOKIE.getKey())).ifPresent(
-                dataSheet -> addInterNameRowIndex(cookieMap, ExcelField.COOKIE_INTER_NAME.getValue(), dataSheet));
+                dataSheet -> addInterNameRowIndex(cookieMap, ExcelField.COOKIE_INTER_NAME, dataSheet));
         // 读取接口响应数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_RESPONSE.getKey())).ifPresent(
-                dataSheet -> addInterNameRowIndex(responseMap, ExcelField.RESPONSE_INTER_NAME.getValue(), dataSheet));
+                dataSheet -> addInterNameRowIndex(responseMap, ExcelField.RESPONSE_INTER_NAME, dataSheet));
         // 读取接口断言数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_ASSERT.getKey())).ifPresent(
-                dataSheet -> addInterNameRowIndex(assertMap, ExcelField.ASSERT_INTER_NAME.getValue(), dataSheet));
+                dataSheet -> addInterNameRowIndex(assertMap, ExcelField.ASSERT_INTER_NAME, dataSheet));
         // 读取接口提词数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_EXTRACT.getKey())).ifPresent(
-                dataSheet -> addInterNameRowIndex(extractMap, ExcelField.EXTRACT_INTER_NAME.getValue(), dataSheet));
+                dataSheet -> addInterNameRowIndex(extractMap, ExcelField.EXTRACT_INTER_NAME, dataSheet));
 
         // 获取环境sheet页，若不存在，则不存储执行环境及环境集合
         Sheet envSheet = excel.getSheet(ExcelField.SHEET_ENV.getKey());
@@ -181,14 +181,14 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
                         continue;
                     }
                     // 获取环境名称单元格内容，若不存在该单元格，或名称为空串，则跳过该行内容的获取
-                    String envName = cellList.get(ExcelField.ENV_ENV_NAME.getValue()).map(Cell::getStringCellValue)
+                    String envName = cellList.get(ExcelField.ENV_ENV_NAME).map(Cell::getStringCellValue)
                             .orElse("");
                     if (envName.isEmpty()) {
                         continue;
                     }
                     
                     // 存储当前环境内容，并获取其url
-                    envMap.put(envName, cellList.get(ExcelField.ENV_URL.getValue()).map(Cell::getStringCellValue)
+                    envMap.put(envName, cellList.get(ExcelField.ENV_URL).map(Cell::getStringCellValue)
                             .orElse(InterfaceInfo.DEFAULT_PROTOCOL + InterfaceInfo.DEFAULT_HOST));
 
                     // 判断当前是否已存储执行环境
@@ -255,7 +255,8 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
         readInterSheetContent(interName, inter);
         // 读取接口参数sheet数据
         readMultirowSheetContent(interName, ExcelField.SHEET_INTER_PARAM.getKey(), inter);
-
+        // 读取请求头sheet数据
+        readMultirowSheetContent(interName, ExcelField.SHEET_REQUEST_HEADER.getKey(), inter);
 
         return inter;
     }
@@ -278,7 +279,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
         Sheet sheet = excel.getSheet(sheetName);
 
         // 获取接口所在行
-        Entry<Integer, Integer> indexEntry = interMap.get(interName);
+        Entry<Integer, Integer> indexEntry = interParamMap.get(interName);
         int startRowIndex = indexEntry.getKey();
         int endRowIndex = indexEntry.getValue();
         // 遍历所有的行
@@ -286,15 +287,57 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
             // 获取行对象
             Row row = sheet.getRow(rowIndex);
             // 根据sheet名称，将其分配到不同的方法中
-            if (interName.equals(ExcelField.SHEET_INTER_PARAM.getKey())) {
+            if (sheetName.equals(ExcelField.SHEET_INTER_PARAM.getKey())) {
                 readInterParamSheetContent(row, inter);
+                continue;
+            }
+            if (sheetName.equals(ExcelField.SHEET_REQUEST_HEADER.getKey())) {
+                readRequestHeaderSheetContent(row, inter);
                 continue;
             }
         }
     }
 
+    /**
+     * 该方法用于接口请求头sheet页内容
+     * 
+     * @param row   行对象
+     * @param inter 接口信息类对象
+     * @since autest 3.7.0
+     */
+    private void readRequestHeaderSheetContent(Row row, InterfaceInfo inter) {
+        // 获取键内容
+        String key = Optional.ofNullable(row.getCell(ExcelField.REQUEST_HEADER_KEY)).map(format::formatCellValue)
+                .orElse("");
+        // 若键为空，则直接返回
+        if (key.isEmpty()) {
+            return;
+        }
+
+        // 获取值内容，并进行存储
+        inter.addRequestHeader(key, Optional.ofNullable(row.getCell(ExcelField.REQUEST_HEADER_VALUE))
+                .map(format::formatCellValue).orElse(""));
+    }
+
+    /**
+     * 该方法用于读取接口参数sheet页内容
+     * 
+     * @param row   行对象
+     * @param inter 接口信息对象
+     * @since autest 3.7.0
+     */
     private void readInterParamSheetContent(Row row, InterfaceInfo inter) {
-        String key = Optional.ofNullable(row.getCell(ExcelField.INTER_PARAM_KEY.getValue()))
+        // 获取键内容
+        String key = Optional.ofNullable(row.getCell(ExcelField.INTER_PARAM_KEY)).map(format::formatCellValue)
+                .orElse("");
+        // 若键为空，则直接返回
+        if (key.isEmpty()) {
+            return;
+        }
+
+        // 获取值内容，并进行存储
+        inter.addParam(key,
+                Optional.ofNullable(row.getCell(ExcelField.INTER_PARAM_VALUE)).map(format::formatCellValue).orElse(""));
     }
 
     /**
@@ -309,13 +352,13 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
         Row interRow = excel.getSheet(ExcelField.SHEET_INTER.getKey()).getRow(interMap.get(interName).getValue());
 
         // 读取url数据
-        inter.analysisUrl(format.formatCellValue(interRow.getCell(ExcelField.INTER_URL.getValue())));
+        inter.analysisUrl(format.formatCellValue(interRow.getCell(ExcelField.INTER_URL)));
         // 读取请求方式数据
         inter.setRequestType(
                 RequestType.valueOf(
-                        format.formatCellValue(interRow.getCell(ExcelField.INTER_TYPE.getValue())).toUpperCase()));
+                        format.formatCellValue(interRow.getCell(ExcelField.INTER_TYPE)).toUpperCase()));
         // 读取接口超时时间
-        inter.setConnectTime(format.formatCellValue(interRow.getCell(ExcelField.INTER_CONNECT_TIME.getValue())));
+        inter.setConnectTime(format.formatCellValue(interRow.getCell(ExcelField.INTER_CONNECT_TIME)));
     }
 
     /**
@@ -482,204 +525,201 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
         /**
          * 环境sheet中的环境名称
          */
-        public static final Entry<String, Integer> ENV_ENV_NAME = new Entry<>(SHEET_ENV.getKey(), 0);
+        public static final int ENV_ENV_NAME = 0;
         /**
          * 环境sheet中的环境url
          */
-        public static final Entry<String, Integer> ENV_URL = new Entry<>(SHEET_ENV.getKey(), 1);
+        public static final int ENV_URL = 1;
 
         /**
          * 接口sheet中的接口名称
          */
-        public static final Entry<String, Integer> INTER_INTER_NAME = new Entry<>(SHEET_INTER.getKey(), 0);
+        public static final int INTER_INTER_NAME = 0;
         /**
          * 接口sheet中的接口url
          */
-        public static final Entry<String, Integer> INTER_URL = new Entry<>(SHEET_INTER.getKey(), 1);
+        public static final int INTER_URL = 1;
         /**
          * 接口sheet中的接口请求方式
          */
-        public static final Entry<String, Integer> INTER_TYPE = new Entry<>(SHEET_INTER.getKey(), 2);
+        public static final int INTER_TYPE = 2;
         /**
          * 接口sheet中的接口连接时间
          */
-        public static final Entry<String, Integer> INTER_CONNECT_TIME = new Entry<>(SHEET_INTER.getKey(), 3);
+        public static final int INTER_CONNECT_TIME = 3;
         /**
          * 接口sheet中的接口环境
          */
-        public static final Entry<String, Integer> INTER_ENV = new Entry<>(SHEET_INTER.getKey(), 4);
+        public static final int INTER_ENV = 4;
 
         /**
          * 接口参数sheet中的接口名称
          */
-        public static final Entry<String, Integer> INTER_PARAM_INTER_NAME = new Entry<>(SHEET_INTER_PARAM.getKey(), 0);
+        public static final int INTER_PARAM_INTER_NAME = 0;
         /**
          * 接口参数sheet中的键
          */
-        public static final Entry<String, Integer> INTER_PARAM_KEY = new Entry<>(SHEET_INTER_PARAM.getKey(), 1);
+        public static final int INTER_PARAM_KEY = 1;
         /**
          * 接口参数sheet中的值
          */
-        public static final Entry<String, Integer> INTER_PARAM_VALUE = new Entry<>(SHEET_INTER_PARAM.getKey(), 2);
+        public static final int INTER_PARAM_VALUE = 2;
 
         /**
          * 前置接口操作sheet中的接口名称
          */
-        public static final Entry<String, Integer> BEFORE_INTER_OPEARTE_INTER_NAME = new Entry<>(
-                SHEET_BEFORE_INTER_OPEARTE.getKey(), 0);
+        public static final int BEFORE_INTER_OPEARTE_INTER_NAME = 0;
         /**
          * 前置接口操作sheet中的前置接口名称
          */
-        public static final Entry<String, Integer> BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME = new Entry<>(
-                SHEET_BEFORE_INTER_OPEARTE.getKey(), 1);
+        public static final int BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME = 1;
 
         /**
          * 普通请求体sheet中的接口名称
          */
-        public static final Entry<String, Integer> NORMAL_BODY_INTER_NAME = new Entry<>(SHEET_NORMAL_BODY.getKey(), 0);
+        public static final int NORMAL_BODY_INTER_NAME = 0;
         /**
          * 普通请求体sheet中的请求体格式
          */
-        public static final Entry<String, Integer> NORMAL_BODY_TYPE = new Entry<>(SHEET_NORMAL_BODY.getKey(), 1);
+        public static final int NORMAL_BODY_TYPE = 1;
         /**
          * 普通类型请求体sheet中的请求体内容
          */
-        public static final Entry<String, Integer> NORMAL_BODY_CONTENT = new Entry<>(SHEET_NORMAL_BODY.getKey(), 2);
+        public static final int NORMAL_BODY_CONTENT = 2;
 
         /**
          * 文件类型体sheet中的接口名称
          */
-        public static final Entry<String, Integer> FILE_BODY_INTER_NAME = new Entry<>(SHEET_FILE_BODY.getKey(), 0);
+        public static final int FILE_BODY_INTER_NAME = 0;
         /**
          * 文件类型体sheet中的文件路径
          */
-        public static final Entry<String, Integer> FILE_BODY_PATH = new Entry<>(SHEET_FILE_BODY.getKey(), 1);
+        public static final int FILE_BODY_PATH = 1;
 
         /**
          * 表单类型体sheet中的接口名称
          */
-        public static final Entry<String, Integer> FORM_BODY_INTER_NAME = new Entry<>(SHEET_FORM_BODY.getKey(), 0);
+        public static final int FORM_BODY_INTER_NAME = 0;
         /**
          * 表单类型体sheet中的表单请求类型
          */
-        public static final Entry<String, Integer> FORM_BODY_TYPE = new Entry<>(SHEET_FORM_BODY.getKey(), 1);
+        public static final int FORM_BODY_TYPE = 1;
         /**
          * 表单类型体sheet中的键
          */
-        public static final Entry<String, Integer> FORM_BODY_KEY = new Entry<>(SHEET_FORM_BODY.getKey(), 2);
+        public static final int FORM_BODY_KEY = 2;
         /**
          * 表单类型体sheet中的值
          */
-        public static final Entry<String, Integer> FORM_BODY_VALUE = new Entry<>(SHEET_FORM_BODY.getKey(), 3);
+        public static final int FORM_BODY_VALUE = 3;
 
         /**
          * 请求头sheet中的接口名称
          */
-        public static final Entry<String, Integer> REQUEST_HEADER_INTER_NAME = new Entry<>(
-                SHEET_REQUEST_HEADER.getKey(), 0);
+        public static final int REQUEST_HEADER_INTER_NAME = 0;
         /**
          * 请求头sheet中的键
          */
-        public static final Entry<String, Integer> REQUEST_HEADER_KEY = new Entry<>(SHEET_REQUEST_HEADER.getKey(), 1);
+        public static final int REQUEST_HEADER_KEY = 1;
         /**
          * 请求头sheet中的值
          */
-        public static final Entry<String, Integer> REQUEST_HEADER_VALUE = new Entry<>(SHEET_REQUEST_HEADER.getKey(), 2);
+        public static final int REQUEST_HEADER_VALUE = 2;
 
         /**
          * Cookie sheet中的接口名称
          */
-        public static final Entry<String, Integer> COOKIE_INTER_NAME = new Entry<>(SHEET_COOKIE.getKey(), 0);
+        public static final int COOKIE_INTER_NAME = 0;
         /**
          * Cookie sheet中的键
          */
-        public static final Entry<String, Integer> COOKIE_KEY = new Entry<>(SHEET_COOKIE.getKey(), 1);
+        public static final int COOKIE_KEY = 1;
         /**
          * Cookie sheet中的值
          */
-        public static final Entry<String, Integer> COOKIE_VALUE = new Entry<>(SHEET_COOKIE.getKey(), 2);
+        public static final int COOKIE_VALUE = 2;
 
         /**
          * 接口响应sheet中的接口名称
          */
-        public static final Entry<String, Integer> RESPONSE_INTER_NAME = new Entry<>(SHEET_RESPONSE.getKey(), 0);
+        public static final int RESPONSE_INTER_NAME = 0;
         /**
          * 接口响应sheet中的响应字符集
          */
-        public static final Entry<String, Integer> RESPONSE_RESPONSE_CHARSET = new Entry<>(SHEET_RESPONSE.getKey(), 1);
+        public static final int RESPONSE_RESPONSE_CHARSET = 1;
         /**
          * 接口响应sheet中的响应状态
          */
-        public static final Entry<String, Integer> RESPONSE_STATE = new Entry<>(SHEET_RESPONSE.getKey(), 2);
+        public static final int RESPONSE_STATE = 2;
         /**
          * 接口响应sheet中的响应体格式
          */
-        public static final Entry<String, Integer> RESPONSE_TYPE = new Entry<>(SHEET_RESPONSE.getKey(), 3);
+        public static final int RESPONSE_TYPE = 3;
 
         /**
          * 接口断言sheet中的接口名称
          */
-        public static final Entry<String, Integer> ASSERT_INTER_NAME = new Entry<>(SHEET_ASSERT.getKey(), 0);
+        public static final int ASSERT_INTER_NAME = 0;
         /**
          * 接口断言sheet中的断言规则
          */
-        public static final Entry<String, Integer> ASSERT_REGEX = new Entry<>(SHEET_ASSERT.getKey(), 1);
+        public static final int ASSERT_REGEX = 1;
         /**
          * 接口断言sheet中的搜索范围
          */
-        public static final Entry<String, Integer> ASSERT_SEARCH = new Entry<>(SHEET_ASSERT.getKey(), 2);
+        public static final int ASSERT_SEARCH = 2;
         /**
          * 接口断言sheet中的搜索参数名称
          */
-        public static final Entry<String, Integer> ASSERT_PARAM_NAME = new Entry<>(SHEET_ASSERT.getKey(), 3);
+        public static final int ASSERT_PARAM_NAME = 3;
         /**
          * 接口断言sheet中的xpath
          */
-        public static final Entry<String, Integer> ASSERT_XPATH = new Entry<>(SHEET_ASSERT.getKey(), 4);
+        public static final int ASSERT_XPATH = 4;
         /**
          * 接口断言sheet中的搜索左边界
          */
-        public static final Entry<String, Integer> ASSERT_LB = new Entry<>(SHEET_ASSERT.getKey(), 5);
+        public static final int ASSERT_LB = 5;
         /**
          * 接口断言sheet中的搜索右边界
          */
-        public static final Entry<String, Integer> ASSERT_RB = new Entry<>(SHEET_ASSERT.getKey(), 6);
+        public static final int ASSERT_RB = 6;
         /**
          * 接口断言sheet中的读取下标
          */
-        public static final Entry<String, Integer> ASSERT_ORD = new Entry<>(SHEET_ASSERT.getKey(), 7);
+        public static final int ASSERT_ORD = 7;
         
         /**
          * 接口提词sheet中的接口名称
          */
-        public static final Entry<String, Integer> EXTRACT_INTER_NAME = new Entry<>(SHEET_EXTRACT.getKey(), 0);
+        public static final int EXTRACT_INTER_NAME = 0;
         /**
          * 接口提词sheet中的提词规则
          */
-        public static final Entry<String, Integer> EXTRACT_REGEX = new Entry<>(SHEET_EXTRACT.getKey(), 1);
+        public static final int EXTRACT_REGEX = 1;
         /**
          * 接口提词sheet中的搜索范围
          */
-        public static final Entry<String, Integer> EXTRACT_SEARCH = new Entry<>(SHEET_EXTRACT.getKey(), 2);
+        public static final int EXTRACT_SEARCH = 2;
         /**
          * 接口提词sheet中的搜索参数名称
          */
-        public static final Entry<String, Integer> EXTRACT_PARAM_NAME = new Entry<>(SHEET_EXTRACT.getKey(), 3);
+        public static final int EXTRACT_PARAM_NAME = 3;
         /**
          * 接口提词sheet中的xpath
          */
-        public static final Entry<String, Integer> EXTRACT_XPATH = new Entry<>(SHEET_EXTRACT.getKey(), 4);
+        public static final int EXTRACT_XPATH = 4;
         /**
          * 接口提词sheet中的搜索左边界
          */
-        public static final Entry<String, Integer> EXTRACT_LB = new Entry<>(SHEET_EXTRACT.getKey(), 5);
+        public static final int EXTRACT_LB = 5;
         /**
          * 接口提词sheet中的搜索右边界
          */
-        public static final Entry<String, Integer> EXTRACT_RB = new Entry<>(SHEET_EXTRACT.getKey(), 6);
+        public static final int EXTRACT_RB = 6;
         /**
          * 接口提词sheet中的读取下标
          */
-        public static final Entry<String, Integer> EXTRACT_ORD = new Entry<>(SHEET_EXTRACT.getKey(), 7);
+        public static final int EXTRACT_ORD = 7;
     }
 }
