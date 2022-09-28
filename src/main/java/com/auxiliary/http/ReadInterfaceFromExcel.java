@@ -2,6 +2,7 @@ package com.auxiliary.http;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.stream.IntStream;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -43,6 +45,10 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
      * 定义模板文件
      */
     private Workbook excel = null;
+    /**
+     * 用于对单元格内容进行格式化输出
+     */
+    private DataFormatter format = new DataFormatter();
 
     /**
      * 存储环境数据
@@ -221,10 +227,11 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
 
     @Override
     public InterfaceInfo getInterface(String interName, String environmentName) {
-        String env = "";
-        if (envMap.containsKey(environmentName)) {
-            env = envMap.get(environmentName);
+        if (interName == null || interName.isEmpty()) {
+            throw new InterfaceReadToolsException("指定的接口名称为空或未指定接口名称：" + interName);
         }
+
+        String env = Optional.ofNullable(envMap.get(environmentName)).orElse("");
 
         // 判断接口是否缓存，若已缓存，则直接返回
         if (interfaceMap.containsKey(interName)) {
@@ -235,13 +242,95 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
             return inter;
         }
 
+        // 判断接口名称在接口表中是否存在数据，若不存在，则抛出异常
+        if (!interMap.containsKey(interName)) {
+            throw new InterfaceReadToolsException(
+                    String.format("接口元素“%s”在文件中不存在", interName));
+        }
+
         InterfaceInfo inter = new InterfaceInfo();
+        // 判断当前是否获取到坏境，若不存在，则根据默认环境获取，若默认也为空，则设置为空串
+        inter.setHost(!env.isEmpty() ? env : Optional.ofNullable(envMap.get(actionEnvironmentName)).orElse(""));
+        // 读取接口的url、请求方式及超时时间信息
+        readInterSheetContent(interName, inter);
+        // 读取接口参数sheet数据
+        readMultirowSheetContent(interName, ExcelField.SHEET_INTER_PARAM.getKey(), inter);
 
 
-
-        return null;
+        return inter;
     }
     
+    /**
+     * 该方法用于读取一个接口占多行的sheet页内容
+     * 
+     * @param interName 接口名称
+     * @param sheetName sheet页名称
+     * @param inter     接口信息类对象
+     * @since autest 3.7.0
+     */
+    private void readMultirowSheetContent(String interName, String sheetName, InterfaceInfo inter) {
+        // 若接口名称不在索引集合中，则不进行获取操作
+        if (!interMap.containsKey(interName)) {
+            return;
+        }
+        
+        // 获取sheet类对象
+        Sheet sheet = excel.getSheet(sheetName);
+
+        // 获取接口所在行
+        Entry<Integer, Integer> indexEntry = interMap.get(interName);
+        int startRowIndex = indexEntry.getKey();
+        int endRowIndex = indexEntry.getValue();
+        // 遍历所有的行
+        for (int rowIndex = startRowIndex; rowIndex <= endRowIndex; rowIndex++) {
+            // 获取行对象
+            Row row = sheet.getRow(rowIndex);
+            // 根据sheet名称，将其分配到不同的方法中
+            if (interName.equals(ExcelField.SHEET_INTER_PARAM.getKey())) {
+                readInterParamSheetContent(row, inter);
+                continue;
+            }
+        }
+    }
+
+    private void readInterParamSheetContent(Row row, InterfaceInfo inter) {
+        String key = Optional.ofNullable(row.getCell(ExcelField.INTER_PARAM_KEY.getValue()))
+    }
+
+    /**
+     * 该方法用于读取“接口”sheet页中接口相关的基本信息
+     * 
+     * @param interName 接口名称
+     * @param inter     接口信息类对象
+     * @since autest 3.7.0
+     */
+    private void readInterSheetContent(String interName, InterfaceInfo inter) {
+        // 获取接口所在行
+        Row interRow = excel.getSheet(ExcelField.SHEET_INTER.getKey()).getRow(interMap.get(interName).getValue());
+
+        // 读取url数据
+        inter.analysisUrl(format.formatCellValue(interRow.getCell(ExcelField.INTER_URL.getValue())));
+        // 读取请求方式数据
+        inter.setRequestType(
+                RequestType.valueOf(
+                        format.formatCellValue(interRow.getCell(ExcelField.INTER_TYPE.getValue())).toUpperCase()));
+        // 读取接口超时时间
+        inter.setConnectTime(format.formatCellValue(interRow.getCell(ExcelField.INTER_CONNECT_TIME.getValue())));
+    }
+
+    /**
+     * 该方法用于关闭对接口模板的读取
+     * 
+     * @since autest 3.7.0
+     */
+    public void close() {
+        try {
+            excel.close();
+        } catch (IOException e) {
+            throw new InterfaceReadToolsException("Excel文件读取异常，无法关闭", e);
+        }
+    }
+
     /**
      * 该方法用于获取当前sheet中所有行对象的集合
      * 
