@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -40,7 +41,8 @@ import com.auxiliary.tool.regex.ConstType;
  * @since JDK 1.8
  * @since autest 3.7.0
  */
-public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements ActionEnvironment {
+public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
+        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeOperation {
     /**
      * 定义模板文件
      */
@@ -220,6 +222,28 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
     }
 
     @Override
+    public List<BeforeInterfaceOperation> getBeforeOperation(String interName) {
+        return getInterface(interName).getBeforeOperationList();
+    }
+
+    @Override
+    public List<String> getParentInterfaceName(String interName) {
+        return getBeforeOperation(interName).stream().map(before -> before.getName()).collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<String> getExtractContent(String interName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<String> getAssertContent(String interName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public InterfaceInfo getInterface(String interName) {
         // TODO 先读取接口的环境，若无环境则取当前执行环境
         return null;
@@ -254,9 +278,16 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
         // 读取接口的url、请求方式及超时时间信息
         readInterSheetContent(interName, inter);
         // 读取接口参数sheet数据
-        readMultirowSheetContent(interName, ExcelField.SHEET_INTER_PARAM.getKey(), inter);
+        readMultirowSheetContent(interName, ExcelField.SHEET_INTER_PARAM.getKey(), inter, interParamMap);
         // 读取请求头sheet数据
-        readMultirowSheetContent(interName, ExcelField.SHEET_REQUEST_HEADER.getKey(), inter);
+        readMultirowSheetContent(interName, ExcelField.SHEET_REQUEST_HEADER.getKey(), inter, requestHeaderMap);
+        // 读取cookie sheet数据
+        readMultirowSheetContent(interName, ExcelField.SHEET_COOKIE.getKey(), inter, cookieMap);
+        // 读取前置接口sheet数据
+        readMultirowSheetContent(interName, ExcelField.SHEET_BEFORE_INTER_OPEARTE.getKey(), inter, beforeInterMap);
+        // 设置响应字符集
+        readMultirowSheetContent(interName, ExcelField.SHEET_RESPONSE.getKey(), inter, responseMap);
+        // 设置响应断言
 
         return inter;
     }
@@ -269,9 +300,10 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
      * @param inter     接口信息类对象
      * @since autest 3.7.0
      */
-    private void readMultirowSheetContent(String interName, String sheetName, InterfaceInfo inter) {
+    private void readMultirowSheetContent(String interName, String sheetName, InterfaceInfo inter,
+            HashMap<String, Entry<Integer, Integer>> map) {
         // 若接口名称不在索引集合中，则不进行获取操作
-        if (!interMap.containsKey(interName)) {
+        if (!map.containsKey(interName)) {
             return;
         }
         
@@ -279,9 +311,10 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
         Sheet sheet = excel.getSheet(sheetName);
 
         // 获取接口所在行
-        Entry<Integer, Integer> indexEntry = interParamMap.get(interName);
+        Entry<Integer, Integer> indexEntry = map.get(interName);
         int startRowIndex = indexEntry.getKey();
         int endRowIndex = indexEntry.getValue();
+
         // 遍历所有的行
         for (int rowIndex = startRowIndex; rowIndex <= endRowIndex; rowIndex++) {
             // 获取行对象
@@ -295,11 +328,103 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract implements
                 readRequestHeaderSheetContent(row, inter);
                 continue;
             }
+            if (sheetName.equals(ExcelField.SHEET_COOKIE.getKey())) {
+                readCookieSheetContent(row, inter);
+                continue;
+            }
+            if (sheetName.equals(ExcelField.SHEET_BEFORE_INTER_OPEARTE.getKey())) {
+                readBeforeInterOpeateSheetContent(row, inter);
+                continue;
+            }
+            if (sheetName.equals(ExcelField.SHEET_RESPONSE.getKey())) {
+                // 若当前行为首行，则设置其响应字符集
+                if (rowIndex == startRowIndex) {
+                    inter.setCharsetname(Optional.ofNullable(row.getCell(ExcelField.RESPONSE_RESPONSE_CHARSET))
+                            .map(format::formatCellValue).orElse(""));
+                }
+                readResponseSheetContent(row, inter);
+                continue;
+            }
+            if (sheetName.equals(ExcelField.SHEET_ASSERT.getKey())) {
+                readAssertSheetContent(row, inter);
+                continue;
+            }
         }
     }
 
+    private void readAssertSheetContent(Row row, InterfaceInfo inter) {
+        // TODO Auto-generated method stub
+
+    }
+
     /**
-     * 该方法用于接口请求头sheet页内容
+     * 该方法用于读取接口响应sheet页内容
+     * 
+     * @param row   行对象
+     * @param inter 接口信息类对象
+     * @since autest 3.7.0
+     */
+    private void readResponseSheetContent(Row row, InterfaceInfo inter) {
+        // 获取当前状态码，若状态码为空或不能转换为数字，则返回-1
+        int state = Optional.ofNullable(row.getCell(ExcelField.RESPONSE_STATE)).map(format::formatCellValue)
+                .map(num -> {
+                    try {
+                        return Integer.valueOf(num);
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                }).orElse(-1);
+        // 若状态码为-1，则不进行存储操作
+        if (state == -1) {
+            return;
+        }
+
+        // 存储接口响应数据
+        inter.addResponseContentTypeSet(state,
+                MessageType.valueOf(Optional.ofNullable(row.getCell(ExcelField.RESPONSE_TYPE))
+                        .map(format::formatCellValue).map(String::toUpperCase).orElse("")));
+    }
+
+    /**
+     * 该方法用于读取前置接口sheet页的接口信息
+     * 
+     * @param row   行对象
+     * @param inter 接口信息类对象
+     * @since autest 3.7.0
+     */
+    private void readBeforeInterOpeateSheetContent(Row row, InterfaceInfo inter) {
+        // 获取单元格中存储的父层接口名称
+        String parentName = Optional.ofNullable(row.getCell(ExcelField.BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME))
+                .map(format::formatCellValue).orElse("");
+        // 若名称不为空，则进行获取接口的操作
+        if (parentName.isEmpty()) {
+            return;
+        }
+        inter.addBeforeOperation(new BeforeInterfaceOperation(parentName, getInterface(parentName)));
+    }
+
+    /**
+     * 该方法用于接口cookie sheet页内容
+     * 
+     * @param row   行对象
+     * @param inter 接口信息类对象
+     * @since autest 3.7.0
+     */
+    private void readCookieSheetContent(Row row, InterfaceInfo inter) {
+        // 获取键内容
+        String key = Optional.ofNullable(row.getCell(ExcelField.COOKIE_KEY)).map(format::formatCellValue).orElse("");
+        // 若键为空，则直接返回
+        if (key.isEmpty()) {
+            return;
+        }
+
+        // 获取值内容，并进行存储
+        inter.addCookie(key,
+                Optional.ofNullable(row.getCell(ExcelField.COOKIE_VALUE)).map(format::formatCellValue).orElse(""));
+    }
+
+    /**
+     * 该方法用于读取接口请求头sheet页内容
      * 
      * @param row   行对象
      * @param inter 接口信息类对象

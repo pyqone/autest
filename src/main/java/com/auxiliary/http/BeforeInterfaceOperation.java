@@ -21,6 +21,11 @@ package com.auxiliary.http;
  */
 public class BeforeInterfaceOperation {
     /**
+     * 前置操作名称
+     */
+    private String name = "";
+
+    /**
      * 接口前置操作相应的类对象
      */
     private Object operation;
@@ -33,10 +38,33 @@ public class BeforeInterfaceOperation {
      * 指定前置操作执行接口
      * 
      * @param inter 接口信息
+     * @since autest 3.6.0
      */
     public BeforeInterfaceOperation(InterfaceInfo inter) {
         operation = inter;
         operationType = BeforeInterfaceOperationType.INTERFACE;
+    }
+
+    /**
+     * 指定前置操作执行接口
+     * 
+     * @param name  前置操作名称
+     * @param inter 接口信息
+     * @since autest 3.7.0
+     */
+    public BeforeInterfaceOperation(String name, InterfaceInfo inter) {
+        this(inter);
+        this.name = name;
+    }
+
+    /**
+     * 该方法用于返回前置操作名称
+     * 
+     * @return 前置操作名称
+     * @since autest 3.7.0
+     */
+    public String getName() {
+        return name;
     }
 
     /**
