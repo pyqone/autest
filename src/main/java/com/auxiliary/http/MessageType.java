@@ -1,5 +1,8 @@
 package com.auxiliary.http;
 
+import java.util.Optional;
+import java.util.function.Function;
+
 /**
  * <p>
  * <b>文件名：ResponseContentType.java</b>
@@ -155,5 +158,65 @@ public enum MessageType {
         }
 
         return text;
+    }
+
+    /**
+     * 该方法用于将枚举文本转换为消息枚举
+     * <p>
+     * 该方法本质上与{@link #valueOf(String)}方法的作用一致，但其中加上了对文本的内容的判空、对文本内容大写转换、
+     * 对特殊文本进行处理以及对异常文本进行汉化的操作。可转换的枚举文本如下：
+     * </p>
+     * <ul>
+     * <li>若文本为“text”，则转换为“raw”输出</li>
+     * </ul>
+     * 
+     * @param type 枚举文本内容
+     * @return 转换后的枚举
+     * @since autest 3.7.0
+     * @throws IllegalArgumentException 当枚举文本为空或不能转换成枚举时抛出的异常
+     */
+    public static MessageType typeText2MessageType(String type) {
+        return typeText2MessageType(type, text -> {
+            text = text.toUpperCase();
+            if ("TEXT".equals(text)) {
+                text = RAW.toString();
+            }
+
+            return text;
+        });
+    }
+
+    /**
+     * 该方法用于将枚举文本转换为消息枚举
+     * <p>
+     * 该方法与{@link #typeText2MessageType(String)}方法类似，其可对传入的文本进行自定义的转换，例如欲将传入的"text"转换为"raw"，则可写为
+     * <code><pre>
+     * MessageType.typeText2MessageType("text", type -> {
+     *      if ("text".equals(text)) {
+     *          text = "raw";
+     *      }
+     *      
+     *      return text;
+     * });
+     * </pre></code>
+     * </p>
+     * 
+     * @param type   枚举文本内容
+     * @param mapper 枚举文本的处理方法
+     * @return 转换后的枚举
+     * @since autest 3.7.0
+     * @throws IllegalArgumentException 当枚举文本为空或不能转换成枚举时抛出的异常
+     */
+    public static MessageType typeText2MessageType(String type, Function<String, String> mapper) {
+        // 将所有的字符转换成大写字母
+        String typeText = Optional.ofNullable(type).map(mapper::apply).map(String::toUpperCase)
+                .orElseThrow(() -> new IllegalArgumentException("未指定枚举文本"));
+
+        // 调用valueOf方法，对文本内容进行转换
+        try {
+            return MessageType.valueOf(typeText);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("不存在的枚举文本：" + type);
+        }
     }
 }

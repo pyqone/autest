@@ -381,8 +381,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
         // 存储接口响应数据
         inter.addResponseContentTypeSet(state,
-                MessageType.valueOf(Optional.ofNullable(row.getCell(ExcelField.RESPONSE_TYPE))
-                        .map(format::formatCellValue).map(String::toUpperCase).orElse("")));
+                MessageType.typeText2MessageType(format.formatCellValue(row.getCell(ExcelField.RESPONSE_TYPE))));
     }
 
     /**
