@@ -19,7 +19,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.AuxiliaryToolsException;
 import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.file.TextFileReadUtil;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -27,7 +30,7 @@ import com.auxiliary.tool.regex.ConstType;
  * <b>文件名：ReadInterfaceFromExcel.java</b>
  * </p>
  * <p>
- * <b>用途：</b>
+ * <b>用途：</b>用于读取excel文件中的接口信息，文件支持“.xls”和“.xlsx”格式，但在读取完后，需要调用{@link #close()}方法关闭文件的读取
  * </p>
  * <p>
  * <b>编码时间：2022年9月8日 上午10:48:30
@@ -43,6 +46,11 @@ import com.auxiliary.tool.regex.ConstType;
  */
 public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeOperation {
+    /**
+     * 用于对特殊内容进行定义的符号
+     */
+    private final String SPECIAL_CONTENT_SYMBOL = "#";
+
     /**
      * 定义模板文件
      */
@@ -196,7 +204,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                     // 判断当前是否已存储执行环境
                     if (!isSaveDefaultEnv) {
                         // 判断环境名称第一位字符是否为“#”符号，若存在该符号，则设置已存储默认环境
-                        if (envName.indexOf("#") == 0) {
+                        if (envName.indexOf(SPECIAL_CONTENT_SYMBOL) == 0) {
                             isSaveDefaultEnv = true;
                         }
                         // 存储当前环境
@@ -205,7 +213,6 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                 }
             }
         }
-        
     }
 
     @Override
@@ -233,20 +240,29 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     @Override
     public Set<String> getExtractContent(String interName) {
-        // TODO Auto-generated method stub
-        return null;
+        return getInterface(interName).getAssertRuleJson();
     }
 
     @Override
     public Set<String> getAssertContent(String interName) {
-        // TODO Auto-generated method stub
-        return null;
+        return getInterface(interName).getExtractRuleJson();
     }
 
     @Override
     public InterfaceInfo getInterface(String interName) {
-        // TODO 先读取接口的环境，若无环境则取当前执行环境
-        return null;
+        if (interName == null || interName.isEmpty()) {
+            throw new InterfaceReadToolsException("指定的接口名称为空或未指定接口名称：" + interName);
+        }
+        // 判断接口名称在接口表中是否存在数据，若不存在，则抛出异常
+        if (!interMap.containsKey(interName)) {
+            throw new InterfaceReadToolsException(String.format("接口元素“%s”在文件中不存在", interName));
+        }
+
+        // 根据接口sheet页内容，获取接口的环境信息
+        String envName = Optional
+                .ofNullable(excel.getSheet(ExcelField.SHEET_INTER.getKey()).getRow(interMap.get(interName).getKey()))
+                .map(row -> row.getCell(ExcelField.INTER_ENV)).map(format::formatCellValue).orElse("");
+        return getInterface(interName, envName);
     }
 
     @Override
@@ -288,10 +304,141 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         // 设置响应字符集
         readMultirowSheetContent(interName, ExcelField.SHEET_RESPONSE.getKey(), inter, responseMap);
         // 设置响应断言
+        readMultirowSheetContent(interName, ExcelField.SHEET_ASSERT.getKey(), inter, assertMap);
+        // 设置提词
+        readMultirowSheetContent(interName, ExcelField.SHEET_EXTRACT.getKey(), inter, extractMap);
+        // 设置请求体
+        readBodySheetContent(interName, inter);
 
         return inter;
     }
     
+    private void readBodySheetContent(String interName, InterfaceInfo inter) {
+        // 若模板中指定了普通请求体文本，则对接口添加普通请求体文本
+        if (normalBodyMap.containsKey(interName)) {
+            // 获取普通请求体sheet页
+            Sheet sheet = excel.getSheet(ExcelField.SHEET_NORMAL_BODY.getKey());
+            if (sheet != null) {
+                // 获取请求体的起始行与结束行，由于普通请求体只获取单一一行，故只获取其起始行下标
+                Row row = sheet.getRow(normalBodyMap.get(interName).getKey());
+                // 获取类型文本
+                String typeCellText = Optional.ofNullable(row.getCell(ExcelField.NORMAL_BODY_TYPE)).map(format::formatCellValue).orElse("");
+                // 获取请求体内容文本，若请求体内容在文本中，则读取文本中的内容
+                String contentCellText = Optional.ofNullable(row.getCell(ExcelField.NORMAL_BODY_CONTENT))
+                        .map(format::formatCellValue).map(content -> {
+                            // 若读取到的内容是以特殊符号开头，以特殊符号结尾，则认为其为内容在文件中，则读取其相应路径下的内容
+                            if (content.indexOf(SPECIAL_CONTENT_SYMBOL) == 0
+                                    && content.lastIndexOf(SPECIAL_CONTENT_SYMBOL) == content.length() - 1) {
+                                String filePath = content.substring(
+                                        content.indexOf(SPECIAL_CONTENT_SYMBOL) + SPECIAL_CONTENT_SYMBOL.length(),
+                                        content.lastIndexOf(SPECIAL_CONTENT_SYMBOL));
+
+                                if (!filePath.isEmpty()) {
+                                    try {
+                                        return TextFileReadUtil.megerTextToTxt(new File(filePath), true);
+                                    } catch (AuxiliaryToolsException e) {
+                                    }
+                                }
+                            }
+                            return content;
+                        }).orElse("");
+                
+                // 若请求体内容不为空，则按照指定的方式设置请求体内容
+                if (!contentCellText.isEmpty()) {
+                    try {
+                        inter.setBodyContent(MessageType.typeText2MessageType(typeCellText), contentCellText);
+                    } catch (Exception e) {
+                        inter.setBody(contentCellText);
+                    }
+                    return;
+                }
+            }
+        }
+
+        // 若不存在普通请求体方法，则读取表单类型请求体
+        if (formBodyMap.containsKey(interName)) {
+            // 获取表单请求体sheet页
+            Sheet sheet = excel.getSheet(ExcelField.SHEET_FORM_BODY.getKey());
+            if (sheet != null) {
+                // 获取接口所在行
+                Entry<Integer, Integer> indexEntry = formBodyMap.get(interName);
+                int startRowIndex = indexEntry.getKey();
+                int endRowIndex = indexEntry.getValue();
+
+                // 获取首行中指定的表单请求类型内容
+                MessageType type = Optional.ofNullable(sheet.getRow(startRowIndex))
+                        .map(row -> row.getCell(ExcelField.FORM_BODY_TYPE)).map(format::formatCellValue)
+                        .map(typeText -> {
+                            try {
+                                return MessageType.typeText2MessageType(typeText);
+                            } catch (Exception e) {
+                                throw new InterfaceReadToolsException(
+                                        String.format("接口“%s”的表单格式文本“%s”无法进行转换", interName, typeText), e);
+                            }
+                        }).orElseThrow(
+                                () -> new InterfaceReadToolsException(String.format("接口“%s”必须指定表单请求类型", interName)));
+
+                // 存储遍历的键值对
+                List<Entry<String, Object>> dataList = new ArrayList<>();
+                // 遍历所有的行
+                for (int rowIndex = startRowIndex; rowIndex <= endRowIndex; rowIndex++) {
+                    // 获取行对象
+                    Row row = sheet.getRow(rowIndex);
+                    // 获取key值
+                    String keyContent = Optional.ofNullable(row.getCell(ExcelField.FORM_BODY_KEY))
+                            .map(format::formatCellValue).orElse("");
+                    // 若key值为空，则跳过该行
+                    if (keyContent.isEmpty()) {
+                        continue;
+                    }
+
+                    // 获取value值
+                    Object valueContent = Optional.ofNullable(row.getCell(ExcelField.FORM_BODY_VALUE))
+                            .map(format::formatCellValue).map(content -> {
+                                // 判断value是否为文件类型，即是否开头与结尾是特殊符号，若是，则按照文件类型进行返回
+                                if (content.indexOf(SPECIAL_CONTENT_SYMBOL) == 0
+                                        && content.lastIndexOf(SPECIAL_CONTENT_SYMBOL) == content.length() - 1) {
+                                    String filePath = content.substring(
+                                            content.indexOf(SPECIAL_CONTENT_SYMBOL) + SPECIAL_CONTENT_SYMBOL.length(),
+                                            content.lastIndexOf(SPECIAL_CONTENT_SYMBOL));
+
+                                    return new File(filePath);
+                                }
+
+                                return content;
+                            }).orElse("");
+
+                    dataList.add(new Entry<>(keyContent, valueContent));
+                }
+
+                // 读取所有行后，若集合不为空，则对接口进行设置
+                if (!dataList.isEmpty()) {
+                    inter.setFormBody(type, dataList);
+                    return;
+                }
+            }
+        }
+
+        // 若不存在表单类型请求体，则按照文件类型请求体进行读取
+        if (fileBodyMap.containsKey(interName)) {
+            // 获取文件请求体sheet页
+            Sheet sheet = excel.getSheet(ExcelField.SHEET_FILE_BODY.getKey());
+            if (sheet != null) {
+                // 获取文件路径，由于文件请求体只获取单一一行，故只获取其起始行下标
+                Optional<File> file = Optional.ofNullable(sheet.getRow(fileBodyMap.get(interName).getKey()))
+                        .map(row -> row.getCell(ExcelField.FILE_BODY_PATH)).map(format::formatCellValue).map(File::new);
+                // 若能转换为文件类对象，则对接口设置文件类型请求体
+                if (file.isPresent()) {
+                    inter.setBodyContent(MessageType.FILE, file.get());
+                    return;
+                }
+            }
+        }
+
+        // 若所有请求体内容未通过判断，则添加请求体为none类型
+        inter.setBodyContent(MessageType.NONE, "");
+    }
+
     /**
      * 该方法用于读取一个接口占多行的sheet页内容
      * 
@@ -349,12 +496,87 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                 readAssertSheetContent(row, inter);
                 continue;
             }
+            if (sheetName.equals(ExcelField.SHEET_EXTRACT.getKey())) {
+                readExtractSheetContent(row, inter);
+                continue;
+            }
         }
     }
 
-    private void readAssertSheetContent(Row row, InterfaceInfo inter) {
-        // TODO Auto-generated method stub
+    /**
+     * 该方法用于读取接口提词sheet页内容
+     * 
+     * @param row   行对象
+     * @param inter 接口信息类对象
+     * @since autest 3.7.0
+     */
+    private void readExtractSheetContent(Row row, InterfaceInfo inter) {
+        // 获取提词保存名称
+        String saveName = Optional.ofNullable(row).map(r -> r.getCell(ExcelField.EXTRACT_SAVE_NAME))
+                .map(format::formatCellValue)
+                .orElse("");
+        // 若提词保存名称为空，则直接返回
+        if (saveName.isEmpty()) {
+            return;
+        }
 
+        // 通过判断后，则对断言json串进行存储
+        JSONObject extractJson = new JSONObject();
+        extractJson.put(ExtractResponse.JSON_EXTRACT_SAVE_NAME, saveName);
+        extractJson.put(ExtractResponse.JSON_EXTRACT_SEARCH,
+                Optional.ofNullable(row.getCell(ExcelField.EXTRACT_SEARCH)).map(format::formatCellValue).orElse(""));
+        extractJson.put(ExtractResponse.JSON_EXTRACT_LB,
+                Optional.ofNullable(row.getCell(ExcelField.EXTRACT_LB)).map(format::formatCellValue).orElse(""));
+        extractJson.put(ExtractResponse.JSON_EXTRACT_RB,
+                Optional.ofNullable(row.getCell(ExcelField.EXTRACT_RB)).map(format::formatCellValue).orElse(""));
+        extractJson.put(ExtractResponse.JSON_EXTRACT_PARAM_NAME, Optional
+                .ofNullable(row.getCell(ExcelField.EXTRACT_PARAM_NAME)).map(format::formatCellValue).orElse(""));
+        extractJson.put(ExtractResponse.JSON_EXTRACT_XPATH,
+                Optional.ofNullable(row.getCell(ExcelField.EXTRACT_XPATH)).map(format::formatCellValue).orElse(""));
+        extractJson.put(ExtractResponse.JSON_EXTRACT_ORD,
+                Optional.ofNullable(row.getCell(ExcelField.EXTRACT_ORD)).map(format::formatCellValue).orElse(""));
+
+        inter.addExtractRule(extractJson.toJSONString());
+
+    }
+
+    /**
+     * 该方法用于读取接口断言sheet页内容
+     * 
+     * @param row   行对象
+     * @param inter 接口信息类对象
+     * @since autest 3.7.0
+     */
+    private void readAssertSheetContent(Row row, InterfaceInfo inter) {
+        // 获取断言规则内容
+        String assertRegex = Optional.ofNullable(row).map(r -> r.getCell(ExcelField.ASSERT_REGEX))
+                .map(format::formatCellValue).orElse("");
+        // 若断言规则为空，则直接返回
+        if (assertRegex.isEmpty()) {
+            return;
+        }
+        
+        // 通过判断后，则对断言json串进行存储
+        JSONObject assertJson = new JSONObject();
+        assertJson.put(AssertResponse.JSON_ASSERT_ASSERT_REGEX, assertRegex);
+        assertJson.put(AssertResponse.JSON_ASSERT_SEARCH,
+                Optional.ofNullable(row.getCell(ExcelField.ASSERT_SEARCH))
+                        .map(format::formatCellValue).orElse(""));
+        assertJson.put(AssertResponse.JSON_ASSERT_LB,
+                Optional.ofNullable(row.getCell(ExcelField.ASSERT_LB))
+                .map(format::formatCellValue).orElse(""));
+        assertJson.put(AssertResponse.JSON_ASSERT_RB,
+                Optional.ofNullable(row.getCell(ExcelField.ASSERT_RB))
+                .map(format::formatCellValue).orElse(""));
+        assertJson.put(AssertResponse.JSON_ASSERT_PARAM_NAME, Optional.ofNullable(row.getCell(ExcelField.ASSERT_PARAM_NAME))
+                .map(format::formatCellValue).orElse(""));
+        assertJson.put(AssertResponse.JSON_ASSERT_XPATH,
+                Optional.ofNullable(row.getCell(ExcelField.ASSERT_XPATH))
+                .map(format::formatCellValue).orElse(""));
+        assertJson.put(AssertResponse.JSON_ASSERT_ORD, Optional.ofNullable(row.getCell(ExcelField.ASSERT_ORD))
+                .map(format::formatCellValue).orElse(""));
+
+        inter.addAssertRule(assertJson.toJSONString());
     }
 
     /**
@@ -366,7 +588,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      */
     private void readResponseSheetContent(Row row, InterfaceInfo inter) {
         // 获取当前状态码，若状态码为空或不能转换为数字，则返回-1
-        int state = Optional.ofNullable(row.getCell(ExcelField.RESPONSE_STATE)).map(format::formatCellValue)
+        int state = Optional.ofNullable(row).map(r -> r.getCell(ExcelField.RESPONSE_STATE)).map(format::formatCellValue)
                 .map(num -> {
                     try {
                         return Integer.valueOf(num);
@@ -393,7 +615,8 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      */
     private void readBeforeInterOpeateSheetContent(Row row, InterfaceInfo inter) {
         // 获取单元格中存储的父层接口名称
-        String parentName = Optional.ofNullable(row.getCell(ExcelField.BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME))
+        String parentName = Optional.ofNullable(row)
+                .map(r -> r.getCell(ExcelField.BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME))
                 .map(format::formatCellValue).orElse("");
         // 若名称不为空，则进行获取接口的操作
         if (parentName.isEmpty()) {
@@ -411,7 +634,8 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      */
     private void readCookieSheetContent(Row row, InterfaceInfo inter) {
         // 获取键内容
-        String key = Optional.ofNullable(row.getCell(ExcelField.COOKIE_KEY)).map(format::formatCellValue).orElse("");
+        String key = Optional.ofNullable(row).map(r -> r.getCell(ExcelField.COOKIE_KEY)).map(format::formatCellValue)
+                .orElse("");
         // 若键为空，则直接返回
         if (key.isEmpty()) {
             return;
@@ -431,7 +655,8 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      */
     private void readRequestHeaderSheetContent(Row row, InterfaceInfo inter) {
         // 获取键内容
-        String key = Optional.ofNullable(row.getCell(ExcelField.REQUEST_HEADER_KEY)).map(format::formatCellValue)
+        String key = Optional.ofNullable(row).map(r -> r.getCell(ExcelField.REQUEST_HEADER_KEY))
+                .map(format::formatCellValue)
                 .orElse("");
         // 若键为空，则直接返回
         if (key.isEmpty()) {
@@ -452,7 +677,8 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      */
     private void readInterParamSheetContent(Row row, InterfaceInfo inter) {
         // 获取键内容
-        String key = Optional.ofNullable(row.getCell(ExcelField.INTER_PARAM_KEY)).map(format::formatCellValue)
+        String key = Optional.ofNullable(row).map(r -> r.getCell(ExcelField.INTER_PARAM_KEY))
+                .map(format::formatCellValue)
                 .orElse("");
         // 若键为空，则直接返回
         if (key.isEmpty()) {
@@ -818,9 +1044,9 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
          */
         public static final int EXTRACT_INTER_NAME = 0;
         /**
-         * 接口提词sheet中的提词规则
+         * 接口提词sheet中的提词保存名称
          */
-        public static final int EXTRACT_REGEX = 1;
+        public static final int EXTRACT_SAVE_NAME = 1;
         /**
          * 接口提词sheet中的搜索范围
          */

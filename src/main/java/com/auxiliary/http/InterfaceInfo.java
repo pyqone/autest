@@ -218,7 +218,7 @@ public class InterfaceInfo implements Cloneable {
                 h = h.substring(h.indexOf(SYMBOL_SPLIT_PROTOCOL) + SYMBOL_SPLIT_PROTOCOL.length());
             }
             return h;
-        }).orElseGet(() -> "");
+        }).orElse("");
     }
 
     /**
