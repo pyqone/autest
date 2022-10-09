@@ -137,12 +137,12 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             try {
                 int state = Integer.valueOf(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_STATUS));
                 String responeType = Optional.ofNullable(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
-                        .filter(type -> !type.isEmpty()).map(String::toUpperCase).orElse("");
+                        .filter(type -> !type.isEmpty()).orElse("");
                 if (responeType.isEmpty()) {
                     continue;
                 }
                 // 将响应报文格式进行转换，之后存储相应的内容
-                inter.addResponseContentTypeSet(state, MessageType.valueOf(responeType));
+                inter.addResponseContentTypeSet(state, MessageType.typeText2MessageType(responeType));
             } catch (IllegalArgumentException e) {
                 continue;
             }
@@ -203,10 +203,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 获取消息类型属性
             String messageTypeText = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
-                    .map(String::toUpperCase).orElse("");
+                    .orElse("");
             // 消息类型转换为消息类型枚举，若转换失败，则按照文本格式进行识别
             try {
-                inter.setBodyContent(MessageType.valueOf(messageTypeText), bodyText);
+                inter.setBodyContent(MessageType.typeText2MessageType(messageTypeText), bodyText);
             } catch (Exception e) {
                 inter.setBody(bodyText);
             }
@@ -218,7 +218,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         if ((bodyElement = interElement.element(XmlParamName.XML_LABEL_FORM_BODY)) != null) {
             // 获取表单类型，并转换为枚举
             MessageType type = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
-                    .map(String::toUpperCase).map(MessageType::valueOf)
+                    .map(MessageType::typeText2MessageType)
                     .orElseThrow(() -> new InterfaceReadToolsException(
                             String.format("接口“%s”必须指定表单类型请求的“%s”属性", nowElementName, XmlParamName.XML_ATTRI_TYPE)));
 
