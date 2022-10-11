@@ -1,7 +1,8 @@
 package com.auxiliary.http;
 
-import java.util.Optional;
 import java.util.function.Function;
+
+import com.auxiliary.tool.common.DisposeCodeUtils;
 
 /**
  * <p>
@@ -175,8 +176,8 @@ public enum MessageType {
      * @since autest 3.7.0
      * @throws IllegalArgumentException 当枚举文本为空或不能转换成枚举时抛出的异常
      */
-    public static MessageType typeText2MessageType(String type) {
-        return typeText2MessageType(type, text -> {
+    public static MessageType typeText2Type(String type) {
+        return typeText2Type(type, text -> {
             text = text.toUpperCase();
             if ("TEXT".equals(text)) {
                 text = RAW.toString();
@@ -189,7 +190,7 @@ public enum MessageType {
     /**
      * 该方法用于将枚举文本转换为消息枚举
      * <p>
-     * 该方法与{@link #typeText2MessageType(String)}方法类似，其可对传入的文本进行自定义的转换，例如欲将传入的"text"转换为"raw"，则可写为
+     * 该方法与{@link #typeText2Type(String)}方法类似，其可对传入的文本进行自定义的转换，例如欲将传入的"text"转换为"raw"，则可写为
      * <code><pre>
      * MessageType.typeText2MessageType("text", type -> {
      *      if ("text".equals(text)) {
@@ -207,16 +208,7 @@ public enum MessageType {
      * @since autest 3.7.0
      * @throws IllegalArgumentException 当枚举文本为空或不能转换成枚举时抛出的异常
      */
-    public static MessageType typeText2MessageType(String type, Function<String, String> mapper) {
-        // 将所有的字符转换成大写字母
-        String typeText = Optional.ofNullable(type).map(mapper::apply).map(String::toUpperCase)
-                .orElseThrow(() -> new IllegalArgumentException("未指定枚举文本"));
-
-        // 调用valueOf方法，对文本内容进行转换
-        try {
-            return MessageType.valueOf(typeText);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("不存在的枚举文本：" + type);
-        }
+    public static MessageType typeText2Type(String type, Function<String, String> mapper) {
+        return DisposeCodeUtils.disposeEnumTypeText(MessageType.class, type, mapper, true);
     }
 }

@@ -49,65 +49,65 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
     /**
      * 用于对特殊内容进行定义的符号
      */
-    private final String SPECIAL_CONTENT_SYMBOL = "#";
+    protected final String SPECIAL_CONTENT_SYMBOL = "#";
 
     /**
      * 定义模板文件
      */
-    private Workbook excel = null;
+    protected Workbook excel = null;
     /**
      * 用于对单元格内容进行格式化输出
      */
-    private DataFormatter format = new DataFormatter();
+    protected DataFormatter format = new DataFormatter();
 
     /**
      * 存储环境数据
      */
-    private HashMap<String, String> envMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, String> envMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储接口数据及接口所在的行号
      */
-    private HashMap<String, Entry<Integer, Integer>> interMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> interMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储接口参数
      */
-    private HashMap<String, Entry<Integer, Integer>> interParamMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> interParamMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储前置接口操作
      */
-    private HashMap<String, Entry<Integer, Integer>> beforeInterMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> beforeInterMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储普通类型请求体
      */
-    private HashMap<String, Entry<Integer, Integer>> normalBodyMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> normalBodyMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储文件类型请求体
      */
-    private HashMap<String, Entry<Integer, Integer>> fileBodyMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> fileBodyMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储表单类型请求体
      */
-    private HashMap<String, Entry<Integer, Integer>> formBodyMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> formBodyMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储请求头参数
      */
-    private HashMap<String, Entry<Integer, Integer>> requestHeaderMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> requestHeaderMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储cookie参数
      */
-    private HashMap<String, Entry<Integer, Integer>> cookieMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> cookieMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储相应内容参数
      */
-    private HashMap<String, Entry<Integer, Integer>> responseMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> responseMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储接口断言
      */
-    private HashMap<String, Entry<Integer, Integer>> assertMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> assertMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储接口提词
      */
-    private HashMap<String, Entry<Integer, Integer>> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, Entry<Integer, Integer>> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 当前执行接口的环境名称
@@ -134,10 +134,8 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         }
         
         // 读取接口数据
-        addInterNameRowIndex(interMap, ExcelField.INTER_INTER_NAME,
-                Optional.ofNullable(excel.getSheet(ExcelField.SHEET_INTER.getKey()))
-                .orElseThrow(() -> new InterfaceReadToolsException(
-                                String.format("文件中不存在“%s”sheet页", ExcelField.SHEET_INTER.getKey()))));
+        Optional.ofNullable(excel.getSheet(ExcelField.SHEET_INTER.getKey()))
+                .ifPresent(dataSheet -> addInterNameRowIndex(interMap, ExcelField.INTER_INTER_NAME, dataSheet));
         // 读取接口参数数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_INTER_PARAM.getKey()))
                 .ifPresent(dataSheet -> addInterNameRowIndex(interParamMap,
@@ -191,14 +189,14 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                         continue;
                     }
                     // 获取环境名称单元格内容，若不存在该单元格，或名称为空串，则跳过该行内容的获取
-                    String envName = cellList.get(ExcelField.ENV_ENV_NAME).map(Cell::getStringCellValue)
+                    String envName = cellList.get(ExcelField.ENV_ENV_NAME).map(format::formatCellValue)
                             .orElse("");
                     if (envName.isEmpty()) {
                         continue;
                     }
                     
                     // 存储当前环境内容，并获取其url
-                    envMap.put(envName, cellList.get(ExcelField.ENV_URL).map(Cell::getStringCellValue)
+                    envMap.put(envName, cellList.get(ExcelField.ENV_URL).map(format::formatCellValue)
                             .orElse(InterfaceInfo.DEFAULT_PROTOCOL + InterfaceInfo.DEFAULT_HOST));
 
                     // 判断当前是否已存储执行环境
@@ -274,8 +272,8 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         String env = Optional.ofNullable(envMap.get(environmentName)).orElse("");
 
         // 判断接口是否缓存，若已缓存，则直接返回
-        if (interfaceMap.containsKey(interName)) {
-            InterfaceInfo inter = interfaceMap.get(interName).clone();
+        if (interfaceCacheMap.containsKey(interName)) {
+            InterfaceInfo inter = interfaceCacheMap.get(interName).clone();
             if (!env.isEmpty()) {
                 inter.setHost(env);
             }
@@ -313,7 +311,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         return inter;
     }
     
-    private void readBodySheetContent(String interName, InterfaceInfo inter) {
+    protected void readBodySheetContent(String interName, InterfaceInfo inter) {
         // 若模板中指定了普通请求体文本，则对接口添加普通请求体文本
         if (normalBodyMap.containsKey(interName)) {
             // 获取普通请求体sheet页
@@ -346,7 +344,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                 // 若请求体内容不为空，则按照指定的方式设置请求体内容
                 if (!contentCellText.isEmpty()) {
                     try {
-                        inter.setBodyContent(MessageType.typeText2MessageType(typeCellText), contentCellText);
+                        inter.setBodyContent(MessageType.typeText2Type(typeCellText), contentCellText);
                     } catch (Exception e) {
                         inter.setBody(contentCellText);
                     }
@@ -370,7 +368,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                         .map(row -> row.getCell(ExcelField.FORM_BODY_TYPE)).map(format::formatCellValue)
                         .map(typeText -> {
                             try {
-                                return MessageType.typeText2MessageType(typeText);
+                                return MessageType.typeText2Type(typeText);
                             } catch (Exception e) {
                                 throw new InterfaceReadToolsException(
                                         String.format("接口“%s”的表单格式文本“%s”无法进行转换", interName, typeText), e);
@@ -447,7 +445,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      * @param inter     接口信息类对象
      * @since autest 3.7.0
      */
-    private void readMultirowSheetContent(String interName, String sheetName, InterfaceInfo inter,
+    protected void readMultirowSheetContent(String interName, String sheetName, InterfaceInfo inter,
             HashMap<String, Entry<Integer, Integer>> map) {
         // 若接口名称不在索引集合中，则不进行获取操作
         if (!map.containsKey(interName)) {
@@ -603,7 +601,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
         // 存储接口响应数据
         inter.addResponseContentTypeSet(state,
-                MessageType.typeText2MessageType(format.formatCellValue(row.getCell(ExcelField.RESPONSE_TYPE))));
+                MessageType.typeText2Type(format.formatCellValue(row.getCell(ExcelField.RESPONSE_TYPE))));
     }
 
     /**
@@ -697,16 +695,18 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      * @param inter     接口信息类对象
      * @since autest 3.7.0
      */
-    private void readInterSheetContent(String interName, InterfaceInfo inter) {
+    protected void readInterSheetContent(String interName, InterfaceInfo inter) {
         // 获取接口所在行
         Row interRow = excel.getSheet(ExcelField.SHEET_INTER.getKey()).getRow(interMap.get(interName).getValue());
 
         // 读取url数据
         inter.analysisUrl(format.formatCellValue(interRow.getCell(ExcelField.INTER_URL)));
         // 读取请求方式数据
-        inter.setRequestType(
-                RequestType.valueOf(
-                        format.formatCellValue(interRow.getCell(ExcelField.INTER_TYPE)).toUpperCase()));
+        String requestTypeText = format.formatCellValue(interRow.getCell(ExcelField.INTER_TYPE)).toUpperCase();
+        if (!requestTypeText.isEmpty()) {
+            inter.setRequestType(RequestType.typeText2Type(requestTypeText));
+        }
+
         // 读取接口超时时间
         inter.setConnectTime(format.formatCellValue(interRow.getCell(ExcelField.INTER_CONNECT_TIME)));
     }
@@ -731,7 +731,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      * @return 当前sheet所有行对象集合
      * @since autest 3.7.0
      */
-    private List<Row> getSheetAllRow(Sheet sheet) {
+    protected List<Row> getSheetAllRow(Sheet sheet) {
         int rowLastIndex = sheet.getLastRowNum();
 
         // 若当前sheet中的最后一行下标为0时，则表示其只存在一行（标题行）或无内容，则直接返回空集合
@@ -753,7 +753,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      * @return 当前行中所有单元格对象的集合
      * @since autest 3.7.0
      */
-    private List<Optional<Cell>> getRowAllCell(Row row, int columnIndex) {
+    protected List<Optional<Cell>> getRowAllCell(Row row, int columnIndex) {
         if (row == null) {
             return new ArrayList<>();
         }
@@ -772,7 +772,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      * @param dataSheet  数据sheet页
      * @since autest 3.7.0
      */
-    private void addInterNameRowIndex(HashMap<String, Entry<Integer, Integer>> map, int fieldIndex, Sheet dataSheet) {
+    protected void addInterNameRowIndex(HashMap<String, Entry<Integer, Integer>> map, int fieldIndex, Sheet dataSheet) {
         // 获取当前sheet的所有行，并遍历
         List<Row> rowList = getSheetAllRow(dataSheet);
 
@@ -822,7 +822,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      * @since JDK 1.8
      * @since autest 3.6.0
      */
-    private static class ExcelField {
+    protected static class ExcelField {
         /**
          * 环境sheet
          */
