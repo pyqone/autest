@@ -1070,7 +1070,7 @@ public class InterfaceInfo implements Cloneable {
         // 计算思路参考Time类中的addTime(String)方法
         char[] chars = Optional.ofNullable(timeExpression).filter(text -> !text.isEmpty())
                 .map(text -> text + ".").map(String::toCharArray)
-                .orElseThrow(() -> new InterfaceReadToolsException("必须指定时间参数"));
+                .orElseGet(() -> new char[] {});
 
         // 遍历所有的字符，区别存储单位与增减的数值，参考Time类中的时间计算方法
         StringBuilder numText = new StringBuilder();
