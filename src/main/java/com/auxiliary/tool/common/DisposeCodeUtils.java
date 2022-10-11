@@ -338,8 +338,10 @@ public class DisposeCodeUtils {
             // 若枚举为空，则不进行处理
             if (enmus != null && enmus.length != 0) {
                 try {
+                    // 获取“valueOf”方法
                     Method method = enumClass.getMethod("valueOf", String.class);
                     try {
+                        // 反射调用方法，将处理后的文本转换为枚举类对象
                         return (T) (method.invoke(enmus[0], typeTextOptional.get()));
                     } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
                         exceptionMessgae = String.format("文本“%s”无法转换为“%s”枚举类", typeText, enumClass.getName());
