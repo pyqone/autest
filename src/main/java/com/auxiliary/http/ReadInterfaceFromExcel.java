@@ -780,7 +780,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         String saveContent = "";
         for (int index = 0; index < rowList.size(); index++) {
             // 获取指定该行指定单元格中的内容
-            String content = Optional.ofNullable(rowList.get(index).getCell(fieldIndex))
+            String content = Optional.ofNullable(rowList.get(index)).map(row -> row.getCell(fieldIndex))
                     .map(Cell::getStringCellValue).orElse("");
             // 若内容不为空串，则在指定的map中进行存储
             if (!content.isEmpty()) {
