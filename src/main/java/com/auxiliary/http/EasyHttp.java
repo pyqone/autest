@@ -245,7 +245,7 @@ public class EasyHttp {
         interInfo.getExtractRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
             String saveName = json.getString(ExtractResponse.JSON_EXTRACT_SAVE_NAME);
-            SearchType searchType = SearchType.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_SEARCH));
+            SearchType searchType = SearchType.typeText2Type(json.getString(ExtractResponse.JSON_EXTRACT_SEARCH));
             String paramName = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_PARAM_NAME));
             String xpath = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_XPATH));
             String lb = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_LB));
@@ -261,7 +261,7 @@ public class EasyHttp {
         interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
             String assertRegex = disposeContent(json.getString(AssertResponse.JSON_ASSERT_ASSERT_REGEX));
-            SearchType searchType = SearchType.valueOf(json.getString(AssertResponse.JSON_ASSERT_SEARCH));
+            SearchType searchType = SearchType.typeText2Type(json.getString(AssertResponse.JSON_ASSERT_SEARCH));
             String paramName = disposeContent(json.getString(AssertResponse.JSON_ASSERT_PARAM_NAME));
             String xpath = disposeContent(json.getString(AssertResponse.JSON_ASSERT_XPATH));
             String lb = disposeContent(json.getString(AssertResponse.JSON_ASSERT_LB));
@@ -446,7 +446,6 @@ public class EasyHttp {
                 requestBody = NONE_REQUEST_BODY;
                 break;
             case FORM_DATA:
-            case FD:
                 // 定义表单请求体构造类
                 MultipartBody.Builder builder = new MultipartBody.Builder();
                 // 获取表单数据
@@ -469,7 +468,6 @@ public class EasyHttp {
                 requestBody = builder.build();
                 break;
             case X_WWW_FORM_URLENCODED:
-            case FU:
                 requestBody = RequestBody.create(mediaType,
                         HttpUtil.formUrlencoded2Extract((List<Entry<String, Object>>) body));
                 break;

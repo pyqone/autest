@@ -211,8 +211,14 @@ public class InterfaceInfo implements Cloneable {
             if (h.lastIndexOf(SYMBOL_SPLIT_PATH) == h.length() - 1) {
                 h = h.substring(0, h.length() - 1);
             }
+
+            // 若设置的主机包含协议分隔符，则将协议设置到接口后，再在主机中内容进行去除
+            if (h.contains(SYMBOL_SPLIT_PROTOCOL)) {
+                setProtocol(h.substring(0, h.indexOf(SYMBOL_SPLIT_PROTOCOL) + SYMBOL_SPLIT_PROTOCOL.length() + 1));
+                h = h.substring(h.indexOf(SYMBOL_SPLIT_PROTOCOL) + SYMBOL_SPLIT_PROTOCOL.length());
+            }
             return h;
-        }).orElseGet(() -> "");
+        }).orElse("");
     }
 
     /**
@@ -526,8 +532,7 @@ public class InterfaceInfo implements Cloneable {
      */
     public void setFormBody(MessageType messageType, List<Entry<String, Object>> dataList) {
         // 判断请求体类型是否为表单格式
-        if (messageType != MessageType.X_WWW_FORM_URLENCODED && messageType != MessageType.FORM_DATA
-                && messageType != MessageType.FD && messageType != MessageType.FU) {
+        if (messageType != MessageType.X_WWW_FORM_URLENCODED && messageType != MessageType.FORM_DATA) {
             throw new InterfaceReadToolsException(String.format("添加表单类型请求体，其类型必须为“%s”或“%s”，错误的接口信息为：%s",
                     MessageType.X_WWW_FORM_URLENCODED.getMediaValue(), MessageType.FORM_DATA.getMediaValue(),
                     toUrlString()));
@@ -1064,7 +1069,7 @@ public class InterfaceInfo implements Cloneable {
         // 计算思路参考Time类中的addTime(String)方法
         char[] chars = Optional.ofNullable(timeExpression).filter(text -> !text.isEmpty())
                 .map(text -> text + ".").map(String::toCharArray)
-                .orElseThrow(() -> new InterfaceReadToolsException("必须指定时间参数"));
+                .orElseGet(() -> new char[] {});
 
         // 遍历所有的字符，区别存储单位与增减的数值，参考Time类中的时间计算方法
         StringBuilder numText = new StringBuilder();

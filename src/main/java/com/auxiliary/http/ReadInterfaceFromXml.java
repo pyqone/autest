@@ -137,12 +137,12 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             try {
                 int state = Integer.valueOf(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_STATUS));
                 String responeType = Optional.ofNullable(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
-                        .filter(type -> !type.isEmpty()).map(String::toUpperCase).orElse("");
+                        .filter(type -> !type.isEmpty()).orElse("");
                 if (responeType.isEmpty()) {
                     continue;
                 }
                 // 将响应报文格式进行转换，之后存储相应的内容
-                inter.addResponseContentTypeSet(state, MessageType.valueOf(responeType));
+                inter.addResponseContentTypeSet(state, MessageType.typeText2Type(responeType));
             } catch (IllegalArgumentException e) {
                 continue;
             }
@@ -203,10 +203,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
             // 获取消息类型属性
             String messageTypeText = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
-                    .map(String::toUpperCase).orElse("");
+                    .orElse("");
             // 消息类型转换为消息类型枚举，若转换失败，则按照文本格式进行识别
             try {
-                inter.setBodyContent(MessageType.valueOf(messageTypeText), bodyText);
+                inter.setBodyContent(MessageType.typeText2Type(messageTypeText), bodyText);
             } catch (Exception e) {
                 inter.setBody(bodyText);
             }
@@ -218,7 +218,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         if ((bodyElement = interElement.element(XmlParamName.XML_LABEL_FORM_BODY)) != null) {
             // 获取表单类型，并转换为枚举
             MessageType type = Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
-                    .map(String::toUpperCase).map(MessageType::valueOf)
+                    .map(MessageType::typeText2Type)
                     .orElseThrow(() -> new InterfaceReadToolsException(
                             String.format("接口“%s”必须指定表单类型请求的“%s”属性", nowElementName, XmlParamName.XML_ATTRI_TYPE)));
 
@@ -340,7 +340,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      */
     private RequestType readInterRequestType(Element interElement) {
         return Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_TYPE)).map(String::toUpperCase)
-                .map(RequestType::valueOf).orElseGet(() -> InterfaceInfo.DEFAULT_REQUESTTYPE);
+                .map(RequestType::typeText2Type).orElseGet(() -> InterfaceInfo.DEFAULT_REQUESTTYPE);
     }
 
     /**
@@ -480,16 +480,16 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         }
 
         // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
-        if (interfaceMap.containsKey(interName)) {
-            InterfaceInfo inter = interfaceMap.get(interName).clone();
-            inter.analysisUrl(environment);
+        if (interfaceCacheMap.containsKey(interName)) {
+            InterfaceInfo inter = interfaceCacheMap.get(interName).clone();
+            inter.setHost(environment);
             return inter;
         }
 
         // 若未缓存信息，则构造接口信息对象，添加接口信息
         InterfaceInfo inter = new InterfaceInfo();
         // 解析环境，获取环境主机等信息
-        inter.analysisUrl(environment);
+        inter.setHost(environment);
 
         // 查找元素
         Element interElement = findElement(interName);
@@ -498,11 +498,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 获取接口的路径
         String path = readInterPath(interElement);
         if (!path.isEmpty()) {
-            // 获取通过环境参数解析到的接口路径信息
-            String environmentPath = inter.getPath();
-            // 为保证接口路径信息的统一，故将新的接口信息设置入接口信息类，之后再获取，以保证接口的路径信息格式的正确性
             inter.setPath(path);
-            inter.setPath(environmentPath + inter.getPath());
         }
         // 获取接口请求时间，若不存在则不进行设置
         try {
@@ -533,7 +529,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         inter.addAllBeforeOperation(getBeforeOperation(interName));
 
         // 缓存读取的接口
-        interfaceMap.put(interName, inter);
+        interfaceCacheMap.put(interName, inter);
         return inter;
     }
 

@@ -1,9 +1,12 @@
 package com.auxiliary.tool.common;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -304,5 +307,60 @@ public class DisposeCodeUtils {
         }
 
         return "";
+    }
+
+    /**
+     * 该方法用于对枚举文本进行处理，并将其转换为指定的枚举类
+     * <p>
+     * 若枚举转换失败，则根据指定的参数来判断是否抛出异常，若不抛出异常，则返回null
+     * </p>
+     * 
+     * @param <T>              枚举类对象
+     * @param enumClass        枚举类{@link Class}对象
+     * @param typeText         枚举文本
+     * @param mapper           文本特殊处理方式
+     * @param isThrowException 是否需要抛出异常
+     * @return 文本转换后的枚举类对象
+     * @since autest 3.7.0
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T disposeEnumTypeText(Class<T> enumClass, String typeText, Function<String, String> mapper,
+            boolean isThrowException) {
+        // 存放报错信息
+        String exceptionMessgae = "";
+
+        // 对枚举文本进行处理
+        Optional<String> typeTextOptional = Optional.ofNullable(typeText).filter(text -> !typeText.isEmpty())
+                .map(mapper::apply).map(String::toUpperCase);
+        if (typeTextOptional.isPresent()) {
+            // 获取枚举类的所有枚举
+            Object[] enmus = enumClass.getEnumConstants();
+            // 若枚举为空，则不进行处理
+            if (enmus != null && enmus.length != 0) {
+                try {
+                    // 获取“valueOf”方法
+                    Method method = enumClass.getMethod("valueOf", String.class);
+                    try {
+                        // 反射调用方法，将处理后的文本转换为枚举类对象
+                        return (T) (method.invoke(enmus[0], typeTextOptional.get()));
+                    } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+                        exceptionMessgae = String.format("文本“%s”无法转换为“%s”枚举类", typeText, enumClass.getName());
+                    }
+                } catch (NoSuchMethodException | SecurityException e) {
+                    exceptionMessgae = String.format("类“%s”不存在“valueOf(String)”方法", enumClass.getName());
+                }
+            } else {
+                exceptionMessgae = String.format("类“%s”不存在枚举内容", enumClass.getName());
+            }
+        } else {
+            exceptionMessgae = "未指定枚举文本或处理后枚举文本为空： " + typeText;
+        }
+
+        // 处理后，若未返回相应的枚举类对象，则根据参数抛出异常或者返回null
+        if (isThrowException) {
+            throw new IllegalArgumentException(exceptionMessgae);
+        } else {
+            return null;
+        }
     }
 }
