@@ -446,7 +446,6 @@ public class EasyHttp {
                 requestBody = NONE_REQUEST_BODY;
                 break;
             case FORM_DATA:
-            case FD:
                 // 定义表单请求体构造类
                 MultipartBody.Builder builder = new MultipartBody.Builder();
                 // 获取表单数据
@@ -469,7 +468,6 @@ public class EasyHttp {
                 requestBody = builder.build();
                 break;
             case X_WWW_FORM_URLENCODED:
-            case FU:
                 requestBody = RequestBody.create(mediaType,
                         HttpUtil.formUrlencoded2Extract((List<Entry<String, Object>>) body));
                 break;

@@ -47,6 +47,8 @@ public enum MessageType {
     FORM_DATA("multipart/form-data"),
     /**
      * 表单类型，与{@link #FORM_DATA}一致
+     * 
+     * @deprecated 该枚举已无效，将在3.8.0或更高版本中删除
      */
     FD(FORM_DATA.mediaName),
     /**
@@ -55,6 +57,8 @@ public enum MessageType {
     X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded"),
     /**
      * 表单上传编码类型，与{@link #X_WWW_FORM_URLENCODED}一致
+     * 
+     * @deprecated 该枚举已无效，将在3.8.0或更高版本中删除
      */
     FU(X_WWW_FORM_URLENCODED.mediaName),
     /**
@@ -169,6 +173,8 @@ public enum MessageType {
      * </p>
      * <ul>
      * <li>若文本为“text”，则转换为“raw”输出</li>
+     * <li>若文本为“fd”，则转换为“form-data”输出</li>
+     * <li>若文本为“fu”，则转换为“X-WWW-FORM-URLENCODED”输出</li>
      * </ul>
      * 
      * @param type 枚举文本内容
@@ -179,8 +185,18 @@ public enum MessageType {
     public static MessageType typeText2Type(String type) {
         return typeText2Type(type, text -> {
             text = text.toUpperCase();
-            if ("TEXT".equals(text)) {
+            switch(text) {
+            case "FD":
+                text = FORM_DATA.toString();
+                break;
+            case "FU":
+                text = X_WWW_FORM_URLENCODED.toString();
+                break;
+            case "TEXT":
                 text = RAW.toString();
+                break;
+            default :
+                break;
             }
 
             return text;

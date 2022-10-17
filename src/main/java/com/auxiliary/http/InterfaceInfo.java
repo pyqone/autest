@@ -532,8 +532,7 @@ public class InterfaceInfo implements Cloneable {
      */
     public void setFormBody(MessageType messageType, List<Entry<String, Object>> dataList) {
         // 判断请求体类型是否为表单格式
-        if (messageType != MessageType.X_WWW_FORM_URLENCODED && messageType != MessageType.FORM_DATA
-                && messageType != MessageType.FD && messageType != MessageType.FU) {
+        if (messageType != MessageType.X_WWW_FORM_URLENCODED && messageType != MessageType.FORM_DATA) {
             throw new InterfaceReadToolsException(String.format("添加表单类型请求体，其类型必须为“%s”或“%s”，错误的接口信息为：%s",
                     MessageType.X_WWW_FORM_URLENCODED.getMediaValue(), MessageType.FORM_DATA.getMediaValue(),
                     toUrlString()));
