@@ -382,6 +382,11 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                 for (int rowIndex = startRowIndex; rowIndex <= endRowIndex; rowIndex++) {
                     // 获取行对象
                     Row row = sheet.getRow(rowIndex);
+                    // 若该行对象为空，则跳过
+                    if (row == null) {
+                        continue;
+                    }
+
                     // 获取key值
                     String keyContent = Optional.ofNullable(row.getCell(ExcelField.FORM_BODY_KEY))
                             .map(format::formatCellValue).orElse("");
