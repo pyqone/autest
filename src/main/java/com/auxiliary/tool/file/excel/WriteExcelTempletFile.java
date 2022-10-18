@@ -10,11 +10,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -91,6 +94,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
      * 标记json中的linkContent字段
      */
 	public static final String KEY_LINK_CONTENT = "linkContent";
+    /**
+     * 标记json中的border字段
+     */
+    public static final String KEY_BORDER = "border";
 
 	/**
 	 * 单元格坐标分隔符
@@ -349,6 +356,25 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		return (T) this;
 	}
+	
+    /**
+     * 该方法用于对指定字段的当前行单元格上添加边框，
+     * 
+     * @param field
+     * @return
+     * @since autest
+     */
+    @SuppressWarnings("unchecked")
+    public T border(BorderStyle borderStyle, String... fields) {
+        // 将字段数组转换为Set集合，若未传入数组，则默认使用当前
+        Set<String> fieldSet = Optional.ofNullable(fields).filter(arr -> arr.length != 0).map(Arrays::asList)
+                .map(HashSet::new).orElseGet(() -> new HashSet<>(getWriteData().getTemplet().getFieldList()));
+        for (String field : fieldSet) {
+            data.getCaseJson().getJSONObject(field).put(KEY_BORDER, borderStyle.toString());
+        }
+
+        return (T) this;
+    }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -665,16 +691,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		for (int textIndex = 0; textIndex < textListJson.size(); textIndex++) {
 			JSONObject textJson = textListJson.getJSONObject(textIndex);
 
-			// 获取单元格的背景色
-			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
-					? fieldContentJson.getShortValue(KEY_BACKGROUND)
-					: (data.getContentJson().containsKey(KEY_BACKGROUND)
-							? data.getContentJson().getShortValue(KEY_BACKGROUND)
-							: -1);
-
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
-					fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, background));
+                    fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, fieldContentJson));
 
 			// 根据样式与内容，拼接文本
 			appendContent(content, style, textJson.getString(KEY_TEXT),
@@ -722,15 +741,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 			// 获取最后一位数据
 			XSSFRichTextString content = contentList.get(contentList.size() - 1);
-			// 获取单元格的背景色
-			short background = fieldContentJson.containsKey(KEY_BACKGROUND)
-					? fieldContentJson.getShortValue(KEY_BACKGROUND)
-					: (data.getContentJson().containsKey(KEY_BACKGROUND)
-							? data.getContentJson().getShortValue(KEY_BACKGROUND)
-							: -1);
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
-					fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, background));
+                    fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, fieldContentJson));
 
 			// 根据样式与内容，拼接文本
 			appendContent(content, style, textJson.getString(KEY_TEXT),
@@ -841,7 +854,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	 * @return 字段样式json
 	 */
 	protected JSONObject fieldJson2StyleJson(String templetName, JSONObject templetFieldJson, JSONObject textJson,
-			short background) {
+            JSONObject fieldContentJson) {
 		JSONObject styleJson = new JSONObject();
 		styleJson.put(ExcelFileTemplet.KEY_HORIZONTAL,
 				Optional.ofNullable(templetFieldJson.getInteger(ExcelFileTemplet.KEY_HORIZONTAL)).orElse(0));
@@ -861,9 +874,17 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		}
 
 		// 判断是否需要背景颜色
+        short background = fieldContentJson.containsKey(KEY_BACKGROUND) ? fieldContentJson.getShortValue(KEY_BACKGROUND)
+                : (data.getContentJson().containsKey(KEY_BACKGROUND)
+                        ? data.getContentJson().getShortValue(KEY_BACKGROUND)
+                        : -1);
 		if (background != -1) {
 			styleJson.put(KEY_BACKGROUND, background);
 		}
+
+        // 判断是会否需要边框
+        Optional.ofNullable(fieldContentJson.getString(KEY_BORDER)).filter(text -> !text.isEmpty())
+                .ifPresent(text -> styleJson.put(KEY_BORDER, text));
 
 		return styleJson;
 	}
@@ -919,6 +940,15 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			style.setFont(font);
 			// 设置单元格自动换行
 			style.setWrapText(styleJson.getBooleanValue(KEY_WRAP_TEXT));
+
+            // 设置单元格添加边框
+            if (styleJson.containsKey(KEY_BORDER)) {
+                BorderStyle border = BorderStyle.valueOf(styleJson.getString(KEY_BORDER));
+                style.setBorderBottom(border);
+                style.setBorderLeft(border);
+                style.setBorderRight(border);
+                style.setBorderTop(border);
+            }
 
 			styleMap.put(styleJson, style);
 
