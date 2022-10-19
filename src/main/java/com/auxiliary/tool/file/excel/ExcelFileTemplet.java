@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.file.FileTemplet;
@@ -20,7 +23,7 @@ import com.auxiliary.tool.file.excel.WriteExcelTempletFile.AlignmentType;
  * <b>编码时间：</b>2021年6月29日下午8:32:09
  * </p>
  * <p>
- * <b>修改时间：</b>2021年6月29日下午8:32:09
+ * <b>修改时间：</b>2022年10月19日 上午8:13:53
  * </p>
  * 
  * @author 彭宇琦
@@ -28,17 +31,60 @@ import com.auxiliary.tool.file.excel.WriteExcelTempletFile.AlignmentType;
  * @since JDK 1.8
  */
 public class ExcelFileTemplet extends FileTemplet {
+    /**
+     * 标记json中的name字段
+     */
 	public static final String KEY_NAME = "name";
+    /**
+     * 标记json中的wide字段
+     */
 	public static final String KEY_WIDE = "wide";
+    /**
+     * 标记json中的high字段
+     */
 	public static final String KEY_HIGH = "high";
+    /**
+     * 标记json中的horizontal字段
+     */
 	public static final String KEY_HORIZONTAL = "horizontal";
+    /**
+     * 标记json中的vertical字段
+     */
 	public static final String KEY_VERTICAL = "vertical";
+    /**
+     * 标记json中的rowText字段
+     */
 	public static final String KEY_ROW_TEXT = "rowText";
+    /**
+     * 标记json中的autoIndex字段
+     */
 	public static final String KEY_AUTO_NUMBER = "autoIndex";
+    /**
+     * 标记json中的freezeTop字段
+     */
 	public static final String KEY_FREEZE_TOP = "freezeTop";
+    /**
+     * 标记json中的freezeLeft字段
+     */
 	public static final String KEY_FREEZE_LEFT = "freezeLeft";
+    /**
+     * 标记json中的filtrate字段
+     */
 	public static final String KEY_FILTRATE = "filtrate";
+    /**
+     * 标记json中的data字段
+     */
 	public static final String KEY_DATA = "data";
+    /**
+     * 标记json中的border字段
+     * 
+     * @since autest 3.7.0
+     */
+    public static final String KEY_BORDER = "border";
+    /**
+     * 标记json中的background字段
+     */
+    public static final String KEY_BACKGROUND = "background";
 
 	public ExcelFileTemplet(File saveFile) {
 		super(saveFile);
@@ -194,6 +240,29 @@ public class ExcelFileTemplet extends FileTemplet {
 
 		return this;
 	}
+
+    /**
+     * 该方法用于在所有标题上添加边框
+     * 
+     * @param borderStyle 边框样式枚举
+     * @return 类本身
+     * @since autest 3.7.0
+     */
+    public ExcelFileTemplet setAllTitleBorder(BorderStyle borderStyle) {
+        // 获取所有字段，并将所有字段加上边框
+        for (String field : getFieldList()) {
+            addFieldAttribute(field, KEY_BORDER, borderStyle.toString());
+        }
+        return this;
+    }
+
+    public ExcelFileTemplet setAllTitleBackground(IndexedColors indexedColors) {
+        // 获取所有字段，并将所有字段加上边框
+        for (String field : getFieldList()) {
+            addFieldAttribute(field, KEY_BACKGROUND, indexedColors.index);
+        }
+        return this;
+    }
 
 	/**
 	 * 用于设置需要冻结的单元格

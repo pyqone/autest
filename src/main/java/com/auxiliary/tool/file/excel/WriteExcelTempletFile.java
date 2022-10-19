@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Hyperlink;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
@@ -64,7 +65,7 @@ import com.auxiliary.tool.regex.RegexType;
  * <b>编码时间：</b>2021年5月27日上午8:09:29
  * </p>
  * <p>
- * <b>修改时间：</b>2021年8月27日下午7:42:30
+ * <b>修改时间：</b>2022年10月19日 上午8:13:53
  * </p>
  *
  * @author 彭宇琦
@@ -419,8 +420,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "deprecation" })
 	@Override
+    @Deprecated
 	public T changeTextColor(MarkColorsType markColorsType, String field, int... textIndexs) {
 		// 判断下标集是否为空
 		Arrays.stream(Optional.ofNullable(textIndexs).filter(arr -> arr.length != 0).orElse(new int[] {}))
@@ -433,21 +435,53 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		return (T) this;
 	}
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public T changeTextColor(IndexedColors indexedColors, String field, int... textIndexs) {
+        // 判断下标集是否为空
+        Arrays.stream(Optional.ofNullable(textIndexs).filter(arr -> arr.length != 0).orElse(new int[] {}))
+                // 将下标转换为文本json，并过滤为null的对象
+                .mapToObj(index -> getTextJson(field, index)).map(Optional::ofNullable).filter(Optional::isPresent)
+                // 向字段json中添加相应的内容
+                .map(Optional::get).forEach(json -> {
+                    json.put(KEY_COLOR, indexedColors.getIndex());
+                });
+        return (T) this;
+    }
+
 	@Override
     @SuppressWarnings("unchecked")
+    @Deprecated
 	public T changeCaseBackground(MarkColorsType markColorsType) {
-		data.getCaseJson().put(KEY_BACKGROUND, markColorsType.getColorsValue());
+        data.getCaseJson().put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		return (T) this;
 	}
 
 	@Override
     @SuppressWarnings("unchecked")
+    @Deprecated
 	public T changeFieldBackground(String field, MarkColorsType markColorsType) {
-		if (data.getCaseJson().containsKey(field)) {
-			data.getCaseJson().getJSONObject(field).put(KEY_BACKGROUND, markColorsType.getColorsValue());
+        if (data.getCaseJson().containsKey(field)) {
+            data.getCaseJson().getJSONObject(field).put(KEY_BACKGROUND, markColorsType.getColorsValue());
 		}
 		return (T) this;
 	}
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T changeCaseBackground(IndexedColors indexedColors) {
+        data.getCaseJson().put(KEY_BACKGROUND, indexedColors.getIndex());
+        return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T changeFieldBackground(String field, IndexedColors indexedColors) {
+        if (data.getCaseJson().containsKey(field)) {
+            data.getCaseJson().getJSONObject(field).put(KEY_BACKGROUND, indexedColors.getIndex());
+        }
+        return (T) this;
+    }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -516,10 +550,23 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		styleJson.put(KEY_ITALIC, false);
 		styleJson.put(KEY_UNDERLINE, false);
 		styleJson.put(KEY_WORK, tempJson.getString(KEY_NAME));
+        styleJson.put(KEY_BACKGROUND, IndexedColors.BLACK.index);
 
 		// 根据字段内容，创建单元格，写入单元格标题
 		JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
 		fieldJson.keySet().stream().map(fieldJson::getJSONObject).forEach(json -> {
+            // 若当前字段存在边框属性，则在样式json中添加相应的属性，若不存在，则赋予none--
+            if (json.containsKey(ExcelFileTemplet.KEY_BORDER)) {
+                styleJson.put(KEY_BORDER, json.getString(ExcelFileTemplet.KEY_BORDER));
+            } else {
+                styleJson.put(KEY_BORDER, BorderStyle.NONE);
+            }
+
+            // 设置字段的背景色
+            if (json.containsKey(ExcelFileTemplet.KEY_BACKGROUND)) {
+                styleJson.put(KEY_BACKGROUND, json.getShort(ExcelFileTemplet.KEY_BACKGROUND));
+            }
+
 			XSSFCell cell = setCellContent(getCell(sheet, 0, json.getIntValue(ExcelFileTemplet.KEY_INDEX)),
 					new XSSFRichTextString(json.getString(KEY_NAME)), getStyle(excel, styleJson));
 			// 设置列宽，若不存在设置，则默认列宽
@@ -693,7 +740,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
-                    fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, fieldContentJson));
+                    fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, fieldContentJson,
+                            textIndex));
 
 			// 根据样式与内容，拼接文本
 			appendContent(content, style, textJson.getString(KEY_TEXT),
@@ -743,7 +791,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			XSSFRichTextString content = contentList.get(contentList.size() - 1);
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
-                    fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, fieldContentJson));
+                    fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, fieldContentJson,
+                            textIndex));
 
 			// 根据样式与内容，拼接文本
 			appendContent(content, style, textJson.getString(KEY_TEXT),
@@ -845,16 +894,17 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	/**
-	 * 用于将字段的json转换为字段样式json
-	 *
-	 * @param templetName      模板名称
-	 * @param templetFieldJson 模板字段json
-	 * @param textJson         文本json
-	 * @param background       背景颜色
-	 * @return 字段样式json
-	 */
+     * 用于将字段的json转换为字段样式json
+     *
+     * @param templetName      模板名称
+     * @param templetFieldJson 模板字段json
+     * @param textJson         文本json
+     * @param textIndex
+     * @param background       背景颜色
+     * @return 字段样式json
+     */
 	protected JSONObject fieldJson2StyleJson(String templetName, JSONObject templetFieldJson, JSONObject textJson,
-            JSONObject fieldContentJson) {
+            JSONObject fieldContentJson, int textIndex) {
 		JSONObject styleJson = new JSONObject();
 		styleJson.put(ExcelFileTemplet.KEY_HORIZONTAL,
 				Optional.ofNullable(templetFieldJson.getInteger(ExcelFileTemplet.KEY_HORIZONTAL)).orElse(0));
@@ -931,8 +981,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 			// 设置背景颜色
 			if (styleJson.containsKey(KEY_BACKGROUND)) {
-				// 为保证添加背景后仍能看清单元格中的文本，故背景采用细左斜线
-				style.setFillPattern(FillPatternType.THIN_FORWARD_DIAG);
+                style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 				style.setFillForegroundColor(styleJson.getShortValue(KEY_BACKGROUND));
 			}
 
