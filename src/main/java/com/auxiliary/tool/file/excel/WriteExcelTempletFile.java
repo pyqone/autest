@@ -673,10 +673,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				// 根据当前字段是否分表格写入内容，计算当前写入单元格的行号
 				if (fieldTempletJson.containsKey(ExcelFileTemplet.KEY_ROW_TEXT)) {
 					cell = writeMultipleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
-							lastRowIndex);
+                            contentJson, lastRowIndex);
 				} else {
 					cell = writeSingleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
-							lastRowIndex);
+                            contentJson, lastRowIndex);
 				}
 
 				// 记录当前内容json的位置 TODO 用于超链接
@@ -717,17 +717,18 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	/**
-	 * 用于写入单个单元格内容
-	 *
-	 * @param excel            excel文件对象
-	 * @param templetSheet     工作页
-	 * @param fieldContentJson 字段内容json
-	 * @param fieldTempletJson 字段模板json
-	 * @param lastRowIndex     需要写入的行号
-	 * @return 写入数据的单元格
-	 */
+     * 用于写入单个单元格内容
+     *
+     * @param excel            excel文件对象
+     * @param templetSheet     工作页
+     * @param fieldContentJson 字段内容json
+     * @param fieldTempletJson 字段模板json
+     * @param contentJson
+     * @param lastRowIndex     需要写入的行号
+     * @return 写入数据的单元格
+     */
 	protected XSSFCell writeSingleCellContent(XSSFWorkbook excel, XSSFSheet templetSheet, JSONObject fieldContentJson,
-			JSONObject fieldTempletJson, int lastRowIndex) {
+            JSONObject fieldTempletJson, JSONObject contentJson, int lastRowIndex) {
 		XSSFRichTextString content = new XSSFRichTextString("");
 		XSSFCellStyle style = null;
 		int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
@@ -741,7 +742,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
                     fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, fieldContentJson,
-                            textIndex));
+                            contentJson));
 
 			// 根据样式与内容，拼接文本
 			appendContent(content, style, textJson.getString(KEY_TEXT),
@@ -754,17 +755,18 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	/**
-	 * 用于写入多个单元格内容
-	 *
-	 * @param excel            excel文件对象
-	 * @param templetSheet     工作页
-	 * @param fieldContentJson 字段内容json
-	 * @param fieldTempletJson 字段模板json
-	 * @param lastRowIndex     需要写入的行号
-	 * @return 写入数据的第一个单元格
-	 */
+     * 用于写入多个单元格内容
+     *
+     * @param excel            excel文件对象
+     * @param templetSheet     工作页
+     * @param fieldContentJson 字段内容json
+     * @param fieldTempletJson 字段模板json
+     * @param contentJson
+     * @param lastRowIndex     需要写入的行号
+     * @return 写入数据的第一个单元格
+     */
 	protected XSSFCell writeMultipleCellContent(XSSFWorkbook excel, XSSFSheet templetSheet, JSONObject fieldContentJson,
-			JSONObject fieldTempletJson, int lastRowIndex) {
+            JSONObject fieldTempletJson, JSONObject contentJson, int lastRowIndex) {
 		ArrayList<XSSFRichTextString> contentList = new ArrayList<>();
 		XSSFCellStyle style = null;
 		int columnIndex = fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX);
@@ -792,7 +794,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 根据当前字段的json，获取样式
 			style = getStyle(excel,
                     fieldJson2StyleJson(templetSheet.getSheetName(), fieldTempletJson, textJson, fieldContentJson,
-                            textIndex));
+                            contentJson));
 
 			// 根据样式与内容，拼接文本
 			appendContent(content, style, textJson.getString(KEY_TEXT),
@@ -899,12 +901,12 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
      * @param templetName      模板名称
      * @param templetFieldJson 模板字段json
      * @param textJson         文本json
-     * @param textIndex
+     * @param contentJson
      * @param background       背景颜色
      * @return 字段样式json
      */
 	protected JSONObject fieldJson2StyleJson(String templetName, JSONObject templetFieldJson, JSONObject textJson,
-            JSONObject fieldContentJson, int textIndex) {
+            JSONObject fieldContentJson, JSONObject contentJson) {
 		JSONObject styleJson = new JSONObject();
 		styleJson.put(ExcelFileTemplet.KEY_HORIZONTAL,
 				Optional.ofNullable(templetFieldJson.getInteger(ExcelFileTemplet.KEY_HORIZONTAL)).orElse(0));
@@ -925,8 +927,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		// 判断是否需要背景颜色
         short background = fieldContentJson.containsKey(KEY_BACKGROUND) ? fieldContentJson.getShortValue(KEY_BACKGROUND)
-                : (data.getContentJson().containsKey(KEY_BACKGROUND)
-                        ? data.getContentJson().getShortValue(KEY_BACKGROUND)
+                : (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND)
                         : -1);
 		if (background != -1) {
 			styleJson.put(KEY_BACKGROUND, background);
