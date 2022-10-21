@@ -167,22 +167,20 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 				// 存储字段对应单元格的宽度
 				Optional<String> wide = Optional.ofNullable(fieldElement.attributeValue("wide"));
 				if (wide.filter(f -> !f.isEmpty()).filter(f -> f.matches("\\d+(\\.\\d+)?")).isPresent()) {
-					excel.setWide(fieldId, Double.valueOf(wide.get()));
+                    excel.setWide(Double.valueOf(wide.get()), fieldId);
 				}
 
 				// 存储字段的水平对齐方式
-				excel.setAlignment(fieldId, Optional.ofNullable(fieldElement.attributeValue("align"))
-						.map(AlignmentType::getAlignmentType).orElse(AlignmentType.HORIZONTAL_LEFT));
+                excel.setAlignment(Optional.ofNullable(fieldElement.attributeValue("align"))
+                        .map(AlignmentType::getAlignmentType).orElse(AlignmentType.HORIZONTAL_LEFT), fieldId);
 
 				// 存储字段是否分行写入
-				excel.setContentBranch(fieldId,
-						Integer.valueOf(Optional.ofNullable(fieldElement.attributeValue("row_text"))
-								.filter(f -> !f.isEmpty()).filter(f -> f.matches("\\d+")).orElse("0")));
+                excel.setContentBranch(Integer.valueOf(Optional.ofNullable(fieldElement.attributeValue("row_text"))
+                        .filter(f -> !f.isEmpty()).filter(f -> f.matches("\\d+")).orElse("0")), fieldId);
 
 				// 存储字段是否自动编号
-				excel.setAutoSerialNumber(fieldId,
-						Boolean.valueOf(Optional.ofNullable(fieldElement.attributeValue("index"))
-								.filter(f -> !f.isEmpty()).filter(f -> f.matches("(true)|(false)")).orElse("false")));
+				excel.setAutoSerialNumber(Boolean.valueOf(Optional.ofNullable(fieldElement.attributeValue("index"))
+                        .filter(f -> !f.isEmpty()).filter(f -> f.matches("(true)|(false)")).orElse("false")), fieldId);
 			}
 
 			// 获取模板中的数据有效性信息
@@ -359,11 +357,12 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 	
     /**
-     * 该方法用于对指定字段的当前行单元格上添加边框，
+     * 该方法用于指定字段的当前行单元格上添加边框
      * 
-     * @param field
-     * @return
-     * @since autest
+     * @param borderStyle 边框样式枚举
+     * @param fields      字段组
+     * @return 类本身
+     * @since autest 3.7.0
      */
     @SuppressWarnings("unchecked")
     public T border(BorderStyle borderStyle, String... fields) {
@@ -550,16 +549,13 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		styleJson.put(KEY_ITALIC, false);
 		styleJson.put(KEY_UNDERLINE, false);
 		styleJson.put(KEY_WORK, tempJson.getString(KEY_NAME));
-        styleJson.put(KEY_BACKGROUND, IndexedColors.BLACK.index);
 
 		// 根据字段内容，创建单元格，写入单元格标题
 		JSONObject fieldJson = tempJson.getJSONObject(ExcelFileTemplet.KEY_FIELD);
 		fieldJson.keySet().stream().map(fieldJson::getJSONObject).forEach(json -> {
-            // 若当前字段存在边框属性，则在样式json中添加相应的属性，若不存在，则赋予none--
+            // 若当前字段存在边框属性，则在样式json中添加相应的属性
             if (json.containsKey(ExcelFileTemplet.KEY_BORDER)) {
                 styleJson.put(KEY_BORDER, json.getString(ExcelFileTemplet.KEY_BORDER));
-            } else {
-                styleJson.put(KEY_BORDER, BorderStyle.NONE);
             }
 
             // 设置字段的背景色
@@ -927,8 +923,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		// 判断是否需要背景颜色
         short background = fieldContentJson.containsKey(KEY_BACKGROUND) ? fieldContentJson.getShortValue(KEY_BACKGROUND)
-                : (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND)
-                        : -1);
+                : (contentJson.containsKey(KEY_BACKGROUND) ? contentJson.getShortValue(KEY_BACKGROUND) : -1);
 		if (background != -1) {
 			styleJson.put(KEY_BACKGROUND, background);
 		}
