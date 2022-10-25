@@ -23,24 +23,24 @@ public enum OrientationType {
     /**
      * 上
      */
-    UP((short)0), 
+    UP(0),
     /**
      * 下
      */
-    DOWN((short)1), 
+    DOWN(1),
     /**
      * 左
      */
-    LEFT((short)2), 
+    LEFT(2),
     /**
      * 右
      */
-    RIGHT((short)3);
+    RIGHT(3);
     
     /**
      * 编码
      */
-    private short code;
+    private int code;
 
     /**
      * 初始化枚举编码
@@ -48,7 +48,7 @@ public enum OrientationType {
      * @param code 编码
      * @since autest 3.7.0
      */
-    private OrientationType(short code) {
+    private OrientationType(int code) {
         this.code = code;
     }
 
@@ -58,7 +58,7 @@ public enum OrientationType {
      * @return 枚举编码
      * @since autest 3.7.0
      */
-    public short getCode() {
+    public int getCode() {
         return this.code;
     }
 
@@ -69,7 +69,7 @@ public enum OrientationType {
      * @return 相应编码的枚举
      * @since autest 3.7.0
      */
-    public OrientationType valueOf(short code) {
+    public OrientationType valueOf(int code) {
         for (OrientationType type : values()) {
             if (type.code == code) {
                 return type;

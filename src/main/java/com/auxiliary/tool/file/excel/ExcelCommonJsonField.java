@@ -56,10 +56,10 @@ public class ExcelCommonJsonField {
      * </pre></code>
      * </p>
      * 
-     * @param borderStyle
-     * @param orientationTypes
-     * @return
-     * @since autest
+     * @param borderStyle      单元格样式
+     * @param orientationTypes 添加边框的位置
+     * @return json类对象
+     * @since autest 3.7.0
      */
     public static JSONObject getBorderJson(BorderStyle borderStyle, OrientationType... orientationTypes) {
         // 若未传入样式，或样式为NONE，则不进行转换

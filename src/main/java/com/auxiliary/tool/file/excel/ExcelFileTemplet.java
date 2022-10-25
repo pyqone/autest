@@ -75,16 +75,6 @@ public class ExcelFileTemplet extends FileTemplet {
      * 标记json中的data字段
      */
 	public static final String KEY_DATA = "data";
-    /**
-     * 标记json中的border字段
-     * 
-     * @since autest 3.7.0
-     */
-    public static final String KEY_BORDER = "border";
-    /**
-     * 标记json中的background字段
-     */
-    public static final String KEY_BACKGROUND = "background";
 
     /**
      * 用于缓存当前模板中字段集合转换成的字段数组
@@ -373,14 +363,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * @since autest 3.7.0
      */
     public ExcelFileTemplet setAllTitleBorder(BorderStyle borderStyle) {
-        // 当颜举不为null时则对标题进行添加
-        if (borderStyle != null) {
-            // 获取所有字段，并将所有字段加上边框
-            for (String field : getFieldList()) {
-                addFieldAttribute(field, KEY_BORDER, borderStyle.toString());
-            }
-        }
-        return this;
+        return setTitleBorder(borderStyle, getFields());
     }
 
     /**
@@ -397,7 +380,8 @@ public class ExcelFileTemplet extends FileTemplet {
             // 获取所有字段，并将所有字段加上边框
             for (String field : fields) {
                 if (containsField(field)) {
-                    addFieldAttribute(field, KEY_BORDER, borderStyle.toString());
+                    addFieldAttribute(field, ExcelCommonJsonField.KEY_BORDER,
+                            ExcelCommonJsonField.getBorderJson(borderStyle));
                 }
             }
         }
@@ -412,14 +396,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * @since autest 3.7.0
      */
     public ExcelFileTemplet setAllTitleBackground(IndexedColors indexedColors) {
-        // 当颜举不为null时则对标题进行添加
-        if (indexedColors != null) {
-            // 获取所有字段，并将所有字段加上边框
-            for (String field : getFieldList()) {
-                addFieldAttribute(field, KEY_BACKGROUND, indexedColors.index);
-            }
-        }
-        return this;
+        return setTitleBackground(indexedColors, getFields());
     }
 
     /**
@@ -434,7 +411,7 @@ public class ExcelFileTemplet extends FileTemplet {
         if (indexedColors != null && fields != null) {
             for (String field : fields) {
                 if (containsField(field)) {
-                    addFieldAttribute(field, KEY_BACKGROUND, indexedColors.index);
+                    addFieldAttribute(field, ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.index);
                 }
             }
         }
