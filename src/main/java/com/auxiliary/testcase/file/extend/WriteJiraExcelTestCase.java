@@ -192,57 +192,60 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 		jiraTemplet.setFreeze(1, 3).setFiltrate(true);
 
 		// 设置模板字段内容
-		jiraTemplet.addField(CASE_TITLE);
-		jiraTemplet.addTitle(CASE_TITLE, "Name").setAlignment(CASE_TITLE, AlignmentType.HORIZONTAL_LEFT)
-				.setAlignment(CASE_TITLE, AlignmentType.VERTICAL_CENTER).setWide(CASE_TITLE, 30.88);
+        jiraTemplet.addField(CASE_TITLE);
+        jiraTemplet.addTitle(CASE_TITLE, "Name").setWide(30.88, CASE_TITLE);
 
 		jiraTemplet.addField(CASE_OBJECTIVE);
-		jiraTemplet.addTitle(CASE_OBJECTIVE, "Objective").setAlignment(CASE_OBJECTIVE, AlignmentType.HORIZONTAL_LEFT)
-				.setAlignment(CASE_OBJECTIVE, AlignmentType.VERTICAL_CENTER).setAutoSerialNumber(CASE_OBJECTIVE, true)
-				.setWide(CASE_OBJECTIVE, 18.25);
+        jiraTemplet.addTitle(CASE_OBJECTIVE, "Objective");
+        
 
 		jiraTemplet.addField(CASE_PRECONDITION);
-		jiraTemplet.addTitle(CASE_PRECONDITION, "Precondition")
-				.setAlignment(CASE_PRECONDITION, AlignmentType.HORIZONTAL_LEFT)
-				.setAlignment(CASE_PRECONDITION, AlignmentType.VERTICAL_CENTER)
-				.setAutoSerialNumber(CASE_PRECONDITION, true).setWide(CASE_PRECONDITION, 18.25);
+        jiraTemplet.addTitle(CASE_PRECONDITION, "Precondition");
 
 		jiraTemplet.addField(CASE_STEP);
-		jiraTemplet.addTitle(CASE_STEP, "Test Script (Step-by-Step) - Step")
-				.setAlignment(CASE_STEP, AlignmentType.HORIZONTAL_LEFT)
-				.setAlignment(CASE_STEP, AlignmentType.VERTICAL_CENTER).setContentBranch(CASE_STEP, 1)
-				.setAutoSerialNumber(CASE_STEP, true).setWide(CASE_STEP, 45.75);
-
+        jiraTemplet.addTitle(CASE_STEP, "Test Script (Step-by-Step) - Step");
+        
 		jiraTemplet.addField(CASE_EXCEPT);
-		jiraTemplet.addTitle(CASE_EXCEPT, "Test Script (Step-by-Step) - Expected Result")
-				.setAlignment(CASE_EXCEPT, AlignmentType.HORIZONTAL_LEFT)
-				.setAlignment(CASE_EXCEPT, AlignmentType.VERTICAL_CENTER).setContentBranch(CASE_EXCEPT, 1)
-				.setAutoSerialNumber(CASE_EXCEPT, true).setWide(CASE_EXCEPT, 45.75);
+        jiraTemplet.addTitle(CASE_EXCEPT, "Test Script (Step-by-Step) - Expected Result");
 
 		jiraTemplet.addField(CASE_MODULE);
-		jiraTemplet.addTitle(CASE_MODULE, "Folder").setAlignment(CASE_MODULE, AlignmentType.HORIZONTAL_MIDDLE)
-				.setAlignment(CASE_MODULE, AlignmentType.VERTICAL_CENTER).setWide(CASE_MODULE, 22);
+        jiraTemplet.addTitle(CASE_MODULE, "Folder");
+
 
 		jiraTemplet.addField(CASE_STATUS);
-		jiraTemplet.addTitle(CASE_STATUS, "Status").setAlignment(CASE_STATUS, AlignmentType.HORIZONTAL_MIDDLE)
-				.setAlignment(CASE_STATUS, AlignmentType.VERTICAL_CENTER).setWide(CASE_STATUS, 10);
+        jiraTemplet.addTitle(CASE_STATUS, "Status");
 
 		jiraTemplet.addField(CASE_RANK);
-		jiraTemplet.addTitle(CASE_RANK, "Priority").setAlignment(CASE_RANK, AlignmentType.HORIZONTAL_MIDDLE)
-				.setAlignment(CASE_RANK, AlignmentType.VERTICAL_CENTER).setWide(CASE_RANK, 10);
+        jiraTemplet.addTitle(CASE_RANK, "Priority");
 
 		jiraTemplet.addField(CASE_COMPONENT);
-		jiraTemplet.addTitle(CASE_COMPONENT, "Component").setAlignment(CASE_COMPONENT, AlignmentType.HORIZONTAL_MIDDLE)
-				.setAlignment(CASE_COMPONENT, AlignmentType.VERTICAL_CENTER).setWide(CASE_COMPONENT, 10);
+        jiraTemplet.addTitle(CASE_COMPONENT, "Component");
 
 		jiraTemplet.addField(CASE_OWNER);
-		jiraTemplet.addTitle(CASE_OWNER, "Owner").setAlignment(CASE_OWNER, AlignmentType.HORIZONTAL_MIDDLE)
-				.setAlignment(CASE_OWNER, AlignmentType.VERTICAL_CENTER).setWide(CASE_OWNER, 10);
+        jiraTemplet.addTitle(CASE_OWNER, "Owner");
 
 		jiraTemplet.addField(CASE_ISSUES);
-		jiraTemplet.addTitle(CASE_ISSUES, "Coverage (Issues)")
-				.setAlignment(CASE_ISSUES, AlignmentType.HORIZONTAL_MIDDLE)
-				.setAlignment(CASE_ISSUES, AlignmentType.VERTICAL_CENTER).setWide(CASE_ISSUES, 20);
+        jiraTemplet.addTitle(CASE_ISSUES, "Coverage (Issues)");
+
+        // 设置字段垂直居中对齐
+        jiraTemplet.setAlignment(AlignmentType.VERTICAL_CENTER);
+        // 设置字段左对齐
+        jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_LEFT, CASE_OBJECTIVE, CASE_PRECONDITION, CASE_STEP,
+                CASE_EXCEPT);
+        // 设置字段居中水平对齐
+        jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_MIDDLE, CASE_TITLE, CASE_MODULE, CASE_STATUS, CASE_RANK,
+                CASE_COMPONENT, CASE_OWNER, CASE_ISSUES);
+        
+        // 设置字段宽度/
+        jiraTemplet.setWide(18.25, CASE_OBJECTIVE, CASE_PRECONDITION);
+        jiraTemplet.setWide(45.75, CASE_STEP, CASE_EXCEPT);
+        jiraTemplet.setWide(20, CASE_MODULE, CASE_ISSUES);
+        jiraTemplet.setWide(10, CASE_STATUS, CASE_RANK, CASE_COMPONENT, CASE_OWNER);
+
+        // 设置需要编号的字段
+        jiraTemplet.setAutoSerialNumber(true, CASE_OBJECTIVE, CASE_PRECONDITION, CASE_STEP, CASE_EXCEPT);
+        // 设置需要换行的字段
+        jiraTemplet.setContentBranch(1, CASE_STEP, CASE_EXCEPT);
 
 		// 添加数据有效性
 		jiraTemplet.addDataOption(CASE_RANK, Arrays.asList("HIGH", "NORMAL", "LOW"));
