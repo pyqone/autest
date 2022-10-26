@@ -10,10 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -346,7 +344,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 	
     /**
-     * 该方法用于指定字段的当前行单元格上添加所有边界的边框
+     * 该方法用于在当前行的指定字段的单元格上添加所有边界的边框
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为空时，则默认对所有的字段设置边框
      * </p>
@@ -356,15 +354,36 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
      * @return 类本身
      * @since autest 3.7.0
      */
-    @SuppressWarnings("unchecked")
     public T border(BorderStyle borderStyle, String... fields) {
+        return border(borderStyle, OrientationType.values(), fields);
+    }
+
+    /**
+     * 该方法用于在当前行的指定字段的单元格上添加指定边界的边框
+     * <p>
+     * <b>注意：</b>若不传入字段组或字段组为空时，则默认对所有的字段设置边框
+     * </p>
+     * 
+     * @param borderStyle      边框样式枚举
+     * @param fields           字段组
+     * @param orientationTypes 边框朝向枚举
+     * @return 类本身
+     * @since autest 3.7.0
+     */
+    @SuppressWarnings("unchecked")
+    public T border(BorderStyle borderStyle, OrientationType[] orientationTypes, String... fields) {
         // 将字段数组转换为Set集合，若未传入数组，则默认使用当前
-        Set<String> fieldSet = Optional.ofNullable(fields).filter(arr -> arr.length != 0).map(Arrays::asList)
-                .map(HashSet::new).orElseGet(() -> new HashSet<>(getWriteData().getTemplet().getFieldList()));
+        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0)
+                .orElseGet(() -> getWriteData().getTemplet().getFieldList().toArray(new String[] {}));
         // 遍历需要添加边框的字段，并将其设置存在上下左右四个反向的边框
-        for (String field : fieldSet) {
+        for (String field : fields) {
+            // 若当前字段不存在，则为该字段添加json
+            if (!data.getCaseJson().containsKey(field)) {
+                data.getCaseJson().put(field, new JSONObject());
+            }
+            // 添加边框
             data.getCaseJson().getJSONObject(field).put(ExcelCommonJsonField.KEY_BORDER,
-                    ExcelCommonJsonField.getBorderJson(borderStyle));
+                    ExcelCommonJsonField.getBorderJson(borderStyle, orientationTypes));
         }
 
         return (T) this;
@@ -471,9 +490,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
     @SuppressWarnings("unchecked")
     @Override
     public T changeFieldBackground(String field, IndexedColors indexedColors) {
-        if (data.getCaseJson().containsKey(field)) {
-            data.getCaseJson().getJSONObject(field).put(ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.getIndex());
+        if (!data.getCaseJson().containsKey(field)) {
+            data.getCaseJson().put(field, new JSONObject());
         }
+        data.getCaseJson().getJSONObject(field).put(ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.getIndex());
         return (T) this;
     }
 
@@ -648,6 +668,12 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 计算当前需要写入的行
 			int lastRowIndex = templetSheet.getLastRowNum() + 1;
 
+            // 若当前内容为空时，则创建一个空行，并继续循环
+            if (contentJson.isEmpty()) {
+                templetSheet.createRow(lastRowIndex);
+                continue;
+            }
+
 			// 遍历所有的字段
 			for (String field : templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD).keySet()) {
 				// 判断字段是否存在内容，不存在，则不进行处理
@@ -662,14 +688,24 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 				// 存储创建的最后一个单元格，用于添加与文本块相关的内容
 				XSSFCell cell = null;
-				// 根据当前字段是否分表格写入内容，计算当前写入单元格的行号
-				if (fieldTempletJson.containsKey(ExcelFileTemplet.KEY_ROW_TEXT)) {
-					cell = writeMultipleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
-                            contentJson, lastRowIndex);
-				} else {
-					cell = writeSingleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
-                            contentJson, lastRowIndex);
-				}
+                // 判断当前字段是否存在需要写入到单元格中的文本，若存在，则按照文本的形式创建单元格，若不存在，则按照无文本形式创建单元格
+                if (fieldContentJson.containsKey(KEY_DATA)) {
+                    // 根据当前字段是否分表格写入内容，计算当前写入单元格的行号
+                    if (fieldTempletJson.containsKey(ExcelFileTemplet.KEY_ROW_TEXT)) {
+                        cell = writeMultipleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
+                                contentJson, lastRowIndex);
+                    } else {
+                        cell = writeSingleCellContent(excel, templetSheet, fieldContentJson, fieldTempletJson,
+                                contentJson, lastRowIndex);
+                    }
+                } else {
+                    // 根据当前字段的json，获取样式
+                    XSSFCellStyle style = getStyle(excel, fieldJson2StyleJson(templetSheet.getSheetName(),
+                            fieldTempletJson, null, fieldContentJson, contentJson));
+                    cell = setCellContent(
+                            getCell(templetSheet, lastRowIndex, fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX)),
+                            null, style);
+                }
 
 				// 记录当前内容json的位置 TODO 用于超链接
 //				contentJson.put(KEY_RELATIVE_ROW, lastRowIndex);
@@ -860,7 +896,9 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			cell.setCellStyle(style);
 		}
 
-		cell.setCellValue(content);
+        if (content != null) {
+            cell.setCellValue(content);
+        }
 
 		return cell;
 	}
@@ -888,14 +926,15 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	/**
-     * 用于将字段的json转换为字段样式json
-     *
+     * 该方法用于将字段的json转换为字段样式json
+     * 
      * @param templetName      模板名称
      * @param templetFieldJson 模板字段json
      * @param textJson         文本json
-     * @param contentJson
-     * @param background       背景颜色
+     * @param fieldContentJson 字段内容Json
+     * @param contentJson      整体内容json
      * @return 字段样式json
+     * @since autest 3.7.0
      */
 	protected JSONObject fieldJson2StyleJson(String templetName, JSONObject templetFieldJson, JSONObject textJson,
             JSONObject fieldContentJson, JSONObject contentJson) {
@@ -903,18 +942,21 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		styleJson.put(ExcelFileTemplet.KEY_HORIZONTAL,
 				Optional.ofNullable(templetFieldJson.getInteger(ExcelFileTemplet.KEY_HORIZONTAL)).orElse(0));
 		styleJson.put(KEY_FONT_NAME, "宋体");
-		styleJson.put(KEY_UNDERLINE, Optional.ofNullable(textJson.getBoolean(KEY_UNDERLINE)).orElse(false));
-		styleJson.put(KEY_BOLD, Optional.ofNullable(textJson.getBoolean(KEY_BOLD)).orElse(false));
-		styleJson.put(KEY_ITALIC, Optional.ofNullable(textJson.getBoolean(KEY_ITALIC)).orElse(false));
 		styleJson.put(ExcelFileTemplet.KEY_VERTICAL,
 				Optional.ofNullable(templetFieldJson.getInteger(ExcelFileTemplet.KEY_VERTICAL)).orElse(5));
 		styleJson.put(KEY_FONT_SIZE, 12);
 		styleJson.put(KEY_WORK, templetName);
 		styleJson.put(KEY_WRAP_TEXT, true);
 
-		// 判断是否需要设置字体颜色
-		if (textJson.containsKey(KEY_COLOR)) {
-			styleJson.put(KEY_COLOR, textJson.getShort(KEY_COLOR));
+        // 若存在写入内容文本的json，则添加文本相应的样式
+        if (textJson != null) {
+            styleJson.put(KEY_UNDERLINE, Optional.ofNullable(textJson.getBoolean(KEY_UNDERLINE)).orElse(false));
+            styleJson.put(KEY_BOLD, Optional.ofNullable(textJson.getBoolean(KEY_BOLD)).orElse(false));
+            styleJson.put(KEY_ITALIC, Optional.ofNullable(textJson.getBoolean(KEY_ITALIC)).orElse(false));
+            // 判断是否需要设置字体颜色
+            if (textJson.containsKey(KEY_COLOR)) {
+                styleJson.put(KEY_COLOR, textJson.getShort(KEY_COLOR));
+            }
 		}
 
 		// 判断是否需要背景颜色

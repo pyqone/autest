@@ -72,8 +72,7 @@ public class ExcelCommonJsonField {
         
         // 判断orientationTypes是否为空，若为空，则将所有的枚举项进行添加
         orientationTypes = Optional.ofNullable(orientationTypes).filter(arr -> arr.length != 0)
-                .orElseGet(() -> new OrientationType[] { OrientationType.DOWN, OrientationType.LEFT,
-                        OrientationType.RIGHT, OrientationType.UP });
+                .orElseGet(() -> OrientationType.values());
         JSONArray oriArrJson = new JSONArray();
         for (OrientationType orientationType : orientationTypes) {
             oriArrJson.add(orientationType.getCode());

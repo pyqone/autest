@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.tool.common.enums.OrientationType;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.excel.WriteExcelTempletFile.AlignmentType;
 
@@ -150,7 +151,7 @@ public class ExcelFileTemplet extends FileTemplet {
     /**
      * 用于在模板中添加指定多个字段指向的单元格的宽度
      * <p>
-     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
      * 
      * @param wide   宽度
@@ -220,7 +221,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * </pre></code> 表示设置“title”字段的对齐方式为水平左对齐（取最后一次设置的内容）
      * </p>
      * <p>
-     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
      * 
      * @param alignmentType 对齐方式枚举
@@ -265,7 +266,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * 当添加的内容段落达到指定的段落数时，则分成多个单元格写入。
      * </p>
      * <p>
-     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
      * 
      * @param paragraphNum 分行段落数
@@ -308,7 +309,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * 设置自动编号后，当写入文件时，将在每段内容前，加上“序号 + .”的内容
      * </p>
      * <p>
-     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
      * 
      * @param isAuto 是否自动编号
@@ -327,9 +328,9 @@ public class ExcelFileTemplet extends FileTemplet {
     }
 
     /**
-     * 该方法用于对指定的标题行添加边框
+     * 该方法用于对指定的标题添加所有朝向的边框
      * <p>
-     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
      * 
      * @param borderStyle 边框样式枚举
@@ -338,6 +339,22 @@ public class ExcelFileTemplet extends FileTemplet {
      * @since autest 3.7.0
      */
     public ExcelFileTemplet setTitleBorder(BorderStyle borderStyle, String... fields) {
+        return setTitleBorder(borderStyle, OrientationType.values(), fields);
+    }
+
+    /**
+     * 该方法用于对指定的标题添加指定朝向的边框
+     * <p>
+     * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
+     * </p>
+     * 
+     * @param borderStyle 边框样式枚举
+     * @param fields      字段组
+     * @return 类本身
+     * @since autest 3.7.0
+     */
+    public ExcelFileTemplet setTitleBorder(BorderStyle borderStyle, OrientationType[] orientationTypes,
+            String... fields) {
         // 当颜举不为null时则对标题进行添加
         if (borderStyle != null) {
             // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
@@ -346,7 +363,7 @@ public class ExcelFileTemplet extends FileTemplet {
             for (String field : fields) {
                 if (containsField(field)) {
                     addFieldAttribute(field, ExcelCommonJsonField.KEY_BORDER,
-                            ExcelCommonJsonField.getBorderJson(borderStyle));
+                            ExcelCommonJsonField.getBorderJson(borderStyle, orientationTypes));
                 }
             }
         }
@@ -356,7 +373,7 @@ public class ExcelFileTemplet extends FileTemplet {
     /**
      * 该方法用于对指定的标题行添加背景颜色
      * <p>
-     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
      * 
      * @param indexedColors 颜色枚举

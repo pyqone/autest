@@ -228,7 +228,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
         jiraTemplet.addTitle(CASE_ISSUES, "Coverage (Issues)");
 
         // 设置字段垂直居中对齐
-        jiraTemplet.setAllAlignment(AlignmentType.VERTICAL_CENTER);
+        jiraTemplet.setAlignment(AlignmentType.VERTICAL_CENTER);
         // 设置字段左对齐
         jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_LEFT, CASE_OBJECTIVE, CASE_PRECONDITION, CASE_STEP,
                 CASE_EXCEPT);
