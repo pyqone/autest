@@ -540,7 +540,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		styleJson.put(KEY_WRAP_TEXT, true);
 		styleJson.put(KEY_FONT_NAME, "宋体");
 		styleJson.put(KEY_FONT_SIZE, (short) 12);
-		styleJson.put(KEY_BOLD, true);
+        styleJson.put(KEY_BOLD, true);
 		styleJson.put(KEY_ITALIC, false);
 		styleJson.put(KEY_UNDERLINE, false);
 		styleJson.put(KEY_WORK, tempJson.getString(KEY_NAME));

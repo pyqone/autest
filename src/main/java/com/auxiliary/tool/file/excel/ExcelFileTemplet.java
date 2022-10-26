@@ -149,6 +149,9 @@ public class ExcelFileTemplet extends FileTemplet {
 
     /**
      * 用于在模板中添加指定多个字段指向的单元格的宽度
+     * <p>
+     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * </p>
      * 
      * @param wide   宽度
      * @param fields 字段组
@@ -156,24 +159,15 @@ public class ExcelFileTemplet extends FileTemplet {
      * @since autest 3.7.0
      */
     public ExcelFileTemplet setWide(double wide, String... fields) {
-        if (wide > 0 && fields != null) {
+        if (wide > 0) {
+            // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
+            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
             for (String field : fields) {
                 addFieldAttribute(field, KEY_WIDE, String.valueOf(wide));
             }
         }
 
         return this;
-    }
-
-    /**
-     * 该方法用于对模板所有的字段设置单元格宽度
-     * 
-     * @param wide 宽度
-     * @return 类本身
-     * @since autest 3.7.0
-     */
-    public ExcelFileTemplet setAllWide(double wide) {
-        return setWide(wide, getFields());
     }
 
 	/**
@@ -225,6 +219,9 @@ public class ExcelFileTemplet extends FileTemplet {
      * test.addHorizontalAlignment("title", AlignmentType.HORIZONTAL_LEFT);
      * </pre></code> 表示设置“title”字段的对齐方式为水平左对齐（取最后一次设置的内容）
      * </p>
+     * <p>
+     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * </p>
      * 
      * @param alignmentType 对齐方式枚举
      * @param fields        字段组
@@ -233,36 +230,17 @@ public class ExcelFileTemplet extends FileTemplet {
      */
     public ExcelFileTemplet setAlignment(AlignmentType alignmentType, String... fields) {
         // 判断字段是否存在，且是否传入指定的枚举
-        if (alignmentType == null || fields == null) {
+        if (alignmentType == null) {
             return this;
         }
 
-        // 判断当前传入的对齐方式
-        String key = "";
-        if (alignmentType.getHorizontal() != null) {
-            key = KEY_HORIZONTAL;
-        } else {
-            key = KEY_VERTICAL;
-        }
-
+        // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
+        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
         for (String field : fields) {
-            addFieldAttribute(field, key, String.valueOf(alignmentType.code));
+            addFieldAttribute(field, (alignmentType.getHorizontal() != null ? KEY_HORIZONTAL : KEY_VERTICAL),
+                    String.valueOf(alignmentType.code));
         }
         return this;
-    }
-
-    /**
-     * 该方法用于设置所有字段指向的单元格的对齐方式
-     * <p>
-     * 具体的设置可参考{@link #setAlignment(AlignmentType, String...)}方法
-     * </p>
-     * 
-     * @param alignmentType 单元格对齐方式枚举
-     * @return 类本身
-     * @since autest 3.7.0
-     */
-    public ExcelFileTemplet setAllAlignment(AlignmentType alignmentType) {
-        return setAlignment(alignmentType, getFields());
     }
 
 	/**
@@ -286,6 +264,9 @@ public class ExcelFileTemplet extends FileTemplet {
      * <p>
      * 当添加的内容段落达到指定的段落数时，则分成多个单元格写入。
      * </p>
+     * <p>
+     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * </p>
      * 
      * @param paragraphNum 分行段落数
      * @param fields       字段组
@@ -294,27 +275,15 @@ public class ExcelFileTemplet extends FileTemplet {
      */
     public ExcelFileTemplet setContentBranch(int paragraphNum, String... fields) {
         // 判断字段是否存在
-        if (paragraphNum > 0 && fields != null) {
+        if (paragraphNum > 0) {
+            // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
+            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
             for (String field : fields) {
                 addFieldAttribute(field, KEY_ROW_TEXT, String.valueOf(paragraphNum));
             }
         }
 
         return this;
-    }
-
-    /**
-     * 用于设置字段内容分行写入的段落数
-     * <p>
-     * 当添加的内容段落达到指定的段落数时，则分成多个单元格写入。
-     * </p>
-     * 
-     * @param paragraphNum 分行段落数
-     * @return 类本身
-     * @since autest 3.7.0
-     */
-    public ExcelFileTemplet setAllContentBranch(int paragraphNum) {
-        return setContentBranch(paragraphNum, getFields());
     }
 
 	/**
@@ -338,6 +307,9 @@ public class ExcelFileTemplet extends FileTemplet {
      * <p>
      * 设置自动编号后，当写入文件时，将在每段内容前，加上“序号 + .”的内容
      * </p>
+     * <p>
+     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * </p>
      * 
      * @param isAuto 是否自动编号
      * @param fields 字段组
@@ -345,29 +317,20 @@ public class ExcelFileTemplet extends FileTemplet {
      * @since autest 3.7.0
      */
     public ExcelFileTemplet setAutoSerialNumber(boolean isAuto, String... fields) {
-        // 判断字段是否存在
-        if (fields != null) {
-            for (String field : fields) {
-                addFieldAttribute(field, KEY_AUTO_NUMBER, String.valueOf(isAuto));
-            }
+        // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
+        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+        for (String field : fields) {
+            addFieldAttribute(field, KEY_AUTO_NUMBER, String.valueOf(isAuto));
         }
 
         return this;
     }
 
     /**
-     * 该方法用于在所有标题上添加边框
-     * 
-     * @param borderStyle 边框样式枚举
-     * @return 类本身
-     * @since autest 3.7.0
-     */
-    public ExcelFileTemplet setAllTitleBorder(BorderStyle borderStyle) {
-        return setTitleBorder(borderStyle, getFields());
-    }
-
-    /**
      * 该方法用于对指定的标题行添加边框
+     * <p>
+     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * </p>
      * 
      * @param borderStyle 边框样式枚举
      * @param fields      字段组
@@ -376,7 +339,9 @@ public class ExcelFileTemplet extends FileTemplet {
      */
     public ExcelFileTemplet setTitleBorder(BorderStyle borderStyle, String... fields) {
         // 当颜举不为null时则对标题进行添加
-        if (borderStyle != null && fields != null) {
+        if (borderStyle != null) {
+            // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
+            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
             // 获取所有字段，并将所有字段加上边框
             for (String field : fields) {
                 if (containsField(field)) {
@@ -389,18 +354,10 @@ public class ExcelFileTemplet extends FileTemplet {
     }
 
     /**
-     * 该方法用于在所有标题上添加背景颜色
-     * 
-     * @param indexedColors 颜色枚举
-     * @return 类本身
-     * @since autest 3.7.0
-     */
-    public ExcelFileTemplet setAllTitleBackground(IndexedColors indexedColors) {
-        return setTitleBackground(indexedColors, getFields());
-    }
-
-    /**
      * 该方法用于对指定的标题行添加背景颜色
+     * <p>
+     * <b>注意：</b>若不传入字段组或字段组为null时，则
+     * </p>
      * 
      * @param indexedColors 颜色枚举
      * @param fields        字段组
@@ -408,7 +365,9 @@ public class ExcelFileTemplet extends FileTemplet {
      * @since autest 3.7.0
      */
     public ExcelFileTemplet setTitleBackground(IndexedColors indexedColors, String... fields) {
-        if (indexedColors != null && fields != null) {
+        if (indexedColors != null) {
+            // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
+            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
             for (String field : fields) {
                 if (containsField(field)) {
                     addFieldAttribute(field, ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.index);
