@@ -141,7 +141,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * @param field 字段
      * @param wide  宽度
      * @return 类本身
-     * @deprecated 该方法已由{@link #setWide(double, String...)}方法代替，将在3.8.0或后续版本中删除
+     * @deprecated 该方法已由带可变参数的相同方法代替，将在3.8.0或后续版本中删除
      */
     @Deprecated
     public ExcelFileTemplet setWide(String field, double wide) {
@@ -201,7 +201,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * @param field         字段
      * @param alignmentType 对齐方式枚举
      * @return 类本身
-     * @deprecated 该方法已由{@link #setAlignment(AlignmentType, String...)}方法代替，将在3.8.0或后续版本中删除
+     * @deprecated 该方法已由带可变参数的相同方法代替，将在3.8.0或后续版本中删除
      */
 	@Deprecated
     public ExcelFileTemplet setAlignment(String field, AlignmentType alignmentType) {
@@ -253,7 +253,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * @param field        字段
      * @param paragraphNum 分行段落数
      * @return 类本身
-     * @deprecated 该方法已由{@link #setContentBranch(int, String...)}方法代替，将在3.8.0或后续版本中删除
+     * @deprecated 该方法已由带可变参数的相同方法代替，将在3.8.0或后续版本中删除
      */
 	@Deprecated
     public ExcelFileTemplet setContentBranch(String field, int paragraphNum) {
@@ -296,7 +296,7 @@ public class ExcelFileTemplet extends FileTemplet {
      * @param field  字段
      * @param isAuto 是否自动编号
      * @return 类本身
-     * @deprecated {@link #setAutoSerialNumber(boolean, String...)}方法代替，将在3.8.0或后续版本中删除
+     * @deprecated 该方法已由带可变参数的相同方法代替，将在3.8.0或后续版本中删除
      */
 	@Deprecated
     public ExcelFileTemplet setAutoSerialNumber(String field, boolean isAuto) {
