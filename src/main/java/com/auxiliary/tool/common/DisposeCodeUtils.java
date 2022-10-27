@@ -211,11 +211,16 @@ public class DisposeCodeUtils {
      * @since autest 3.5.0
      */
     public static int calcExtendStrIndex(String text, String findStr, String transferredMeaningStr) {
-        Optional.ofNullable(text).filter(s -> !s.isEmpty()).orElseThrow(() -> new AuxiliaryToolsException("未指定待查找字符串"));
-        Optional.ofNullable(findStr).filter(s -> !s.isEmpty())
-                .orElseThrow(() -> new AuxiliaryToolsException("未指定待查找符号"));
-        Optional.ofNullable(transferredMeaningStr).filter(s -> !s.isEmpty())
-                .orElseThrow(() -> new AuxiliaryToolsException("未指定转义字符"));
+        // 进行字符串的判断
+        if (text == null || text.isEmpty()) {
+            throw new AuxiliaryToolsException("未指定待查找字符串");
+        }
+        if (findStr == null || findStr.isEmpty()) {
+            throw new AuxiliaryToolsException("未指定待查找符号");
+        }
+        if (transferredMeaningStr == null || transferredMeaningStr.isEmpty()) {
+            throw new AuxiliaryToolsException("未指定转义字符");
+        }
 
         // 获取待查找符号在字符串中的下标
         int index = text.indexOf(findStr);
