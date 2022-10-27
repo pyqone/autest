@@ -41,7 +41,7 @@ public abstract class ReadInterfaceFromAbstract {
     /**
      * 存储已读取的接口信息
      */
-    protected HashMap<String, InterfaceInfo> interfaceMap = new HashMap<>(
+    protected HashMap<String, InterfaceInfo> interfaceCacheMap = new HashMap<>(
             ConstType.DEFAULT_MAP_SIZE);
 
     /**
@@ -62,6 +62,6 @@ public abstract class ReadInterfaceFromAbstract {
      * @since autest 3.3.0
      */
     public void clearInterfaceInfoCache() {
-        interfaceMap.clear();
+        interfaceCacheMap.clear();
     }
 }

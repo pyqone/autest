@@ -3,6 +3,7 @@ package com.auxiliary.selenium.tool;
 import java.io.File;
 import java.util.Optional;
 
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
@@ -11,7 +12,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.selenium.brower.AbstractBrower;
 import com.auxiliary.testcase.templet.InformationCase;
 import com.auxiliary.tool.date.Time;
-import com.auxiliary.tool.file.MarkColorsType;
 import com.auxiliary.tool.file.excel.WriteExcelTempletFile;
 
 /**
@@ -157,7 +157,7 @@ public class ExcelRecord extends WriteExcelTempletFile<ExcelRecord> {
 		// 若当前结果为bug，则bug数量+1，且将当前字体颜色标记为红色
 		if (bug) {
 			bugNum++;
-			changeTextColor(MarkColorsType.RED, "result", -1);
+            changeTextColor(IndexedColors.RED, "result", -1);
 		}
 
 		return this;
@@ -321,7 +321,7 @@ public class ExcelRecord extends WriteExcelTempletFile<ExcelRecord> {
 				.addContent("active_time", Time.parse().getFormatTime()).addContent("use_time", startTime == 0L ? ""
 						: (String.valueOf((System.currentTimeMillis() - startTime) / 1000.0) + "s"));
 		if (isError) {
-			changeTextColor(MarkColorsType.YELLOW, "state", -1);
+            changeTextColor(IndexedColors.YELLOW, "state", -1);
 		}
 
 		// 初始化数据
