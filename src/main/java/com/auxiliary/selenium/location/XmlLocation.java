@@ -28,7 +28,7 @@ import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElemen
  * 如xpath模板可以使用id='1'，css模板可以使用id='1'，但另一xpath模板的id属性就不能 再定为1，但建议模板的id也唯一存在
  * <li>元素定位标签只能写xpath、css、classname、id、linktext、name、tagname
  * <li>所有标签均为小写
- * <ol>
+ * </ol>
  * </p>
  * <p>
  * <b>编码时间：</b>2017年9月25日下午4:23:40
