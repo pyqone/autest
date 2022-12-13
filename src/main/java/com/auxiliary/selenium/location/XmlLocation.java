@@ -97,7 +97,7 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
 
         // 遍历元素下的所有子标签
         for (Element e : element.elements()) {
-            ByType byType = toByType(e.getName());
+            ByType byType = ByType.typeText2Type(e.getName());
             // 忽略不能转换成ByType类型的其他标签
             if (byType == null) {
                 continue;
@@ -121,7 +121,8 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
             if (tempId.isEmpty()) {
                 locationText = e.getText();
             } else {
-                locationText = getTemplateValue(tempId, toByType(e.getName()));
+                locationText = getTemplateValue(tempId, Optional.ofNullable(ByType.typeText2Type(e.getName()))
+                        .orElseThrow(() -> new UndefinedElementException("不存在的元素定位方式：" + e.getName())));
             }
             // 替换占位符，得到最终的定位方式
             locationText = replaceValue(e, locationText);

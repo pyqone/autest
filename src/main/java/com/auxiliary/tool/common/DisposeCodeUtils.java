@@ -25,7 +25,7 @@ import com.auxiliary.tool.regex.RegexType;
  * <b>编码时间：2022年5月17日 下午3:59:33
  * </p>
  * <p>
- * <b>修改时间：2022年5月17日 下午3:59:33
+ * <b>修改时间：2022年12月12日 上午8:49:01
  * </p>
  *
  *
@@ -315,7 +315,7 @@ public class DisposeCodeUtils {
     }
 
     /**
-     * 该方法用于对枚举文本进行处理，并将其转换为指定的枚举类
+     * 该方法用于对枚举文本所有内容转换为大写字母处理，并最终将其转换为指定的枚举类
      * <p>
      * 若枚举转换失败，则根据指定的参数来判断是否抛出异常，若不抛出异常，则返回null
      * </p>
@@ -328,15 +328,51 @@ public class DisposeCodeUtils {
      * @return 文本转换后的枚举类对象
      * @since autest 3.7.0
      */
-    @SuppressWarnings("unchecked")
     public static <T> T disposeEnumTypeText(Class<T> enumClass, String typeText, Function<String, String> mapper,
             boolean isThrowException) {
+        return disposeEnumTypeText(enumClass, typeText, mapper, isThrowException, (short) 1);
+    }
+
+    /**
+     * 该方法用于对枚举文本根据指定转换方式进行转换处理，并最终将其转换为指定的枚举类
+     * <p>
+     * 若枚举转换失败，则根据指定的参数来判断是否抛出异常，若不抛出异常，则返回null；文本转换的方式可通过“changeTypeText”参数控制：
+     * <ol>
+     * <li>当传入“-1”时，则将枚举文本转换为小写</li>
+     * <li>当传入“1”时，则将枚举文本转换为大写</li>
+     * <li>当传入其他数值时，则不进行转换</li>
+     * </ol>
+     * </p>
+     * 
+     * @param <T>              枚举类对象
+     * @param enumClass        枚举类{@link Class}对象
+     * @param typeText         枚举文本
+     * @param mapper           文本特殊处理方式
+     * @param isThrowException 是否需要抛出异常
+     * @param changeTypeText   文本转换方式
+     * @return 文本转换后的枚举类对象
+     * @since autest 3.8.0
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T disposeEnumTypeText(Class<T> enumClass, String typeText, Function<String, String> mapper,
+            boolean isThrowException, short changeTypeText) {
         // 存放报错信息
         String exceptionMessgae = "";
 
         // 对枚举文本进行处理
         Optional<String> typeTextOptional = Optional.ofNullable(typeText).filter(text -> !typeText.isEmpty())
-                .map(mapper::apply).map(String::toUpperCase);
+                .map(mapper::apply).map(text -> {
+                    // 根据转换方式参数，对元素文本进行转换
+                    switch (changeTypeText) {
+                    case -1:
+                        return text.toLowerCase();
+                    case 1:
+                        return text.toUpperCase();
+                    case 0:
+                    default:
+                        return text;
+                    }
+                });
         if (typeTextOptional.isPresent()) {
             // 获取枚举类的所有枚举
             Object[] enmus = enumClass.getEnumConstants();

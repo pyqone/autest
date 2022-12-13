@@ -94,7 +94,9 @@ public abstract class AbstractLocation implements ReadLocation {
      *
      * @param labelName 标签名称
      * @return {@link ByType}枚举
+     * @deprecated 该方法已过期，已被{@link ByType#typeText2Type(String)}方法代替，将在4.0.0版本后删除
      */
+    @Deprecated
     protected ByType toByType(String labelName) {
         switch (labelName) {
         case "xpath":
