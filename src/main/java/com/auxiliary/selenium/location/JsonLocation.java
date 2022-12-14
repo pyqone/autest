@@ -306,12 +306,14 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 				String typeText = locationJson.getString(KEY_TYPE);
 				// 若当前值不存在内容，则抛出异常
 				if (typeText == null || typeText.isEmpty()) {
-					throw new UndefinedElementException("元素“" + name + "”不存在" + KEY_TYPE + "值");
+                    throw new UndefinedElementException(
+                            "元素“" + name + "”不存在" + KEY_TYPE + "值：" + locationJson.toJSONString());
 				}
 
 				// 转换并存储定位方式
                 ByType byType = Optional.ofNullable(ByType.typeText2Type(typeText))
-                        .orElseThrow(() -> new UndefinedElementException("不存在的元素定位方式：" + typeText));
+                        .orElseThrow(() -> new UndefinedElementException(
+                                "元素“" + name + "”存在错误的元素定位方式：" + locationJson.toJSONString()));
 
 				String locationText = "";
 				// 读取其中的"temp"值的内容
@@ -321,7 +323,8 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 					String valueText = locationJson.getString(KEY_VALUE);
 					// 若不存在模板key，则判断是否存在定位值key，若均不存在，则抛出异常
 					if (valueText == null || valueText.isEmpty()) {
-						throw new UndefinedElementException("元素“" + name + "”不存在定位方式键值对");
+                        throw new UndefinedElementException(
+                                "元素“" + name + "”存在无定位内容的标签：" + locationJson.toJSONString());
 					}
 
 					// 若存在value值，则读取相应的值，并进行存储
