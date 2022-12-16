@@ -131,7 +131,8 @@ public class YamlLocation extends AbstractLocation implements ReadElementLimit, 
 				}
 
 				// 转换并存储定位方式
-				ByType byType = toByType(typeText);
+                ByType byType = Optional.ofNullable(ByType.typeText2Type(typeText))
+                        .orElseThrow(() -> new UndefinedElementException("不存在的元素定位方式：" + typeText));
 
 				String locationText = "";
 				// 读取其中的"temp"值的内容
