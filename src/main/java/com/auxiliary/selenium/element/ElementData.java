@@ -159,13 +159,13 @@ public class ElementData {
 	}
 
 	/**
-	 * 用于返回当前元素是否为app原生元素
-	 * <p>
-	 * <b>注意：</b>若元素属于app元素，则返回false
-	 * </p>
-	 * 
-	 * @return 元素是否为app原生元素
-	 */
+     * 用于返回当前元素是否为app原生元素
+     * <p>
+     * <b>注意：</b>若元素非app元素，则返回false
+     * </p>
+     * 
+     * @return 元素是否为app原生元素
+     */
 	public boolean isNativeElement() {
 		// 对元素进行查找
 		read.find(name);
@@ -241,23 +241,30 @@ public class ElementData {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		ElementData other = (ElementData) obj;
 		if (linkWordList == null) {
-			if (other.linkWordList != null)
-				return false;
-		} else if (!linkWordList.equals(other.linkWordList))
-			return false;
+			if (other.linkWordList != null) {
+                return false;
+            }
+		} else if (!linkWordList.equals(other.linkWordList)) {
+            return false;
+        }
 		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
+			if (other.name != null) {
+                return false;
+            }
+		} else if (!name.equals(other.name)) {
+            return false;
+        }
 		return true;
 	}
 }

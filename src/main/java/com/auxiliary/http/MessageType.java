@@ -183,7 +183,7 @@ public enum MessageType {
      * @throws IllegalArgumentException 当枚举文本为空或不能转换成枚举时抛出的异常
      */
     public static MessageType typeText2Type(String type) {
-        return typeText2Type(type, text -> {
+        return DisposeCodeUtils.disposeEnumTypeText(MessageType.class, type, text -> {
             text = text.toUpperCase();
             switch(text) {
             case "FD":
@@ -200,7 +200,8 @@ public enum MessageType {
             }
 
             return text;
-        });
+        }, true, (short) 0);
+
     }
 
     /**

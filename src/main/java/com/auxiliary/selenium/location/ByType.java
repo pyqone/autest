@@ -2,6 +2,8 @@ package com.auxiliary.selenium.location;
 
 import org.openqa.selenium.By;
 
+import com.auxiliary.tool.common.DisposeCodeUtils;
+
 /**
  * <p>
  * <b>文件名：</b>ByType.java
@@ -13,13 +15,13 @@ import org.openqa.selenium.By;
  * <b>编码时间：</b>2019年10月24日下午5:18:57
  * </p>
  * <p>
- * <b>修改时间：</b>2019年10月24日下午5:18:57
+ * <b>修改时间：</b>修改时间：2022年12月13日 上午8:03:18
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  * @since JDK 1.8
- *
+ * @since autest 2.0.0
  */
 public enum ByType {
 	/** 通过xpath方式进行定位 */
@@ -47,6 +49,11 @@ public enum ByType {
 	 */
 	private String value;
 
+    /**
+     * 初始化枚举值
+     * 
+     * @param value 枚举值
+     */
 	private ByType(String value) {
 		this.value = value;
 	}
@@ -85,4 +92,15 @@ public enum ByType {
 			return null;
 		}
 	}
+
+    /**
+     * 该方法用于将枚举文本转换为消息枚举
+     * 
+     * @param typeText 枚举文本
+     * @return 枚举类对象
+     * @since autest 3.8.0
+     */
+    public static ByType typeText2Type(String typeText) {
+        return DisposeCodeUtils.disposeEnumTypeText(ByType.class, typeText, text -> text, false, (short) 1);
+    }
 }
