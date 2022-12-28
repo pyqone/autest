@@ -305,6 +305,11 @@ public class YamlLocation extends AbstractLocation implements ReadElementLimit, 
 			tempValueText = tempValueText.replaceAll(matchKey, locationInfoMap.get(key));
 		}
 
+        // 替换特殊的占位符
+        // 替换name占位符
+        String matchKey = startRegex + "name" + endRegex;
+        tempValueText = tempValueText.replaceAll(matchKey, name);
+
 		return tempValueText;
 	}
 }
