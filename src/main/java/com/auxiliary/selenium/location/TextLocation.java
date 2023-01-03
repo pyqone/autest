@@ -237,7 +237,10 @@ public class TextLocation extends AbstractLocation {
             noFileLocation.putWaitTime(elementInfoTexts[0], toWaitTime(elementInfoTexts[3]));
         case 3:
             // 存储元素名称
-            noFileLocation.putElementLocation(elementInfoTexts[0], toByType(elementInfoTexts[1]), elementInfoTexts[2]);
+            noFileLocation.putElementLocation(elementInfoTexts[0],
+                    Optional.ofNullable(ByType.typeText2Type(elementInfoTexts[1]))
+                            .orElseThrow(() -> new UndefinedElementException("不存在的元素定位方式：" + elementInfoTexts[1])),
+                    elementInfoTexts[2]);
             break;
         default:
             throw new UndefinedElementException("元素信息不足，缺少必要信息！元素分隔符号：" + infoSplitSign + "；元素内容：" + elementText);

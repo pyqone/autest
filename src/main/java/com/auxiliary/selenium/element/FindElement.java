@@ -240,11 +240,13 @@ public abstract class FindElement {
 	}
 
 	/**
-	 * 用于根据写入到元素信息中的WebView上下文，对WebView上下文进行切换
-	 * <p>
-	 * <b>注意：</b>该方法对web端元素无效，若元素信息中元素上下文属性为空，则按照默认的名称进行切换
-	 * </p>
-	 */
+     * 用于根据写入到元素信息中的WebView上下文，对WebView上下文进行切换
+     * <p>
+     * <b>注意：</b>该方法对web端元素无效，若元素信息中元素上下文属性为空，则按照默认的名称进行切换
+     * </p>
+     * 
+     * @param context 上下文内容
+     */
 	public void switchWebViewContext(String context) {
 		// 若未指定上下文，则不进行任何操作
 		if (!Optional.ofNullable(context).filter(t -> !t.isEmpty()).isPresent()) {
@@ -274,6 +276,11 @@ public abstract class FindElement {
 		isNative = false;
 	}
 
+    /**
+     * 该方法用于自动切换app元素的上下文
+     * 
+     * @param elementData {@link ElementData}类对象
+     */
 	protected void autoSwitchContext(ElementData elementData) {
 		// 获取当前是否为原生层元素
 		boolean nowNativeContext = elementData.isNativeElement();
@@ -438,7 +445,7 @@ public abstract class FindElement {
 				return null;
 			});
 		} catch (TimeoutException e) {
-			return new ArrayList<WebElement>();
+			return new ArrayList<>();
 		}
 	}
 

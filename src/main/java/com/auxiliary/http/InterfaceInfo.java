@@ -506,11 +506,13 @@ public class InterfaceInfo implements Cloneable {
      * @param bodyObject  请求体内容
      * @since autest 3.4.0
      */
+    @SuppressWarnings({ "unused", "unchecked" })
     public void setBodyContent(MessageType messageType, Object bodyObject) {
         // 判断请求体类型是否为表单格式
         if (messageType == MessageType.X_WWW_FORM_URLENCODED || messageType == MessageType.FORM_DATA) {
             try {
-
+                // 表单格式必须为List<Entry<String, Object>>类对象，故对其强转，若不成功，则抛出异常
+                List<Entry<String, Object>> dataList = (List<Entry<String, Object>>) bodyObject;
             } catch (ClassCastException e) {
                 throw new InterfaceReadToolsException(
                         "表单类型，其请求体必须是“List<Entry<String, Object>>”类型，错误的接口信息为：" + toUrlString(), e);
@@ -564,7 +566,8 @@ public class InterfaceInfo implements Cloneable {
             list.add(data);
         }
 
-        body = new Entry<>(messageType, list);
+        setBodyContent(messageType, list);
+//        body = new Entry<>(messageType, list);
     }
 
     /**

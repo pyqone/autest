@@ -659,22 +659,22 @@ public class EasyResponse {
             if (elementType == 0) {
                 // 获取元素集合，并根据是否为尾元素，返回相应的内容
                 JSONArray arrJson = ((JSONObject) parentElement).getJSONArray(arrData.getKey());
-                int index = DisposeCodeUtils.disposeArrayIndex(arrData.getValue(), 0, arrJson.size() - 1, false, false,
+                int index = DisposeCodeUtils.disposeArrayIndex(arrData.getValue(), 1, arrJson.size(), false, false,
                         false);
                 if (isEndElement) {
-                    return arrJson.getString(index);
+                    return arrJson.getString(index - 1);
                 } else {
-                    return arrJson.getJSONObject(index);
+                    return arrJson.getJSONObject(index - 1);
                 }
             } else if (elementType == 1) {
                 // 处理下标，并返回相应下标的内容
                 List<Element> elementList = ((Element) parentElement).elements(arrData.getKey());
-                int index = DisposeCodeUtils.disposeArrayIndex(arrData.getValue(), 0, elementList.size() - 1, false,
+                int index = DisposeCodeUtils.disposeArrayIndex(arrData.getValue(), 1, elementList.size(), false,
                         false, false);
                 if (isEndElement) {
-                    return elementList.get(index).getText();
+                    return elementList.get(index - 1).getText();
                 } else {
-                    return elementList.get(index);
+                    return elementList.get(index - 1);
                 }
             } else {
                 throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
