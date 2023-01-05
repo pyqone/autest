@@ -122,13 +122,25 @@ public class DisposeCodeUtils {
             } else {
                 calcIndex = maxIndex + index + minIndex;
             }
-        } else if (absIndex > maxIndex) { // 判断下标绝对值大于最大下标的情况
+            // 判断下标绝对值大于最大下标的情况
+        } else if (absIndex > maxIndex) {
             // 判断是否需要抛出异常
             if (isThrowException) {
                 throw new DisposeNumberException(String.format("指定下标“%d”的绝对值大于最大可用下标“%d”", index, maxIndex));
             }
-            calcIndex = isMaxEmptyIndexRandom ? randomNumber : maxIndex;
-        } else { // 判断下标绝对值小于最小下标的情况
+
+            // 判断当前下标是否为负数，并判断是否允许反序遍历
+            // 说明，此处存在以下情况：
+            // 1. 下标为负数，且允许反序遍历：取最小值
+            // 2. 下标为负数，且不允许反序遍历：取最小值
+            // 3. 下标为正数，无视反序遍历：取最大值
+            if (!isMinusIndex) {
+                calcIndex = isMaxEmptyIndexRandom ? randomNumber : maxIndex;
+            } else {
+                calcIndex = isMinEmptyIndexRandom ? randomNumber : minIndex;
+            }
+            // 判断下标绝对值小于最小下标的情况
+        } else {
             // 判断是否需要抛出异常
             if (isThrowException) {
                 throw new DisposeNumberException(String.format("指定下标“%d”的绝对值小于最小可用下标“%d”", index, minIndex));
@@ -136,15 +148,13 @@ public class DisposeCodeUtils {
 
             // 判断当前下标是否为负数，并判断是否允许反序遍历
             // 说明，此处存在以下情况：
-            // 1. 下标为正数，则不考虑是否允许反序遍历，直接按照最小值返回
-            // 2. 下标为负数，且不允许反序遍历，则按照最小值返回
-            // 3. 下标为负数，且允许反序遍历，则按照最大值返回
-            if (!isMinusIndex || !isReverseOrderTraversal) {
-                // 若为非负数，则判断是否最小值随机，需要随机，则返回随机数；反之，返回最小下标
-                calcIndex = isMinEmptyIndexRandom ? randomNumber : minIndex;
-            } else {
-                // 若为负数，则判断是否最大值随机，则返回随机数；反之，返回最大下标
+            // 1. 下标为负数，且允许反序遍历：取最大值
+            // 2. 下标为负数，且不允许反序遍历：取最小值
+            // 3. 下标为正数，无视反序遍历：取最小值
+            if (isMinusIndex && isReverseOrderTraversal) {
                 calcIndex = isMaxEmptyIndexRandom ? randomNumber : maxIndex;
+            } else {
+                calcIndex = isMinEmptyIndexRandom ? randomNumber : minIndex;
             }
         }
 
