@@ -1,6 +1,8 @@
 package com.auxiliary.testcase.templet;
 
-public class LabelNotFoundException extends RuntimeException {
+import com.auxiliary.AuxiliaryToolsException;
+
+public class LabelNotFoundException extends AuxiliaryToolsException {
 
 	private static final long serialVersionUID = 1L;
 
