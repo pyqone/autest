@@ -2,6 +2,7 @@ package com.auxiliary.tool.common;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 
 import com.auxiliary.AuxiliaryToolsException;
 import com.auxiliary.tool.common.enums.MathematicsSymbolType;
+import com.auxiliary.tool.file.excel.IncorrectIndexException;
 import com.auxiliary.tool.regex.RegexType;
 
 /**
@@ -35,6 +37,34 @@ import com.auxiliary.tool.regex.RegexType;
  * @since autest 3.3.0
  */
 public class DisposeCodeUtils {
+    /**
+     * 定义罗马数字数级并通过静态代码对其构造，以便于多次调用方法时不需要每次进行添加操作
+     */
+    private static LinkedHashMap<Integer, String> romaNumLevelMap = new LinkedHashMap<>(16);
+    static {
+        romaNumLevelMap.put(1000, "M");
+        romaNumLevelMap.put(999, "IM");
+        romaNumLevelMap.put(990, "XM");
+        romaNumLevelMap.put(950, "LM");
+        romaNumLevelMap.put(900, "CM");
+        romaNumLevelMap.put(500, "D");
+        romaNumLevelMap.put(499, "ID");
+        romaNumLevelMap.put(490, "XD");
+        romaNumLevelMap.put(450, "LD");
+        romaNumLevelMap.put(400, "CD");
+        romaNumLevelMap.put(100, "C");
+        romaNumLevelMap.put(99, "IC");
+        romaNumLevelMap.put(90, "XC");
+        romaNumLevelMap.put(50, "L");
+        romaNumLevelMap.put(49, "Il");
+        romaNumLevelMap.put(40, "Xl");
+        romaNumLevelMap.put(10, "X");
+        romaNumLevelMap.put(9, "IX");
+        romaNumLevelMap.put(5, "V");
+        romaNumLevelMap.put(4, "IV");
+        romaNumLevelMap.put(1, "I");
+    }
+    
     /**
      * 该方法用于对文本进行去正则特殊符号处理，使文本整体能在正则判断中不被转义
      * <p>
@@ -413,5 +443,111 @@ public class DisposeCodeUtils {
         } else {
             return null;
         }
+    }
+
+    /**
+     * 该方法用于将3999以内的阿拉伯数字转换为罗马数字
+     * <p>
+     * <b>注意：</b>转换后的罗马数字为大写字母，若转换的数字超过3999，则无法进行表示，故不建议使用
+     * </p>
+     * 
+     * @param arabicNum 阿拉伯数字
+     * @return 罗马数字（大写）
+     * @since autest 4.0.0
+     */
+    public static String arabicNum2RomanNum(int arabicNum) {
+        StringBuilder content = new StringBuilder();
+        
+        for (Integer num : romaNumLevelMap.keySet()) {
+            // 对当前数字进行判断
+            if (arabicNum >= num) {
+                int addCount = arabicNum / num;
+
+                // 根据数字与数级相除得到的个数，对单位字符串进行拼接
+                for (int count = 0; count < addCount; count++) {
+                    content.append(romaNumLevelMap.get(num));
+                }
+
+                // 原数字减去相应次数个数级
+                arabicNum -= (addCount * num);
+            }
+
+            // 若index为0，则结束循环，反之，则继续判断
+            if (arabicNum == 0) {
+                break;
+            }
+        }
+        
+        return content.toString();
+    }
+
+    /**
+     * 用于将阿拉伯数字序号转换为以英文字母表示的数字序号
+     * <p>
+     * 数字转换的方法为，根据英文字母的顺序，1则转换为字母A，2转换为字母B，以此类推；当表示完26个字母后，则继续从A开始，在其后添加字母，例如，27转换为AA，28转换为AB，类似于Excel表格的计数方式
+     * </p>
+     * <p>
+     * <b>注意：</b>转换后的英文字母为大写字母，并且不能表示0
+     * </p>
+     * 
+     * @param numberIndex 列数字下标
+     * @return 列英文下标
+     */
+    public String arabicNum2EnglishLetters(int numberIndex) {
+        // 存储列文本信息
+        String indexText = "";
+        // 转换下标，使下标变为可计算的下标
+        numberIndex += 1;
+
+        // 循环，直至cellIndex被减为0为止
+        while (numberIndex != 0) {
+            // 计算当前字母的个数，用于计算幂数以及需要进行除法的次数
+            int textLength = indexText.length();
+
+            // 存储当前转换的下标，并根据textLength值计算最后可以求余的数字
+            int index = (int) (numberIndex / Math.pow(26, textLength));
+
+            // 计算数据的余数，若余数为0，则转换为26（英文字母比较特殊，其对应数字从1开始，故需要处理0）
+            int remainder = (index % 26 == 0) ? 26 : index % 26;
+            // 将余数转换为字母，并拼接至indexText上
+            indexText = String.valueOf((char) (65 + remainder - 1)) + indexText;
+            // cellIndex按照计算公式减去相应的数值
+            numberIndex -= remainder * Math.pow(26, textLength);
+        }
+
+        // 返回下标的文本
+        return indexText;
+    }
+
+    /**
+     * 用于将英文字母表示的数字序号转换为阿拉伯数字序号，英文下标忽略大小写
+     * <p>
+     * 转换方式可参考方法{@link #arabicNum2EnglishLetters(int)}
+     * </p>
+     *
+     * @param charIndex 列英文下标
+     * @return 列数字下标
+     * @throws IncorrectIndexException 当英文下标不正确时抛出的异常
+     */
+    public static int englishLetters2ArabicNum(String charIndex) {
+        // 判断传入的内容是否符合正则
+        if (charIndex != null && !charIndex.matches("[a-zA-Z]+")) {
+            throw new IncorrectIndexException("错误的英文下标：" + charIndex);
+        }
+
+        // 将所有的字母转换为大写
+        charIndex = charIndex.toUpperCase();
+
+        // 将字符串下标转换为字符数组
+        char[] indexs = charIndex.toCharArray();
+        // 初始化数字下标
+        int numberIndex = 0;
+        // 遍历所有字符，计算相应的值
+        for (int i = 0; i < indexs.length; i++) {
+            // 按照“(字母对应数字) * 26 ^ (字母位下标)”的公式对计算的数字进行累加，得到对应的数字下标
+            numberIndex += ((indexs[i] - 'A' + 1) * Math.pow(26, indexs.length - i - 1));
+        }
+
+        return numberIndex;
     }
 }
