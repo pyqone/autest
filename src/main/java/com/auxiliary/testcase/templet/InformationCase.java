@@ -19,45 +19,45 @@ public class InformationCase extends Case {
 	/**
 	 * 用于标记提交按钮名称
 	 */
-	public static final String BUTTON_NAME = WordType.SAVE_BUTTON_NAME.getName();
+    public static final String BUTTON_NAME = WordType.SAVE_BUTTON_NAME.getName();
 	/**
 	 * 用于标记需要添加的信息
 	 */
-	public static final String ADD_INFORMATION = WordType.ADD_INFORMATION.getName();
+    public static final String ADD_INFORMATION = WordType.ADD_INFORMATION.getName();
 	/**
 	 * 用于标记添加成功预期的前文
 	 */
-	public static final String SUCCESS_EXCEPT_TEXT_START = WordType.SUCCESS_EXCEPT_TEXT_START.getName();
+    public static final String SUCCESS_EXCEPT_TEXT_START = WordType.SUCCESS_EXCEPT_TEXT_START.getName();
 	/**
 	 * 用于标记添加成功预期的后文
 	 */
-	public static final String SUCCESS_EXCEPT_TEXT_END = WordType.SUCCESS_EXCEPT_TEXT_END.getName();
+    public static final String SUCCESS_EXCEPT_TEXT_END = WordType.SUCCESS_EXCEPT_TEXT_END.getName();
 	/**
 	 * 用于标记添加失败预期前文
 	 */
-	public static final String FAIL_EXCEPT_TEXT_START = WordType.FAIL_EXCEPT_TEXT_START.getName();
+    public static final String FAIL_EXCEPT_TEXT_START = WordType.FAIL_EXCEPT_TEXT_START.getName();
 	/**
 	 * 用于标记添加失败预期后文
 	 */
-	public static final String FAIL_EXCEPT_TEXT_END = WordType.FAIL_EXCEPT_TEXT_END.getName();
+    public static final String FAIL_EXCEPT_TEXT_END = WordType.FAIL_EXCEPT_TEXT_END.getName();
 	
 	/**
 	 * 整形最小值，用于数字限制型文本框
 	 */
-	public static final int MIN_NUMBER = Integer.MIN_VALUE;
+    public static final int MIN_NUMBER = Integer.MIN_VALUE;
 	/**
 	 * 整形最大值，用于数字限制型文本框
 	 */
-	public static final int MAX_NUMBER = Integer.MAX_VALUE;
+    public static final int MAX_NUMBER = Integer.MAX_VALUE;
 	
 	/**
 	 * 新增操作类型文本
 	 */
-	private final String OPERATION_ADD = "新增";
+    private final String OPERATION_ADD = "新增";
 	/**
 	 * 编辑操作类型文本
 	 */
-	private final String OPERATION_EDIT = "编辑";
+    private final String OPERATION_EDIT = "编辑";
 	
 	/**
 	 * 通过测试用例模板库的xml配置文件来构造InformationCase对象
@@ -100,41 +100,40 @@ public class InformationCase extends Case {
 	}
 	
 	/**
-	 * 用于生成正确填写所有信息的用例
-	 * 
-	 * @return 类本身
-	 */
-	public Case addWholeInformationCase() {
-		//清空字段的内容
-		clearFieldText();
+     * 用于生成正确填写所有信息的用例
+     * 
+     * @return 类本身
+     */
+    public Case addWholeInformationCase() {
+        // 清空字段的内容
+        clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addWholeInformationCase";
 		
-		//存储标题信息
-		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+        // 存储标题信息
+        addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
 		
+        getAllLabelText(caseName, LabelType.STEP).forEach(text -> {
+            addFieldText(LabelType.STEP, text);
+        });
 		
-		getAllLabelText(caseName, LabelType.STEP).forEach(text -> {
-			addFieldText(LabelType.STEP, text);
-		});
-		
-		//存储预期信息
-		getAllLabelText(caseName, LabelType.EXCEPT).forEach(text -> {
-			addFieldText(LabelType.EXCEPT, text);
-		});
+        // 存储预期信息
+        getAllLabelText(caseName, LabelType.EXCEPT).forEach(text -> {
+            addFieldText(LabelType.EXCEPT, text);
+        });
 		
 		//存储前置条件信息
 		
-		getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
-			addFieldText(LabelType.PRECONDITION, text);
-		});
-		
+        getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
+            addFieldText(LabelType.PRECONDITION, text);
+        });
+
 		//存储关键词信息
-		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+        addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
 		//存储优先级信息
-		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+        addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
 		
-		return this;
+        return this;
 	}
 	
 	/**
@@ -142,32 +141,32 @@ public class InformationCase extends Case {
 	 * 
 	 * @return 类本身
 	 */
-	public Case addUnWholeInformationCase() {
-		//清空字段的内容
-		clearFieldText();
+    public Case addUnWholeInformationCase() {
+        // 清空字段的内容
+        clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addUnWholeInformationCase";
 		
 		//存储标题信息
-		addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
+        addFieldText(LabelType.TITLE, getLabelText(caseName, LabelType.TITLE, "1"));
 		
 		//存储步骤与预期信息
-		//不填写任何信息
-		relevanceAddData(caseName, "1", "2");
-		//只填写所有的必填项信息
-		relevanceAddData(caseName, "2", "1");
-		//只填写所有的非必填项信息
-		relevanceAddData(caseName, "3", "2");
+        // 不填写任何信息
+        relevanceAddData(caseName, "1", "2");
+        // 只填写所有的必填项信息
+        relevanceAddData(caseName, "2", "1");
+        // 只填写所有的非必填项信息
+        relevanceAddData(caseName, "3", "2");
 		
 		//存储前置条件信息
-		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
+        addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
 		
 		//存储关键词信息
-		addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
+        addFieldText(LabelType.KEY, getLabelText(caseName, LabelType.KEY, "1"));
 		//存储优先级信息
-		addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
+        addFieldText(LabelType.RANK, getLabelText(caseName, LabelType.RANK, "1"));
 		
-		return this;
+        return this;
 	}
 	
 	/**
@@ -179,7 +178,8 @@ public class InformationCase extends Case {
 	 * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
 	 * @return 类本身
 	 */
-	public Case addBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
+    public Case addBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            InputRuleType... inputRuleTypes) {
 		return basicTextboxCase(OPERATION_ADD, name, isMust, isRepeat, isClear, inputRuleTypes);
 	}
 	
@@ -192,7 +192,8 @@ public class InformationCase extends Case {
 	 * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
 	 * @return 类本身
 	 */
-	public Case editBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
+    public Case editBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            InputRuleType... inputRuleTypes) {
 		return basicTextboxCase(OPERATION_EDIT, name, isMust, isRepeat, isClear, inputRuleTypes);
 	}
 	
@@ -206,9 +207,10 @@ public class InformationCase extends Case {
 	 * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
 	 * @return 类本身
 	 */
-	private Case basicTextboxCase(String operation, String name, boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
-		//清空字段的内容
-		clearFieldText();
+    private Case basicTextboxCase(String operation, String name, boolean isMust, boolean isRepeat, boolean isClear,
+            InputRuleType... inputRuleTypes) {
+        // 清空字段的内容
+        clearFieldText();
 		// 存储case标签的name属性内容
 		String caseName = "addTextboxCase";
 		
@@ -1331,11 +1333,12 @@ public class InformationCase extends Case {
 		return this;
 	}
 	
-	/**
-	 * 用于生成取消保存新增信息相关的测试用例
-	 * @param cencelButtonName 取消按钮名称
-	 * @return 类本身
-	 */
+    /**
+     * 用于生成取消保存新增信息相关的测试用例
+     * 
+     * @param cencelButtonName 取消按钮名称
+     * @return 类本身
+     */
 	public Case cencelSaveAddDataCase(String cencelButtonName) {
 		//清空字段的内容
 		clearFieldText();
