@@ -3,6 +3,7 @@ package com.auxiliary.testcase.templet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -65,7 +66,7 @@ public class CaseData {
         if (field == null || field.isEmpty()) {
             return this;
         }
-        if (contentList == null || !contentList.isEmpty()) {
+        if (contentList == null || contentList.isEmpty()) {
             return this;
         }
 
@@ -83,6 +84,39 @@ public class CaseData {
         // 插入指定的数据
         contentListJson.addAll(insertIndex, contentList);
 
+        return this;
+    }
+
+    /**
+     * 该方法用于将测试用例类对象下下指定字段的内容拼接至当前测试用例类对象相应字段下
+     * <p>
+     * <b>注意：</b>若未指定字段，则默认将所有的字段内容拼接至当前用例类对象下
+     * </p>
+     * 
+     * @param caseDate 已生成的测试用例类对象
+     * @param fields   指定的字段组
+     * @return 当前用例类对象
+     * @since autest 4.0.0
+     */
+    public CaseData addContent(CaseData caseDate, String... fields) {
+        // 判断两个参数是否为null
+        if (fields == null) {
+            return this;
+        }
+        Optional<CaseData> caseDataOpt = Optional.ofNullable(caseDate);
+        if (caseDataOpt.isPresent()) {
+            return this;
+        }
+
+        // 遍历传入的caseData类对象中的所有字段
+        for (String field : fields) {
+            // 获取待添加用例类的字段内容，并将其转换为字符串集合
+            List<String> contentList = caseDataOpt.map(data -> data.caseJson.getJSONObject(field))
+                    .map(json -> json.getJSONArray(JSON_CONTENT)).map(jsonArr -> jsonArr.toJavaList(String.class))
+                    .orElseGet(() -> new ArrayList<>());
+            
+            addContent(field, -1, contentList);
+        }
         return this;
     }
 
