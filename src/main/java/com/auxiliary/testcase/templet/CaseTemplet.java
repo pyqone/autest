@@ -1,6 +1,11 @@
 package com.auxiliary.testcase.templet;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.file.WriteTempletFile;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -26,4 +31,33 @@ public abstract class CaseTemplet<T extends CaseTemplet<T>> {
      * 标记用于需要替换的词语
      */
     protected final String REPLACE_WORD_SIGN = WriteTempletFile.WORD_SIGN;
+
+    /**
+     * 存储xml文件中其需要替换的词语
+     */
+    protected Map<String, DataFunction> replaceWordMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+    /**
+     * 该方法用于添加需要替换的内容
+     * 
+     * @param word        需要替换的内容
+     * @param replaceWord 替换后的内容
+     * @since autest 4.0.0
+     */
+    public void addReplaceWord(String word, String replaceWord) {
+        if (word != null && word.isEmpty()) {
+            // 存储替换的词语
+            replaceWordMap.put(word, text -> replaceWord);
+        }
+    }
+
+    /**
+     * 该方法用于返回需要替换的占位符内容集合
+     * 
+     * @return 待替换的占位符内容集合
+     * @since autest 4.0.0
+     */
+    public Map<String, DataFunction> getFieldTextMap() {
+        return replaceWordMap;
+    }
 }

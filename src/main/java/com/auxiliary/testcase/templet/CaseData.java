@@ -41,6 +41,30 @@ public class CaseData {
     private JSONObject caseJson = new JSONObject();
 
     /**
+     * 用于存储当前生成用例的模板类对象，以方便调取模板类对象中部分所需的功能
+     */
+    private CaseTemplet<?> caseTemplet;
+
+    /**
+     * 构造对象，并设置当前生成用例的模板类对象
+     * 
+     * @param caseTemplet 用例模板类对象
+     */
+    public CaseData(CaseTemplet<?> caseTemplet) {
+        this.caseTemplet = caseTemplet;
+    }
+
+    /**
+     * 该方法用于返回用例模板类对象
+     * 
+     * @return 用例模板类对象
+     * @since autest 4.0.0
+     */
+    public CaseTemplet<?> getCaseTemplet() {
+        return caseTemplet;
+    }
+
+    /**
      * 该方法用于向指定的字段中插入指定的内容，下标支持反序遍历
      * 
      * @param field       字段名称

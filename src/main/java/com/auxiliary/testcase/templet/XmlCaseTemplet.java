@@ -1,6 +1,12 @@
 package com.auxiliary.testcase.templet;
 
+import java.io.File;
+
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
+
+import com.auxiliary.testcase.TestCaseException;
 
 /**
  * <p>
@@ -26,4 +32,20 @@ public abstract class XmlCaseTemplet<T extends XmlCaseTemplet<T>> extends CaseTe
      * 用于指向测试用例xml文件的Document对象
      */
     protected Document configXml;
+
+    /**
+     * 构造对象，读取xml文件模板类
+     * 
+     * @param xmlTempletFile xml模板文件类对象
+     */
+    public XmlCaseTemplet(File xmlTempletFile) {
+        // 判断文件是否存在
+        if (xmlTempletFile != null && xmlTempletFile.isFile() && xmlTempletFile.exists()) {
+            try {
+                configXml = new SAXReader().read(xmlTempletFile);
+            } catch (DocumentException e) {
+                throw new TestCaseException("xml用例模板文件异常，无法读取：" + xmlTempletFile.getAbsolutePath(), e);
+            }
+        }
+    }
 }

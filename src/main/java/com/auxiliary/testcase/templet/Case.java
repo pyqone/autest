@@ -162,7 +162,6 @@ public abstract class Case {
     protected String getLabelText(String caseName, LabelType labelType, String id) {
         // 返回处理替换的单词后相应的文本
         return getLabelText(caseName, labelType.getName(), id);
-
     }
 
     /**
