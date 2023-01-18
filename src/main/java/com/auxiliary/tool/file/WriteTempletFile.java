@@ -11,8 +11,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
-import com.auxiliary.tool.common.VoidSupplier;
 import com.auxiliary.datadriven.Functions;
+import com.auxiliary.tool.common.VoidSupplier;
 import com.google.common.base.Objects;
 
 /**
@@ -54,7 +54,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
     /**
      * 待替换词语的标记
      */
-    protected final String WORD_SIGN = "#";
+    public static final String WORD_SIGN = "#";
 
     /**
      * 存储需要写入到文件中的数据

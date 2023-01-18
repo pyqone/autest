@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.file.WriteTempletFile;
 
 /**
  * <p>
@@ -32,7 +33,7 @@ public class CaseData {
     /**
      * 定义json中内容集合的字段名
      */
-    private final String JSON_CONTENT = "content";
+    private final String JSON_CONTENT = WriteTempletFile.KEY_CONTENT;
 
     /**
      * 用于存储测试用例的内容json
@@ -49,7 +50,8 @@ public class CaseData {
      * @since autest 4.0.0
      */
     public CaseData addContent(String field, int insertIndex, String... contents) {
-        return addContent(field, insertIndex, Arrays.asList(contents));
+        return addContent(field, insertIndex,
+                Arrays.asList(Optional.ofNullable(contents).orElseGet(() -> new String[] {})));
     }
 
     /**
@@ -104,7 +106,7 @@ public class CaseData {
             return this;
         }
         Optional<CaseData> caseDataOpt = Optional.ofNullable(caseDate);
-        if (caseDataOpt.isPresent()) {
+        if (!caseDataOpt.isPresent()) {
             return this;
         }
 
