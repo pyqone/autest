@@ -1,6 +1,12 @@
 package com.auxiliary.testcase.templet;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.dom4j.Element;
 
 /**
  * <p>
@@ -24,41 +30,46 @@ import java.io.File;
 public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends XmlCaseTemplet<T>
         implements StepDetailTemplet {
     /**
+     * 定义包内用例模板文件所在的路径
+     */
+    protected final static String DEFAULT_TEMPLET_FOLDER = "com/auxiliary/testcase/templet/";
+
+    /**
      * 根标签（cases）
      */
-    protected final String KEY_CASES = "cases";
+    protected final String LABEL_CASES = "cases";
     /**
      * 用例组（group）标签
      */
-    protected final String KEY_GROUP = "group";
+    protected final String LABEL_GROUP = "group";
     /**
      * 优先级（rank）标签
      */
-    protected final String KEY_RANK = "rank";
+    protected final String LABEL_RANK = "rank";
     /**
      * 关键词（key）标签
      */
-    protected final String KEY_KEY = "key";
+    protected final String LABEL_KEY = "key";
     /**
      * 前置条件（precondition）标签
      */
-    protected final String KEY_PRECONDITION = "precondition";
+    protected final String LABEL_PRECONDITION = "precondition";
     /**
      * 标题（title）标签
      */
-    protected final String KEY_TITLE = "title";
+    protected final String LABEL_TITLE = "title";
     /**
      * 步骤标（step）签
      */
-    protected final String KEY_STEP = "step";
+    protected final String LABEL_STEP = "step";
     /**
      * 详细步骤（stepdetail）标签
      */
-    protected final String KEY_STEPDETAIL = "stepdetail";
+    protected final String LABEL_STEPDETAIL = "stepdetail";
     /**
      * 预期（except）标签
      */
-    protected final String KEY_EXCEPT = "except";
+    protected final String LABEL_EXCEPT = "except";
     /**
      * 名称（name）属性
      */
@@ -102,5 +113,49 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
     public void setReadStepDetail(boolean isStepDetail, boolean isStepIndependentCase) {
         this.isStepDetail = isStepDetail;
         this.isStepIndependentCase = isStepIndependentCase;
+    }
+
+    /**
+     * 该方法用于返回用例组中的指定id的标题
+     * 
+     * @param groupName 用例组名称
+     * @param id        用例id
+     * @return 指定的标题内容集合
+     * @since autest 4.0.0
+     */
+    public List<String> title(String groupName, String id) {
+        return getAttributeValue(getXpathFormat(groupName, LABEL_TITLE, id, ""), ATT_VALUE);
+    }
+
+    /**
+     * 该方法用于根据指定的xptah内容，查找并返回元素指定属性下的内容集合
+     * 
+     * @param xptah     查找元素的xpath
+     * @param attribute 元素对应的属性
+     * @return 元素指定属性的内容集合
+     * @since autest 4.0.0
+     */
+    protected List<String> getAttributeValue(String xptah, String attribute) {
+        // 根据指定的xptah查找元素，并返回相应元素的属性内容
+        return Optional.ofNullable(xptah).map(configXml::selectNodes).map(nodeList -> {
+            return nodeList.stream().map(node -> (Element) node)
+                    .map(element -> Optional.ofNullable(element.attributeValue(attribute)).orElse(""))
+                    .collect(Collectors.toList());
+        }).orElseGet(() -> new ArrayList<>());
+    }
+
+    /**
+     * 该方法用于生成查找元素的xpath信息
+     * 
+     * @param groupName  用例组名称
+     * @param labelName  标签名称
+     * @param id         标签id
+     * @param lowerLabel 下级元素标签
+     * @return 格式化后的xpath
+     * @since autest 4.0.0
+     */
+    protected String getXpathFormat(String groupName, String labelName, String id, String lowerLabel) {
+        return String.format("//%s[@%s='%s']/%s[@id='%s']%s", LABEL_GROUP, ATT_NAME, groupName, labelName, id,
+                (lowerLabel.isEmpty() ? "" : ("/" + lowerLabel)));
     }
 }
