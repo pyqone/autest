@@ -117,14 +117,113 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
 
     /**
      * 该方法用于返回用例组中的指定id的标题
+     * <p>
+     * 根据设置的每条步骤是否为独立用例的开关，读取标题标签或步骤标签的内容
+     * </p>
      * 
      * @param groupName 用例组名称
-     * @param id        用例id
+     * @param ids       用例id组
      * @return 指定的标题内容集合
      * @since autest 4.0.0
      */
-    public List<String> title(String groupName, String id) {
-        return getAttributeValue(getXpathFormat(groupName, LABEL_TITLE, id, ""), ATT_VALUE);
+    public List<String> title(String groupName, String... ids) {
+        if (isStepIndependentCase) {
+            return getContentList(groupName, LABEL_STEP, "", ATT_INTENTION, ids);
+        } else {
+            return getContentList(groupName, LABEL_TITLE, "", ATT_VALUE, ids);
+        }
+    }
+
+    /**
+     * 该方法用于返回用例组中的指定id的步骤
+     * <p>
+     * 根据设置的是否读取详细步骤的开关，读取简要步骤或详细步骤。建议在既打开每条步骤为独立用例的开关，又打开读取详细步骤的开关，
+     * 请勿传入多组id，否则所有的步骤详情将写在一个集合中
+     * </p>
+     * 
+     * @param groupName 用例组名称
+     * @param ids       用例id组
+     * @return 指定的步骤内容集合
+     * @since autest 4.0.0
+     */
+    public List<String> step(String groupName, String... ids) {
+        return getContentList(groupName, LABEL_STEP, (isStepDetail ? LABEL_STEPDETAIL : ""), ATT_VALUE, ids);
+    }
+
+    /**
+     * 该方法用于返回用例组中的指定id的前置条件
+     * 
+     * @param groupName 用例组名称
+     * @param ids       用例id组
+     * @return 指定的前置条件内容集合
+     * @since autest 4.0.0
+     */
+    public List<String> precondition(String groupName, String... ids) {
+        return getContentList(groupName, LABEL_PRECONDITION, "", ATT_VALUE, ids);
+    }
+
+    /**
+     * 该方法用于返回用例组中的指定id的关键词
+     * 
+     * @param groupName 用例组名称
+     * @param ids       用例id组
+     * @return 指定的关键词内容集合
+     * @since autest 4.0.0
+     */
+    public List<String> key(String groupName, String... ids) {
+        return getContentList(groupName, LABEL_KEY, "", ATT_VALUE, ids);
+    }
+
+    /**
+     * 该方法用于返回用例组中的指定id的关键词
+     * 
+     * @param groupName 用例组名称
+     * @param ids       用例id组
+     * @return 指定的关键词内容集合
+     * @since autest 4.0.0
+     */
+    public List<String> except(String groupName, String... ids) {
+        return getContentList(groupName, LABEL_EXCEPT, "", ATT_VALUE, ids);
+    }
+
+    /**
+     * 该方法用于返回用例组中的指定id的关键词
+     * 
+     * @param groupName 用例组名称
+     * @param ids       用例id组
+     * @return 指定的关键词内容集合
+     * @since autest 4.0.0
+     */
+    public List<String> rank(String groupName, String... ids) {
+        return getContentList(groupName, LABEL_RANK, "", ATT_VALUE, ids);
+    }
+
+    /**
+     * 该方法用于读取模板中的指定内容，并将所有需要读取的内容组成集合进行返回
+     * 
+     * @param groupName  用例组名称
+     * @param labelName  读取的标签
+     * @param otherXpath 需要拼接的xpath内容
+     * @param attName    读取的属性名称
+     * @param ids        用例id组
+     * @return 内容集合
+     * @since autest 4.0.0
+     */
+    protected List<String> getContentList(String groupName, String labelName, String otherXpath, String attName,
+            String... ids) {
+        List<String> contentList = new ArrayList<>();
+        // 判断传入的id组是否为null
+        if (ids == null) {
+            return contentList;
+        }
+
+        // 遍历所有id
+        for (String id : ids) {
+            // 判断步骤是否读取详细步骤
+            contentList.addAll(getAttributeValue(getXpathFormat(groupName, labelName, id, otherXpath), attName));
+        }
+
+        return contentList;
     }
 
     /**
