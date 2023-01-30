@@ -59,9 +59,6 @@ public class EasyResponse {
      * @param interInfo
      */
     protected EasyResponse(Response response, InterfaceInfo interInfo) {
-        // 记录当前时间的时间戳
-        info.timeAfterRequestAtMillis = System.currentTimeMillis();
-
         // 记录接口实际请求信息
         info.requestInterInfo = interInfo;
         // 记录请求结果
@@ -168,7 +165,7 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于返回从客户端发出请求时记录的时间戳
+     * 该方法用于返回服务端收到客户端发出请求时的时间戳
      * 
      * @return 从客户端发出请求的时刻记录的时间戳
      * @since autest 3.4.0
@@ -178,7 +175,7 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于返回从服务器接收到请求头时记录的时间戳
+     * 该方法用于返回客户端接收到服务端返回的请求头时的时间戳
      * 
      * @return 从服务器接收到请求头时记录的时间戳
      * @since autest 3.4.0
@@ -192,7 +189,9 @@ public class EasyResponse {
      * 
      * @return 接口请求成功后记录的时间戳
      * @since autest 3.4.0
+     * @deprecated 该方法与{@link #getReceivedResponseAtMillis()}方法效果一致，将在4.1.0或后续版本中删除
      */
+    @Deprecated
     public long getTimeAfterRequestAtMillis() {
         return info.timeAfterRequestAtMillis;
     }
@@ -207,10 +206,26 @@ public class EasyResponse {
      * @param isSentRequestTime 是否以从客户端发出请求时记录的时间戳进行计算
      * @return 接口开始请求与结束请求之间的时间差
      * @since autest 3.4.0
+     * @deprecated 该方法已由{@link #getResponseTimeDifferenceAtMillis()}方法代替，且传参不再生效，将在4.1.0或后续版本中删除
      */
+    @Deprecated
     public long getResponseTimeDifferenceAtMillis(boolean isSentRequestTime) {
-        return getTimeAfterRequestAtMillis()
-                - (isSentRequestTime ? getSentRequestAtMillis() : getReceivedResponseAtMillis());
+        return getResponseTimeDifferenceAtMillis();
+    }
+
+    /**
+     * 该方法用于根据指定的接口开始请求时间与接口成功请求时间做差，返回其差值，单位为毫秒
+     * <p>
+     * 参数指定根据何种类型的时间计算，传入true表示以{@link #getSentRequestAtMillis()}方法返回的时间进行计算；传入false表示以
+     * {@link #getReceivedResponseAtMillis()}方法返回的时间进行计算
+     * </p>
+     * 
+     * @param isSentRequestTime 是否以从客户端发出请求时记录的时间戳进行计算
+     * @return 接口开始请求与结束请求之间的时间差
+     * @since autest 4.0.0
+     */
+    public long getResponseTimeDifferenceAtMillis() {
+        return getReceivedResponseAtMillis() - getSentRequestAtMillis();
     }
 
     /**
@@ -851,16 +866,19 @@ public class EasyResponse {
          */
         public HashMap<Integer, Set<MessageType>> bodyTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         /**
-         * 记录接口发送请求时的时间戳
+         * 记录客户端发送请求时的时间戳
          */
         public long sentRequestAtMillis = 0L;
         /**
-         * 记录接口收到请求头时的时间戳
+         * 记录客户端收到请求头时的时间戳
          */
         public long receivedResponseAtMillis = 0L;
         /**
          * 记录请求成功后的时间戳
+         * 
+         * @deprecated 该属性已无意义，与{@link #receivedResponseAtMillis}属性用处一致，将在4.1.0或之后版本中删除
          */
+        @Deprecated
         public long timeAfterRequestAtMillis = 0L;
 
         /**
