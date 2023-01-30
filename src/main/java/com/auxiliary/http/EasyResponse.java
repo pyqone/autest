@@ -214,14 +214,9 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于根据指定的接口开始请求时间与接口成功请求时间做差，返回其差值，单位为毫秒
-     * <p>
-     * 参数指定根据何种类型的时间计算，传入true表示以{@link #getSentRequestAtMillis()}方法返回的时间进行计算；传入false表示以
-     * {@link #getReceivedResponseAtMillis()}方法返回的时间进行计算
-     * </p>
+     * 该方法用于对客户端发送请求的时间戳与客户端接收到返回的时间戳做差，返回其差值，即接口从请求到响应的时间，单位为毫秒
      * 
-     * @param isSentRequestTime 是否以从客户端发出请求时记录的时间戳进行计算
-     * @return 接口开始请求与结束请求之间的时间差
+     * @return 客户端发送请求到客户端收到请求的时间
      * @since autest 4.0.0
      */
     public long getResponseTimeDifferenceAtMillis() {
