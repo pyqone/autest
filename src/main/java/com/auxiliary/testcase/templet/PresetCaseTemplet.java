@@ -3,10 +3,13 @@ package com.auxiliary.testcase.templet;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.dom4j.Element;
+
+import com.auxiliary.tool.common.Entry;
 
 /**
  * <p>
@@ -29,6 +32,23 @@ import org.dom4j.Element;
  */
 public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends XmlCaseTemplet<T>
         implements StepDetailTemplet {
+    /**
+     * 1级优先级
+     */
+    public final static String RANK_1 = "rank-1";
+    /**
+     * 2级优先级
+     */
+    public final static String RANK_2 = "rank-2";
+    /**
+     * 3级优先级
+     */
+    public final static String RANK_3 = "rank-3";
+    /**
+     * 4级优先级
+     */
+    public final static String RANK_4 = "rank-4";
+
     /**
      * 定义包内用例模板文件所在的路径
      */
@@ -90,15 +110,19 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
      * 步骤（step）属性
      */
     protected final String ATT_STEP = "step";
+    /**
+     * 优先级（rank）属性
+     */
+    protected final String ATT_RANK = "rank";
 
     /**
      * 存储是否读取详细的步骤
      */
-    boolean isStepDetail = false;
+    protected boolean isStepDetail = false;
     /**
      * 存储每条步骤是否作为独立的用例
      */
-    boolean isStepIndependentCase = false;
+    protected boolean isStepIndependentCase = false;
 
     /**
      * 构造对象，读取xml文件模板类
@@ -116,86 +140,39 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
     }
 
     /**
-     * 该方法用于返回用例组中的指定id的标题
-     * <p>
-     * 根据设置的每条步骤是否为独立用例的开关，读取标题标签或步骤标签的内容
-     * </p>
+     * 该方法用于返回用指定例组中的指定id对应的内容
      * 
-     * @param groupName 用例组名称
-     * @param ids       用例id组
-     * @return 指定的标题内容集合
+     * @param presetCaseTempletContentType 预设用例模板内容枚举
+     * @param groupName                    用例组名称
+     * @param ids                          用例id组
+     * @return 获取到的内容集合
      * @since autest 4.0.0
      */
-    public List<String> title(String groupName, String... ids) {
-        if (isStepIndependentCase) {
-            return getContentList(groupName, LABEL_STEP, "", ATT_INTENTION, ids);
-        } else {
-            return getContentList(groupName, LABEL_TITLE, "", ATT_VALUE, ids);
+    public List<String> getTempletContent(PresetCaseTempletContentType presetCaseTempletContentType, String groupName,
+            String... ids) {
+        // 根据相应的模板内容枚举，返回相应的内容
+        switch(presetCaseTempletContentType) {
+        case RANK:
+            if (isStepIndependentCase) {
+                return getContentList(groupName, LABEL_STEP, "", ATT_RANK, ids);
+            } else {
+                return getContentList(groupName, LABEL_RANK, "", ATT_VALUE, ids);
+            }
+        case TITLE:
+            if (isStepIndependentCase) {
+                return getContentList(groupName, LABEL_STEP, "", ATT_INTENTION, ids);
+            } else {
+                return getContentList(groupName, LABEL_TITLE, "", ATT_VALUE, ids);
+            }
+        case STEP:
+            return getContentList(groupName, LABEL_STEP, (isStepDetail ? LABEL_STEPDETAIL : ""), ATT_VALUE, ids);
+        case EXCEPT:
+            return getContentList(groupName, LABEL_EXCEPT, "", ATT_VALUE, ids);
+        case KEY:
+            return getContentList(groupName, LABEL_KEY, "", ATT_VALUE, ids);
+        default:
+            return new ArrayList<>();
         }
-    }
-
-    /**
-     * 该方法用于返回用例组中的指定id的步骤
-     * <p>
-     * 根据设置的是否读取详细步骤的开关，读取简要步骤或详细步骤。建议在既打开每条步骤为独立用例的开关，又打开读取详细步骤的开关，
-     * 请勿传入多组id，否则所有的步骤详情将写在一个集合中
-     * </p>
-     * 
-     * @param groupName 用例组名称
-     * @param ids       用例id组
-     * @return 指定的步骤内容集合
-     * @since autest 4.0.0
-     */
-    public List<String> step(String groupName, String... ids) {
-        return getContentList(groupName, LABEL_STEP, (isStepDetail ? LABEL_STEPDETAIL : ""), ATT_VALUE, ids);
-    }
-
-    /**
-     * 该方法用于返回用例组中的指定id的前置条件
-     * 
-     * @param groupName 用例组名称
-     * @param ids       用例id组
-     * @return 指定的前置条件内容集合
-     * @since autest 4.0.0
-     */
-    public List<String> precondition(String groupName, String... ids) {
-        return getContentList(groupName, LABEL_PRECONDITION, "", ATT_VALUE, ids);
-    }
-
-    /**
-     * 该方法用于返回用例组中的指定id的关键词
-     * 
-     * @param groupName 用例组名称
-     * @param ids       用例id组
-     * @return 指定的关键词内容集合
-     * @since autest 4.0.0
-     */
-    public List<String> key(String groupName, String... ids) {
-        return getContentList(groupName, LABEL_KEY, "", ATT_VALUE, ids);
-    }
-
-    /**
-     * 该方法用于返回用例组中的指定id的关键词
-     * 
-     * @param groupName 用例组名称
-     * @param ids       用例id组
-     * @return 指定的关键词内容集合
-     * @since autest 4.0.0
-     */
-    public List<String> except(String groupName, String... ids) {
-        return getContentList(groupName, LABEL_EXCEPT, "", ATT_VALUE, ids);
-    }
-
-    /**
-     * 该方法用于返回用例组中的指定id的关键词
-     * 
-     * @param groupName 用例组名称
-     * @param ids       用例id组
-     * @return 指定的关键词内容集合
-     * @since autest 4.0.0
-     */
-    public List<String> rank(String groupName, String... ids) {
-        return getContentList(groupName, LABEL_RANK, "", ATT_VALUE, ids);
     }
 
     /**
@@ -256,5 +233,41 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
     protected String getXpathFormat(String groupName, String labelName, String id, String lowerLabel) {
         return String.format("//%s[@%s='%s']/%s[@id='%s']%s", LABEL_GROUP, ATT_NAME, groupName, labelName, id,
                 (lowerLabel.isEmpty() ? "" : ("/" + lowerLabel)));
+    }
+
+    protected List<CaseData> createCaseDataList(PresetCaseTemplet<? extends PresetCaseTemplet<?>> templetClass,
+            Map<PresetCaseTempletContentType, List<Entry<String, String[]>>> allContentMap) {
+        // 定义需要返回的用例数据集合
+        List<CaseData> caseDataList = new ArrayList<>();
+
+        // 判断当前用例是否需要每步作为新的用例处理
+        if (!isStepIndependentCase) {
+            CaseData caseData = new CaseData(templetClass);
+            // 遍历传入的所有用例内容
+            for (PresetCaseTempletContentType presetCaseTempletContentType : allContentMap.keySet()) {
+                // 获取指定枚举的内容
+                List<Entry<String, String[]>> contntList = allContentMap.get(presetCaseTempletContentType);
+                // 遍历并在用例信息类对象中，添加相应的内容
+                for (Entry<String, String[]> contentGroup : contntList) {
+                    caseData.addContent(presetCaseTempletContentType.getFieldName(), -1,
+                            getTempletContent(presetCaseTempletContentType, contentGroup.getKey(), contentGroup.getValue()));
+                }
+            }
+
+            caseDataList.add(caseData);
+        } else {
+            // 遍历传入的所有用例内容
+            for (PresetCaseTempletContentType presetCaseTempletContentType : allContentMap.keySet()) {
+                // 获取指定枚举的内容
+                List<Entry<String, String[]>> contntList = allContentMap.get(presetCaseTempletContentType);
+                // 遍历并在用例信息类对象中，添加相应的内容
+                for (Entry<String, String[]> contentGroup : contntList) {
+                    caseData.addContent(presetCaseTempletContentType.getFieldName(), -1, getTempletContent(
+                            presetCaseTempletContentType, contentGroup.getKey(), contentGroup.getValue()));
+                }
+            }
+        }
+
+        return caseDataList;
     }
 }

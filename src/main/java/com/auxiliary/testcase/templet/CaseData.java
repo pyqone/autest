@@ -47,6 +47,16 @@ public class CaseData {
 
     /**
      * 构造对象，并设置当前生成用例的模板类对象
+     * <p>
+     * 在写入用例时需要读取模板类中的内容，若通过用例模板子类生成的测试用例数据，建议使用该构造，在构造对象时使用如下形式进行构造
+     * 
+     * <pre>
+     * <code>CaseData caseData = new CaseData(this)</code>
+     * </pre>
+     * </p>
+     * <p>
+     * 若不存在模板，可传入null进行构造
+     * </p>
      * 
      * @param caseTemplet 用例模板类对象
      */
@@ -145,6 +155,8 @@ public class CaseData {
         }
         return this;
     }
+
+    // TODO 添加移除、替换内容的方法
 
     /**
      * 该方法用于对指定字段中的内容进行返回，若字段不存在，则返回空集合
