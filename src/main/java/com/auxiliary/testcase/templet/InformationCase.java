@@ -123,7 +123,7 @@ public class InformationCase extends Case {
         });
 		
 		//存储前置条件信息
-		
+
         getAllLabelText(caseName, LabelType.PRECONDITION).forEach(text -> {
             addFieldText(LabelType.PRECONDITION, text);
         });

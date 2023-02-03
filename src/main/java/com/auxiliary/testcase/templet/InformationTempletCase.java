@@ -1,11 +1,13 @@
 package com.auxiliary.testcase.templet;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -45,29 +47,24 @@ public class InformationTempletCase<T extends InformationTempletCase<T>> extends
     }
 
     public List<CaseData> addWholeInformationCase() {
-        List<CaseData> caseDataList = new ArrayList<>();
+        Map<PresetCaseTempletContentType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(
+                ConstType.DEFAULT_MAP_SIZE);
+        allContentMap.put(PresetCaseTempletContentType.TITLE,
+                Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" })));
+        allContentMap.put(PresetCaseTempletContentType.STEP,
+                Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_TEXTBOX_BASIC_CASE,
+                        new String[] { "1", "2", "3", "4", "5", "6", "7", "8" })));
+        allContentMap.put(PresetCaseTempletContentType.EXCEPT,
+                Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT,
+                        new String[] { "1", "2", "3", "4", "1", "2", "3", "4" })));
+        allContentMap.put(PresetCaseTempletContentType.RANK,
+                Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" })));
+        allContentMap.put(PresetCaseTempletContentType.KEY,
+                Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" })));
+        allContentMap.put(PresetCaseTempletContentType.PRECONDITION, Arrays
+                .asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1", "2", "3" })));
 
-        if (!isStepIndependentCase) {
-            caseDataList.add(getCaseData(new CaseData(this), Arrays.asList(
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_TEXTBOX_BASIC_CASE,
-                            new String[] { "1", "2", "3", "4", "5", "6", "7", "8" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT,
-                            new String[] { "1", "2", "3", "4", "1", "2", "3", "4" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "2" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1", "2", "3" }))));
-        } else {
-            caseDataList.add(getCaseData(new CaseData(this), Arrays.asList(
-                    new Entry<>(InformationTempletCaseName.GROUP_TEXTBOX_BASIC_CASE, new String[] { "1" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_TEXTBOX_BASIC_CASE, new String[] { "1" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "2" }),
-                    new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1", "2", "3" }))));
-        }
-
-        return caseDataList;
+        return createCaseDataList(this, allContentMap);
     }
 
     /**

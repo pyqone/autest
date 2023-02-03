@@ -2,6 +2,7 @@ package com.auxiliary.testcase.templet;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import org.dom4j.Element;
 
 import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -170,6 +172,8 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
             return getContentList(groupName, LABEL_EXCEPT, "", ATT_VALUE, ids);
         case KEY:
             return getContentList(groupName, LABEL_KEY, "", ATT_VALUE, ids);
+        case PRECONDITION:
+            return getContentList(groupName, LABEL_PRECONDITION, "", ATT_VALUE, ids);
         default:
             return new ArrayList<>();
         }
@@ -190,12 +194,16 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
             String... ids) {
         List<String> contentList = new ArrayList<>();
         // 判断传入的id组是否为null
-        if (ids == null) {
+        if (ids == null || (groupName == null || groupName.isEmpty())) {
             return contentList;
         }
 
         // 遍历所有id
         for (String id : ids) {
+            if (id.isEmpty()) {
+                continue;
+            }
+
             // 判断步骤是否读取详细步骤
             contentList.addAll(getAttributeValue(getXpathFormat(groupName, labelName, id, otherXpath), attName));
         }
@@ -235,6 +243,14 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
                 (lowerLabel.isEmpty() ? "" : ("/" + lowerLabel)));
     }
 
+    /**
+     * 该方法用于生成测试用例集合
+     * 
+     * @param templetClass  测试用例模板读取类
+     * @param allContentMap 需要读取的测试用例集合
+     * @return 生成的测试用例信息集合
+     * @since autest 4.0.0
+     */
     protected List<CaseData> createCaseDataList(PresetCaseTemplet<? extends PresetCaseTemplet<?>> templetClass,
             Map<PresetCaseTempletContentType, List<Entry<String, String[]>>> allContentMap) {
         // 定义需要返回的用例数据集合
@@ -256,15 +272,59 @@ public abstract class PresetCaseTemplet<T extends PresetCaseTemplet<T>> extends 
 
             caseDataList.add(caseData);
         } else {
+            // 存储所有内容id数组展开后的结果
+            Map<PresetCaseTempletContentType, List<Entry<String, String>>> contentMap = new HashMap<>(
+                    ConstType.DEFAULT_MAP_SIZE);
             // 遍历传入的所有用例内容
             for (PresetCaseTempletContentType presetCaseTempletContentType : allContentMap.keySet()) {
-                // 获取指定枚举的内容
-                List<Entry<String, String[]>> contntList = allContentMap.get(presetCaseTempletContentType);
-                // 遍历并在用例信息类对象中，添加相应的内容
-                for (Entry<String, String[]> contentGroup : contntList) {
-                    caseData.addContent(presetCaseTempletContentType.getFieldName(), -1, getTempletContent(
-                            presetCaseTempletContentType, contentGroup.getKey(), contentGroup.getValue()));
+                // 判断当前字段是否需要展开，以过滤掉无需展开的字段
+                contentMap.put(presetCaseTempletContentType, new ArrayList<>());
+                // 展开集合中的数组，使其成为独立的用例
+                for (Entry<String, String[]> contentGroup : allContentMap.get(presetCaseTempletContentType)) {
+                    for (String id : contentGroup.getValue()) {
+                        contentMap.get(presetCaseTempletContentType).add(new Entry<>(contentGroup.getKey(), id));
+                    }
                 }
+            }
+
+            // 读取关键词与前置条件的内容
+            Entry<String, String> keyEntry = Optional.ofNullable(contentMap.get(PresetCaseTempletContentType.KEY))
+                    .map(list -> list.get(0)).orElseGet(() -> new Entry<>("", ""));
+            Entry<String, String> preconditionEntry = Optional
+                    .ofNullable(contentMap.get(PresetCaseTempletContentType.PRECONDITION)).map(list -> list.get(0))
+                    .orElseGet(() -> new Entry<>("", ""));
+
+            // 由于是按照步骤对用例进行拆分，故需要计算步骤中的集合数量
+            int stepNum = contentMap.get(PresetCaseTempletContentType.STEP).size();
+            // 按照步骤数量，对各个字段相应位置的内容进行获取
+            for (int index = 0; index < stepNum; index++) {
+                CaseData caseData = new CaseData(templetClass);
+                // 获取步骤相关的内容
+                Entry<String, String> stepEntry = contentMap.get(PresetCaseTempletContentType.STEP).get(index);
+                // 添加标题数据
+                caseData.addContent(PresetCaseTempletContentType.TITLE.getFieldName(), -1, getTempletContent(
+                        PresetCaseTempletContentType.TITLE, stepEntry.getKey(), stepEntry.getValue()));
+                // 添加步骤
+                caseData.addContent(PresetCaseTempletContentType.STEP.getFieldName(), -1,
+                        getTempletContent(PresetCaseTempletContentType.STEP, stepEntry.getKey(), stepEntry.getValue()));
+                // 优先级
+                caseData.addContent(PresetCaseTempletContentType.RANK.getFieldName(), -1,
+                        getTempletContent(PresetCaseTempletContentType.RANK, stepEntry.getKey(), stepEntry.getValue()));
+                
+                // 添加预期
+                Entry<String, String> exceptEntry = contentMap.get(PresetCaseTempletContentType.EXCEPT).get(index);
+                caseData.addContent(PresetCaseTempletContentType.EXCEPT.getFieldName(), -1, getTempletContent(
+                        PresetCaseTempletContentType.EXCEPT, exceptEntry.getKey(), exceptEntry.getValue()));
+
+                // 添加关键词
+                caseData.addContent(PresetCaseTempletContentType.KEY.getFieldName(), -1,
+                        getTempletContent(PresetCaseTempletContentType.KEY, keyEntry.getKey(), keyEntry.getValue()));
+                // 添加前置条件
+                caseData.addContent(PresetCaseTempletContentType.PRECONDITION.getFieldName(), -1,
+                        getTempletContent(PresetCaseTempletContentType.PRECONDITION, preconditionEntry.getKey(),
+                                preconditionEntry.getValue()));
+
+                caseDataList.add(caseData);
             }
         }
 
