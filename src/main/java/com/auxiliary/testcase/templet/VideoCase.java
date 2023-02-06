@@ -3,16 +3,25 @@ package com.auxiliary.testcase.templet;
 import java.io.File;
 
 /**
- * <p><b>文件名：</b>VideoCase.java</p>
- * <p><b>用途：</b>
- * 生成生成与视频播放相关的测试用例
+ * <p>
+ * <b>文件名：</b>VideoCase.java
  * </p>
- * <p><b>编码时间：</b>2020年11月13日上午1:13:07</p>
- * <p><b>修改时间：</b>2020年11月13日上午1:13:07</p>
+ * <p>
+ * <b>用途：</b> 生成生成与视频播放相关的测试用例
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2020年11月13日上午1:13:07
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2020年11月13日上午1:13:07
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
- *
+ * @since autest 2.0.0
+ * @deprecated 用例生成类已重构，可参考{@link AbstractCaseTemplet}及其相应的子类，原始用例生成类将于4.1.0或后续版本中删除
  */
+@Deprecated
 public class VideoCase extends Case {
 	/**
 	 * 用于标记

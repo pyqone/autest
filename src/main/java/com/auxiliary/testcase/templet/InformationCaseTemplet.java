@@ -26,7 +26,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- * @since autest 
+ * @since autest 4.0.0
  */
 public class InformationCaseTemplet<T extends InformationCaseTemplet<T>> extends AbstractPresetCaseTemplet<T> {
     /**
@@ -47,21 +47,21 @@ public class InformationCaseTemplet<T extends InformationCaseTemplet<T>> extends
     }
 
     public List<CaseData> addWholeInformationCase() {
-        Map<PresetCaseTempletContentType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(
                 ConstType.DEFAULT_MAP_SIZE);
-        allContentMap.put(PresetCaseTempletContentType.TITLE,
+        allContentMap.put(LabelType.TITLE,
                 Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" })));
-        allContentMap.put(PresetCaseTempletContentType.STEP,
+        allContentMap.put(LabelType.STEP,
                 Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_TEXTBOX_BASIC_CASE,
                         new String[] { "1", "2", "3", "4", "5", "6", "7", "8" })));
-        allContentMap.put(PresetCaseTempletContentType.EXCEPT,
+        allContentMap.put(LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT,
                         new String[] { "1", "2", "3", "4", "1", "2", "3", "4" })));
-        allContentMap.put(PresetCaseTempletContentType.RANK,
+        allContentMap.put(LabelType.RANK,
                 Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" })));
-        allContentMap.put(PresetCaseTempletContentType.KEY,
+        allContentMap.put(LabelType.KEY,
                 Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" })));
-        allContentMap.put(PresetCaseTempletContentType.PRECONDITION, Arrays
+        allContentMap.put(LabelType.PRECONDITION, Arrays
                 .asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1", "2", "3" })));
 
         return createCaseDataList(this, allContentMap);

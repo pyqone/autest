@@ -144,16 +144,16 @@ public abstract class AbstractPresetCaseTemplet<T extends AbstractPresetCaseTemp
     /**
      * 该方法用于返回用指定例组中的指定id对应的内容
      * 
-     * @param presetCaseTempletContentType 预设用例模板内容枚举
-     * @param groupName                    用例组名称
-     * @param ids                          用例id组
+     * @param LabelType 预设用例模板内容枚举
+     * @param groupName 用例组名称
+     * @param ids       用例id组
      * @return 获取到的内容集合
      * @since autest 4.0.0
      */
-    public List<String> getTempletContent(PresetCaseTempletContentType presetCaseTempletContentType, String groupName,
+    public List<String> getTempletContent(LabelType LabelType, String groupName,
             String... ids) {
         // 根据相应的模板内容枚举，返回相应的内容
-        switch(presetCaseTempletContentType) {
+        switch (LabelType) {
         case RANK:
             if (isStepIndependentCase) {
                 return getContentList(groupName, LABEL_STEP, "", ATT_RANK, ids);
@@ -252,7 +252,7 @@ public abstract class AbstractPresetCaseTemplet<T extends AbstractPresetCaseTemp
      * @since autest 4.0.0
      */
     protected List<CaseData> createCaseDataList(AbstractPresetCaseTemplet<? extends AbstractPresetCaseTemplet<?>> templetClass,
-            Map<PresetCaseTempletContentType, List<Entry<String, String[]>>> allContentMap) {
+            Map<LabelType, List<Entry<String, String[]>>> allContentMap) {
         // 定义需要返回的用例数据集合
         List<CaseData> caseDataList = new ArrayList<>();
 
@@ -260,68 +260,68 @@ public abstract class AbstractPresetCaseTemplet<T extends AbstractPresetCaseTemp
         if (!isStepIndependentCase) {
             CaseData caseData = new CaseData(templetClass);
             // 遍历传入的所有用例内容
-            for (PresetCaseTempletContentType presetCaseTempletContentType : allContentMap.keySet()) {
+            for (LabelType LabelType : allContentMap.keySet()) {
                 // 获取指定枚举的内容
-                List<Entry<String, String[]>> contntList = allContentMap.get(presetCaseTempletContentType);
+                List<Entry<String, String[]>> contntList = allContentMap.get(LabelType);
                 // 遍历并在用例信息类对象中，添加相应的内容
                 for (Entry<String, String[]> contentGroup : contntList) {
-                    caseData.addContent(presetCaseTempletContentType.getFieldName(), -1,
-                            getTempletContent(presetCaseTempletContentType, contentGroup.getKey(), contentGroup.getValue()));
+                    caseData.addContent(LabelType.getName(), -1,
+                            getTempletContent(LabelType, contentGroup.getKey(), contentGroup.getValue()));
                 }
             }
 
             caseDataList.add(caseData);
         } else {
             // 存储所有内容id数组展开后的结果
-            Map<PresetCaseTempletContentType, List<Entry<String, String>>> contentMap = new HashMap<>(
+            Map<LabelType, List<Entry<String, String>>> contentMap = new HashMap<>(
                     ConstType.DEFAULT_MAP_SIZE);
             // 遍历传入的所有用例内容
-            for (PresetCaseTempletContentType presetCaseTempletContentType : allContentMap.keySet()) {
+            for (LabelType LabelType : allContentMap.keySet()) {
                 // 判断当前字段是否需要展开，以过滤掉无需展开的字段
-                contentMap.put(presetCaseTempletContentType, new ArrayList<>());
+                contentMap.put(LabelType, new ArrayList<>());
                 // 展开集合中的数组，使其成为独立的用例
-                for (Entry<String, String[]> contentGroup : allContentMap.get(presetCaseTempletContentType)) {
+                for (Entry<String, String[]> contentGroup : allContentMap.get(LabelType)) {
                     for (String id : contentGroup.getValue()) {
-                        contentMap.get(presetCaseTempletContentType).add(new Entry<>(contentGroup.getKey(), id));
+                        contentMap.get(LabelType).add(new Entry<>(contentGroup.getKey(), id));
                     }
                 }
             }
 
             // 读取关键词与前置条件的内容
-            Entry<String, String> keyEntry = Optional.ofNullable(contentMap.get(PresetCaseTempletContentType.KEY))
+            Entry<String, String> keyEntry = Optional.ofNullable(contentMap.get(LabelType.KEY))
                     .map(list -> list.get(0)).orElseGet(() -> new Entry<>("", ""));
             Entry<String, String> preconditionEntry = Optional
-                    .ofNullable(contentMap.get(PresetCaseTempletContentType.PRECONDITION)).map(list -> list.get(0))
+                    .ofNullable(contentMap.get(LabelType.PRECONDITION)).map(list -> list.get(0))
                     .orElseGet(() -> new Entry<>("", ""));
 
             // 由于是按照步骤对用例进行拆分，故需要计算步骤中的集合数量
-            int stepNum = contentMap.get(PresetCaseTempletContentType.STEP).size();
+            int stepNum = contentMap.get(LabelType.STEP).size();
             // 按照步骤数量，对各个字段相应位置的内容进行获取
             for (int index = 0; index < stepNum; index++) {
                 CaseData caseData = new CaseData(templetClass);
                 // 获取步骤相关的内容
-                Entry<String, String> stepEntry = contentMap.get(PresetCaseTempletContentType.STEP).get(index);
+                Entry<String, String> stepEntry = contentMap.get(LabelType.STEP).get(index);
                 // 添加标题数据
-                caseData.addContent(PresetCaseTempletContentType.TITLE.getFieldName(), -1, getTempletContent(
-                        PresetCaseTempletContentType.TITLE, stepEntry.getKey(), stepEntry.getValue()));
+                caseData.addContent(LabelType.TITLE.getName(), -1,
+                        getTempletContent(LabelType.TITLE, stepEntry.getKey(), stepEntry.getValue()));
                 // 添加步骤
-                caseData.addContent(PresetCaseTempletContentType.STEP.getFieldName(), -1,
-                        getTempletContent(PresetCaseTempletContentType.STEP, stepEntry.getKey(), stepEntry.getValue()));
+                caseData.addContent(LabelType.STEP.getName(), -1,
+                        getTempletContent(LabelType.STEP, stepEntry.getKey(), stepEntry.getValue()));
                 // 优先级
-                caseData.addContent(PresetCaseTempletContentType.RANK.getFieldName(), -1,
-                        getTempletContent(PresetCaseTempletContentType.RANK, stepEntry.getKey(), stepEntry.getValue()));
+                caseData.addContent(LabelType.RANK.getName(), -1,
+                        getTempletContent(LabelType.RANK, stepEntry.getKey(), stepEntry.getValue()));
                 
                 // 添加预期
-                Entry<String, String> exceptEntry = contentMap.get(PresetCaseTempletContentType.EXCEPT).get(index);
-                caseData.addContent(PresetCaseTempletContentType.EXCEPT.getFieldName(), -1, getTempletContent(
-                        PresetCaseTempletContentType.EXCEPT, exceptEntry.getKey(), exceptEntry.getValue()));
+                Entry<String, String> exceptEntry = contentMap.get(LabelType.EXCEPT).get(index);
+                caseData.addContent(LabelType.EXCEPT.getName(), -1,
+                        getTempletContent(LabelType.EXCEPT, exceptEntry.getKey(), exceptEntry.getValue()));
 
                 // 添加关键词
-                caseData.addContent(PresetCaseTempletContentType.KEY.getFieldName(), -1,
-                        getTempletContent(PresetCaseTempletContentType.KEY, keyEntry.getKey(), keyEntry.getValue()));
+                caseData.addContent(LabelType.KEY.getName(), -1,
+                        getTempletContent(LabelType.KEY, keyEntry.getKey(), keyEntry.getValue()));
                 // 添加前置条件
-                caseData.addContent(PresetCaseTempletContentType.PRECONDITION.getFieldName(), -1,
-                        getTempletContent(PresetCaseTempletContentType.PRECONDITION, preconditionEntry.getKey(),
+                caseData.addContent(LabelType.PRECONDITION.getName(), -1, getTempletContent(LabelType.PRECONDITION,
+                        preconditionEntry.getKey(),
                                 preconditionEntry.getValue()));
 
                 caseDataList.add(caseData);

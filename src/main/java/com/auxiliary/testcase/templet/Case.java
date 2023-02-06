@@ -31,8 +31,10 @@ import com.auxiliary.tool.regex.ConstType;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- *
+ * @since autest 2.0.0
+ * @deprecated 用例生成类已重构，可参考{@link AbstractCaseTemplet}及其相应的子类，原始用例生成类将于4.1.0或后续版本中删除
  */
+@Deprecated
 public abstract class Case {
     /**
      * 用于指向用例标签中的name属性
