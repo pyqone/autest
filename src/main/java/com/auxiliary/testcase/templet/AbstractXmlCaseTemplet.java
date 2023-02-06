@@ -27,7 +27,7 @@ import com.auxiliary.testcase.TestCaseException;
  * @since JDK 1.8
  * @since autest 4.0.0
  */
-public abstract class XmlCaseTemplet<T extends XmlCaseTemplet<T>> extends CaseTemplet<T> {
+public abstract class AbstractXmlCaseTemplet<T extends AbstractXmlCaseTemplet<T>> extends AbstractCaseTemplet<T> {
     /**
      * 用于指向测试用例xml文件的Document对象
      */
@@ -38,7 +38,7 @@ public abstract class XmlCaseTemplet<T extends XmlCaseTemplet<T>> extends CaseTe
      * 
      * @param xmlTempletFile xml模板文件类对象
      */
-    public XmlCaseTemplet(File xmlTempletFile) {
+    public AbstractXmlCaseTemplet(File xmlTempletFile) {
         // 判断文件是否存在
         if (xmlTempletFile != null && xmlTempletFile.isFile() && xmlTempletFile.exists()) {
             try {

@@ -28,20 +28,20 @@ import com.auxiliary.tool.regex.ConstType;
  * @since JDK 1.8
  * @since autest 
  */
-public class InformationTempletCase<T extends InformationTempletCase<T>> extends PresetCaseTemplet<T> {
+public class InformationCaseTemplet<T extends InformationCaseTemplet<T>> extends AbstractPresetCaseTemplet<T> {
     /**
      * 构造对象，并设置模板所在的位置
      * 
      * @param xmlTempletFile 用例模板文件类对象
      */
-    public InformationTempletCase(File xmlTempletFile) {
+    public InformationCaseTemplet(File xmlTempletFile) {
         super(xmlTempletFile);
     }
 
     /**
      * 构造对象，设置包内用例模板所在的默认位置
      */
-    public InformationTempletCase() {
+    public InformationCaseTemplet() {
         super(new File(InformationCase.class.getClassLoader()
                 .getResource(DEFAULT_TEMPLET_FOLDER + "AddInformation.xml").getFile()));
     }
