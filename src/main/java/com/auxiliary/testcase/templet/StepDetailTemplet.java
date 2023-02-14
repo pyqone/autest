@@ -21,7 +21,7 @@ package com.auxiliary.testcase.templet;
  */
 public interface StepDetailTemplet {
     /**
-     * 该方法用于设置返回的用例是否需要读取当前步骤的详细步骤，并设置每组步骤是否作为独立的用例生成
+     * 该方法用于设置返回的用例步骤样式，并设置每组步骤是否作为独立的用例生成
      * <p>
      * 例如，当前用例有2个步骤，每个步骤有3条步骤详情，则：
      * <ul>
@@ -31,8 +31,9 @@ public interface StepDetailTemplet {
      * <li>当isStepDetail为false，isStepIndependentCase为true时：输出2条测试用例，每条测试用例包含1个步骤</li>
      * </ul>
      * </p>
+     * <p>
      * 
-     * @param isStepDetail          是否读取详细步骤
+     * @param isStepDetail          读取的步骤样式
      * @param isStepIndependentCase 每组步骤详情是否单独作为一条用例
      * @since autest 4.0.0
      */

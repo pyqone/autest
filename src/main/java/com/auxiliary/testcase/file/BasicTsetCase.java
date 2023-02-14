@@ -16,14 +16,17 @@ import com.auxiliary.testcase.templet.LabelType;
  * <b>编码时间：</b>2021年6月18日上午7:49:59
  * </p>
  * <p>
- * <b>修改时间：</b>2021年6月18日上午7:49:59
+ * <b>修改时间：</b>2023年2月7日 上午8:35:06
  * </p>
  *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
+ * @since autest 2.4.0
  * @param <T> 子类
+ * @deprecated 该接口中的方法并非所有用例模板都需要，应由用例模板子类自行实现，故该接口已无实际意义，将在4.1.0或后续版本中删除
  */
+@Deprecated
 public interface BasicTsetCase<T extends BasicTsetCase<T>> {
     /**
      * 用例标题字段

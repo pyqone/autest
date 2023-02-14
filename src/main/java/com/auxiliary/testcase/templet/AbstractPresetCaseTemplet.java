@@ -118,7 +118,7 @@ public abstract class AbstractPresetCaseTemplet<T extends AbstractPresetCaseTemp
     protected final String ATT_RANK = "rank";
 
     /**
-     * 存储是否读取详细的步骤
+     * 存储是否读取详细步骤的内容
      */
     protected boolean isStepDetail = false;
     /**
@@ -168,6 +168,8 @@ public abstract class AbstractPresetCaseTemplet<T extends AbstractPresetCaseTemp
             }
         case STEP:
             return getContentList(groupName, LABEL_STEP, (isStepDetail ? LABEL_STEPDETAIL : ""), ATT_VALUE, ids);
+        case STEPDETAIL:
+            return getContentList(groupName, LABEL_STEP, LABEL_STEPDETAIL, ATT_VALUE, ids);
         case EXCEPT:
             return getContentList(groupName, LABEL_EXCEPT, "", ATT_VALUE, ids);
         case KEY:

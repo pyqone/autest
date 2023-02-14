@@ -28,9 +28,15 @@ public enum LabelType {
     @Deprecated
 	CASE("case"), 
 	/**
-	 * 步骤
-	 */
+     * 步骤
+     */
 	STEP("step"), 
+    /**
+     * 详细步骤
+     * 
+     * @since autest 4.0.0
+     */
+    STEPDETAIL("stepdetail"),
 	/**
 	 * 预期
 	 */

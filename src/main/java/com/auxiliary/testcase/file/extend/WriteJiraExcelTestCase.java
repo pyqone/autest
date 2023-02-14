@@ -102,7 +102,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 
 	@Override
 	protected void initField() {
-		super.initField();
+//		super.initField();
 		caseFieldMap.put(CASE_OBJECTIVE, CASE_OBJECTIVE);
 		caseFieldMap.put(CASE_STATUS, CASE_STATUS);
 		caseFieldMap.put(CASE_COMPONENT, CASE_COMPONENT);
