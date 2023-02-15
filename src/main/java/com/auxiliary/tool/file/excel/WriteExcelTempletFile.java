@@ -1136,7 +1136,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			}
 
 			// 指定数据有效性选项公式
-            String dataChar = DisposeCodeUtils.arabicNum2RomanNum(dataTitleList.indexOf(dataTitle));
+            String dataChar = DisposeCodeUtils.arabicNum2EnglishLetters(dataTitleList.indexOf(dataTitle));
 			String dataConstraint = String.format("=%s!$%s$2:$%s$%d", DATA_SHEET_NAME, dataChar, dataChar,
 					(dataJson.getJSONArray(field).size() + 1));
 

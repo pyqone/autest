@@ -56,5 +56,5 @@ public interface RelevanceTestCaseTemplet<T extends RelevanceTestCaseTemplet<T>>
      * @return 类本身
      * @since autest 4.0.0
      */
-    T addCase(CaseData caseData);
+    T addCase(CaseData caseDataList);
 }

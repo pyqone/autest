@@ -161,7 +161,7 @@ public class CaseData {
      */
     private List<String> getFieldContentList(String field) {
         // 判断当前字段在用例map集合中是否存在，若不存在，则进行初始化
-        if (caseMap.containsKey(field)) {
+        if (!caseMap.containsKey(field)) {
             List<String> contentList = new ArrayList<>();
             caseMap.put(field, contentList);
         }

@@ -669,7 +669,8 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
     /**
      * 用于对当前文本内容中的词语进行提取，并返回替换后的内容
      *
-     * @param content 文本内容
+     * @param content        文本内容
+     * @param replaceWordMap 待替换词语集合
      * @return 替换词语后的文本内容
      */
     protected String replaceWord(String content, Map<String, DataFunction> replaceWordMap) {

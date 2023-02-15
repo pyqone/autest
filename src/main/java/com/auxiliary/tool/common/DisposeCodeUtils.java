@@ -493,7 +493,7 @@ public class DisposeCodeUtils {
      * @param numberIndex 列数字下标
      * @return 列英文下标
      */
-    public String arabicNum2EnglishLetters(int numberIndex) {
+    public static String arabicNum2EnglishLetters(int numberIndex) {
         // 存储列文本信息
         String indexText = "";
         // 转换下标，使下标变为可计算的下标
