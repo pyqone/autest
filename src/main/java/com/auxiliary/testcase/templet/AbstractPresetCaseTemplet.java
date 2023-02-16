@@ -32,8 +32,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since JDK 1.8
  * @since autest 4.0.0
  */
-public abstract class AbstractPresetCaseTemplet<T extends AbstractPresetCaseTemplet<T>> extends AbstractXmlCaseTemplet<T>
-        implements StepDetailTemplet {
+public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet implements StepDetailTemplet {
     /**
      * 1级优先级
      */
@@ -253,7 +252,7 @@ public abstract class AbstractPresetCaseTemplet<T extends AbstractPresetCaseTemp
      * @return 生成的测试用例信息集合
      * @since autest 4.0.0
      */
-    protected List<CaseData> createCaseDataList(AbstractPresetCaseTemplet<? extends AbstractPresetCaseTemplet<?>> templetClass,
+    protected List<CaseData> createCaseDataList(AbstractPresetCaseTemplet templetClass,
             Map<LabelType, List<Entry<String, String[]>>> allContentMap) {
         // 定义需要返回的用例数据集合
         List<CaseData> caseDataList = new ArrayList<>();

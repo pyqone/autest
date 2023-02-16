@@ -27,7 +27,7 @@ import com.auxiliary.testcase.TestCaseException;
  * @since JDK 1.8
  * @since autest 4.0.0
  */
-public abstract class AbstractXmlCaseTemplet<T extends AbstractXmlCaseTemplet<T>> extends AbstractCaseTemplet<T> {
+public abstract class AbstractXmlCaseTemplet extends AbstractCaseTemplet {
     /**
      * 用于指向测试用例xml文件的Document对象
      */

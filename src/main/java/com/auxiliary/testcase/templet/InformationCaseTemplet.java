@@ -28,7 +28,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since JDK 1.8
  * @since autest 4.0.0
  */
-public class InformationCaseTemplet<T extends InformationCaseTemplet<T>> extends AbstractPresetCaseTemplet<T> {
+public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     /**
      * 构造对象，并设置模板所在的位置
      * 

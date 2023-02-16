@@ -40,7 +40,7 @@ public class CaseData {
     /**
      * 用于存储当前生成用例的模板类对象，以方便调取模板类对象中部分所需的功能
      */
-    private AbstractCaseTemplet<?> caseTemplet;
+    private AbstractCaseTemplet caseTemplet;
 
     /**
      * 构造对象，并设置当前生成用例的模板类对象
@@ -57,7 +57,7 @@ public class CaseData {
      * 
      * @param caseTemplet 用例模板类对象
      */
-    public CaseData(AbstractCaseTemplet<?> caseTemplet) {
+    public CaseData(AbstractCaseTemplet caseTemplet) {
         this.caseTemplet = caseTemplet;
     }
 
@@ -67,7 +67,7 @@ public class CaseData {
      * @return 用例模板类对象
      * @since autest 4.0.0
      */
-    public AbstractCaseTemplet<?> getCaseTemplet() {
+    public AbstractCaseTemplet getCaseTemplet() {
         return caseTemplet;
     }
 

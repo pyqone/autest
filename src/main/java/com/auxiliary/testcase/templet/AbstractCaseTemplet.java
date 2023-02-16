@@ -26,7 +26,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since JDK 1.8
  * @since autest 4.0.0
  */
-public abstract class AbstractCaseTemplet<T extends AbstractCaseTemplet<T>> {
+public abstract class AbstractCaseTemplet {
     /**
      * 标记用于需要替换的词语
      */
