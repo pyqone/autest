@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -39,6 +40,7 @@ import org.dom4j.Element;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.enums.OrientationType;
 import com.auxiliary.tool.data.TableData;
@@ -473,7 +475,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	@Override
-	public T addContent(String field, int index, String... contents) {
+    public T addContent(String field, int index, Map<String, DataFunction> replaceWordMap, String... contents) {
 		String[] newContents = new String[contents.length];
 		// 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
 		for (int i = 0; i < contents.length; i++) {
@@ -489,7 +491,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			}
 		}
 
-		return super.addContent(field, index, newContents);
+        return super.addContent(field, index, replaceWordMap, newContents);
 	}
 
 	@Override

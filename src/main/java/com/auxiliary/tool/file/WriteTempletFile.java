@@ -455,6 +455,30 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
     }
 
     /**
+     * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下，并且可传入临时的替换词语，对文本中的占位符进行替换，且不影响已添加的替换词语
+     * <p>
+     * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
+     * </p>
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>当设置了自动换行字段时，则在插入该字段内容后（内容非空时），则会在插入当前内容前自动进行换行，再插入该内容，可参考{@link #setEndField(String)}的设置方法</li>
+     * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
+     * </ol>
+     * </p>
+     * 
+     * @param field          字段id
+     * @param replaceWordMap 临时替换词语集合
+     * @param contents       相应字段的内容
+     * 
+     * @return 类本身
+     * @since autest 4.0.0
+     */
+    public T addContent(String field, Map<String, DataFunction> replaceWordMap, String... contents) {
+        return addContent(field, -1, replaceWordMap, contents);
+    }
+
+    /**
      * 用于清除用例字段下指定下标段落的内容
      *
      * @param field 字段
@@ -686,7 +710,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
                     // 将待替换的词语进行拼装
                     String oldWord = WORD_SIGN + word + WORD_SIGN;
                     // 获取替换的词语
-                    String newWord = data.getReplaceWordMap().get(key).apply(word);
+                    String newWord = replaceWordMap.get(key).apply(word);
                     // 循环，替换所有与oldWord相同的内容
                     // 由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
                     while (content.contains(oldWord)) {

@@ -42,7 +42,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * 构造对象，设置包内用例模板所在的默认位置
      */
     public InformationCaseTemplet() {
-        super(new File(InformationCase.class.getClassLoader()
+        super(new File(InformationCaseTemplet.class.getClassLoader()
                 .getResource(DEFAULT_TEMPLET_FOLDER + "AddInformation.xml").getFile()));
     }
 
@@ -63,6 +63,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 Arrays.asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1" })));
         allContentMap.put(LabelType.PRECONDITION, Arrays
                 .asList(new Entry<>(InformationTempletCaseName.GROUP_COMMON_CONTENT, new String[] { "1", "2", "3" })));
+
+        addReplaceWord("保存按钮名称", "保存个人信息");
+        addReplaceWord("成功预期前文", "这是一段成功的预期前文呀！");
 
         return createCaseDataList(this, allContentMap);
     }

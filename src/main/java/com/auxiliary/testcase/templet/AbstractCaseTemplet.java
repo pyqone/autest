@@ -45,7 +45,7 @@ public abstract class AbstractCaseTemplet {
      * @since autest 4.0.0
      */
     public void addReplaceWord(String word, String replaceWord) {
-        if (word != null && word.isEmpty()) {
+        if (word != null && !word.isEmpty()) {
             // 存储替换的词语
             replaceWordMap.put(word, text -> replaceWord);
         }
@@ -57,7 +57,7 @@ public abstract class AbstractCaseTemplet {
      * @return 待替换的占位符内容集合
      * @since autest 4.0.0
      */
-    public Map<String, DataFunction> getFieldTextMap() {
+    public Map<String, DataFunction> getReplaceWordMap() {
         return replaceWordMap;
     }
 }

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.regex.ConstType;
 
@@ -188,6 +189,16 @@ public class CaseData {
      */
     public Set<String> getFields() {
         return caseMap.keySet();
+    }
+
+    /**
+     * 该方法用于返回指定的模板类对象中存储的需要替换模板占位符的词语集合，若未指定模板类对象，则返回空集合
+     * 
+     * @return 需要替换模板占位符的词语集合
+     * @since autest 4.0.0
+     */
+    public Map<String, DataFunction> getReplaceWordMap() {
+        return Optional.ofNullable(caseTemplet).map(ct -> ct.getReplaceWordMap()).orElseGet(() -> new HashMap<>());
     }
 
     /**
