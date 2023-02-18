@@ -74,6 +74,23 @@ public class CaseData {
 
     /**
      * 该方法用于向指定的字段中插入指定的内容，下标支持反序遍历
+     * <p>
+     * 下标为内容所在位置的真实下标，其逻辑如下：
+     * <ul>
+     * <li>正序插入内容（传入正数），则在指定的真实下标前插入内容：
+     * <ul>
+     * <li>当传入大于等于1且小于等于字段内容集合总个数（以下简称“总数”）时，则在指定的下标前插入指定的内容，例如，下标传入“2”，则在第2条内容前插入指定的内容</li>
+     * <li>当传入大于总数时，则在最后一条内容前插入指定的内容</li>
+     * <li>当传入0时，则在第1条内容前插入指定的内容</li>
+     * </ul>
+     * </li>
+     * <li>反序插入内容（传入负数），则在指定的真实下标后插入内容：</li>
+     * <ul>
+     * <li>当传入小于-1且大于等于总数的相反数时，则在倒数指定的下标内容后插入指定的内容，例如，下标传入“-2”，则在倒数第2条内容后插入指定的内容</li>
+     * <li>当传入小于总数的相反数时，则第1条内容后插入指定的内容</li>
+     * </ul>
+     * </ul>
+     * </p>
      * 
      * @param field       字段名称
      * @param insertIndex 插入的下标
@@ -88,6 +105,23 @@ public class CaseData {
 
     /**
      * 该方法用于向指定的字段中插入指定的内容，下标支持反序遍历
+     * <p>
+     * 下标为内容所在位置的真实下标，其逻辑如下：
+     * <ul>
+     * <li>正序插入内容（传入正数）：
+     * <ul>
+     * <li>当传入大于等于1且小于等于字段内容集合总个数（以下简称“总数”）时，则在指定的下标前插入指定的内容，例如，下标传入“2”，则在第2条内容前插入指定的内容</li>
+     * <li>当传入大于总数时，则在最后一条内容后插入指定的内容</li>
+     * <li>当传入0时，则在第1条内容前插入指定的内容</li>
+     * </ul>
+     * </li>
+     * <li>反序插入内容（传入负数）：</li>
+     * <ul>
+     * <li>当传入小于等于-1且大于等于总数的相反数时，则在倒数指定的下标内容后插入指定的内容，例如，下标传入“-2”，则在倒数第2条内容后插入指定的内容</li>
+     * <li>当传入小于总数的相反数时，则第1条内容前插入指定的内容</li>
+     * </ul>
+     * </ul>
+     * </p>
      * 
      * @param field       字段名称
      * @param insertIndex 插入的下标
@@ -151,7 +185,99 @@ public class CaseData {
         return this;
     }
 
-    // TODO 添加移除、替换内容的方法
+    /**
+     * 该方法用于对指定下标的内容进行移除，下标支持反序遍历
+     * <p>
+     * 下标为内容所在位置的真实下标，其逻辑如下（默认指定的字段存在内容，且不超过5条）：
+     * <ul>
+     * <li>正序插入内容（传入正数）：
+     * <ul>
+     * <li>当传入大于等于1且小于等于字段内容集合总个数（以下简称“总数”）时，则删除指定的下标内容，例如，下标传入“2”，则删除第2条内容</li>
+     * <li>当传入大于总数时，则删除最后一条内容</li>
+     * <li>当传入0时，则删除第1条内容</li>
+     * </ul>
+     * </li>
+     * <li>反序插入内容（传入负数），则在指定的真实下标后插入内容：</li>
+     * <ul>
+     * <li>当传入小于-1且大于等于总数的相反数时，则删除倒数指定下标的内容，例如，下标传入“-2”，则删除倒数第2条内容</li>
+     * <li>当传入小于总数的相反数时，则删除第1条内容</li>
+     * </ul>
+     * </ul>
+     * </p>
+     * 
+     * @param removeIndex 需要移除内容的真实所在下标
+     * @param fields      需要删除指定下标的字段组
+     * @return 类本身
+     * @since autest 4.0.0
+     */
+    public CaseData removeContent(int removeIndex, String...fields) {
+        // 判断传入的字段组是否为空
+        if (fields == null || fields.length == 0) {
+            return this;
+        }
+        
+        // 遍历整个字段组，并根据字段组的长度，对相应下标的内容进行删除
+        for (String field : fields) {
+            // 判断当前字段在用例集合中是否存在，若不存在，则不进行删除操作
+            if (!caseMap.containsKey(field)) {
+                continue;
+            }
+
+            List<String> contentList = caseMap.get(field);
+            // 根据字段对应内容的数量，以及传入的下标内容，重新确认真实的删除下标
+            removeIndex = DisposeCodeUtils.customizedIndex2ArrayIndex(removeIndex, 1, contentList.size(), 1,
+                    true, false, false, false);
+            // 对相应字段内容进行删除
+            contentList.remove(removeIndex);
+        }
+        
+        return this;
+    }
+
+    /**
+     * 该方法用于对指定下标的内容进行替换，下标支持反序遍历
+     * <p>
+     * 下标为内容所在位置的真实下标，其逻辑如下（默认指定的字段存在内容，且不超过5条）：
+     * <ul>
+     * <li>正序插入内容（传入正数）：
+     * <ul>
+     * <li>当传入大于等于1且小于等于字段内容集合总个数（以下简称“总数”）时，则替换指定的下标内容，例如，下标传入“2”，则替换第2条内容</li>
+     * <li>当传入大于总数时，则替换最后一条内容</li>
+     * <li>当传入0时，则替换第1条内容</li>
+     * </ul>
+     * </li>
+     * <li>反序插入内容（传入负数），则在指定的真实下标后插入内容：</li>
+     * <ul>
+     * <li>当传入小于-1且大于等于总数的相反数时，则替换倒数指定下标的内容，例如，下标传入“-2”，则替换倒数第2条内容</li>
+     * <li>当传入小于总数的相反数时，则替换第1条内容</li>
+     * </ul>
+     * </ul>
+     * </p>
+     * 
+     * @param field        字段名称
+     * @param replaceIndex 需要替换的下标
+     * @param contents     替换的内容组
+     * @return 类本身
+     * @since autest 4.0.0
+     */
+    public CaseData replaceContent(String field, int replaceIndex, String... contents) {
+        // 判断传入的字段组是否为空
+        if (contents == null || contents.length == 0) {
+            return this;
+        }
+
+        // 判断字段是否存在
+        if (!caseMap.containsKey(field)) {
+            return this;
+        }
+
+        // 删除制定下标的内容
+        removeContent(replaceIndex, field);
+        // 在下标位置添加内容
+        addContent(field, replaceIndex, contents);
+
+        return this;
+    }
 
     /**
      * 该方法用于返回指定字段的内容集合，若字段在用例集合中不存在，则初始化字段的内容集合，并返回相应字段的空集合对象
@@ -198,7 +324,8 @@ public class CaseData {
      * @since autest 4.0.0
      */
     public Map<String, DataFunction> getReplaceWordMap() {
-        return Optional.ofNullable(caseTemplet).map(ct -> ct.getReplaceWordMap()).orElseGet(() -> new HashMap<>());
+        return Optional.ofNullable(caseTemplet).map(ct -> ct.getReplaceWordMap())
+                .orElseGet(() -> new HashMap<>(ConstType.DEFAULT_MAP_SIZE));
     }
 
     /**
