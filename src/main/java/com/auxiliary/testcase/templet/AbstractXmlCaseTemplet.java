@@ -48,4 +48,7 @@ public abstract class AbstractXmlCaseTemplet extends AbstractCaseTemplet {
             }
         }
     }
+
+    protected AbstractXmlCaseTemplet() {
+    }
 }

@@ -134,6 +134,9 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
         super(xmlTempletFile);
     }
 
+    protected AbstractPresetCaseTemplet() {
+    }
+
     @Override
     public void setReadStepDetail(boolean isStepDetail, boolean isStepIndependentCase) {
         this.isStepDetail = isStepDetail;

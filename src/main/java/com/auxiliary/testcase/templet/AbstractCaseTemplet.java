@@ -51,6 +51,9 @@ public abstract class AbstractCaseTemplet {
         }
     }
 
+    protected AbstractCaseTemplet() {
+    }
+
     /**
      * 该方法用于返回需要替换的占位符内容集合
      * 

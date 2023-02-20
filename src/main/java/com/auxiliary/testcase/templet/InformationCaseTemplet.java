@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
+
+import com.auxiliary.testcase.TestCaseException;
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 
@@ -30,7 +34,7 @@ import com.auxiliary.tool.regex.ConstType;
  */
 public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     /**
-     * 构造对象，并设置模板所在的位置
+     * 构造对象，并指定读取的模板xml文件
      * 
      * @param xmlTempletFile 用例模板文件类对象
      */
@@ -39,11 +43,15 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
-     * 构造对象，设置包内用例模板所在的默认位置
+     * 构造对象，并读取默认的模板xml文件
      */
     public InformationCaseTemplet() {
-        super(new File(InformationCaseTemplet.class.getClassLoader()
-                .getResource(DEFAULT_TEMPLET_FOLDER + "AddInformation.xml").getFile()));
+        try {
+            configXml = new SAXReader().read(InformationCaseTemplet.class.getClassLoader()
+                    .getResourceAsStream(DEFAULT_TEMPLET_FOLDER + "NewCaseTemplet.xml"));
+        } catch (DocumentException e) {
+            throw new TestCaseException("jar包异常，无法读取模板xml文件", e);
+        }
     }
 
     public List<CaseData> addWholeInformationCase() {
