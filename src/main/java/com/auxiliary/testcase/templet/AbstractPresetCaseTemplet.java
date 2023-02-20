@@ -290,19 +290,29 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
                     }
                 }
             }
-
+            
+            CaseData defaultCaseData = new CaseData(this);
             // 读取关键词与前置条件的内容
-            Entry<String, String> keyEntry = Optional.ofNullable(contentMap.get(LabelType.KEY))
-                    .map(list -> list.get(0)).orElseGet(() -> new Entry<>("", ""));
-            Entry<String, String> preconditionEntry = Optional
-                    .ofNullable(contentMap.get(LabelType.PRECONDITION)).map(list -> list.get(0))
-                    .orElseGet(() -> new Entry<>("", ""));
+            for (int index = 0; index < contentMap.get(LabelType.KEY).size(); index++) {
+                Entry<String, String> keyEntry = contentMap.get(LabelType.KEY).get(index);
+                defaultCaseData.addContent(LabelType.KEY.getName(), -1,
+                        getTempletContent(LabelType.KEY, keyEntry.getKey(), keyEntry.getValue()));
+            }
+            for (int index = 0; index < contentMap.get(LabelType.PRECONDITION).size(); index++) {
+                Entry<String, String> preconditionEntry = contentMap.get(LabelType.PRECONDITION).get(index);
+                defaultCaseData.addContent(LabelType.PRECONDITION.getName(), -1,
+                        getTempletContent(LabelType.PRECONDITION, preconditionEntry.getKey(),
+                                preconditionEntry.getValue()));
+            }
 
             // 由于是按照步骤对用例进行拆分，故需要计算步骤中的集合数量
             int stepNum = contentMap.get(LabelType.STEP).size();
             // 按照步骤数量，对各个字段相应位置的内容进行获取
             for (int index = 0; index < stepNum; index++) {
                 CaseData caseData = new CaseData(templetClass);
+                // 添加默认信息
+                caseData.addContent(defaultCaseData, LabelType.PRECONDITION.getName(), LabelType.KEY.getName());
+
                 // 获取步骤相关的内容
                 Entry<String, String> stepEntry = contentMap.get(LabelType.STEP).get(index);
                 // 添加标题数据
@@ -319,15 +329,6 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
                 Entry<String, String> exceptEntry = contentMap.get(LabelType.EXCEPT).get(index);
                 caseData.addContent(LabelType.EXCEPT.getName(), -1,
                         getTempletContent(LabelType.EXCEPT, exceptEntry.getKey(), exceptEntry.getValue()));
-
-                // 添加关键词
-                caseData.addContent(LabelType.KEY.getName(), -1,
-                        getTempletContent(LabelType.KEY, keyEntry.getKey(), keyEntry.getValue()));
-                // 添加前置条件
-                caseData.addContent(LabelType.PRECONDITION.getName(), -1, getTempletContent(LabelType.PRECONDITION,
-                        preconditionEntry.getKey(),
-                                preconditionEntry.getValue()));
-
                 caseDataList.add(caseData);
             }
         }

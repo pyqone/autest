@@ -157,9 +157,6 @@ public class CaseData {
 
     /**
      * 该方法用于将测试用例类对象下下指定字段的内容拼接至当前测试用例类对象相应字段下
-     * <p>
-     * <b>注意：</b>若未指定字段，则默认将所有的字段内容拼接至当前用例类对象下
-     * </p>
      * 
      * @param caseDate 已生成的测试用例类对象
      * @param fields   指定的字段组
@@ -179,7 +176,7 @@ public class CaseData {
         // 遍历传入的caseData类对象中的所有字段
         for (String field : fields) {
             // 获取待添加用例类的字段内容，并将其转换为字符串集合
-            List<String> contentList = getFieldContentList(field);
+            List<String> contentList = caseDate.getFieldContentList(field);
             addContent(field, -1, contentList);
         }
         return this;

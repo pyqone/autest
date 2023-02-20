@@ -33,7 +33,7 @@ public interface StepDetailTemplet {
      * </p>
      * <p>
      * 
-     * @param isStepDetail          读取的步骤样式
+     * @param isStepDetail          是否读取步骤详情
      * @param isStepIndependentCase 每组步骤详情是否单独作为一条用例
      * @since autest 4.0.0
      */
