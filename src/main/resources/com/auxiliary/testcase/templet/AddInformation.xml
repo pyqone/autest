@@ -11,14 +11,18 @@
 		<precondition id='1' value='已在#操作类型##信息#的页面上' />
 		<precondition id='2' value='除#控件名称#外，其他信息均正确填写或选择' />
 		<precondition id='3' value='清除#控件名称#内容，其他信息均不改变' />
+		
+		<title id='1' value='对#操作类型##信息#界面的#控件名称#进行测试' />
 
 		<except id='1'
 			value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为所填写的信息#成功预期后文#' />
-		<except id='3'
+		<except id='2'
             value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为所选择的信息#成功预期后文#' />
-		<except id='2' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
-		<except id='3'
-            value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为空或默认选择的信息#成功预期后文#' />
+        <except id='3'
+            value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为所选择的#文件类型##成功预期后文#' />
+		<except id='4' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
+		<except id='5'
+            value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为空或默认的信息#成功预期后文#' />
 	</group>
 	<group name='textboxBasicCase'>
 		<step id='1' intention='验证#操作类型##信息#界面上的#控件名称#信息是否允许不输入'
@@ -80,14 +84,14 @@
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='3'
+		<except id='1'
             value='点击清空按钮后，填写的内容被清空，点击“#保存按钮名称#”按钮后，#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息#成功预期后文#' />
-        <except id='4'
+        <except id='2'
             value='点击清空按钮后，填写的内容被清空，点击“#保存按钮名称#”按钮后，#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
 	</group>
 
 	<group name='addTextboxCase'>
-		<step id='4' value='输入小于#最短长度限制#个字符，点击“#保存按钮名称#”按钮'
+		<step id='1' value='输入小于#最短长度限制#个字符，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入小于#最短长度限制#个字符'
 			rank='#rank-2#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
@@ -95,14 +99,14 @@
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='5' value='输入#最短长度限制#个字符，点击“#保存按钮名称#”按钮'
+		<step id='2' value='输入#最短长度限制#个字符，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入#最短长度限制#个字符' rank='#rank-1#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
 			<stepdetail value='在#控件名称#上输入#最短长度限制#个字符' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='6' value='输入大于#最长长度限制#个字符，点击“#保存按钮名称#”按钮'
+		<step id='3' value='输入大于#最长长度限制#个字符，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入大于#最长长度限制#个字符'
 			rank='#rank-2#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
@@ -110,14 +114,21 @@
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='7' value='输入#最长长度限制#个字符，点击“#保存按钮名称#”按钮'
+		<step id='4' value='输入#最长长度限制#个字符，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入#最长长度限制#个字符' rank='#rank-1#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
 			<stepdetail value='在#控件名称#上输入#最长长度限制#个字符' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='8' value='输入小于#数字最小限制#的数字，点击“#保存按钮名称#”按钮'
+		<step id='5' value='输入小于#最长长度限制#但大于#最短长度限制#长度的字符，点击“#保存按钮名称#”按钮'
+            intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入#最长长度限制#个字符' rank='#rank-1#'>
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#上输入小于#最长长度限制#但大于#最短长度限制#长度的字符' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+		<step id='6' value='输入小于#数字最小限制#的数字，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入小于#数字最小限制#的数字'
 			rank='#rank-2#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
@@ -125,42 +136,42 @@
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='9' value='输入数字#数字最小限制#，点击“#保存按钮名称#”按钮'
+		<step id='7' value='输入数字#数字最小限制#，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入#数字最小限制#的数字' rank='#rank-1#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
 			<stepdetail value='在#控件名称#上输入#数字最小限制#的数字' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='10' value='输入大于#数字最大限制#的数字，点击“#保存按钮名称#”按钮'
+		<step id='8' value='输入大于#数字最大限制#的数字，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入大于#数字最大限制#的数字' rank='#rank-2#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
 			<stepdetail value='在#控件名称#上输入大于#数字最大限制#的数字' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='11' value='输入#数字最大限制#的数字，点击“#保存按钮名称#”按钮'
+		<step id='9' value='输入#数字最大限制#的数字，点击“#保存按钮名称#”按钮'
             intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入#数字最大限制#的数字' rank='#rank-1#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
 			<stepdetail value='在#控件名称#上输入#数字最大限制#的数字' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='14' value='输入大于#小数位数#位小数位的数字，点击“#保存按钮名称#”按钮'
+		<step id='10' value='输入大于#小数位数#位小数位的数字，点击“#保存按钮名称#”按钮'
             intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入大于#小数位数#位小数位的数字' rank='#rank-2#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
 			<stepdetail value='在#控件名称#上输入大于#小数位数#位小数位的数字' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='15' value='输入#小数位数#位小数位的数字，点击“#保存按钮名称#”按钮'
+		<step id='11' value='输入#小数位数#位小数位的数字，点击“#保存按钮名称#”按钮'
             intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入#小数位数#位小数位的数字' rank='#rank-1#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
 			<stepdetail value='在#控件名称#上输入#小数位数#位小数位的数字' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='16' value='输入整数，点击“#保存按钮名称#”按钮'
+		<step id='12' value='输入整数，点击“#保存按钮名称#”按钮'
             intention='验证#操作类型##信息#界面上的#控件名称#信息是否可输入整数' rank='#rank-2#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
 			<stepdetail value='在#控件名称#上输入整数数字' />
@@ -168,8 +179,8 @@
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 
-		<except id='5' value='页面不会报错，若允许，则能进行输入，若不允许，则给出正确的提示' />
-		<except id='6'
+		<except id='1' value='页面不会报错，若允许，则能进行输入，若不允许，则给出正确的提示' />
+		<except id='2'
 			value='#成功预期前文##信息#创建成功，多余的小数位将按照规则舍弃，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息#成功预期后文#' />
 	</group>
 
@@ -204,9 +215,9 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='3' value='#成功预期前文##信息#创建成功，#信息#选项变为默认选项或第一个选项，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息#成功预期后文#' />
-		<except id='4' value='选项变为空选项或默认选项，保存信息后，#成功预期前文##信息#创建成功，#信息#选项变为默认选项或第一个选项，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息#成功预期后文#' />
-		<except id='5' value='选项变为空选项或默认选项，保存信息后，#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
+		<except id='1' value='#成功预期前文##信息#创建成功，#信息#选项变为默认选项或第一个选项，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息#成功预期后文#' />
+		<except id='2' value='选项变为空选项或默认选项，保存信息后，#成功预期前文##信息#创建成功，#信息#选项变为默认选项或第一个选项，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息#成功预期后文#' />
+		<except id='3' value='选项变为空选项或默认选项，保存信息后，#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
 	</group>
 
 	<group name='addRadioButtonCase'>
@@ -236,8 +247,8 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='3' value='不会出现有两个或以上的选项被选中的情况' />
-		<except id='4' value='#控件名称#选项应有一个默认选项' />
+		<except id='1' value='不会出现有两个或以上的选项被选中的情况' />
+		<except id='2' value='#控件名称#选项应有一个默认选项' />
 	</group>
 
 	<group name='addCheckboxCase'>
@@ -247,28 +258,28 @@
             <stepdetail value='在#控件名称#上点击所有的选项' />
             <stepdetail value='在上一步基础上，再次点击所有的选项' />
 		</step>
-		<step id='3' value='不进行选择，点击“#保存按钮名称#”按钮'
-            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许不选择' rank='#rank-1#' >
+		<step id='2' value='不进行选择，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许不选择' rank='#rank-2#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='不对#控件名称#信息进行选择' />
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='4' value='选择选项中的第一项，点击“#保存按钮名称#”按钮'
-            intention='检查#操作类型##信息#界面上的#控件名称#信息勾选第一个选项是否正常' rank='#rank-1#' >
+		<step id='3' value='选择选项中的第一项，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息勾选第一个选项是否正常' rank='#rank-2#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='在#控件名称#信息上勾选第一个选项' />
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='5' value='选择选项中的最后一项，点击“#保存按钮名称#”按钮'
-            intention='检查#操作类型##信息#界面上的#控件名称#信息勾选最后一个选项是否正常' rank='#rank-1#' >
+		<step id='4' value='选择选项中的最后一项，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息勾选最后一个选项是否正常' rank='#rank-2#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='在#控件名称#信息上勾选最后一个选项' />
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
-		<step id='6' value='选择其中多个选项，点击“#保存按钮名称#”按钮'
+		<step id='5' value='选择其中多个选项，点击“#保存按钮名称#”按钮'
             intention='检查#操作类型##信息#界面上的#控件名称#信息的勾选多个选项是否正常' rank='#rank-1#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='在#控件名称#信息上勾选其中多个选项' />
@@ -276,301 +287,355 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='3' value='在未勾选状态下，点击选项后，选项会被勾选，且可以勾选多个；在勾选状态下，点击选项后，选项被取消勾选' />
+		<except id='1' value='在未勾选状态下，点击选项后，选项会被勾选，且可以勾选多个；在勾选状态下，点击选项后，选项被取消勾选' />
 	</group>
 
 	<group name='addDateCase'>
-		<steps>
-			<step id='1' value='不选择时间，点击“#保存按钮名称#”按钮' />
-			<step id='2' value='选择当前的时间，点击“#保存按钮名称#”按钮' />
-			<step id='3' value='选择时间后清空时间，点击“#保存按钮名称#”按钮' />
-			<step id='4' value='手动输入正确格式的日期，点击“#保存按钮名称#”按钮' />
-			<step id='5' value='手动输入非正确格式的日期，点击“#保存按钮名称#”按钮' />
-			<step id='6' value='选择大于“#结束日期#”的日期，点击“#保存按钮名称#”按钮' />
-			<step id='7' value='选择与“#结束日期#”相同的日期，点击“#保存按钮名称#”按钮' />
-			<step id='8' value='选择小于“#开始日期#”的日期，点击“#保存按钮名称#”按钮' />
-			<step id='9' value='选择与“#开始日期#”相同的日期，点击“#保存按钮名称#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息#成功预期后文#' />
-			<except id='2' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
-		</excepts>
-		<titles>
-			<title id='1' value='对#操作类型##信息#界面的#控件名称#进行测试' />
-		</titles>
-		<preconditions>
-			<precondition id='1' value='已在#操作类型##信息#的页面上' />
-			<precondition id='2' value='除#控件名称#外，其他信息均正确填写' />
-			<precondition id='3' value='清除#控件名称#内容，其他信息均不改变' />
-		</preconditions>
-		<ranks>
-			<rank id='1' value='1' />
-			<rank id='2' value='2' />
-			<rank id='3' value='3' />
-		</ranks>
-		<keys>
-			<key id='1' value='#控件名称#、#信息#、#操作类型#' />
-		</keys>
+		<step id='1' value='不选择时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许不进行选择' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息不对时间或日期进行选择' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='2' value='选择当前的时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许选择当前时间' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息点击当前时间相关按钮，或选择当前时间' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='3' value='选择时间后清空时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许选择当前时间' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息选择一个正确的时间' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='清除#控件名称#信息中选择的时间' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='4' value='手动输入符合格式要求的时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许手动输入符合格式要求的时间' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息上手动输入一个符合格式要求的时间' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='5' value='手动输入不符合格式要求的时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许手动输入不符合格式要求的时间' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息上手动输入一个不符合格式要求的时间' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='6' value='选择大于“#结束日期#”的时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许选择大于“#结束日期#”的时间' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息上选择一个大于“#结束日期#”的时间' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='7' value='选择与“#结束日期#”相同的时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许选择当前时间' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息上选择一个与“#结束日期#”相同的时间' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='8' value='选择小于“#开始日期#”的时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许选择当前时间' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息上选择一个小于“#开始日期#”的时间' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='9' value='选择与“#开始日期#”相同的时间，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许选择当前时间' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息上选择一个与“#开始日期#”相同的时间' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
 	</group>
 
 	<group name='addPhoneCase'>
-		<steps>
-			<step id='3' value='输入大于11位的数字，点击“#保存按钮名称#”按钮' />
-			<step id='4' value='输入小于11位的数字，点击“#保存按钮名称#”按钮' />
-			<step id='5' value='输入大于7位的数字，点击“#保存按钮名称#”按钮' />
-			<step id='6' value='输入小于7位的数字，点击“#保存按钮名称#”按钮' />
-			<step id='7' value='输入不符合规则但长度符合规则的数字，点击“#保存按钮名称#”按钮' />
-			<step id='1' value='输入座机区位号 + “-”符号 + 正确座机号后，点击“#保存按钮名称#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息#成功预期后文#' />
-			<except id='2' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
-		</excepts>
-		<titles>
-			<title id='1' value='对#操作类型##信息#界面的#控件名称#进行测试' />
-		</titles>
-		<preconditions>
-			<precondition id='1' value='已在#操作类型##信息#的页面上' />
-			<precondition id='2' value='除#控件名称#外，其他信息均正确填写' />
-			<precondition id='3' value='清除#控件名称#内容，其他信息均不改变' />
-		</preconditions>
-		<ranks>
-			<rank id='1' value='1' />
-			<rank id='2' value='2' />
-			<rank id='3' value='3' />
-		</ranks>
-		<keys>
-			<key id='1' value='#控件名称#、#信息#、#操作类型#' />
-		</keys>
+		<step id='1' value='输入不符合号码规则但数字长度符合规则的数字，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息输入不符合要求的号码是否有提示' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#上输入不符合号码规则但数字长度符合规则的数字' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='2' value='输入正确的座机区位号和号码后，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许输入带区号的座机号码' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#上输入正确的座机区位号和号码后' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
 	</group>
 
 	<group name='addIDCardCase'>
-		<steps>
-			<step id='3' value='输入15位的证件信息，点击“#保存按钮名称#”按钮' />
-			<step id='4' value='输入18位的证件信息，点击“#保存按钮名称#”按钮' />
-			<step id='5' value='输入末尾带“X”或“x”的证件信息，点击“#保存按钮名称#”按钮' />
-			<step id='6' value='输入大于18位的数字，点击“#保存按钮名称#”按钮' />
-			<step id='7' value='输入小于18位但大于15位的数字，点击“#保存按钮名称#”按钮' />
-			<step id='8' value='输入小于15位的数字，点击“#保存按钮名称#”按钮' />
-			<step id='9'
-				value='输入不符合证件规则但长度符合规则的数字（如123456789012345678），点击“#保存按钮名称#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息#成功预期后文#' />
-			<except id='2' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
-		</excepts>
-		<titles>
-			<title id='1' value='对#操作类型##信息#界面的#控件名称#进行测试' />
-		</titles>
-		<preconditions>
-			<precondition id='1' value='已在#操作类型##信息#的页面上' />
-			<precondition id='2' value='除#控件名称#外，其他信息均正确填写' />
-			<precondition id='3' value='清除#控件名称#内容，其他信息均不改变' />
-		</preconditions>
-		<ranks>
-			<rank id='1' value='1' />
-			<rank id='2' value='2' />
-			<rank id='3' value='3' />
-		</ranks>
-		<keys>
-			<key id='1' value='#控件名称#、#信息#、#操作类型#' />
-		</keys>
+		<step id='1' value='输入15位的证件信息，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许输入15位身份证号码' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#上输入正确的15位身份证号码' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='2' value='输入18位的证件信息，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许输入18位身份证号码' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#上输入正确的18位身份证号码' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='3' value='输入末尾带“X”或“x”的证件信息，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许输入末尾为“X”的身份证号码' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#上输入正确的末尾为“X”身份证号码（末尾输入“X”或“x”）' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='4'
+			value='输入不符合证件规则但长度符合规则的数字（如123456789012345678），点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许输入不符合身份证格式的号码' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#上输入不符合证件规则但长度符合规则的数字（如123456789012345678）' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
 	</group>
 
 	<group name='addUploadImageCase'>
-		<steps>
-			<step id='1' value='不#操作名称#图片，点击“#保存按钮名称#”按钮' />
-			<step id='2' value='上传图片后点击图片' />
-			<step id='3' value='#操作名称#图片后删除图片再#操作名称#图片，点击“#保存按钮名称#”按钮' />
-			<step id='4' value='#操作名称#同一张图片，点击“#保存按钮名称#”按钮' />
-			<step id='5' value='拍照后再取消拍照' />
-			<step id='6' value='#操作名称#超过限制大小的图片，点击“#保存按钮名称#”按钮' />
-			<step id='7' value='#操作名称#较大的图片（如超过3M的图片），点击“#保存按钮名称#”按钮' />
-			<step id='8' value='上传非#文件限制#格式的文件，点击“#保存按钮名称#”按钮' />
-			<step id='9' value='#操作名称#上传非图片格式的文件，点击“#保存按钮名称#”按钮' />
-			<step id='10'
-				value='#操作名称#小于#文件最小个数##文件单位##文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='11' value='#操作名称##文件最小个数##文件单位##文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='12'
-				value='#操作名称#大于#文件最大个数##文件单位##文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='13' value='#操作名称##文件最大个数##文件单位##文件类型#，点击“#保存按钮名称#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息#成功预期后文#' />
-			<except id='2' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
-			<except id='3' value='图片能进行预览' />
-			<except id='4' value='界面上不显示任何图片' />
-		</excepts>
-		<titles>
-			<title id='1' value='对#操作类型##信息#界面的#控件名称#进行测试' />
-		</titles>
-		<preconditions>
-			<precondition id='1' value='已在#操作类型##信息#的页面上' />
-			<precondition id='2' value='除#控件名称#外，其他信息均正确填写' />
-			<precondition id='3' value='清除#控件名称#内容，其他信息均不改变' />
-		</preconditions>
-		<ranks>
-			<rank id='1' value='1' />
-			<rank id='2' value='2' />
-			<rank id='3' value='3' />
-		</ranks>
-		<keys>
-			<key id='1' value='#控件名称#、#信息#、#操作类型#' />
-		</keys>
+		<step id='1' value='拍照后再取消拍照'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能取消拍照' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='点击拍照相关的按钮' />
+            <stepdetail value='取消拍照或关闭相机' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='2' value='在不给予拍照权限时进行拍照'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能取消拍照' rank='#rank-2#' >
+            <stepdetail value='关闭对软件的相机授权' />
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='点击拍照相关的按钮' />
+        </step>
+		<step id='3' value='上传非图片格式的文件，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能上传非图片格式的文件' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='点击上传图片相关的按钮' />
+            <stepdetail value='选择一个非图片的文件（如纯文本文件）' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		
+		<except id='1' value='界面上不显示任何图片' />
+		<except id='2' value='无法调取手机相机，且app不会闪退' />
+		<except id='3' value='文件不能选择，或选择后，弹出相应的提示' />
 	</group>
 
 	<group name='addUploadFileCase'>
-		<steps>
-			<step id='11' value='上传#文件类型#后点击相应的预览按钮' />
-			<step id='1' value='不上传#文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='2'
-				value='上传#文件类型#后删除#文件类型#，再上传一个#文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='3' value='上传#文件类型#后删除#文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='4' value='上传超过#文件大小#M大小的#文件类型#' />
-			<step id='5' value='上传较大的#文件类型#' />
-			<step id='6' value='上传非#文件格式#格式的#文件类型#' />
-			<step id='7' value='上传小于#文件最小个数#个#文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='8' value='上传#文件最小个数#个#文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='9' value='上传大于#文件最大个数#个#文件类型#，点击“#保存按钮名称#”按钮' />
-			<step id='10' value='上传#文件最大个数#个#文件类型#，点击“#保存按钮名称#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息#成功预期后文#' />
-			<except id='2' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
-			<except id='3'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息，并且其#信息#的#控件名称#为最后上传的文件#成功预期后文#' />
-			<except id='4'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息，并且其#信息#的#控件名称#显示为最后上传的图片#成功预期后文#' />
-			<except id='5' value='上传的图片被放大显示在页面中' />
-			<except id='6' value='上传的文件被下载或者在新的页面中显示' />
-			<except id='7' value='给出文件超过大小限制相关的提示' />
-			<except id='9' value='给出文件格式不正确相关的提示' />
-			<except id='8'
-				value='若允许上传则点击“#保存按钮名称#”按钮后#信息#创建成功，若无法上传，则给出相应的友好提示' />
-		</excepts>
-		<titles>
-			<title id='1' value='对#操作类型##信息#界面的#控件名称#进行测试' />
-		</titles>
-		<preconditions>
-			<precondition id='1' value='已在#操作类型##信息#的页面上' />
-			<precondition id='2' value='除#控件名称#外，其他信息均正确填写' />
-			<precondition id='3' value='清除#控件名称#内容，其他信息均不改变' />
-		</preconditions>
-		<ranks>
-			<rank id='1' value='1' />
-			<rank id='2' value='2' />
-			<rank id='3' value='3' />
-		</ranks>
-		<keys>
-			<key id='1' value='#控件名称#、#信息#、#操作类型#' />
-		</keys>
+		<step id='1' value='上传#文件类型#后点击相应的预览按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否进行预览' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='上传#文件类型#' />
+            <stepdetail value='点击相应的预览按钮' />
+        </step>
+		<step id='2' value='不上传#文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否允许输入不上传#文件类型#' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='在#控件名称#信息上不上传#文件类型#，其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+		<step id='3' value='上传#文件类型#后删除#文件类型#再上传#文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能删除上传的#文件类型#' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='上传#文件类型#' />
+            <stepdetail value='点击删除#文件类型#相关的按钮，再次上传#文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+		<step id='4' value='上传同一张#文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能重复上传同一个的#文件类型# ' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='上传#文件类型#' />
+            <stepdetail value='点击删除#文件类型#相关的按钮，再次上传相同的#文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+		<step id='5' value='#操作名称#超过限制大小的#文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能#操作名称#超过限制的#文件类型# ' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='#操作名称##文件类型#，选择一张超过大小限制的#文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+		<step id='6' value='上传非“#文件格式#”格式的#文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能上传非指定格式的#文件类型#' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='上传#文件类型#，选择非“#文件格式#”格式的#文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+        <step id='7'
+            value='上传小于#文件最小个数##文件单位##文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能上传小于#文件最小个数##文件单位##文件类型#' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='点击上传#文件类型#相关的按钮' />
+            <stepdetail value='选择小于#文件最小个数##文件单位##文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+        <step id='8' value='上传#文件最小个数##文件单位##文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能上传#文件最小个数##文件单位##文件类型#' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='点击上传#文件类型#相关的按钮' />
+            <stepdetail value='选择#文件最小个数##文件单位##文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+        <step id='9'
+            value='上传大于#文件最大个数##文件单位##文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能上传大于#文件最大个数##文件单位##文件类型#' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='点击上传#文件类型#相关的按钮' />
+            <stepdetail value='选择大于#文件最大个数##文件单位##文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+        <step id='10' value='上传#文件最大个数##文件单位##文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的#控件名称#信息是否能上传#文件最大个数##文件单位##文件类型#' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='点击上传#文件类型#相关的按钮' />
+            <stepdetail value='选择#文件最大个数##文件单位##文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+		
+		<except id='1' value='弹出预览#文件类型#的弹窗，#文件类型#能进行预览' />
+		<except id='2' value='上传的#文件类型#被放大显示在页面中' />
+		<except id='3' value='上传的文件被下载或者在新的页面中显示' />
+		<except id='4' value='给出文件超过大小限制相关的提示' />
+		<except id='5' value='给出文件格式不正确相关的提示' />
+		<except id='6'
+			value='若允许上传则点击“#保存按钮名称#”按钮后#信息#创建成功，若无法上传，则给出相应的友好提示' />
 	</group>
 
 	<group name='addWholeInformationCase'>
-		<steps>
-			<step id='1' value='正确填写所有的信息，点击“#保存按钮名称#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示新增的信息#成功预期后文#' />
-		</excepts>
-		<titles>
-			<title id='1' value='添加内容完整的#信息#' />
-		</titles>
-		<preconditions>
-			<precondition id='1' value='已在新增#信息#的页面上' />
-		</preconditions>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<keys>
-			<key id='1' value='#信息#、新增' />
-		</keys>
+	    <step id='1' value='正确填写所有的信息，点击“#保存按钮名称#”按钮'
+            intention='验证正确填写所有信息时是否能保存#信息#' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='正确填写或选择所有的内容' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+	    </step>
 	</group>
 	
 	<group name='examineUI'>
-        <step id='1' value='查看#信息#页面' />
-        <step id='2' value='查看#控件名称#信息中的选项' />
+        <step id='1' value='查看#操作类型##信息#页面'
+            intention='验证正确填写所有信息是否能保存#信息#' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='查看#操作类型##信息#页面的控件布局' />
+        </step>
+        <step id='2' value='查看#控件名称#信息中的选项'
+            intention='验证正确填写所有信息是否能保存#信息#' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='查看#控件名称#信息中的选项内容' />
+        </step>
         
         <except id='1'
             value='界面中可选择或可填写的信息均与需求一致，UI与设计图一致，且控件排布友好' />
         <except id='2' value='#控件名称#信息中的选项与需求一致' />
         
         <title id='1' value='检查#信息#界面是否符合需求' />
-        <title id='1' value='检查#控件名称#信息是否符合需求' />
+        <title id='2' value='检查#控件名称#信息是否符合需求' />
+        
+        <key id='1' value='#信息#、#操作类型#' />
     </group>
 
 	<group name='addUnWholeInformationCase'>
-		<steps>
-			<step id='1' value='不填写任何信息，点击“#保存按钮名称#”按钮' />
-			<step id='2' value='只填写所有的必填项信息，点击“#保存按钮名称#”按钮' />
-			<step id='3' value='只填写所有的非必填项信息，点击“#保存按钮名称#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1'
-				value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示新增的信息#成功预期后文#' />
-			<except id='2' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
-		</excepts>
-		<titles>
-			<title id='1' value='添加内容不完整的#信息#' />
-		</titles>
-		<preconditions>
-			<precondition id='1' value='已在新增#信息#的页面上' />
-		</preconditions>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<keys>
-			<key id='1' value='#信息#、新增' />
-		</keys>
+		<step id='1' value='不填写任何信息，点击“#保存按钮名称#”按钮'
+            intention='验证不填写所有信息时是否能保存#信息#' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='不正确填写或不选择所有的内容' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='2' value='只填写所有的必填项信息，点击“#保存按钮名称#”按钮'
+            intention='验证正确填写所有必填项信息时是否能保存#信息#' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='正确填写或选择所有必填项内容' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		<step id='3' value='只填写所有的非必填项信息，点击“#保存按钮名称#”按钮'
+            intention='验证正确填写所有非必填项信息时是否能保存#信息#' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='正确填写或选择所有非必填项内容' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
+		
+		<title id='1' value='添加内容不完整的#信息#' />
+		
+		<precondition id='1' value='已在新增#信息#的页面上' />
+		
+		<key id='1' value='#信息#、新增' />
 	</group>
 
 	<group name='openEditPage'>
-		<steps>
-			<step id='1' value='选择相应的#信息#数据进行编辑' />
-		</steps>
-		<excepts>
-			<except id='1' value='界面上的字段没有缺失，且之前填写的内容在界面上回填' />
-		</excepts>
-		<titles>
-			<title id='1' value='查看编辑#信息#信息界面' />
-		</titles>
-		<preconditions>
-			<precondition id='1' value='存在#信息#数据' />
-		</preconditions>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<keys>
-			<key id='1' value='#信息#、编辑' />
-		</keys>
+		<step id='1' value='选择相应的#信息#数据进行编辑'
+            intention='检查编辑#信息#界面其所有内容是否回显' rank='#rank-1#' >
+            <stepdetail value='在#信息#列表中，选择一条数据' />
+            <stepdetail value='点击编辑数据相关的按钮' />
+            <stepdetail value='查看编辑#信息#界面的内容' />
+        </step>
+        
+		<except id='1' value='界面上的字段没有缺失，且新增时填写的内容在界面上回填' />
+		
+		<title id='1' value='查看编辑#信息#信息界面' />
+		
+		<precondition id='1' value='存在#信息#数据' />
+		
+		<rank id='1' value='1' />
+		
+		<key id='1' value='#信息#、编辑' />
 	</group>
 
 	<group name='cancelSaveData'>
-		<steps>
-			<step id='1' value='在#操作类型##信息#界面上填写所有信息后，点击#取消按钮名称#' />
-			<step id='2' value='在#操作类型##信息#界面上填写所有必填项后，点击关闭界面按钮' />
-			<step id='3' value='在#操作类型##信息#界面上改变所有信息后，点击#取消按钮名称#' />
-			<step id='4' value='在#操作类型##信息#界面上改变所有必填项后，点击关闭界面按钮' />
-		</steps>
-		<excepts>
-			<except id='1'
-				value='#操作类型##信息#界面关闭，数据不被保存，#信息#列表 上不显示在新增界面上填写的数据' />
-			<except id='2' value='#操作类型##信息#界面关闭，数据不被保存，其#信息#信息仍显示为之前的内容' />
-		</excepts>
-		<titles>
-			<title id='1' value='取消保存#操作类型#的#信息#信息' />
-		</titles>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<keys>
-			<key id='1' value='#信息#、编辑' />
-		</keys>
+		<step id='1' value='在新增#信息#界面上填写所有信息后，点击“#取消按钮名称#”按钮'
+            intention='验证在新增#信息#界面上填写所有信息后取消保存是否生效' rank='#rank-2#' >
+            <stepdetail value='进入新增#信息#界面' />
+            <stepdetail value='正确填写或选择界面上的所有信息' />
+            <stepdetail value='点击“#取消按钮名称#”按钮' />
+		</step>
+		<step id='2' value='在编辑#信息#界面上填写所有信息后，点击“#取消按钮名称#”按钮'
+            intention='验证在编辑#信息#界面上修改所有信息后取消保存是否生效' rank='#rank-1#' >
+            <stepdetail value='在#信息#列表中，选择一条数据' />
+            <stepdetail value='点击编辑相关的按钮，进入编辑#信息#界面' />
+            <stepdetail value='正确修改界面上的所有信息' />
+            <stepdetail value='点击“#取消按钮名称#”按钮' />
+        </step>
+		
+		<step id='3' value='在新增#信息#界面上填写所有必填项后，点击关闭界面按钮'
+            intention='验证在新增#信息#界面上填写所有信息后关闭页面其内容是否被保存' rank='#rank-2#' >
+            <stepdetail value='进入新增#信息#界面' />
+            <stepdetail value='正确填写或选择界面上的所有信息' />
+            <stepdetail value='点击关闭界面按钮，将新增#信息#界面关闭' />
+		</step>
+		<step id='4' value='在修改#信息#界面上填写所有必填项后，点击关闭界面按钮'
+            intention='验证在修改#信息#界面上修改所有信息后关闭页面其内容是否被保存' rank='#rank-2#' >
+           <stepdetail value='在#信息#列表中，选择一条数据' />
+            <stepdetail value='点击编辑相关的按钮，进入编辑#信息#界面' />
+            <stepdetail value='正确修改界面上的所有信息' />
+            <stepdetail value='点击关闭界面按钮，将编辑#信息#界面关闭' />
+        </step>
+		
+		<except id='1'
+			value='#操作类型##信息#界面关闭，数据不被保存，#信息#列表上不显示在新增界面上填写的数据' />
+		<except id='2' value='#操作类型##信息#界面关闭，数据不被保存，其#信息#信息仍显示为之前的内容' />
+		
+		<title id='1' value='取消保存#操作类型#的#信息#' />
+		
+		<rank id='1' value='1' />
+		
+		<key id='1' value='#信息#、编辑' />
 	</group>
 </cases>

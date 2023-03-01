@@ -48,7 +48,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public InformationCaseTemplet() {
         try {
             configXml = new SAXReader().read(InformationCaseTemplet.class.getClassLoader()
-                    .getResourceAsStream(DEFAULT_TEMPLET_FOLDER + "NewCaseTemplet.xml"));
+                    .getResourceAsStream(DEFAULT_TEMPLET_FOLDER + "AddInformation.xml"));
         } catch (DocumentException e) {
             throw new TestCaseException("jar包异常，无法读取模板xml文件", e);
         }

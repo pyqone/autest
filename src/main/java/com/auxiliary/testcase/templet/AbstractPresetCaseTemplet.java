@@ -152,10 +152,10 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
      * @return 获取到的内容集合
      * @since autest 4.0.0
      */
-    public List<String> getTempletContent(LabelType LabelType, String groupName,
+    public List<String> getTempletContent(LabelType labelType, String groupName,
             String... ids) {
         // 根据相应的模板内容枚举，返回相应的内容
-        switch (LabelType) {
+        switch (labelType) {
         case RANK:
             if (isStepIndependentCase) {
                 return getContentList(groupName, LABEL_STEP, "", ATT_RANK, ids);
