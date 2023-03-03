@@ -8,8 +8,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
+import com.auxiliary.testcase.TestCaseException;
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
 
@@ -134,7 +137,14 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
         super(xmlTempletFile);
     }
 
-    protected AbstractPresetCaseTemplet() {
+    protected AbstractPresetCaseTemplet(String fileName) {
+        super();
+        try {
+            configXml = new SAXReader().read(InformationCaseTemplet.class.getClassLoader()
+                    .getResourceAsStream(String.format("%s%s.xml", DEFAULT_TEMPLET_FOLDER, fileName)));
+        } catch (DocumentException e) {
+            throw new TestCaseException("jar包异常，无法读取模板xml文件", e);
+        }
     }
 
     @Override

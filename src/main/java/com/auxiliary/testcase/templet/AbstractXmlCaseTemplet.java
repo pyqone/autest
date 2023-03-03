@@ -34,6 +34,14 @@ public abstract class AbstractXmlCaseTemplet extends AbstractCaseTemplet {
     protected Document configXml;
 
     /**
+     * 定义无参构造，方便子类使用
+     * 
+     * @since autest 4.0.0
+     */
+    protected AbstractXmlCaseTemplet() {
+    }
+
+    /**
      * 构造对象，读取xml文件模板类
      * 
      * @param xmlTempletFile xml模板文件类对象
@@ -47,8 +55,5 @@ public abstract class AbstractXmlCaseTemplet extends AbstractCaseTemplet {
                 throw new TestCaseException("xml用例模板文件异常，无法读取：" + xmlTempletFile.getAbsolutePath(), e);
             }
         }
-    }
-
-    protected AbstractXmlCaseTemplet() {
     }
 }

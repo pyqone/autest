@@ -8,12 +8,14 @@
 
 		<key id='1' value='#控件名称#、#信息#、#操作类型#' />
 
-		<precondition id='1' value='已在#操作类型##信息#的页面上' />
-		<precondition id='2' value='除#控件名称#外，其他信息均正确填写或选择' />
-		<precondition id='3' value='清除#控件名称#内容，其他信息均不改变' />
+		<precondition id='1' value='已在新增#信息#的页面上' />
+		<precondition id='2' value='已在编辑#信息#的页面上' />
+		<precondition id='3' value='除#控件名称#外，其他信息均正确填写或选择' />
+		<precondition id='4' value='除#控件名称#外，其他信息均不做修改' />
+		<precondition id='5' value='清除#控件名称#内容，其他信息均不改变' />
 		
 		<title id='1' value='对#操作类型##信息#界面的#控件名称#进行测试' />
-
+		
 		<except id='1'
 			value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为所填写的信息#成功预期后文#' />
 		<except id='2'
@@ -525,10 +527,14 @@
 	<group name='addWholeInformationCase'>
 	    <step id='1' value='正确填写所有的信息，点击“#保存按钮名称#”按钮'
             intention='验证正确填写所有信息时是否能保存#信息#' rank='#rank-1#' >
-            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='进入新增#信息#页面' />
             <stepdetail value='正确填写或选择所有的内容' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 	    </step>
+		
+		<title id='1' value='添加内容完整的#信息#' />
+		
+		<key id='1' value='#信息#' />
 	</group>
 	
 	<group name='examineUI'>

@@ -267,9 +267,9 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
         // 设置字段左对齐
         jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_LEFT, JiraPresetFieldType.FIELD_OBJECTIVE,
                 JiraPresetFieldType.FIELD_PRECONDITION, JiraPresetFieldType.FIELD_STEP,
-                JiraPresetFieldType.FIELD_EXCEPT);
+                JiraPresetFieldType.FIELD_EXCEPT, JiraPresetFieldType.FIELD_TITLE);
         // 设置字段居中水平对齐
-        jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_MIDDLE, JiraPresetFieldType.FIELD_TITLE,
+        jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_MIDDLE,
                 JiraPresetFieldType.FIELD_MODULE, JiraPresetFieldType.FIELD_STATUS, JiraPresetFieldType.FIELD_RANK,
                 JiraPresetFieldType.FIELD_COMPONENT, JiraPresetFieldType.FIELD_OWNER, JiraPresetFieldType.FIELD_ISSUES);
         

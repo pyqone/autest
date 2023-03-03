@@ -38,6 +38,14 @@ public abstract class AbstractCaseTemplet {
     protected Map<String, DataFunction> replaceWordMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
+     * 定义无参构造，方便子类使用
+     * 
+     * @since autest 4.0.0
+     */
+    protected AbstractCaseTemplet() {
+    }
+
+    /**
      * 该方法用于添加需要替换的内容
      * 
      * @param word        需要替换的内容
@@ -49,9 +57,6 @@ public abstract class AbstractCaseTemplet {
             // 存储替换的词语
             replaceWordMap.put(word, text -> replaceWord);
         }
-    }
-
-    protected AbstractCaseTemplet() {
     }
 
     /**
