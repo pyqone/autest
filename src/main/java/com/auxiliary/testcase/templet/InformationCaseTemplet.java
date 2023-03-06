@@ -102,7 +102,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
-     * 用于生成正确填写所有信息的用例
+     * 该方法用于生成正确填写所有信息的用例
      * 
      * @return 用例数据对象集合
      * @since autest 4.0.0
@@ -114,25 +114,88 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         // 标题
         allContentMap.put(LabelType.TITLE,
                 Arrays.asList(
-                        new Entry<>(InformationTempletCaseName.ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
+                        new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 步骤
         allContentMap.put(LabelType.STEP,
                 Arrays.asList(
-                        new Entry<>(InformationTempletCaseName.ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
+                        new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 预期
         allContentMap.put(LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(InformationTempletCaseName.COMMON_CONTENT,
-                        new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { "输入成功预期" })));
         // 优先级
         allContentMap.put(LabelType.RANK,
-                Arrays.asList(new Entry<>(InformationTempletCaseName.COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
         // 关键词
         allContentMap.put(LabelType.KEY,
                 Arrays.asList(
-                        new Entry<>(InformationTempletCaseName.ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
+                        new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 前置条件
         allContentMap.put(LabelType.PRECONDITION, Arrays
-                .asList(new Entry<>(InformationTempletCaseName.COMMON_CONTENT, new String[] { "1" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成不完全填写所有信息的用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addUnWholeInformationCase() {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 标题
+        allContentMap.put(LabelType.TITLE, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1" })));
+        // 步骤
+        allContentMap.put(LabelType.STEP, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE,
+                        new String[] { "1", "2", "3" })));
+        // 预期
+        allContentMap.put(LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { "失败预期", "输入成功预期", "失败预期" })));
+        // 优先级
+        allContentMap.put(LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+        // 关键词
+        allContentMap.put(LabelType.KEY, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
+        // 前置条件
+        allContentMap.put(LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    private List<CaseData> basicTextboxCase(String operation, String name, boolean isMust, boolean isRepeat,
+            boolean isClear, InputRuleType... inputRuleTypes) {
+        // 添加需要替换的关键词
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, operation);
+        addReplaceWord(ReplaceWord.CONTROL_NAME, name);
+
+        // 添加测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        // 标题
+        allContentMap.put(LabelType.TITLE, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1" })));
+        // 步骤
+        allContentMap.put(LabelType.STEP, Arrays.asList(
+                new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1", "2", "3" })));
+        // 预期
+        allContentMap.put(LabelType.EXCEPT, Arrays.asList(
+                new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期", "失败预期" })));
+        // 优先级
+        allContentMap.put(LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+        // 关键词
+        allContentMap.put(LabelType.KEY, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
+        // 前置条件
+        allContentMap.put(LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -156,25 +219,28 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since JDK 1.8
      * @since autest 4.0.0
      */
-    public class InformationTempletCaseName {
-        public static final String COMMON_CONTENT = "commonContent";
-        public static final String TEXTBOX_BASIC_CASE = "textboxBasicCase";
-        public static final String ADD_TEXTBOX_CASE = "addTextboxCase";
-        public static final String ADD_SELECTBOX_CASE = "addSelectboxCase";
-        public static final String ADD_RADIO_BUTTON_CASE = "addRadioButtonCase";
-        public static final String ADD_CHECKBOX_CASE = "addCheckboxCase";
-        public static final String ADD_DATE_CASE = "addDateCase";
-        public static final String ADD_PHONE_CASE = "addPhoneCase";
-        public static final String ADD_ID_CARD_CASE = "addIDCardCase";
-        public static final String ADD_UPLOAD_IMAGE_CASE = "addUploadImageCase";
-        public static final String ADD_UPLOAD_FILE_CASE = "addUploadFileCase";
-        public static final String ADD_WHOLE_INFORMATION_CASE = "addWholeInformationCase";
-        public static final String EXAMINE_UI = "examineUI";
-        public static final String ADD_UNWHOLE_INFORMATION_CASE = "addUnWholeInformationCase";
-        public static final String OPEN_EDIT_PAGE = "openEditPage";
-        public static final String CANCEL_SAVE_DATA = "cancelSaveData";
-    }
+    public class AddInformationTemplet {
+        // 分组名称
+        public static final String GROUP_COMMON_CONTENT = "commonContent";
+        public static final String GROUP_TEXTBOX_BASIC_CASE = "textboxBasicCase";
+        public static final String GROUP_ADD_TEXTBOX_CASE = "addTextboxCase";
+        public static final String GROUP_ADD_SELECTBOX_CASE = "addSelectboxCase";
+        public static final String GROUP_ADD_RADIO_BUTTON_CASE = "addRadioButtonCase";
+        public static final String GROUP_ADD_CHECKBOX_CASE = "addCheckboxCase";
+        public static final String GROUP_ADD_DATE_CASE = "addDateCase";
+        public static final String GROUP_ADD_PHONE_CASE = "addPhoneCase";
+        public static final String GROUP_ADD_ID_CARD_CASE = "addIDCardCase";
+        public static final String GROUP_ADD_UPLOAD_IMAGE_CASE = "addUploadImageCase";
+        public static final String GROUP_ADD_UPLOAD_FILE_CASE = "addUploadFileCase";
+        public static final String GROUP_ADD_WHOLE_INFORMATION_CASE = "addWholeInformationCase";
+        public static final String GROUP_EXAMINE_UI = "examineUI";
+        public static final String GROUP_ADD_UNWHOLE_INFORMATION_CASE = "addUnWholeInformationCase";
+        public static final String GROUP_OPEN_EDIT_PAGE = "openEditPage";
+        public static final String GROUP_CANCEL_SAVE_DATA = "cancelSaveData";
 
+        // TODO 后续补充每个分组中id的名称
+    }
+    
     /**
      * <p>
      * <b>文件名：InformationCaseTemplet.java</b>
