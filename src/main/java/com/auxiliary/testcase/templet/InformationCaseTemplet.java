@@ -108,31 +108,27 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public List<CaseData> addWholeInformationCase() {
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(
-                ConstType.DEFAULT_MAP_SIZE);
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 标题
-        allContentMap.put(LabelType.TITLE,
-                Arrays.asList(
-                        new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
+        addContent(allContentMap, LabelType.TITLE, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 步骤
-        allContentMap.put(LabelType.STEP,
-                Arrays.asList(
-                        new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
+        addContent(allContentMap, LabelType.STEP, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 预期
-        allContentMap.put(LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                         new String[] { "输入成功预期" })));
         // 优先级
-        allContentMap.put(LabelType.RANK,
+        addContent(allContentMap, LabelType.RANK,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
         // 关键词
-        allContentMap.put(LabelType.KEY,
-                Arrays.asList(
+        addContent(allContentMap, LabelType.KEY, Arrays.asList(
                         new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 前置条件
-        allContentMap.put(LabelType.PRECONDITION, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+        addContent(allContentMap, LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -147,43 +143,37 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 标题
-        allContentMap.put(LabelType.TITLE, Arrays
+        addContent(allContentMap, LabelType.TITLE, Arrays
                 .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 步骤
-        allContentMap.put(LabelType.STEP, Arrays
+        addContent(allContentMap, LabelType.STEP, Arrays
                 .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE,
                         new String[] { "1", "2", "3" })));
         // 预期
-        allContentMap.put(LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                         new String[] { "失败预期", "输入成功预期", "失败预期" })));
         // 优先级
-        allContentMap.put(LabelType.RANK,
+        addContent(allContentMap, LabelType.RANK,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
         // 关键词
-        allContentMap.put(LabelType.KEY, Arrays
+        addContent(allContentMap, LabelType.KEY, Arrays
                 .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 前置条件
-        allContentMap.put(LabelType.PRECONDITION,
+        addContent(allContentMap, LabelType.PRECONDITION,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
 
         return createCaseDataList(this, allContentMap);
     }
 
-    private List<CaseData> basicTextboxCase(String operation, String name, boolean isMust, boolean isRepeat,
+    private Map<LabelType, List<Entry<String, String[]>>> textboxCommonCase(boolean isMust, boolean isRepeat,
             boolean isClear, InputRuleType... inputRuleTypes) {
-        // 添加需要替换的关键词
-        addReplaceWord(ReplaceWord.OPERATION_TYPE, operation);
-        addReplaceWord(ReplaceWord.CONTROL_NAME, name);
-
         // 添加测试用例
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-        // 标题
-        allContentMap.put(LabelType.TITLE, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 步骤
         allContentMap.put(LabelType.STEP, Arrays.asList(
                 new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1", "2", "3" })));
+
         // 预期
         allContentMap.put(LabelType.EXCEPT, Arrays.asList(
                 new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期", "失败预期" })));
@@ -197,7 +187,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         allContentMap.put(LabelType.PRECONDITION,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
 
-        return createCaseDataList(this, allContentMap);
+        return allContentMap;
     }
 
     /**

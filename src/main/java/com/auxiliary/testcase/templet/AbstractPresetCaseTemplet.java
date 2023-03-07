@@ -301,22 +301,26 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
                 }
             }
             
-            CaseData defaultCaseData = new CaseData(this);
+            CaseData defaultCaseData = new CaseData(templetClass);
             // 读取关键词与前置条件的内容
-            for (int index = 0; index < contentMap.get(LabelType.KEY).size(); index++) {
-                Entry<String, String> keyEntry = contentMap.get(LabelType.KEY).get(index);
-                defaultCaseData.addContent(LabelType.KEY.getName(), -1,
-                        getTempletContent(LabelType.KEY, keyEntry.getKey(), keyEntry.getValue()));
+            if (contentMap.containsKey(LabelType.KEY)) {
+                for (int index = 0; index < contentMap.get(LabelType.KEY).size(); index++) {
+                    Entry<String, String> keyEntry = contentMap.get(LabelType.KEY).get(index);
+                    defaultCaseData.addContent(LabelType.KEY.getName(), -1,
+                            getTempletContent(LabelType.KEY, keyEntry.getKey(), keyEntry.getValue()));
+                }
             }
-            for (int index = 0; index < contentMap.get(LabelType.PRECONDITION).size(); index++) {
-                Entry<String, String> preconditionEntry = contentMap.get(LabelType.PRECONDITION).get(index);
-                defaultCaseData.addContent(LabelType.PRECONDITION.getName(), -1,
-                        getTempletContent(LabelType.PRECONDITION, preconditionEntry.getKey(),
-                                preconditionEntry.getValue()));
+            if (contentMap.containsKey(LabelType.PRECONDITION)) {
+                for (int index = 0; index < contentMap.get(LabelType.PRECONDITION).size(); index++) {
+                    Entry<String, String> preconditionEntry = contentMap.get(LabelType.PRECONDITION).get(index);
+                    defaultCaseData.addContent(LabelType.PRECONDITION.getName(), -1,
+                            getTempletContent(LabelType.PRECONDITION, preconditionEntry.getKey(),
+                                    preconditionEntry.getValue()));
+                }
             }
 
             // 由于是按照步骤对用例进行拆分，故需要计算步骤中的集合数量
-            int stepNum = contentMap.get(LabelType.STEP).size();
+            int stepNum = Optional.ofNullable(contentMap.get(LabelType.STEP)).map(List::size).orElse(0);
             // 按照步骤数量，对各个字段相应位置的内容进行获取
             for (int index = 0; index < stepNum; index++) {
                 CaseData caseData = new CaseData(templetClass);
@@ -344,5 +348,45 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
         }
 
         return caseDataList;
+    }
+
+    /**
+     * 该方法用于将需要添加的测试用例内容，附加到内容map集合中，并返回该集合进行返回
+     * 
+     * @param allContentMap 所有测试用例内容集合
+     * @param labelType     标签枚举
+     * @param contentList   内容集合
+     * @return 附加内容后的map集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> addContent(
+            Map<LabelType, List<Entry<String, String[]>>> allContentMap, LabelType labelType,
+            List<Entry<String, String[]>> contentList) {
+        // 判断传入的map集合是否为null，若为null，则对其进行构造
+        if (allContentMap == null) {
+            allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        }
+
+        // 判断当前标签在集合中是否存在，若不存在，则对其进行构造
+        if (!allContentMap.containsKey(labelType)) {
+            allContentMap.put(labelType, new ArrayList<>());
+        }
+
+        // 获取map集合下的内容集合
+        List<Entry<String, String[]>> labelContentList = allContentMap.get(labelType);
+        // 向内容集合中，添加指定的内容
+        for (Entry<String, String[]> content : contentList) {
+            // 判断内容是否为null
+            if (content == null) {
+                continue;
+            }
+            // 判断内容的键值是否为null或为空
+            if (!Optional.ofNullable(content.getKey()).filter(str -> !str.isEmpty()).isPresent()) {
+                continue;
+            }
+            labelContentList.add(content);
+        }
+
+        return allContentMap;
     }
 }
