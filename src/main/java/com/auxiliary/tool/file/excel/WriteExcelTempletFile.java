@@ -451,7 +451,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
     @SuppressWarnings("unchecked")
     @Override
     public T changeCaseBackground(IndexedColors indexedColors) {
-        data.getCaseJson().put(ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.getIndex());
+//        data.getCaseJson().put(ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.getIndex());
+        for (String field : getTemplet(data.getTempName()).getFieldList()) {
+            changeFieldBackground(field, indexedColors);
+        }
         return (T) this;
     }
 
@@ -637,12 +640,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 计算当前需要写入的行
 			int lastRowIndex = templetSheet.getLastRowNum() + 1;
 
-            // 若当前内容为空时，则创建一个空行，并继续循环
-            if (contentJson.isEmpty()) {
-                templetSheet.createRow(lastRowIndex);
-                continue;
-            }
-
+            // 存储判断当前是否添加了一行内容
+            boolean isCreateRow = false;
 			// 遍历所有的字段
 			for (String field : templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD).keySet()) {
 				// 判断字段是否存在内容，不存在，则不进行处理
@@ -675,6 +674,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
                             getCell(templetSheet, lastRowIndex, fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX)),
                             null, style);
                 }
+                // 设置当前已创建一行内容
+                isCreateRow = true;
 
 				// 记录当前内容json的位置 TODO 用于超链接
 //				contentJson.put(KEY_RELATIVE_ROW, lastRowIndex);
@@ -689,6 +690,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					addLink(excel, cell, fieldContentJson.getJSONObject(KEY_LINK));
 				}
 			}
+
+            // TODO 若当前内容为空时，则创建一个空行，并添加相应的全局内容
+            if (!isCreateRow) {
+                templetSheet.createRow(lastRowIndex);
+            }
 
 			// 获取数据有效性标题
 			List<String> dataTitleList = readDataOptionTitle(excel);
