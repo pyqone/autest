@@ -1,11 +1,15 @@
 package com.auxiliary.testcase.templet;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
 
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
@@ -166,28 +170,107 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         return createCaseDataList(this, allContentMap);
     }
 
+    /**
+     * 该方法用于添加文本框相关的基本测试用例
+     * 
+     * @param isMust         是否必填
+     * @param isRepeat       是否允许重复提交
+     * @param isClear        是否允许清空
+     * @param inputRuleTypes 输入限制组
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
     private Map<LabelType, List<Entry<String, String[]>>> textboxCommonCase(boolean isMust, boolean isRepeat,
             boolean isClear, InputRuleType... inputRuleTypes) {
-        // 添加测试用例
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-        // 步骤
-        allContentMap.put(LabelType.STEP, Arrays.asList(
-                new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1", "2", "3" })));
+        // 转换输入限制
+        Set<InputRuleType> inputRuleTypeSet = new HashSet<>();
+        if (inputRuleTypes != null) {
+            for (InputRuleType inputRuleType : inputRuleTypes) {
+                inputRuleTypeSet.add(inputRuleType);
+            }
+        }
 
-        // 预期
-        allContentMap.put(LabelType.EXCEPT, Arrays.asList(
-                new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期", "失败预期" })));
-        // 优先级
-        allContentMap.put(LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 标题
+        addContent(allContentMap, LabelType.TITLE, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        // 步骤与预期
+        List<Entry<String, String[]>> stepList = new ArrayList<>();
+        List<Entry<String, String[]>> exceptList = new ArrayList<>();
+        stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "1" }));
+        exceptList.add(
+                new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "失败预期" : "输入成功预期" }));
+        // 判断输入限制是否只为数字，以添加只输入空格的用例
+        if (inputRuleTypeSet.size() != 1 && !inputRuleTypeSet.contains(InputRuleType.NUM)) {
+            stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "2" }));
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                    new String[] { isMust ? "失败预期" : "输入成功预期" }));
+        }
+        // 判断是否没有输入限制，或者允许输入大、小写字母和特殊字符，以添加SQL注入漏洞与XSS攻击漏洞用例
+        if (inputRuleTypeSet.size() == 0
+                || ((inputRuleTypeSet.contains(InputRuleType.LOW) || inputRuleTypeSet.contains(InputRuleType.CAP))
+                        && inputRuleTypeSet.contains(InputRuleType.SPE))) {
+            stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "3", "8" }));
+            exceptList
+                    .add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "输入成功预期", "输入成功预期" }));
+        }
+        // 判断是否允许输入emoji表情
+        if (inputRuleTypeSet.size() == 0 || inputRuleTypeSet.contains(InputRuleType.EMOJI)) {
+            stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "7" }));
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "输入成功预期" }));
+        }
+        // 判断是否有输入限制，以添加输入限制相关的用例
+        if (inputRuleTypeSet.size() != 0) {
+            // 拼接输入限制
+            StringJoiner inputRule = new StringJoiner("、");
+            inputRuleTypeSet.stream().map(InputRuleType::getName).forEach(inputRule::add);
+            // 添加替换词以及用例
+            addReplaceWord(ReplaceWord.INPUT_RULE, inputRule.toString());
+            stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "4" }));
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期" }));
+        }
+        // 判断是否能清空内容，添加清空后提交的用例
+        if (isClear) {
+            stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "6" }));
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                    new String[] { isMust ? "失败预期" : "输入成功预期" }));
+        }
+        // 添加重复提交相关的用例
+        stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "5" }));
+        exceptList.add(
+                new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isRepeat ? "输入成功预期" : "失败预期" }));
+
+        // 添加步骤与预期
+        addContent(allContentMap, LabelType.STEP, stepList);
+        addContent(allContentMap, LabelType.EXCEPT, exceptList);
         // 关键词
-        allContentMap.put(LabelType.KEY, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
         // 前置条件
-        allContentMap.put(LabelType.PRECONDITION,
+        addContent(allContentMap, LabelType.PRECONDITION,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
 
         return allContentMap;
+    }
+
+    public List<CaseData> addBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            InputRuleType... inputRuleTypes) {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(isMust, isRepeat, isClear,
+                inputRuleTypes);
+        
+        // 添加替换词语
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, "新增");
+        addReplaceWord(ReplaceWord.CONTROL_NAME, name);
+
+        // 添加前置条件
+        addContent(allContentMap, LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "3" })));
+
+        return createCaseDataList(this, allContentMap);
     }
 
     /**
@@ -286,22 +369,19 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * <b>编码时间：</b>2020年3月14日 下午9:14:30
      * </p>
      * <p>
-     * <b>修改时间：</b>2020年3月14日 下午9:14:30
+     * <b>修改时间：</b>2023年3月8日 上午8:13:53
      * </p>
      * 
      * @author 彭宇琦
      * @version Ver1.0
      * @since JDK 1.8
+     * @since autest 2.6.0
      */
     public enum InputRuleType {
         /**
          * 中文
          */
         CH("中文"),
-        /**
-         * 英文
-         */
-        EN("英文"),
         /**
          * 数字
          */
@@ -317,7 +397,13 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         /**
          * 大写字母
          */
-        CAP("大写字母");
+        CAP("大写字母"),
+        /**
+         * emoji表情
+         * 
+         * @since autest 4.0.0
+         */
+        EMOJI("emoji表情");
 
         /**
          * 枚举名称
