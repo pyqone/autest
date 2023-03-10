@@ -127,28 +127,28 @@
 			intention='验证#操作类型##信息#界面上的“#控件名称#”信息是否可输入小于#数字最小限制#的数字'
 			rank='#rank-2#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
-			<stepdetail value='在#控件名称#上输入小于#数字最小限制#的数字' />
+			<stepdetail value='在#控件名称#上输入小于“#数字最小限制#”的数字' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		<step id='7' value='输入数字#数字最小限制#，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的“#控件名称#”信息是否可输入#数字最小限制#的数字' rank='#rank-1#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
-			<stepdetail value='在#控件名称#上输入#数字最小限制#的数字' />
+			<stepdetail value='在#控件名称#上输入数字#数字最小限制#' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		<step id='8' value='输入大于#数字最大限制#的数字，点击“#保存按钮名称#”按钮'
 			intention='验证#操作类型##信息#界面上的“#控件名称#”信息是否可输入大于#数字最大限制#的数字' rank='#rank-2#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
-			<stepdetail value='在#控件名称#上输入大于#数字最大限制#的数字' />
+			<stepdetail value='在#控件名称#上输入大于“#数字最大限制#”的数字' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		<step id='9' value='输入#数字最大限制#的数字，点击“#保存按钮名称#”按钮'
             intention='验证#操作类型##信息#界面上的“#控件名称#”信息是否可输入#数字最大限制#的数字' rank='#rank-1#'>
 			<stepdetail value='进入#操作类型##信息#页面' />
-			<stepdetail value='在#控件名称#上输入#数字最大限制#的数字' />
+			<stepdetail value='在#控件名称#上输入数字“#数字最大限制#”' />
 			<stepdetail value='其他内容正确填写或选择' />
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>

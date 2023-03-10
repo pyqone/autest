@@ -45,6 +45,15 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public final String OPERAT_ADD = "新增";
 
     /**
+     * 最小数字限制
+     */
+    public static final int MIN_NUMBER = Integer.MIN_VALUE;
+    /**
+     * 最大数字限制
+     */
+    public static final int MAX_NUMBER = Integer.MAX_VALUE;
+
+    /**
      * 构造对象，并指定读取的模板xml文件
      * 
      * @param xmlTempletFile 用例模板文件类对象
@@ -422,6 +431,58 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             int minLen, int maxLen, InputRuleType... inputRuleTypes) {
         return createCaseDataList(this,
                 lengthRuleTextboxCase(OPERAT_EDIT, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
+    }
+
+    protected Map<LabelType, List<Entry<String, String[]>>> numberRuleTextboxCase(String operationName, String name,
+            boolean isMust, boolean isRepeat, boolean isClear, int decimals, int minNum, int maxNum) {
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, operationName, isMust,
+                isRepeat, isClear, InputRuleType.NUM);
+
+        // 添加输入数字限制相关的测试用例
+        // 判断最大最小值是否一致，若一致，则按照只包含最大限制生成用例
+        if (minNum == maxNum) {
+            minNum = MIN_NUMBER;
+        }
+        // 判断最大与最小值是否需要调换，存储正确最大最小值
+        if (minNum > maxNum) {
+            int temp = minNum;
+            minNum = maxNum;
+            maxNum = temp;
+        }
+
+        // 存储数字限制
+        addReplaceWord(ReplaceWord.INPUT_MIN_NUMBER, String.valueOf(minNum));
+        addReplaceWord(ReplaceWord.INPUT_MAX_NUMBER, String.valueOf(maxNum));
+
+        // 判断是否有最小数字限制
+        if (minNum != MIN_NUMBER) {
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "6", "7" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+        }
+        // 判断是否有最大数字限制
+        if (maxNum != MAX_NUMBER) {
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "8", "9" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+        }
+
+        // 若传入的小数位数大于0，则添加小数位相关的用例
+        if (decimals > 0) {
+            // 存储小数位数
+            addReplaceWord(ReplaceWord.INPUT_DECIMALS, String.valueOf(decimals));
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE,
+                            new String[] { "10", "11", "12" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { "失败预期", "输入成功预期", "输入成功预期" })));
+        }
+
+        return allContentMap;
     }
 
     /**
