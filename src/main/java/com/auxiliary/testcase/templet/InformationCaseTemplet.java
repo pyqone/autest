@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -34,6 +35,15 @@ import com.auxiliary.tool.regex.ConstType;
  * @since autest 4.0.0
  */
 public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
+    /**
+     * 编辑操作名称
+     */
+    public final String OPERAT_EDIT = "编辑";
+    /**
+     * 新增操作名称
+     */
+    public final String OPERAT_ADD = "新增";
+
     /**
      * 构造对象，并指定读取的模板xml文件
      * 
@@ -176,15 +186,19 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @param isMust         是否必填
      * @param isRepeat       是否允许重复提交
      * @param isClear        是否允许清空
-     * @param inputRuleTypes 输入限制组
+     * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）组
      * @return 用例集合
      * @since autest 4.0.0
      */
-    private Map<LabelType, List<Entry<String, String[]>>> textboxCommonCase(boolean isMust, boolean isRepeat,
-            boolean isClear, InputRuleType... inputRuleTypes) {
+    protected Map<LabelType, List<Entry<String, String[]>>> textboxCommonCase(String name, String operationName,
+            boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
+        // 添加替换词语
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
+        addReplaceWord(ReplaceWord.CONTROL_NAME, name);
+
         // 转换输入限制
         Set<InputRuleType> inputRuleTypeSet = new HashSet<>();
-        if (inputRuleTypes != null) {
+        if (inputRuleTypes != null && inputRuleTypes.length != 0) {
             for (InputRuleType inputRuleType : inputRuleTypes) {
                 inputRuleTypeSet.add(inputRuleType);
             }
@@ -199,17 +213,16 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         // 步骤与预期
         List<Entry<String, String[]>> stepList = new ArrayList<>();
         List<Entry<String, String[]>> exceptList = new ArrayList<>();
-        stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "1" }));
-        exceptList.add(
-                new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "失败预期" : "输入成功预期" }));
-        // 判断输入限制是否只为数字，以添加只输入空格的用例
-        if (inputRuleTypeSet.size() != 1 && !inputRuleTypeSet.contains(InputRuleType.NUM)) {
-            stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "2" }));
-            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                    new String[] { isMust ? "失败预期" : "输入成功预期" }));
+        stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "1", "2" }));
+        if (isMust) {
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "失败预期" }));
+        } else {
+            exceptList
+                    .add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "空成功预期", "空成功预期" }));
         }
+
         // 判断是否没有输入限制，或者允许输入大、小写字母和特殊字符，以添加SQL注入漏洞与XSS攻击漏洞用例
-        if (inputRuleTypeSet.size() == 0
+        if (inputRuleTypeSet.isEmpty()
                 || ((inputRuleTypeSet.contains(InputRuleType.LOW) || inputRuleTypeSet.contains(InputRuleType.CAP))
                         && inputRuleTypeSet.contains(InputRuleType.SPE))) {
             stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "3", "8" }));
@@ -248,29 +261,167 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         // 关键词
         addContent(allContentMap, LabelType.KEY,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
-        addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
-        // 前置条件
-        addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        // 根据操作名称，添加前置条件
+        if (Objects.equals(OPERAT_ADD, operationName)) {
+            addContent(allContentMap, LabelType.PRECONDITION,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+            addContent(allContentMap, LabelType.PRECONDITION,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "3" })));
+        } else {
+            addContent(allContentMap, LabelType.PRECONDITION,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+            addContent(allContentMap, LabelType.PRECONDITION,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "4" })));
+        }
 
         return allContentMap;
     }
 
+    /**
+     * 该方法用于生成新增信息中对普通文本测试的用例
+     * 
+     * @param name           控件名称
+     * @param isMust         是否必填
+     * @param isRepeat       是否允许保存相同内容
+     * @param isClear        是否可以通过按钮清除内容
+     * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）组
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
     public List<CaseData> addBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
             InputRuleType... inputRuleTypes) {
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(isMust, isRepeat, isClear,
-                inputRuleTypes);
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, OPERAT_ADD, isMust,
+                isRepeat, isClear, inputRuleTypes);
         
-        // 添加替换词语
-        addReplaceWord(ReplaceWord.OPERATION_TYPE, "新增");
-        addReplaceWord(ReplaceWord.CONTROL_NAME, name);
-
-        // 添加前置条件
-        addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "3" })));
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
 
         return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成编辑信息中对普通文本测试的用例
+     * 
+     * @param name           控件名称
+     * @param isMust         是否必填
+     * @param isRepeat       是否允许保存相同内容
+     * @param isClear        是否可以通过按钮清除内容
+     * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）组
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            InputRuleType... inputRuleTypes) {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, OPERAT_EDIT, isMust,
+                isRepeat, isClear, inputRuleTypes);
+
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成带长度限制的文本框测试用例的基本内容
+     * 
+     * @param operationName  操作类型名称
+     * @param name           控件名称
+     * @param isMust         是否必填
+     * @param isRepeat       是否可以与存在的内容重复
+     * @param isClear        是否有按钮可以清空文本框
+     * @param minLen         最小输入长度限制
+     * @param maxLen         最大输入长度限制
+     * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）组
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> lengthRuleTextboxCase(String operationName, String name,
+            boolean isMust, boolean isRepeat, boolean isClear, int minLen, int maxLen,
+            InputRuleType... inputRuleTypes) {
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, operationName, isMust,
+                isRepeat, isClear, inputRuleTypes);
+
+        // 添加输入长度限制相关的测试用例
+        // 判断传入的限制参数是否有小于0的参数，参数小于0则直接转换为0
+        minLen = minLen < 0 ? 0 : minLen;
+        maxLen = maxLen < 0 ? 0 : maxLen;
+        // 判断是否存在最小长度限制
+        if (minLen != 0) {
+            addReplaceWord(ReplaceWord.INPUT_MIN_LENGTH, String.valueOf(minLen));
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+        }
+        // 判断是否存在最大长度限制
+        if (maxLen != 0) {
+            addReplaceWord(ReplaceWord.INPUT_MAX_LENGTH, String.valueOf(maxLen));
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "3", "4" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+        }
+
+        // 根据是否必填，添加其文本框的优先级
+        addContent(allContentMap, LabelType.RANK, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中带长度限制的文本框测试用例
+     * <p>
+     * 传入长度限制的方法如下：
+     * <ol>
+     * <li>输入长度限制为2~10个字符时：addLengthRuleTextboxCase(..., 2, 10, ...)</li>
+     * <li>输入长度限制为最多输入10个字符时：addLengthRuleTextboxCase(..., 0, 10, ...)</li>
+     * <li>输入长度限制为最少输入2个字符时：addLengthRuleTextboxCase(..., 2, 0, ...)</li>
+     * <li>输入长度限制仅能输入2个字符时：addLengthRuleTextboxCase(..., 2, 2, ...)</li>
+     * </ol>
+     * </p>
+     * <p>
+     * <b>注意：</b>若最长、最短限制均传入小于等于0的数值时，则当成无任何长度限制的文本框用例进行返回
+     * </p>
+     * 
+     * @param name           控件名称
+     * @param isMust         是否必填
+     * @param isRepeat       是否可以与存在的内容重复
+     * @param isClear        是否有按钮可以清空文本框
+     * @param minLen         最小输入长度限制
+     * @param maxLen         最大输入长度限制
+     * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addLengthRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            int minLen, int maxLen, InputRuleType... inputRuleTypes) {
+        return createCaseDataList(this,
+                lengthRuleTextboxCase(OPERAT_ADD, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中带长度限制的文本框测试用例
+     * <p>
+     * 传入长度限制的方法可参考生成新增用例的方法{@link #addLengthRuleTextboxCase(String, boolean, boolean, boolean, int, int, InputRuleType...)}
+     * </p>
+     * 
+     * @param name           控件名称
+     * @param isMust         是否必填
+     * @param isRepeat       是否可以与存在的内容重复
+     * @param isClear        是否有按钮可以清空文本框
+     * @param minLen         最小输入长度限制
+     * @param maxLen         最大输入长度限制
+     * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editLengthRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            int minLen, int maxLen, InputRuleType... inputRuleTypes) {
+        return createCaseDataList(this,
+                lengthRuleTextboxCase(OPERAT_EDIT, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
     }
 
     /**
