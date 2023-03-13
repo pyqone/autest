@@ -337,18 +337,25 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     protected Map<LabelType, List<Entry<String, String[]>>> lengthRuleTextboxCase(String operationName, String name,
-            boolean isMust, boolean isRepeat, boolean isClear, int minLen, int maxLen,
+            boolean isMust, boolean isRepeat, boolean isClear, Integer minLen, Integer maxLen,
             InputRuleType... inputRuleTypes) {
         // 获取文本框的基础测试用例
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, operationName, isMust,
                 isRepeat, isClear, inputRuleTypes);
 
         // 添加输入长度限制相关的测试用例
-        // 判断传入的限制参数是否有小于0的参数，参数小于0则直接转换为0
-        minLen = minLen < 0 ? 0 : minLen;
-        maxLen = maxLen < 0 ? 0 : maxLen;
+        // 判断最大最小值是否一致，若一致，则按照只包含最大限制生成用例
+        if (Objects.equals(minLen, maxLen)) {
+            minLen = null;
+        }
+        // 判断最大与最小值是否需要调换，存储正确最大最小值
+        if (minLen != null && maxLen != null && minLen > maxLen) {
+            int temp = minLen;
+            minLen = maxLen;
+            maxLen = temp;
+        }
         // 判断是否存在最小长度限制
-        if (minLen != 0) {
+        if (Optional.ofNullable(minLen).filter(min -> min > 0).isPresent()) {
             addReplaceWord(ReplaceWord.INPUT_MIN_LENGTH, String.valueOf(minLen));
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2" })));
@@ -356,7 +363,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                     new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
         }
         // 判断是否存在最大长度限制
-        if (maxLen != 0) {
+        if (Optional.ofNullable(maxLen).filter(max -> max > 0).isPresent()) {
             addReplaceWord(ReplaceWord.INPUT_MAX_LENGTH, String.valueOf(maxLen));
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "3", "4" })));
@@ -583,6 +590,87 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             Integer minNum, Integer maxNum, Integer decimals) {
         return createCaseDataList(this,
                 numberRuleTextboxCase(OPERATION_EDIT, name, isMust, isRepeat, isClear, minNum, maxNum, decimals));
+    }
+
+    /**
+     * 该方法用于生成电话号码相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isRepeat      是否可以与存在的内容重复
+     * @param isClear       是否有按钮可以清空文本框
+     * @param phoneTypes    号码类型
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> phoneCase(String operationName, String name, boolean isMust,
+            boolean isRepeat, boolean isClear, PhoneType... phoneTypes) {
+        if (phoneTypes.length == 0) {
+            return lengthRuleTextboxCase(operationName, name, isMust, isRepeat, isClear, null, null, InputRuleType.NUM);
+        }
+
+        // 将号码限制组改为set集合
+        Set<PhoneType> phoneTypeSet = new HashSet<>(Arrays.asList(phoneTypes));
+        
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = null;
+        if (phoneTypeSet.contains(PhoneType.FIXED)) {
+            allContentMap = lengthRuleTextboxCase(operationName, name, isMust, isRepeat, isClear, 7,
+                    phoneTypeSet.contains(PhoneType.MOBLE) ? 11 : 7, InputRuleType.NUM);
+        } else {
+            allContentMap = lengthRuleTextboxCase(operationName, name, isMust, isRepeat, isClear, null, 11,
+                    InputRuleType.NUM);
+        }
+
+        // 添加移动电话用例
+        if (phoneTypeSet.contains(PhoneType.MOBLE)) {
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_PHONE_CASE, new String[] { "1" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期" })));
+        }
+        // 添加座机用例
+        if (phoneTypeSet.contains(PhoneType.FIXED)) {
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_PHONE_CASE, new String[] { "2" })));
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "输入成功预期" })));
+        }
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中电话号码类型文本框相关的测试用例
+     * 
+     * @param name       控件名称
+     * @param isMust     是否必填
+     * @param isRepeat   是否可以与存在的内容重复
+     * @param isClear    是否有按钮可以清空文本框
+     * @param phoneTypes 号码类型
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addPhoneCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            PhoneType... phoneTypes) {
+        return createCaseDataList(this, phoneCase(OPERATION_ADD, name, isMust, isRepeat, isClear, phoneTypes));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中电话号码类型文本框相关的测试用例
+     * 
+     * @param name       控件名称
+     * @param isMust     是否必填
+     * @param isRepeat   是否可以与存在的内容重复
+     * @param isClear    是否有按钮可以清空文本框
+     * @param phoneTypes 号码类型
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editPhoneCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            PhoneType... phoneTypes) {
+        return createCaseDataList(this, phoneCase(OPERATION_EDIT, name, isMust, isRepeat, isClear, phoneTypes));
     }
 
     /**
