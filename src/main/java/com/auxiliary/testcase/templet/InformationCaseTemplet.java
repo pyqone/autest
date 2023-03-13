@@ -38,20 +38,11 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     /**
      * 编辑操作名称
      */
-    public final String OPERAT_EDIT = "编辑";
+    public final String OPERATION_EDIT = "编辑";
     /**
      * 新增操作名称
      */
-    public final String OPERAT_ADD = "新增";
-
-    /**
-     * 最小数字限制
-     */
-    public static final int MIN_NUMBER = Integer.MIN_VALUE;
-    /**
-     * 最大数字限制
-     */
-    public static final int MAX_NUMBER = Integer.MAX_VALUE;
+    public final String OPERATION_ADD = "新增";
 
     /**
      * 构造对象，并指定读取的模板xml文件
@@ -272,7 +263,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
 
         // 根据操作名称，添加前置条件
-        if (Objects.equals(OPERAT_ADD, operationName)) {
+        if (Objects.equals(OPERATION_ADD, operationName)) {
             addContent(allContentMap, LabelType.PRECONDITION,
                     Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
             addContent(allContentMap, LabelType.PRECONDITION,
@@ -300,7 +291,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public List<CaseData> addBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
             InputRuleType... inputRuleTypes) {
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, OPERAT_ADD, isMust,
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, OPERATION_ADD, isMust,
                 isRepeat, isClear, inputRuleTypes);
         
         addContent(allContentMap, LabelType.RANK,
@@ -322,7 +313,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public List<CaseData> editBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
             InputRuleType... inputRuleTypes) {
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, OPERAT_EDIT, isMust,
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, OPERATION_EDIT, isMust,
                 isRepeat, isClear, inputRuleTypes);
 
         addContent(allContentMap, LabelType.RANK,
@@ -385,10 +376,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * <p>
      * 传入长度限制的方法如下：
      * <ol>
-     * <li>输入长度限制为2~10个字符时：addLengthRuleTextboxCase(..., 2, 10, ...)</li>
-     * <li>输入长度限制为最多输入10个字符时：addLengthRuleTextboxCase(..., 0, 10, ...)</li>
-     * <li>输入长度限制为最少输入2个字符时：addLengthRuleTextboxCase(..., 2, 0, ...)</li>
-     * <li>输入长度限制仅能输入2个字符时：addLengthRuleTextboxCase(..., 2, 2, ...)</li>
+     * <li>输入长度限制为2~10个字符时：{@code addLengthRuleTextboxCase("姓名", true, true, true, 2, 10)}</li>
+     * <li>输入长度限制为最多输入10个字符时：{@code addLengthRuleTextboxCase("姓名", true, true, true, 0, 10)}</li>
+     * <li>输入长度限制为最少输入2个字符时：{@code addLengthRuleTextboxCase("姓名", true, true, true, 2, 0)}</li>
+     * <li>输入长度限制仅能输入2个字符时：{@code addLengthRuleTextboxCase("姓名", true, true, true, 2, 2)}</li>
      * </ol>
      * </p>
      * <p>
@@ -408,7 +399,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public List<CaseData> addLengthRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
             int minLen, int maxLen, InputRuleType... inputRuleTypes) {
         return createCaseDataList(this,
-                lengthRuleTextboxCase(OPERAT_ADD, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
+                lengthRuleTextboxCase(OPERATION_ADD, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
     }
 
     /**
@@ -430,22 +421,62 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public List<CaseData> editLengthRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
             int minLen, int maxLen, InputRuleType... inputRuleTypes) {
         return createCaseDataList(this,
-                lengthRuleTextboxCase(OPERAT_EDIT, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
+                lengthRuleTextboxCase(OPERATION_EDIT, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
     }
 
+    /**
+     * 该方法用于生成带数字限制的文本框测试用例
+     * <p>
+     * 该方法可以生成带数字大小限制的输入文本框，亦可生成带小数位限制的文本框，其传参方式如下：
+     * </p>
+     * <p>
+     * 带数字大小限制的文本框：
+     * <ul>
+     * <li>数字最小输入限制为2：{@code addNumberRuleTextboxCase("成功率", true, true, true, 1, null, null)}</li>
+     * <li>数字最大输入限制为10：{@code addNumberRuleTextboxCase("成功率", true, true, true, null, 10, null)}</li>
+     * <li>数字输入限制为2~10：{@code addNumberRuleTextboxCase("成功率", true, true, true, 2, 10, null)}</li>
+     * </ul>
+     * </p>
+     * <p>
+     * 带小数位限制的文本框：
+     * <ul>
+     * <li>小数位限制为2位：{@code addNumberRuleTextboxCase("成功率", true, true, true, null, null, 2)}</li>
+     * <li>无小数位限制：{@code addNumberRuleTextboxCase("成功率", true, true, true, null, null, null)}</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>以上案例中，小数位与数字限制可同时使用，例如，数字输入限制为2~10，小数位限制2位：{@code addNumberRuleTextboxCase("成功率", true, true, true, 2, 10, 2)}</li>
+     * <li>当最大、最小数字限制与小数位限制都传入null时，则按照只限制输入数字的文本框处理</li>
+     * <li></li>
+     * </ol>
+     * </p>
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isRepeat      是否可以与存在的内容重复
+     * @param isClear       是否有按钮可以清空文本框
+     * @param minNum        数字最大限制
+     * @param maxNum        数字最小限制
+     * @param decimals      小数位限制
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
     protected Map<LabelType, List<Entry<String, String[]>>> numberRuleTextboxCase(String operationName, String name,
-            boolean isMust, boolean isRepeat, boolean isClear, int decimals, int minNum, int maxNum) {
+            boolean isMust, boolean isRepeat, boolean isClear, Integer minNum, Integer maxNum, Integer decimals) {
         // 获取文本框的基础测试用例
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, operationName, isMust,
                 isRepeat, isClear, InputRuleType.NUM);
 
         // 添加输入数字限制相关的测试用例
         // 判断最大最小值是否一致，若一致，则按照只包含最大限制生成用例
-        if (minNum == maxNum) {
-            minNum = MIN_NUMBER;
+        if (Objects.equals(minNum, maxNum)) {
+            minNum = null;
         }
         // 判断最大与最小值是否需要调换，存储正确最大最小值
-        if (minNum > maxNum) {
+        if (minNum != null && maxNum != null && minNum > maxNum) {
             int temp = minNum;
             minNum = maxNum;
             maxNum = temp;
@@ -456,14 +487,14 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         addReplaceWord(ReplaceWord.INPUT_MAX_NUMBER, String.valueOf(maxNum));
 
         // 判断是否有最小数字限制
-        if (minNum != MIN_NUMBER) {
+        if (minNum != null) {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "6", "7" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
                     new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
         }
         // 判断是否有最大数字限制
-        if (maxNum != MAX_NUMBER) {
+        if (maxNum != null) {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "8", "9" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
@@ -471,18 +502,87 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         }
 
         // 若传入的小数位数大于0，则添加小数位相关的用例
-        if (decimals > 0) {
+        if (Optional.ofNullable(decimals).filter(de -> de.compareTo(0) > 0).isPresent()) {
             // 存储小数位数
             addReplaceWord(ReplaceWord.INPUT_DECIMALS, String.valueOf(decimals));
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE,
                             new String[] { "10", "11", "12" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "2" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
                     new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                            new String[] { "失败预期", "输入成功预期", "输入成功预期" })));
+                            new String[] { "输入成功预期", "输入成功预期" })));
         }
 
         return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中带数字限制的文本框测试用例
+     * <p>
+     * 该方法可以生成带数字大小限制的输入文本框，亦可生成带小数位限制的文本框，其传参方式如下：
+     * </p>
+     * <p>
+     * 带数字大小限制的文本框：
+     * <ul>
+     * <li>数字最小输入限制为2：{@code addNumberRuleTextboxCase("成功率", true, true, true, 1, null, null)}</li>
+     * <li>数字最大输入限制为10：{@code addNumberRuleTextboxCase("成功率", true, true, true, null, 10, null)}</li>
+     * <li>数字输入限制为2~10：{@code addNumberRuleTextboxCase("成功率", true, true, true, 2, 10, null)}</li>
+     * </ul>
+     * </p>
+     * <p>
+     * 带小数位限制的文本框：
+     * <ul>
+     * <li>小数位限制为2位：{@code addNumberRuleTextboxCase("成功率", true, true, true, null, null, 2)}</li>
+     * <li>无小数位限制：{@code addNumberRuleTextboxCase("成功率", true, true, true, null, null, null)}</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>以上案例中，小数位与数字限制可同时使用，例如，数字输入限制为2~10，小数位限制2位：{@code addNumberRuleTextboxCase("成功率", true, true, true, 2, 10, 2)}</li>
+     * <li>当最大、最小数字限制与小数位限制都传入null时，则按照只限制输入数字的文本框处理</li>
+     * <li></li>
+     * </ol>
+     * </p>
+     * 
+     * @param name     控件名称
+     * @param isMust   是否必填
+     * @param isRepeat 是否可以与存在的内容重复
+     * @param isClear  是否有按钮可以清空文本框
+     * @param minNum   数字最大限制
+     * @param maxNum   数字最小限制
+     * @param decimals 小数位限制
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addNumberRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            Integer minNum, Integer maxNum, Integer decimals) {
+        return createCaseDataList(this,
+                numberRuleTextboxCase(OPERATION_ADD, name, isMust, isRepeat, isClear, minNum, maxNum, decimals));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中带数字限制的文本框测试用例
+     * <p>
+     * 传入数字限制的方法可参考生成新增用例的方法：{@link #addNumberRuleTextboxCase(String, boolean, boolean, boolean, Integer, Integer, Integer)}
+     * </p>
+     * 
+     * @param name     控件名称
+     * @param isMust   是否必填
+     * @param isRepeat 是否可以与存在的内容重复
+     * @param isClear  是否有按钮可以清空文本框
+     * @param minNum   数字最大限制
+     * @param maxNum   数字最小限制
+     * @param decimals 小数位限制
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editNumberRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            Integer minNum, Integer maxNum, Integer decimals) {
+        return createCaseDataList(this,
+                numberRuleTextboxCase(OPERATION_EDIT, name, isMust, isRepeat, isClear, minNum, maxNum, decimals));
     }
 
     /**
