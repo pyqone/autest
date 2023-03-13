@@ -183,6 +183,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     /**
      * 该方法用于添加文本框相关的基本测试用例
      * 
+     * @param operationName  操作类型名称
+     * @param name           控件名称
      * @param isMust         是否必填
      * @param isRepeat       是否允许重复提交
      * @param isClear        是否允许清空
@@ -190,7 +192,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @return 用例集合
      * @since autest 4.0.0
      */
-    protected Map<LabelType, List<Entry<String, String[]>>> textboxCommonCase(String name, String operationName,
+    protected Map<LabelType, List<Entry<String, String[]>>> textboxCommonCase(String operationName, String name,
             boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
         // 添加替换词语
         addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
@@ -291,7 +293,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public List<CaseData> addBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
             InputRuleType... inputRuleTypes) {
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, OPERATION_ADD, isMust,
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(OPERATION_ADD, name, isMust,
                 isRepeat, isClear, inputRuleTypes);
         
         addContent(allContentMap, LabelType.RANK,
@@ -313,7 +315,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public List<CaseData> editBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
             InputRuleType... inputRuleTypes) {
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, OPERATION_EDIT, isMust,
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(OPERATION_EDIT, name, isMust,
                 isRepeat, isClear, inputRuleTypes);
 
         addContent(allContentMap, LabelType.RANK,
@@ -340,7 +342,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             boolean isMust, boolean isRepeat, boolean isClear, Integer minLen, Integer maxLen,
             InputRuleType... inputRuleTypes) {
         // 获取文本框的基础测试用例
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, operationName, isMust,
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(operationName, name, isMust,
                 isRepeat, isClear, inputRuleTypes);
 
         // 添加输入长度限制相关的测试用例
@@ -404,7 +406,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public List<CaseData> addLengthRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
-            int minLen, int maxLen, InputRuleType... inputRuleTypes) {
+            Integer minLen, Integer maxLen, InputRuleType... inputRuleTypes) {
         return createCaseDataList(this,
                 lengthRuleTextboxCase(OPERATION_ADD, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
     }
@@ -426,7 +428,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public List<CaseData> editLengthRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
-            int minLen, int maxLen, InputRuleType... inputRuleTypes) {
+            Integer minLen, Integer maxLen, InputRuleType... inputRuleTypes) {
         return createCaseDataList(this,
                 lengthRuleTextboxCase(OPERATION_EDIT, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
     }
@@ -474,7 +476,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     protected Map<LabelType, List<Entry<String, String[]>>> numberRuleTextboxCase(String operationName, String name,
             boolean isMust, boolean isRepeat, boolean isClear, Integer minNum, Integer maxNum, Integer decimals) {
         // 获取文本框的基础测试用例
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(name, operationName, isMust,
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(operationName, name, isMust,
                 isRepeat, isClear, InputRuleType.NUM);
 
         // 添加输入数字限制相关的测试用例
@@ -671,6 +673,61 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public List<CaseData> editPhoneCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
             PhoneType... phoneTypes) {
         return createCaseDataList(this, phoneCase(OPERATION_EDIT, name, isMust, isRepeat, isClear, phoneTypes));
+    }
+
+    /**
+     * 该方法用于生成身份证相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isRepeat      是否可以与存在的内容重复
+     * @param isClear       是否有按钮可以清空文本框
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> idCardCase(String operationName, String name,
+            boolean isMust,
+            boolean isRepeat, boolean isClear) {
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(operationName, name, isMust,
+                isRepeat, isClear);
+
+        addContent(allContentMap, LabelType.STEP, Arrays.asList(
+                new Entry<>(AddInformationTemplet.GROUP_ADD_ID_CARD_CASE, new String[] { "1", "2", "3", "4" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { "输入成功预期", "输入成功预期", "输入成功预期", "失败预期" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中身份证号码类型文本框相关的测试用例
+     * 
+     * @param name     控件名称
+     * @param isMust   是否必填
+     * @param isRepeat 是否可以与存在的内容重复
+     * @param isClear  是否有按钮可以清空文本框
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addIdCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
+        return createCaseDataList(this, idCardCase(OPERATION_ADD, name, isMust, isRepeat, isClear));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中身份证号码类型文本框相关的测试用例
+     * 
+     * @param name     控件名称
+     * @param isMust   是否必填
+     * @param isRepeat 是否可以与存在的内容重复
+     * @param isClear  是否有按钮可以清空文本框
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editIdCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
+        return createCaseDataList(this, idCardCase(OPERATION_EDIT, name, isMust, isRepeat, isClear));
     }
 
     /**
