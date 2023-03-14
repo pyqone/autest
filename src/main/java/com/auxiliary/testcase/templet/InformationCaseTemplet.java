@@ -181,6 +181,45 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
+     * 该方法用于添加用例公共内容
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> addCommonData(String operationName, String name) {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 添加替换词语
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
+        addReplaceWord(ReplaceWord.CONTROL_NAME, name);
+        
+        // 标题
+        addContent(allContentMap, LabelType.TITLE, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+        
+        // 根据操作名称，添加前置条件
+        if (Objects.equals(OPERATION_ADD, operationName)) {
+            addContent(allContentMap, LabelType.PRECONDITION,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+            addContent(allContentMap, LabelType.PRECONDITION,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "3" })));
+        } else {
+            addContent(allContentMap, LabelType.PRECONDITION,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+            addContent(allContentMap, LabelType.PRECONDITION,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "4" })));
+        }
+
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return allContentMap;
+    }
+
+    /**
      * 该方法用于添加文本框相关的基本测试用例
      * 
      * @param operationName  操作类型名称
@@ -194,9 +233,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     protected Map<LabelType, List<Entry<String, String[]>>> textboxCommonCase(String operationName, String name,
             boolean isMust, boolean isRepeat, boolean isClear, InputRuleType... inputRuleTypes) {
-        // 添加替换词语
-        addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
-        addReplaceWord(ReplaceWord.CONTROL_NAME, name);
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = addCommonData(operationName, name);
 
         // 转换输入限制
         Set<InputRuleType> inputRuleTypeSet = new HashSet<>();
@@ -205,12 +242,6 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 inputRuleTypeSet.add(inputRuleType);
             }
         }
-
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-
-        // 标题
-        addContent(allContentMap, LabelType.TITLE, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
 
         // 步骤与预期
         List<Entry<String, String[]>> stepList = new ArrayList<>();
@@ -260,22 +291,6 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         // 添加步骤与预期
         addContent(allContentMap, LabelType.STEP, stepList);
         addContent(allContentMap, LabelType.EXCEPT, exceptList);
-        // 关键词
-        addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
-
-        // 根据操作名称，添加前置条件
-        if (Objects.equals(OPERATION_ADD, operationName)) {
-            addContent(allContentMap, LabelType.PRECONDITION,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
-            addContent(allContentMap, LabelType.PRECONDITION,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "3" })));
-        } else {
-            addContent(allContentMap, LabelType.PRECONDITION,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
-            addContent(allContentMap, LabelType.PRECONDITION,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "4" })));
-        }
 
         return allContentMap;
     }
@@ -524,6 +539,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                             new String[] { "输入成功预期", "输入成功预期" })));
         }
 
+        // 根据是否必填，添加其文本框的优先级
+        addContent(allContentMap, LabelType.RANK, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+
         return allContentMap;
     }
 
@@ -563,7 +582,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @param minNum   数字最大限制
      * @param maxNum   数字最小限制
      * @param decimals 小数位限制
-     * @return 用例集合
+     * @return 用例数据对象集合
      * @since autest 4.0.0
      */
     public List<CaseData> addNumberRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
@@ -585,7 +604,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @param minNum   数字最大限制
      * @param maxNum   数字最小限制
      * @param decimals 小数位限制
-     * @return 用例集合
+     * @return 用例数据对象集合
      * @since autest 4.0.0
      */
     public List<CaseData> editNumberRuleTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
@@ -651,7 +670,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @param isRepeat   是否可以与存在的内容重复
      * @param isClear    是否有按钮可以清空文本框
      * @param phoneTypes 号码类型
-     * @return 用例集合
+     * @return 用例数据对象集合
      * @since autest 4.0.0
      */
     public List<CaseData> addPhoneCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
@@ -667,7 +686,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @param isRepeat   是否可以与存在的内容重复
      * @param isClear    是否有按钮可以清空文本框
      * @param phoneTypes 号码类型
-     * @return 用例集合
+     * @return 用例数据对象集合
      * @since autest 4.0.0
      */
     public List<CaseData> editPhoneCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
@@ -687,8 +706,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     protected Map<LabelType, List<Entry<String, String[]>>> idCardCase(String operationName, String name,
-            boolean isMust,
-            boolean isRepeat, boolean isClear) {
+            boolean isMust, boolean isRepeat, boolean isClear) {
         // 获取文本框的基础测试用例
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(operationName, name, isMust,
                 isRepeat, isClear);
@@ -698,6 +716,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                         new String[] { "输入成功预期", "输入成功预期", "输入成功预期", "失败预期" })));
+
+        // 根据是否必填，添加其文本框的优先级
+        addContent(allContentMap, LabelType.RANK, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
 
         return allContentMap;
     }
@@ -709,7 +731,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @param isMust   是否必填
      * @param isRepeat 是否可以与存在的内容重复
      * @param isClear  是否有按钮可以清空文本框
-     * @return 用例集合
+     * @return 用例数据对象集合
      * @since autest 4.0.0
      */
     public List<CaseData> addIdCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
@@ -723,11 +745,158 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @param isMust   是否必填
      * @param isRepeat 是否可以与存在的内容重复
      * @param isClear  是否有按钮可以清空文本框
-     * @return 用例集合
+     * @return 用例数据对象集合
      * @since autest 4.0.0
      */
     public List<CaseData> editIdCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
         return createCaseDataList(this, idCardCase(OPERATION_EDIT, name, isMust, isRepeat, isClear));
+    }
+
+    /**
+     * 该方法用于生成下拉选项控件相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isEmptyOption 是否存在空选项
+     * @param isClear       是否能清空
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> selectboxCase(String operationName, String name,
+            boolean isMust, boolean isEmptyOption, boolean isClear) {
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = addCommonData(operationName, name);
+
+        // 添加检查选项
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "2" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "2" })));
+        // 添加基础步骤
+        addContent(allContentMap, LabelType.STEP, Arrays.asList(
+                new Entry<>(AddInformationTemplet.GROUP_ADD_SELECTBOX_CASE, new String[] { "0", "2", "3" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust && isEmptyOption ? "失败预期" : "选择成功预期", "选择成功预期", "选择成功预期" })));
+        // 判断下拉框是否包含空选项
+        if (isEmptyOption) {
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_SELECTBOX_CASE, new String[] { "1" })));
+            if (isMust) {
+                addContent(allContentMap, LabelType.EXCEPT, Arrays
+                        .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_SELECTBOX_CASE, new String[] { "1" })));
+            } else {
+                addContent(allContentMap, LabelType.EXCEPT, Arrays
+                        .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期" })));
+            }
+        }
+        // 判断是否可清空
+        if (isClear) {
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_SELECTBOX_CASE, new String[] { "4" })));
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_SELECTBOX_CASE, new String[] { "2" })));
+        }
+
+        // 根据是否必填，添加其文本框的优先级
+        addContent(allContentMap, LabelType.RANK, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中下拉选项控件相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isEmptyOption 是否存在空选项
+     * @param isClear       是否能清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addSelectboxCase(String name, boolean isMust, boolean isEmptyOption, boolean isClear) {
+        return createCaseDataList(this, selectboxCase(OPERATION_ADD, name, isMust, isEmptyOption, isClear));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中下拉选项控件相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isEmptyOption 是否存在空选项
+     * @param isClear       是否能清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editSelectboxCase(String name, boolean isMust, boolean isEmptyOption, boolean isClear) {
+        return createCaseDataList(this, selectboxCase(OPERATION_EDIT, name, isMust, isEmptyOption, isClear));
+    }
+
+    /**
+     * 该方法用于生成单选控件相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> radioButtonCase(String operationName, String name) {
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = addCommonData(operationName, name);
+
+        // 添加检查选项
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "2" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "2" })));
+        // 添加基础步骤
+        addContent(allContentMap, LabelType.STEP, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_RADIO_BUTTON_CASE,
+                        new String[] { "1", "2", "3", "4" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_RADIO_BUTTON_CASE, new String[] { "1" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { "选择成功预期", "选择成功预期", "选择成功预期" })));
+
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中单选控件相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isEmptyOption 是否存在空选项
+     * @param isClear       是否能清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addRadioButtonCase(String name) {
+        return createCaseDataList(this, radioButtonCase(OPERATION_ADD, name));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中单选控件相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isEmptyOption 是否存在空选项
+     * @param isClear       是否能清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editRadioButtonCase(String name) {
+        return createCaseDataList(this, radioButtonCase(OPERATION_EDIT, name));
     }
 
     /**

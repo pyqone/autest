@@ -180,6 +180,13 @@
 	</group>
 
 	<group name='addSelectboxCase'>
+		<step id='0' value='不对控件进行选择，点击“#保存按钮名称#”按钮'
+            intention='验证#操作类型##信息#界面上的“#控件名称#”信息是否可选择无意义的选项' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='不对#控件名称#进行操作' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+		</step>
 		<step id='1' value='选择空选项，点击“#保存按钮名称#”按钮'
             intention='验证#操作类型##信息#界面上的“#控件名称#”信息是否可选择无意义的选项' rank='#rank-3#' >
             <stepdetail value='进入#操作类型##信息#页面' />
@@ -207,12 +214,10 @@
             <stepdetail value='在#控件名称#上选择第一个有意义的选项' />
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击清除选项的按钮' />
-            <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='1' value='#成功预期前文##信息#创建成功，#信息#选项变为默认选项或第一个选项，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息#成功预期后文#' />
-		<except id='2' value='选项变为空选项或默认选项，保存信息后，#成功预期前文##信息#创建成功，#信息#选项变为默认选项或第一个选项，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息#成功预期后文#' />
-		<except id='3' value='选项变为空选项或默认选项，保存信息后，#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
+		<except id='1' value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为默认选项或为空#成功预期后文#' />
+		<except id='2' value='选项变为空选项或默认选项' />
 	</group>
 
 	<group name='addRadioButtonCase'>
@@ -537,7 +542,7 @@
             <stepdetail value='查看#操作类型##信息#页面的控件布局' />
         </step>
         <step id='2' value='查看“#控件名称#”信息中的选项'
-            intention='验证正确填写所有信息是否能保存#信息#' rank='#rank-1#' >
+            intention='检查“#控件名称#”中的选项是否符合需求' rank='#rank-1#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='查看“#控件名称#”信息中的选项内容' />
         </step>
@@ -547,7 +552,6 @@
         <except id='2' value='“#控件名称#”信息中的选项与需求一致' />
         
         <title id='1' value='检查#信息#界面是否符合需求' />
-        <title id='2' value='检查“#控件名称#”信息是否符合需求' />
         
         <key id='1' value='#信息#、#操作类型#' />
     </group>
