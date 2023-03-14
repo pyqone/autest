@@ -872,11 +872,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     /**
      * 该方法用于生成新增信息中单选控件相关的测试用例
      * 
-     * @param operationName 操作类型名称
      * @param name          控件名称
-     * @param isMust        是否必填
-     * @param isEmptyOption 是否存在空选项
-     * @param isClear       是否能清空
      * @return 用例数据对象集合
      * @since autest 4.0.0
      */
@@ -887,16 +883,270 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     /**
      * 该方法用于生成编辑信息中单选控件相关的测试用例
      * 
-     * @param operationName 操作类型名称
      * @param name          控件名称
-     * @param isMust        是否必填
-     * @param isEmptyOption 是否存在空选项
-     * @param isClear       是否能清空
      * @return 用例数据对象集合
      * @since autest 4.0.0
      */
     public List<CaseData> editRadioButtonCase(String name) {
         return createCaseDataList(this, radioButtonCase(OPERATION_EDIT, name));
+    }
+
+    /**
+     * 该方法用于生成多选控件相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> checkboxCase(String operationName, String name,
+            boolean isMust) {
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = addCommonData(operationName, name);
+
+        // 添加检查选项
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "2" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "2" })));
+
+        // 添加基础步骤
+        addContent(allContentMap, LabelType.STEP, Arrays.asList(
+                new Entry<>(AddInformationTemplet.GROUP_ADD_CHECKBOX_CASE, new String[] { "1", "2", "3", "4", "5" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_CHECKBOX_CASE, new String[] { "1" })));
+
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? "失败预期" : "选择成功预期", "选择成功预期", "选择成功预期", "选择成功预期" })));
+
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中多选控件相关的测试用例
+     * 
+     * @param name   控件名称
+     * @param isMust 是否必填
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addCheckboxCase(String name, boolean isMust) {
+        return createCaseDataList(this, checkboxCase(OPERATION_ADD, name, isMust));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中多选控件相关的测试用例
+     * 
+     * @param name   控件名称
+     * @param isMust 是否必填
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editCheckboxCase(String name, boolean isMust) {
+        return createCaseDataList(this, checkboxCase(OPERATION_EDIT, name, isMust));
+    }
+
+    /**
+     * 该方法用于生成日期控件基本的方法
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isInput       是否可输入
+     * @param isClear       是否可清空
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> commonDateCase(String operationName, String name,
+            boolean isMust, boolean isInput, boolean isClear) {
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = addCommonData(operationName, name);
+
+        // 添加检查选项
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "1", "2" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? "失败预期" : "选择成功预期", "选择成功预期" })));
+        // 判断是否能清空
+        if (isClear) {
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "3" })));
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { isMust ? "失败预期" : "选择成功预期" })));
+        }
+        // 判断能输入
+        if (isInput) {
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "4", "5" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "选择成功预期", "失败预期" })));
+        }
+
+        // 根据是否必填，添加其文本框的优先级
+        addContent(allContentMap, LabelType.RANK, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中独立日期相关的测试用例
+     * 
+     * @param name    控件名称
+     * @param isMust  是否必填
+     * @param isInput 是否可输入
+     * @param isClear 是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addDateCase(String name, boolean isMust, boolean isInput, boolean isClear) {
+        return createCaseDataList(this, commonDateCase(OPERATION_ADD, name, isMust, isInput, isClear));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中独立日期相关的测试用例
+     * 
+     * @param name    控件名称
+     * @param isMust  是否必填
+     * @param isInput 是否可输入
+     * @param isClear 是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editDateCase(String name, boolean isMust, boolean isInput, boolean isClear) {
+        return createCaseDataList(this, commonDateCase(OPERATION_EDIT, name, isMust, isInput, isClear));
+    }
+
+    /**
+     * 该方法用于生成开始时间相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param endDateName   结束时间控件名称
+     * @param isMust        是否必填
+     * @param isInput       是否可输入
+     * @param isClear       是否可清空
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> startDateCase(String operationName, String name,
+            String endDateName, boolean isMust, boolean isInput, boolean isClear) {
+        // 添加替换词
+        addReplaceWord(ReplaceWord.END_DATE, endDateName);
+
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = commonDateCase(operationName, name, isMust,
+                isInput, isClear);
+
+        // 添加检查选项
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "6", "7" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { "失败预期", "选择成功预期" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中开始日期类型相关的测试用例
+     * 
+     * @param name        控件名称
+     * @param endDateName 结束时间控件名称
+     * @param isMust      是否必填
+     * @param isInput     是否可输入
+     * @param isClear     是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addStartDateCase(String name, String endDateName, boolean isMust, boolean isInput,
+            boolean isClear) {
+        return createCaseDataList(this, startDateCase(OPERATION_ADD, name, endDateName, isMust, isInput, isClear));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中开始日期类型相关的测试用例
+     * 
+     * @param name        控件名称
+     * @param endDateName 结束时间控件名称
+     * @param isMust      是否必填
+     * @param isInput     是否可输入
+     * @param isClear     是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editStartDateCase(String name, String endDateName, boolean isMust, boolean isInput,
+            boolean isClear) {
+        return createCaseDataList(this, startDateCase(OPERATION_EDIT, name, endDateName, isMust, isInput, isClear));
+    }
+
+    /**
+     * 该方法用于生成结束时间相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param endDateName   结束时间控件名称
+     * @param isMust        是否必填
+     * @param isInput       是否可输入
+     * @param isClear       是否可清空
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> endDateCase(String operationName, String name,
+            String startDateName, boolean isMust, boolean isInput, boolean isClear) {
+        // 添加替换词
+        addReplaceWord(ReplaceWord.START_DATE, startDateName);
+
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = commonDateCase(operationName, name, isMust,
+                isInput, isClear);
+
+        // 添加检查选项
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "8", "9" })));
+        addContent(allContentMap, LabelType.EXCEPT, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "选择成功预期" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中结束日期类型相关的测试用例
+     * 
+     * @param name          控件名称
+     * @param startDateName 结束时间控件名称
+     * @param isMust        是否必填
+     * @param isInput       是否可输入
+     * @param isClear       是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addEndDateCase(String name, String startDateName, boolean isMust, boolean isInput,
+            boolean isClear) {
+        return createCaseDataList(this, endDateCase(OPERATION_ADD, name, startDateName, isMust, isInput, isClear));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中结束日期类型相关的测试用例
+     * 
+     * @param name          控件名称
+     * @param startDateName 结束时间控件名称
+     * @param isMust        是否必填
+     * @param isInput       是否可输入
+     * @param isClear       是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editEndDateCase(String name, String startDateName, boolean isMust, boolean isInput,
+            boolean isClear) {
+        return createCaseDataList(this, endDateCase(OPERATION_EDIT, name, startDateName, isMust, isInput, isClear));
     }
 
     /**

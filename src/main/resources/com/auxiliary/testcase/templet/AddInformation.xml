@@ -335,21 +335,21 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		<step id='7' value='选择与“#结束日期#”相同的时间，点击“#保存按钮名称#”按钮'
-            intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否允许选择当前时间' rank='#rank-2#' >
+            intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否允许选择与“#结束日期#”相同的时间' rank='#rank-2#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='在“#控件名称#”信息上选择一个与“#结束日期#”相同的时间' />
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		<step id='8' value='选择小于“#开始日期#”的时间，点击“#保存按钮名称#”按钮'
-            intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否允许选择当前时间' rank='#rank-2#' >
+            intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否允许选择小于“#开始日期#”的时间' rank='#rank-2#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='在“#控件名称#”信息上选择一个小于“#开始日期#”的时间' />
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		<step id='9' value='选择与“#开始日期#”相同的时间，点击“#保存按钮名称#”按钮'
-            intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否允许选择当前时间' rank='#rank-2#' >
+            intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否允许选择与“#开始日期#”相同的时间' rank='#rank-2#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='在“#控件名称#”信息上选择一个与“#开始日期#”相同的时间' />
             <stepdetail value='其他内容正确填写或选择' />
