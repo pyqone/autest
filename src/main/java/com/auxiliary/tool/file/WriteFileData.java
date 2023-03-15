@@ -1,6 +1,7 @@
 package com.auxiliary.tool.file;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import com.alibaba.fastjson.JSONArray;
@@ -246,7 +247,7 @@ public class WriteFileData {
      *
      * @return 替换的词语集合
      */
-    public HashMap<String, DataFunction> getReplaceWordMap() {
+    public Map<String, DataFunction> getReplaceWordMap() {
         return replaceWordMap;
     }
 

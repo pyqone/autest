@@ -5,16 +5,25 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * <p><b>文件名：</b>MapCase.java</p>
- * <p><b>用途：</b>
- * 提供生成与地图相关测试用例的方法
+ * <p>
+ * <b>文件名：</b>MapCase.java
  * </p>
- * <p><b>编码时间：</b>2020年04月05日下午10:03:54</p>
- * <p><b>修改时间：</b>2020年04月05日下午10:03:54</p>
+ * <p>
+ * <b>用途：</b> 提供生成与地图相关测试用例的方法
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2020年04月05日下午10:03:54
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2020年04月05日下午10:03:54
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
- *
+ * @since autest 2.0.0
+ * @deprecated 用例生成类已重构，可参考{@link AbstractCaseTemplet}及其相应的子类，原始用例生成类将于4.1.0或后续版本中删除
  */
+@Deprecated
 public class MapCase extends Case {
 	/**
 	 * 通过测试用例模板库的xml配置文件来构造MapCase对象

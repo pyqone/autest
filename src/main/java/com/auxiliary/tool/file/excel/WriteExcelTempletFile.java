@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -39,10 +40,11 @@ import org.dom4j.Element;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.auxiliary.datadriven.DataFunction;
+import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.enums.OrientationType;
 import com.auxiliary.tool.data.TableData;
 import com.auxiliary.tool.file.FileTemplet;
-import com.auxiliary.tool.file.MarkColorsType;
 import com.auxiliary.tool.file.MarkComment;
 import com.auxiliary.tool.file.MarkFieldBackground;
 import com.auxiliary.tool.file.MarkFieldLink;
@@ -272,7 +274,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		// 获取字段指向的列下标，并计算得到excel中，数字列下标对应的字母
 		Optional<String> columnChar = Optional.ofNullable(templet.getFieldAttribute(linkField, FileTemplet.KEY_INDEX))
-				.map(Object::toString).map(Integer::valueOf).map(this::num2CharIndex);
+                .map(Object::toString).map(Integer::valueOf).map(DisposeCodeUtils::arabicNum2RomanNum);
 		if (columnChar.isPresent()) {
 			String templetName = templet.getTempletAttribute(FileTemplet.KEY_NAME).toString();
 			// 拼接文本链接内容
@@ -432,21 +434,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 		return (T) this;
 	}
 
-    @SuppressWarnings({ "unchecked", "deprecation" })
-	@Override
-    @Deprecated
-	public T changeTextColor(MarkColorsType markColorsType, String field, int... textIndexs) {
-		// 判断下标集是否为空
-		Arrays.stream(Optional.ofNullable(textIndexs).filter(arr -> arr.length != 0).orElse(new int[] {}))
-				// 将下标转换为文本json，并过滤为null的对象
-				.mapToObj(index -> getTextJson(field, index)).map(Optional::ofNullable).filter(Optional::isPresent)
-				// 向字段json中添加相应的内容
-				.map(Optional::get).forEach(json -> {
-					json.put(KEY_COLOR, markColorsType.getColorsValue());
-				});
-		return (T) this;
-	}
-
     @SuppressWarnings("unchecked")
     @Override
     public T changeTextColor(IndexedColors indexedColors, String field, int... textIndexs) {
@@ -461,29 +448,13 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
         return (T) this;
     }
 
-	@Override
-    @SuppressWarnings("unchecked")
-    @Deprecated
-	public T changeCaseBackground(MarkColorsType markColorsType) {
-        data.getCaseJson().put(ExcelCommonJsonField.KEY_BACKGROUND, markColorsType.getColorsValue());
-		return (T) this;
-	}
-
-	@Override
-    @SuppressWarnings("unchecked")
-    @Deprecated
-	public T changeFieldBackground(String field, MarkColorsType markColorsType) {
-        if (data.getCaseJson().containsKey(field)) {
-            data.getCaseJson().getJSONObject(field).put(ExcelCommonJsonField.KEY_BACKGROUND,
-                    markColorsType.getColorsValue());
-		}
-		return (T) this;
-	}
-
     @SuppressWarnings("unchecked")
     @Override
     public T changeCaseBackground(IndexedColors indexedColors) {
-        data.getCaseJson().put(ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.getIndex());
+//        data.getCaseJson().put(ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.getIndex());
+        for (String field : getTemplet(data.getTempName()).getFieldList()) {
+            changeFieldBackground(field, indexedColors);
+        }
         return (T) this;
     }
 
@@ -507,7 +478,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	@Override
-	public T addContent(String field, int index, String... contents) {
+    public T addContent(String field, int index, Map<String, DataFunction> replaceWordMap, String... contents) {
 		String[] newContents = new String[contents.length];
 		// 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
 		for (int i = 0; i < contents.length; i++) {
@@ -523,7 +494,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			}
 		}
 
-		return super.addContent(field, index, newContents);
+        return super.addContent(field, index, replaceWordMap, newContents);
 	}
 
 	@Override
@@ -613,7 +584,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
 		// 添加数据筛选按钮
         Optional.ofNullable(tempJson.getBoolean(ExcelFileTemplet.KEY_FILTRATE)).filter(is -> is == true).ifPresent(is -> {
-            sheet.setAutoFilter(CellRangeAddress.valueOf(String.format("A1:%s1", num2CharIndex(sheet.getRow(0).getLastCellNum() - 1))));
+                    sheet.setAutoFilter(CellRangeAddress.valueOf(String.format("A1:%s1",
+                            DisposeCodeUtils.arabicNum2RomanNum(sheet.getRow(0).getLastCellNum() - 1))));
         });
 
 		// 若存在数据有效性sheet页，则设置该页展示在文档最后
@@ -668,12 +640,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			// 计算当前需要写入的行
 			int lastRowIndex = templetSheet.getLastRowNum() + 1;
 
-            // 若当前内容为空时，则创建一个空行，并继续循环
-            if (contentJson.isEmpty()) {
-                templetSheet.createRow(lastRowIndex);
-                continue;
-            }
-
+            // 存储判断当前是否添加了一行内容
+            boolean isCreateRow = false;
 			// 遍历所有的字段
 			for (String field : templetJson.getJSONObject(ExcelFileTemplet.KEY_FIELD).keySet()) {
 				// 判断字段是否存在内容，不存在，则不进行处理
@@ -706,6 +674,8 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
                             getCell(templetSheet, lastRowIndex, fieldTempletJson.getIntValue(FileTemplet.KEY_INDEX)),
                             null, style);
                 }
+                // 设置当前已创建一行内容
+                isCreateRow = true;
 
 				// 记录当前内容json的位置 TODO 用于超链接
 //				contentJson.put(KEY_RELATIVE_ROW, lastRowIndex);
@@ -720,6 +690,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 					addLink(excel, cell, fieldContentJson.getJSONObject(KEY_LINK));
 				}
 			}
+
+            // TODO 若当前内容为空时，则创建一个空行，并添加相应的全局内容
+            if (!isCreateRow) {
+                templetSheet.createRow(lastRowIndex);
+            }
 
 			// 获取数据有效性标题
 			List<String> dataTitleList = readDataOptionTitle(excel);
@@ -1075,67 +1050,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 	}
 
 	/**
-	 * 用于将列数字下标转换为英文下标，数字下标计数从0开始，即0为第一列
-	 *
-	 * @param numberIndex 列数字下标
-	 * @return 列英文下标
-	 */
-	protected String num2CharIndex(int numberIndex) {
-		// 存储列文本信息
-		String indexText = "";
-		// 转换下标，使下标变为可计算的下标
-		numberIndex += 1;
-
-		// 循环，直至cellIndex被减为0为止
-		while (numberIndex != 0) {
-			// 计算当前字母的个数，用于计算幂数以及需要进行除法的次数
-			int textLength = indexText.length();
-
-			// 存储当前转换的下标，并根据textLength值计算最后可以求余的数字
-			int index = (int) (numberIndex / Math.pow(26, textLength));
-
-			// 计算数据的余数，若余数为0，则转换为26（英文字母比较特殊，其对应数字从1开始，故需要处理0）
-			int remainder = (index % 26 == 0) ? 26 : index % 26;
-			// 将余数转换为字母，并拼接至indexText上
-			indexText = String.valueOf((char) (65 + remainder - 1)) + indexText;
-			// cellIndex按照计算公式减去相应的数值
-			numberIndex -= remainder * Math.pow(26, textLength);
-		}
-
-		// 返回下标的文本
-		return indexText;
-	}
-
-	/**
-	 * 用于将英文下标转换为数字下标，转换的数字下标从0开始，即0为第一列，英文下标允许传入小写、大写字母
-	 *
-	 * @param charIndex 列英文下标
-	 * @return 列数字下标
-	 * @throws IncorrectIndexException 当英文下标不正确时抛出的异常
-	 */
-	protected int char2NumIndex(String charIndex) {
-		// 判断传入的内容是否符合正则
-		if (!charIndex.matches("[a-zA-Z]+")) {
-			throw new IncorrectIndexException("错误的英文下标：" + charIndex);
-		}
-
-		// 将所有的字母转换为大写
-		charIndex = charIndex.toUpperCase();
-
-		// 将字符串下标转换为字符数组
-		char[] indexs = charIndex.toCharArray();
-		// 初始化数字下标
-		int numberIndex = 0;
-		// 遍历所有字符，计算相应的值
-		for (int i = 0; i < indexs.length; i++) {
-			// 按照“(字母对应数字) * 26 ^ (字母位下标)”的公式对计算的数字进行累加，得到对应的数字下标
-			numberIndex += ((indexs[i] - 'A' + 1) * Math.pow(26, indexs.length - i - 1));
-		}
-
-		return numberIndex;
-	}
-
-	/**
 	 * 用于读取数据有效性sheet页中所有数据有效性列的标题
 	 *
 	 * @param excel 模板类对象
@@ -1230,7 +1144,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			}
 
 			// 指定数据有效性选项公式
-			String dataChar = num2CharIndex(dataTitleList.indexOf(dataTitle));
+            String dataChar = DisposeCodeUtils.arabicNum2EnglishLetters(dataTitleList.indexOf(dataTitle));
 			String dataConstraint = String.format("=%s!$%s$2:$%s$%d", DATA_SHEET_NAME, dataChar, dataChar,
 					(dataJson.getJSONArray(field).size() + 1));
 
@@ -1247,6 +1161,31 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 			sheet.addValidationData(new XSSFDataValidationHelper(sheet).createValidation(constraint, regions));
 		}
 	}
+
+    /**
+     * 用于将列数字下标转换为英文下标，数字下标计数从0开始，即0为第一列
+     *
+     * @param numberIndex 列数字下标
+     * @return 列英文下标
+     * @deprecated 该方法已由{@link DisposeCodeUtils#arabicNum2EnglishLetters(int)}方法代替，将在4.1.0或之后版本删除
+     */
+    @Deprecated
+    protected String num2CharIndex(int numberIndex) {
+        return DisposeCodeUtils.arabicNum2RomanNum(numberIndex);
+    }
+
+    /**
+     * 用于将英文下标转换为数字下标，转换的数字下标从0开始，即0为第一列，英文下标允许传入小写、大写字母
+     *
+     * @param charIndex 列英文下标
+     * @return 列数字下标
+     * @throws IncorrectIndexException 当英文下标不正确时抛出的异常
+     * @deprecated 该方法已由{@link DisposeCodeUtils#englishLetters2ArabicNum(String)}方法代替，将在4.1.0或之后版本删除
+     */
+    @Deprecated
+    protected int char2NumIndex(String charIndex) {
+        return DisposeCodeUtils.englishLetters2ArabicNum(charIndex);
+    }
 
 	/**
 	 * <p>

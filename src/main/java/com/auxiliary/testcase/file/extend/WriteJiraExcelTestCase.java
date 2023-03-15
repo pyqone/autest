@@ -6,6 +6,8 @@ import java.util.Arrays;
 import org.dom4j.Document;
 
 import com.auxiliary.testcase.file.WriteExcelTestCase;
+import com.auxiliary.testcase.templet.AbstractPresetCaseTemplet;
+import com.auxiliary.testcase.templet.LabelType;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.excel.ExcelFileTemplet;
 
@@ -21,68 +23,88 @@ import com.auxiliary.tool.file.excel.ExcelFileTemplet;
  * <b>编码时间：</b>2021年6月19日下午3:30:43
  * </p>
  * <p>
- * <b>修改时间：</b>2021年6月19日下午3:30:43
+ * <b>修改时间：</b>2023年2月15日 上午8:23:26
  * </p>
  * 
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
+ * @since autest 2.4.0
  */
 public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTestCase> {
 	public static final String DEFAULT_CASE_NAME = "测试用例";
 
 	/**
-	 * 用例标题目的
-	 */
-	public static final String CASE_OBJECTIVE = "objective";
+     * 用例标题目的
+     * 
+     * @deprecated 该属性已由{@link JiraPresetFieldType#FIELD_OBJECTIVE}属性代替，将在4.1.0或后续版本中删除
+     */
+	@Deprecated
+    public static final String CASE_OBJECTIVE = "objective";
 	/**
-	 * 用例标题状态
-	 */
-	public static final String CASE_STATUS = "status";
+     * 用例标题状态
+     * 
+     * @deprecated 该属性已由{@link JiraPresetFieldType#FIELD_STATUS}属性代替，将在4.1.0或后续版本中删除
+     */
+	@Deprecated
+    public static final String CASE_STATUS = "status";
 	/**
-	 * 用例标题项目
-	 */
-	public static final String CASE_COMPONENT = "component";
+     * 用例标题项目
+     * 
+     * @deprecated 该属性已由{@link JiraPresetFieldType#FIELD_COMPONENT}属性代替，将在4.1.0或后续版本中删除
+     */
+	@Deprecated
+    public static final String CASE_COMPONENT = "component";
 	/**
-	 * 用例标题设计者
-	 */
-	public static final String CASE_OWNER = "owner";
+     * 用例标题设计者
+     * 
+     * @deprecated 该属性已由{@link JiraPresetFieldType#FIELD_OWNER}属性代替，将在4.1.0或后续版本中删除
+     */
+	@Deprecated
+    public static final String CASE_OWNER = "owner";
 	/**
-	 * 用例标题关联需求
-	 */
-	public static final String CASE_ISSUES = "issues";
+     * 用例标题关联需求
+     * 
+     * @deprecated 该属性已由{@link JiraPresetFieldType#FIELD_ISSUES}属性代替，将在4.1.0或后续版本中删除
+     */
+	@Deprecated
+    public static final String CASE_ISSUES = "issues";
 
 	/**
-	 * 通过模板配置xml文件对文件写入类进行构造
-	 * <p>
-	 * 通过该方法构造的写入类为包含模板的写入类，可直接按照字段编写文件内容
-	 * </p>
-	 * 
-	 * @param templetXml 模板配置文件
-	 * @param saveFile   文件保存路径
-	 */
+     * 通过模板配置xml文件对文件写入类进行构造
+     * <p>
+     * 通过该方法构造的写入类为包含模板的写入类，可直接按照字段编写文件内容
+     * </p>
+     * 
+     * @param templetXml 模板配置文件
+     * @param saveFile   文件保存路径
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase(Document templetXml, File saveFile) {
 		super(templetXml, saveFile);
 	}
 
 	/**
-	 * 构造用例写入类，使用默认模板
-	 * <p>
-	 * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
-	 * </p>
-	 */
+     * 构造用例写入类，使用默认模板
+     * <p>
+     * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
+     * </p>
+     * 
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase() {
 		super(DEFAULT_CASE_NAME, WriteJiraExcelTestCase.getJiraCaseExcelTemplet());
 	}
 
 	/**
-	 * 构造用例写入类，使用默认模板并重新设置文件保存路径
-	 * <p>
-	 * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
-	 * </p>
-	 * 
-	 * @param saveFile 保存路径文件类对象
-	 */
+     * 构造用例写入类，使用默认模板并重新设置文件保存路径
+     * <p>
+     * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
+     * </p>
+     * 
+     * @param saveFile 保存路径文件类对象
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase(File saveFile) {
 		this();
 		// 重新设置保存路径
@@ -90,10 +112,11 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 	}
 
 	/**
-	 * 构造用例写入类，并重新设置模板
-	 * 
-	 * @param templet 模板类对象
-	 */
+     * 构造用例写入类，并重新设置模板
+     * 
+     * @param templet 模板类对象
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase(FileTemplet templet) {
 		this();
 		// 重新设置模板
@@ -102,89 +125,101 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 
 	@Override
 	protected void initField() {
-		super.initField();
-		caseFieldMap.put(CASE_OBJECTIVE, CASE_OBJECTIVE);
-		caseFieldMap.put(CASE_STATUS, CASE_STATUS);
-		caseFieldMap.put(CASE_COMPONENT, CASE_COMPONENT);
-		caseFieldMap.put(CASE_OWNER, CASE_OWNER);
-		caseFieldMap.put(CASE_ISSUES, CASE_ISSUES);
+        // 关联用例字段
+        relevanceCase(LabelType.STEP.getName(), JiraPresetFieldType.FIELD_STEP);
+        relevanceCase(LabelType.EXCEPT.getName(), JiraPresetFieldType.FIELD_EXCEPT);
+        relevanceCase(LabelType.TITLE.getName(), JiraPresetFieldType.FIELD_TITLE);
+        relevanceCase(LabelType.PRECONDITION.getName(), JiraPresetFieldType.FIELD_PRECONDITION);
+        relevanceCase(LabelType.RANK.getName(), JiraPresetFieldType.FIELD_RANK);
+
+        // 关联关键词替换字段
+        setReplactWord(AbstractPresetCaseTemplet.RANK_1, JiraPresetFieldType.RANK_HIGH);
+        setReplactWord(AbstractPresetCaseTemplet.RANK_2, JiraPresetFieldType.RANK_NORMAL);
+        setReplactWord(AbstractPresetCaseTemplet.RANK_3, JiraPresetFieldType.RANK_LOW);
+        setReplactWord(AbstractPresetCaseTemplet.RANK_4, JiraPresetFieldType.RANK_LOW);
 	}
 
 	/**
-	 * 用于添加测试用例目的
-	 * <p>
-	 * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
-	 * </p>
-	 * 
-	 * @param objective 用例目的
-	 * @return 类本身
-	 */
+     * 用于添加测试用例目的
+     * <p>
+     * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
+     * </p>
+     * 
+     * @param objective 用例目的
+     * @return 类本身
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase addObjective(String objective) {
-		addContent(caseFieldMap.get(CASE_OBJECTIVE), objective);
+        addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_OBJECTIVE), objective);
 		return this;
 	}
 
 	/**
-	 * 用于添加测试用例状态
-	 * <p>
-	 * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
-	 * </p>
-	 * 
-	 * @param status 用例状态文本
-	 * @return 类本身
-	 */
+     * 用于添加测试用例状态
+     * <p>
+     * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
+     * </p>
+     * 
+     * @param status 用例状态文本
+     * @return 类本身
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase addStatus(String status) {
-		addContent(caseFieldMap.get(CASE_STATUS), status);
+        addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_STATUS), status);
 		return this;
 	}
 
 	/**
-	 * 用于添加测试用例模块
-	 * <p>
-	 * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
-	 * </p>
-	 * 
-	 * @param component 用例模块文本
-	 * @return 类本身
-	 */
+     * 用于添加测试用例模块
+     * <p>
+     * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
+     * </p>
+     * 
+     * @param component 用例模块文本
+     * @return 类本身
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase addComponent(String component) {
-		addContent(caseFieldMap.get(CASE_COMPONENT), component);
+        addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_COMPONENT), component);
 		return this;
 	}
 
 	/**
-	 * 用于添加测试用例关联需求
-	 * <p>
-	 * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
-	 * </p>
-	 * 
-	 * @param issues 用例关联需求文本
-	 * @return 类本身
-	 */
+     * 用于添加测试用例关联需求
+     * <p>
+     * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
+     * </p>
+     * 
+     * @param issues 用例关联需求文本
+     * @return 类本身
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase addIssues(String issues) {
-		addContent(caseFieldMap.get(CASE_ISSUES), issues);
+        addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_ISSUES), issues);
 		return this;
 	}
 
 	/**
-	 * 用于添加测试用例设计者
-	 * <p>
-	 * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
-	 * </p>
-	 * 
-	 * @param owner 用例设计者
-	 * @return 类本身
-	 */
+     * 用于添加测试用例设计者
+     * <p>
+     * <b>注意：</b>多次调用该方法时，会覆盖前一次写入的内容
+     * </p>
+     * 
+     * @param owner 用例设计者
+     * @return 类本身
+     * @since autest 2.4.0
+     */
 	public WriteJiraExcelTestCase addOwner(String owner) {
-		addContent(caseFieldMap.get(CASE_OWNER), owner);
+        addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_OWNER), owner);
 		return this;
 	}
 
 	/**
-	 * 用于生成默认的jira测试用例模板类对象
-	 * 
-	 * @return jira测试用例模板类对象
-	 */
+     * 用于生成默认的jira测试用例模板类对象
+     * 
+     * @return jira测试用例模板类对象
+     * @since autest 2.4.0
+     */
 	public static ExcelFileTemplet getJiraCaseExcelTemplet() {
 		ExcelFileTemplet jiraTemplet = new ExcelFileTemplet(new File("result/测试用例.xlsx"));
 
@@ -192,64 +227,74 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 		jiraTemplet.setFreeze(1, 3).setFiltrate(true);
 
 		// 设置模板字段内容
-        jiraTemplet.addField(CASE_TITLE);
-        jiraTemplet.addTitle(CASE_TITLE, "Name").setWide(30.88, CASE_TITLE);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_TITLE);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_TITLE, JiraPresetFieldType.TITLE_TITLE);
 
-		jiraTemplet.addField(CASE_OBJECTIVE);
-        jiraTemplet.addTitle(CASE_OBJECTIVE, "Objective");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_OBJECTIVE);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_OBJECTIVE, JiraPresetFieldType.TITLE_OBJECTIVE);
         
 
-		jiraTemplet.addField(CASE_PRECONDITION);
-        jiraTemplet.addTitle(CASE_PRECONDITION, "Precondition");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_PRECONDITION);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_PRECONDITION, JiraPresetFieldType.TITLE_PRECONDITION);
 
-		jiraTemplet.addField(CASE_STEP);
-        jiraTemplet.addTitle(CASE_STEP, "Test Script (Step-by-Step) - Step");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_STEP);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_STEP, JiraPresetFieldType.TITLE_STEP);
         
-		jiraTemplet.addField(CASE_EXCEPT);
-        jiraTemplet.addTitle(CASE_EXCEPT, "Test Script (Step-by-Step) - Expected Result");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_EXCEPT);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_EXCEPT, JiraPresetFieldType.TITLE_EXCEPT);
 
-		jiraTemplet.addField(CASE_MODULE);
-        jiraTemplet.addTitle(CASE_MODULE, "Folder");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_MODULE);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_MODULE, JiraPresetFieldType.TITLE_MODULE);
 
 
-		jiraTemplet.addField(CASE_STATUS);
-        jiraTemplet.addTitle(CASE_STATUS, "Status");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_STATUS);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_STATUS, JiraPresetFieldType.TITLE_STATUS);
 
-		jiraTemplet.addField(CASE_RANK);
-        jiraTemplet.addTitle(CASE_RANK, "Priority");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_RANK);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_RANK, JiraPresetFieldType.TITLE_RANK);
 
-		jiraTemplet.addField(CASE_COMPONENT);
-        jiraTemplet.addTitle(CASE_COMPONENT, "Component");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_COMPONENT);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_COMPONENT, JiraPresetFieldType.TITLE_COMPONENT);
 
-		jiraTemplet.addField(CASE_OWNER);
-        jiraTemplet.addTitle(CASE_OWNER, "Owner");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_OWNER);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_OWNER, JiraPresetFieldType.TITLE_OWNER);
 
-		jiraTemplet.addField(CASE_ISSUES);
-        jiraTemplet.addTitle(CASE_ISSUES, "Coverage (Issues)");
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_ISSUES);
+        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_ISSUES, JiraPresetFieldType.TITLE_ISSUES);
 
         // 设置字段垂直居中对齐
         jiraTemplet.setAlignment(AlignmentType.VERTICAL_CENTER);
         // 设置字段左对齐
-        jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_LEFT, CASE_OBJECTIVE, CASE_PRECONDITION, CASE_STEP,
-                CASE_EXCEPT);
+        jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_LEFT, JiraPresetFieldType.FIELD_OBJECTIVE,
+                JiraPresetFieldType.FIELD_PRECONDITION, JiraPresetFieldType.FIELD_STEP,
+                JiraPresetFieldType.FIELD_EXCEPT, JiraPresetFieldType.FIELD_TITLE);
         // 设置字段居中水平对齐
-        jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_MIDDLE, CASE_TITLE, CASE_MODULE, CASE_STATUS, CASE_RANK,
-                CASE_COMPONENT, CASE_OWNER, CASE_ISSUES);
+        jiraTemplet.setAlignment(AlignmentType.HORIZONTAL_MIDDLE,
+                JiraPresetFieldType.FIELD_MODULE, JiraPresetFieldType.FIELD_STATUS, JiraPresetFieldType.FIELD_RANK,
+                JiraPresetFieldType.FIELD_COMPONENT, JiraPresetFieldType.FIELD_OWNER, JiraPresetFieldType.FIELD_ISSUES);
         
-        // 设置字段宽度/
-        jiraTemplet.setWide(18.25, CASE_OBJECTIVE, CASE_PRECONDITION);
-        jiraTemplet.setWide(45.75, CASE_STEP, CASE_EXCEPT);
-        jiraTemplet.setWide(20, CASE_MODULE, CASE_ISSUES);
-        jiraTemplet.setWide(10, CASE_STATUS, CASE_RANK, CASE_COMPONENT, CASE_OWNER);
+        // 设置字段宽度
+        jiraTemplet.setWide(18.25, JiraPresetFieldType.FIELD_OBJECTIVE, JiraPresetFieldType.FIELD_PRECONDITION);
+        jiraTemplet.setWide(45.75, JiraPresetFieldType.FIELD_STEP, JiraPresetFieldType.FIELD_EXCEPT);
+        jiraTemplet.setWide(20, JiraPresetFieldType.FIELD_MODULE, JiraPresetFieldType.FIELD_ISSUES);
+        jiraTemplet.setWide(10, JiraPresetFieldType.FIELD_STATUS, JiraPresetFieldType.FIELD_RANK,
+                JiraPresetFieldType.FIELD_COMPONENT, JiraPresetFieldType.FIELD_OWNER);
+        jiraTemplet.setWide(10, JiraPresetFieldType.FIELD_STATUS, JiraPresetFieldType.FIELD_RANK,
+                JiraPresetFieldType.FIELD_COMPONENT, JiraPresetFieldType.FIELD_OWNER);
+        jiraTemplet.setWide(30.88, JiraPresetFieldType.FIELD_TITLE);
 
         // 设置需要编号的字段
-        jiraTemplet.setAutoSerialNumber(true, CASE_OBJECTIVE, CASE_PRECONDITION, CASE_STEP, CASE_EXCEPT);
+        jiraTemplet.setAutoSerialNumber(true, JiraPresetFieldType.FIELD_OBJECTIVE,
+                JiraPresetFieldType.FIELD_PRECONDITION, JiraPresetFieldType.FIELD_STEP,
+                JiraPresetFieldType.FIELD_EXCEPT);
         // 设置需要换行的字段
-        jiraTemplet.setContentBranch(1, CASE_STEP, CASE_EXCEPT);
+        jiraTemplet.setContentBranch(1, JiraPresetFieldType.FIELD_STEP, JiraPresetFieldType.FIELD_EXCEPT);
 
 		// 添加数据有效性
-		jiraTemplet.addDataOption(CASE_RANK, Arrays.asList("HIGH", "NORMAL", "LOW"));
-		jiraTemplet.addDataOption(CASE_STATUS, Arrays.asList("APPROVED", "DRAFT", "DEPRECATED"));
+        jiraTemplet.addDataOption(JiraPresetFieldType.FIELD_RANK, Arrays.asList(JiraPresetFieldType.RANK_HIGH,
+                JiraPresetFieldType.RANK_NORMAL, JiraPresetFieldType.RANK_LOW));
+        jiraTemplet.addDataOption(JiraPresetFieldType.FIELD_STATUS, Arrays.asList(JiraPresetFieldType.STATUS_APPROVED,
+                JiraPresetFieldType.STATUS_DRAFT, JiraPresetFieldType.STATUS_DEPRECATED));
 
 		return jiraTemplet;
 	}

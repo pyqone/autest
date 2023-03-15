@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.dom4j.Document;
 
 import com.auxiliary.testcase.templet.Case;
+import com.auxiliary.testcase.templet.CaseData;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.excel.WriteExcelTempletFile;
 
@@ -24,14 +25,16 @@ import com.auxiliary.tool.file.excel.WriteExcelTempletFile;
  * <b>编码时间：</b>2021年6月17日上午8:15:56
  * </p>
  * <p>
- * <b>修改时间：</b>2021年8月27日下午7:42:16
+ * <b>修改时间：</b>2023年2月7日 上午8:24:04
  * </p>
  *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
+ * @since autest 2.5.0
  * @param <T> 子类
  */
+@SuppressWarnings("deprecation")
 public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extends WriteExcelTempletFile<T>
 		implements RelevanceTestCaseTemplet<T>, BasicTsetCase<T> {
 	/**
@@ -50,7 +53,7 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 	 */
 	public WriteExcelTestCase(Document templetXml, File saveFile) {
 		super(templetXml, saveFile);
-		initField();
+        initField();
 	}
 
 	/**
@@ -61,18 +64,19 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 	 */
 	public WriteExcelTestCase(String templetName, FileTemplet templet) {
 		super(templetName, templet);
-		initField();
+        initField();
 	}
 
-	/**
-	 * 用于初始化字段的链接
-	 */
-	protected void initField() {
-		getField().forEach(field -> caseFieldMap.put(field, field));
-	}
+    /**
+     * 该方法用于初始化已知的模板字段与已知的用例字段之间的联系，在构造方法时进行调用，亦可不编写其中内容
+     * 
+     * @since autest 2.5.0
+     */
+    protected abstract void initField();
 
 	@SuppressWarnings("unchecked")
 	@Override
+    @Deprecated
 	public T addStep(String... stepTexts) {
 		addContent(caseFieldMap.get(CASE_STEP), stepTexts);
 		return (T) this;
@@ -80,6 +84,7 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 
 	@SuppressWarnings("unchecked")
 	@Override
+    @Deprecated
 	public T addTitle(String titleText) {
 		addContent(caseFieldMap.get(CASE_TITLE), titleText);
 		return (T) this;
@@ -87,22 +92,14 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 
 	@SuppressWarnings("unchecked")
 	@Override
+    @Deprecated
 	public T addExcept(String... exceptTexts) {
 		addContent(caseFieldMap.get(CASE_EXCEPT), exceptTexts);
 		return (T) this;
 	}
 
-	/**
-     * 用于添加测试用例的一条步骤及预期
-     * <p>
-     * <b>注意：</b>多次调用该方法时，会在内容下方继续添加写入的内容。当步骤或预期字段为自动换行字段时，则会在插入内容前，进行自动换行，之后再插入相应内容
-     * </p>
-     *
-     * @param step   步骤
-     * @param except 预期
-     * @return 类本身
-     */
 	@Override
+    @Deprecated
 	public T addStepAndExcept(String step, String except) {
 		return disposeWriteFieldsContent(Arrays.asList(caseFieldMap.get(CASE_STEP), caseFieldMap.get(CASE_EXCEPT)), () -> {
 		    addStep(step);
@@ -112,6 +109,7 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 
 	@SuppressWarnings("unchecked")
 	@Override
+    @Deprecated
 	public T addModule(String module) {
 		addContent(caseFieldMap.get(CASE_MODULE), module);
 		return (T) this;
@@ -119,6 +117,7 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 
 	@SuppressWarnings("unchecked")
 	@Override
+    @Deprecated
 	public T addPrecondition(String... preconditions) {
 		addContent(caseFieldMap.get(CASE_PRECONDITION), preconditions);
 		return (T) this;
@@ -126,14 +125,15 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 
 	@SuppressWarnings("unchecked")
 	@Override
+    @Deprecated
 	public T addPriority(String priority) {
 		addContent(caseFieldMap.get(CASE_RANK), priority);
 		return (T) this;
 	}
 
 	@Override
-	public void relevanceCase(String templetField, String caseField) {
-		caseFieldMap.put(caseField, templetField);
+    public void relevanceCase(String caseField, String templetField) {
+        caseFieldMap.put(templetField, caseField);
 	}
 
 	/**
@@ -145,8 +145,9 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
      * @param testCase 测试用例生成方法
      * @return 类本身
      */
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
+    @Deprecated
 	public T addCase(Case testCase) {
 		// 获取用例内容
 		HashMap<String, ArrayList<String>> labelMap = testCase.getFieldTextMap();
@@ -162,4 +163,21 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 
 		return (T) this;
 	}
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T addCase(CaseData caseData) {
+        // 遍历当前测试用例模板字段中的内容，将内容写入到相应的文件模板中
+        disposeWriteFieldsContent(caseData.getFields(), () -> {
+            caseFieldMap.forEach((key, value) -> {
+                List<String> contentList = caseData.getContent(value);
+                if (!contentList.isEmpty()) {
+                    addContent(key, caseData.getCaseTemplet().getReplaceWordMap(),
+                            contentList.toArray(new String[] {}));
+                }
+            });
+        });
+
+        return (T) this;
+    }
 }

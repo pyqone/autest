@@ -726,7 +726,7 @@ public class Flowcharting implements Cloneable {
         }
 
         /**
-         * 该方法用于与子节点间的节点连接方式
+         * 该方法用于返回与子节点间的节点连接方式
          *
          * @param childNodeName 子节点名称
          * @return 与子节点间的连接方式

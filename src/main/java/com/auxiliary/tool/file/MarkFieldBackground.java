@@ -22,27 +22,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
  * @param <T> 子类
  */
 public interface MarkFieldBackground<T extends MarkFieldBackground<T>> {
-	/**
-     * 用于标记当前内容的所有字段背景颜色
-     * 
-     * @param markColorsType 颜色枚举
-     * @return 类本身
-     * @deprecated 该方法由{@link #changeCaseBackground(IndexedColors)}方法代替，将在后续版本中删除
-     */
-	@Deprecated
-    T changeCaseBackground(MarkColorsType markColorsType);
-
-	/**
-     * 用于标记当前内容指定字段的背景颜色
-     * 
-     * @param field          字段名称
-     * @param markColorsType 颜色枚举
-     * @return 类本身
-     * @deprecated 该方法由{@link #changeFieldBackground(String, IndexedColors)}方法代替，将在后续版本中删除
-     */
-	@Deprecated
-    T changeFieldBackground(String field, MarkColorsType markColorsType);
-
     /**
      * 用于标记当前内容的所有字段背景颜色
      * 

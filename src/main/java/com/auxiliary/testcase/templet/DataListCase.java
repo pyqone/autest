@@ -3,15 +3,27 @@ package com.auxiliary.testcase.templet;
 import java.io.File;
 
 /**
- * <p><b>文件名：</b>DataListCase.java</p>
- * <p><b>用途：</b>用于生成数据列表相关的测试用例</p>
- * <p><b>编码时间：</b>2020年3月3日下午8:25:33</p>
- * <p><b>修改时间：</b>2020年3月3日下午8:25:33</p>
+ * <p>
+ * <b>文件名：</b>DataListCase.java
+ * </p>
+ * <p>
+ * <b>用途：</b>用于生成数据列表相关的测试用例
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2020年3月3日下午8:25:33
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2020年3月3日下午8:25:33
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- *
+ * @since autest 2.0.0
+ * @deprecated 用例生成类已重构，可参考{@link AbstractCaseTemplet}及其相应的子类，原始用例生成类将于4.1.0或后续版本中删除
  */
+
+@Deprecated
 public class DataListCase extends Case {
 	/**
 	 * 用于列表名称

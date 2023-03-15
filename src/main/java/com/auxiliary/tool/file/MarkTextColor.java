@@ -27,18 +27,6 @@ public interface MarkTextColor<T extends MarkTextColor<T>> {
 	 */
 	String KEY_COLOR = "color";
 	
-	/**
-     * 用于对指定文本内容的字体颜色进行更改
-     * 
-     * @param markColorsType 颜色枚举
-     * @param field          字段
-     * @param textIndexs     字段中文本的下标
-     * @return 类本身
-     * @deprecated 该方法由{@link #changeTextColor(IndexedColors, String, int...)}方法代替，将在后续版本中删除
-     */
-	@Deprecated
-    T changeTextColor(MarkColorsType markColorsType, String field, int... textIndexs);
-
     /**
      * 用于对指定文本内容的字体颜色进行更改
      * 

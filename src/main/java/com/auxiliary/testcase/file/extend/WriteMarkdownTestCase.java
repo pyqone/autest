@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.testcase.file.BasicTsetCase;
 import com.auxiliary.testcase.file.RelevanceTestCaseTemplet;
 import com.auxiliary.testcase.templet.Case;
+import com.auxiliary.testcase.templet.CaseData;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteSingleTempletFile;
@@ -35,6 +36,7 @@ import com.auxiliary.tool.file.WriteSingleTempletFile;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
+ * @since autest 2.4.0
  */
 public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownTestCase>
 		implements BasicTsetCase<WriteMarkdownTestCase>, RelevanceTestCaseTemplet<WriteMarkdownTestCase> {
@@ -229,6 +231,7 @@ public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownT
 	}
 
 	@Override
+    @Deprecated
 	public WriteMarkdownTestCase addCase(Case testCase) {
 		// 获取用例内容
 		HashMap<String, ArrayList<String>> labelMap = testCase.getFieldTextMap();
@@ -240,4 +243,10 @@ public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownT
 
 		return this;
 	}
+
+    @Override
+    public WriteMarkdownTestCase addCase(CaseData caseData) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
