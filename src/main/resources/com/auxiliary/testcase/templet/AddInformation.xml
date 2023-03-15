@@ -544,7 +544,7 @@
 	
 	<group name='examineUI'>
         <step id='1' value='查看#操作类型##信息#页面'
-            intention='验证正确填写所有信息是否能保存#信息#' rank='#rank-1#' >
+            intention='检查新增#信息#界面是否符合需求设计' rank='#rank-1#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='查看#操作类型##信息#页面的控件布局' />
         </step>
@@ -553,12 +553,21 @@
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='查看“#控件名称#”信息中的选项内容' />
         </step>
+		<step id='3' value='选择相应的#信息#数据进行编辑'
+            intention='检查编辑#信息#界面是否符合需求设计' rank='#rank-1#' >
+            <stepdetail value='在#信息#列表中，选择一条数据' />
+            <stepdetail value='点击编辑数据相关的按钮' />
+            <stepdetail value='查看编辑#信息#界面的内容' />
+        </step>
+		
+		<precondition id='1' value='存在#信息#数据' />
         
         <except id='1'
             value='界面中可选择或可填写的信息均与需求一致，UI与设计图一致，且控件排布友好' />
         <except id='2' value='“#控件名称#”信息中的选项与需求一致' />
+		<except id='3' value='界面中可选择或可填写的信息均与需求一致，UI与设计图一致，控件排布友好，且新增时填写的内容能在界面上回填' />
         
-        <title id='1' value='检查#信息#界面是否符合需求' />
+        <title id='1' value='检查#操作类型##信息#界面是否符合需求设计' />
         
         <key id='1' value='#信息#、#操作类型#' />
     </group>
@@ -588,25 +597,6 @@
 		<key id='1' value='#信息#、新增' />
 	</group>
 
-	<group name='openEditPage'>
-		<step id='1' value='选择相应的#信息#数据进行编辑'
-            intention='检查编辑#信息#界面其所有内容是否回显' rank='#rank-1#' >
-            <stepdetail value='在#信息#列表中，选择一条数据' />
-            <stepdetail value='点击编辑数据相关的按钮' />
-            <stepdetail value='查看编辑#信息#界面的内容' />
-        </step>
-        
-		<except id='1' value='界面上的字段没有缺失，且新增时填写的内容在界面上回填' />
-		
-		<title id='1' value='查看编辑#信息#信息界面' />
-		
-		<precondition id='1' value='存在#信息#数据' />
-		
-		<rank id='1' value='1' />
-		
-		<key id='1' value='#信息#、编辑' />
-	</group>
-
 	<group name='cancelSaveData'>
 		<step id='1' value='在新增#信息#界面上填写所有信息后，点击“#取消按钮名称#”按钮'
             intention='验证在新增#信息#界面上填写所有信息后取消保存是否生效' rank='#rank-2#' >
@@ -614,7 +604,7 @@
             <stepdetail value='正确填写或选择界面上的所有信息' />
             <stepdetail value='点击“#取消按钮名称#”按钮' />
 		</step>
-		<step id='2' value='在编辑#信息#界面上填写所有信息后，点击“#取消按钮名称#”按钮'
+		<step id='2' value='在编辑#信息#界面上修改所有信息后，点击“#取消按钮名称#”按钮'
             intention='验证在编辑#信息#界面上修改所有信息后取消保存是否生效' rank='#rank-1#' >
             <stepdetail value='在#信息#列表中，选择一条数据' />
             <stepdetail value='点击编辑相关的按钮，进入编辑#信息#界面' />
@@ -622,13 +612,13 @@
             <stepdetail value='点击“#取消按钮名称#”按钮' />
         </step>
 		
-		<step id='3' value='在新增#信息#界面上填写所有必填项后，点击关闭界面按钮'
+		<step id='3' value='在新增#信息#界面上填写所有信息后，点击关闭界面按钮'
             intention='验证在新增#信息#界面上填写所有信息后关闭页面其内容是否被保存' rank='#rank-2#' >
             <stepdetail value='进入新增#信息#界面' />
             <stepdetail value='正确填写或选择界面上的所有信息' />
             <stepdetail value='点击关闭界面按钮，将新增#信息#界面关闭' />
 		</step>
-		<step id='4' value='在修改#信息#界面上填写所有必填项后，点击关闭界面按钮'
+		<step id='4' value='在编辑#信息#界面上修改所有信息后，点击关闭界面按钮'
             intention='验证在修改#信息#界面上修改所有信息后关闭页面其内容是否被保存' rank='#rank-2#' >
            <stepdetail value='在#信息#列表中，选择一条数据' />
             <stepdetail value='点击编辑相关的按钮，进入编辑#信息#界面' />
@@ -641,8 +631,6 @@
 		<except id='2' value='#操作类型##信息#界面关闭，数据不被保存，其#信息#信息仍显示为之前的内容' />
 		
 		<title id='1' value='取消保存#操作类型#的#信息#' />
-		
-		<rank id='1' value='1' />
 		
 		<key id='1' value='#信息#、编辑' />
 	</group>

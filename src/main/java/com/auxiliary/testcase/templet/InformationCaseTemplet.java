@@ -1420,6 +1420,146 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
+     * 该方法用于生成检查新增信息页面相关的测试用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> examineAddUICase() {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 添加替换词语
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_ADD);
+
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+
+        // 步骤与预期
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+
+        // 优先级
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成检查编辑信息页面相关的测试用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> examineEditUICase() {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 添加替换词语
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_EDIT);
+
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+
+        // 步骤与预期
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "3" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "3" })));
+
+        // 前置条件
+        addContent(allContentMap, LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+
+        // 优先级
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成新增信息界面取消保存信息的用例
+     * 
+     * @param cencelButtonName 取消保存按钮名称
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> cencelSaveAddDataCase(String cencelButtonName) {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 添加替换词语
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_ADD);
+        addReplaceWord(ReplaceWord.CENCEL_BUTTON_NAME, cencelButtonName);
+
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
+
+        // 步骤与预期
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1", "3" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1", "1" })));
+
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
+
+        // 优先级
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成编辑信息界面取消保存信息的用例
+     * 
+     * @param cencelButtonName 取消保存按钮名称
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> cencelSaveEditDataCase(String cencelButtonName) {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 添加替换词语
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_EDIT);
+        addReplaceWord(ReplaceWord.CENCEL_BUTTON_NAME, cencelButtonName);
+
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
+
+        // 步骤与预期
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "2", "4" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "2", "2" })));
+
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
+
+        // 优先级
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
      * <p>
      * <b>文件名：InformationTempletCase.java</b>
      * </p>
