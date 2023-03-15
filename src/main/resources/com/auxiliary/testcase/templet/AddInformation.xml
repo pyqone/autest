@@ -456,7 +456,7 @@
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
         </step>
-		<step id='4' value='上传同一张#文件类型#，点击“#保存按钮名称#”按钮'
+		<step id='4' value='上传同一#文件单位##文件类型#，点击“#保存按钮名称#”按钮'
             intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否能重复上传同一个的#文件类型# ' rank='#rank-3#' >
             <stepdetail value='进入#操作类型##信息#页面' />
             <stepdetail value='上传#文件类型#' />
@@ -464,10 +464,17 @@
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
         </step>
-		<step id='5' value='#操作名称#超过限制大小的#文件类型#，点击“#保存按钮名称#”按钮'
+		<step id='5' value='上传超过#文件大小#的#文件类型#，点击“#保存按钮名称#”按钮'
             intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否能#操作名称#超过限制的#文件类型# ' rank='#rank-3#' >
             <stepdetail value='进入#操作类型##信息#页面' />
-            <stepdetail value='#操作名称##文件类型#，选择一张超过大小限制的#文件类型#' />
+            <stepdetail value='上传#文件类型#，选择一#文件单位#超过#文件大小#的#文件类型#' />
+            <stepdetail value='其他内容正确填写或选择' />
+            <stepdetail value='点击“#保存按钮名称#”按钮' />
+        </step>
+		<step id='11' value='上传接近#文件大小#的#文件类型#，点击“#保存按钮名称#”按钮'
+            intention='检查#操作类型##信息#界面上的“#控件名称#”信息是否能#操作名称#超过限制的#文件类型# ' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型##信息#页面' />
+            <stepdetail value='上传#文件类型#，选择一个接近#文件大小#的#文件类型#' />
             <stepdetail value='其他内容正确填写或选择' />
             <stepdetail value='点击“#保存按钮名称#”按钮' />
         </step>

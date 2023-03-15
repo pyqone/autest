@@ -236,12 +236,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = addCommonData(operationName, name);
 
         // 转换输入限制
-        Set<InputRuleType> inputRuleTypeSet = new HashSet<>();
-        if (inputRuleTypes != null && inputRuleTypes.length != 0) {
-            for (InputRuleType inputRuleType : inputRuleTypes) {
-                inputRuleTypeSet.add(inputRuleType);
-            }
-        }
+        Set<InputRuleType> inputRuleTypeSet = new HashSet<>(
+                Arrays.asList(Optional.ofNullable(inputRuleTypes).orElseGet(() -> new InputRuleType[] {})));
 
         // 步骤与预期
         List<Entry<String, String[]>> stepList = new ArrayList<>();
@@ -268,7 +264,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "输入成功预期" }));
         }
         // 判断是否有输入限制，以添加输入限制相关的用例
-        if (inputRuleTypeSet.size() != 0) {
+        if (!inputRuleTypeSet.isEmpty()) {
             // 拼接输入限制
             StringJoiner inputRule = new StringJoiner("、");
             inputRuleTypeSet.stream().map(InputRuleType::getName).forEach(inputRule::add);
@@ -361,31 +357,38 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 isRepeat, isClear, inputRuleTypes);
 
         // 添加输入长度限制相关的测试用例
-        // 判断最大最小值是否一致，若一致，则按照只包含最大限制生成用例
-        if (Objects.equals(minLen, maxLen)) {
-            minLen = null;
-        }
-        // 判断最大与最小值是否需要调换，存储正确最大最小值
-        if (minLen != null && maxLen != null && minLen > maxLen) {
-            int temp = minLen;
-            minLen = maxLen;
-            maxLen = temp;
-        }
-        // 判断是否存在最小长度限制
-        if (Optional.ofNullable(minLen).filter(min -> min > 0).isPresent()) {
+        // 判断最大最小值是否一致
+        if (Objects.equals(minLen, maxLen) && minLen != null && minLen != 0) {
             addReplaceWord(ReplaceWord.INPUT_MIN_LENGTH, String.valueOf(minLen));
-            addContent(allContentMap, LabelType.STEP, Arrays
-                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
-        }
-        // 判断是否存在最大长度限制
-        if (Optional.ofNullable(maxLen).filter(max -> max > 0).isPresent()) {
             addReplaceWord(ReplaceWord.INPUT_MAX_LENGTH, String.valueOf(maxLen));
             addContent(allContentMap, LabelType.STEP, Arrays
-                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "3", "4" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2", "3" })));
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { "失败预期", "输入成功预期", "失败预期" })));
+        } else {
+            // 判断最大与最小值是否需要调换，存储正确最大最小值
+            if (minLen != null && maxLen != null && minLen > maxLen) {
+                int temp = minLen;
+                minLen = maxLen;
+                maxLen = temp;
+            }
+            // 判断是否存在最小长度限制
+            if (Optional.ofNullable(minLen).filter(min -> min > 0).isPresent()) {
+                addReplaceWord(ReplaceWord.INPUT_MIN_LENGTH, String.valueOf(minLen));
+                addContent(allContentMap, LabelType.STEP, Arrays
+                        .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2" })));
+                addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+            }
+            // 判断是否存在最大长度限制
+            if (Optional.ofNullable(maxLen).filter(max -> max > 0).isPresent()) {
+                addReplaceWord(ReplaceWord.INPUT_MAX_LENGTH, String.valueOf(maxLen));
+                addContent(allContentMap, LabelType.STEP, Arrays
+                        .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "3", "4" })));
+                addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+            }
         }
 
         // 根据是否必填，添加其文本框的优先级
@@ -632,7 +635,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         }
 
         // 将号码限制组改为set集合
-        Set<PhoneType> phoneTypeSet = new HashSet<>(Arrays.asList(phoneTypes));
+        Set<PhoneType> phoneTypeSet = new HashSet<>(
+                Arrays.asList(Optional.ofNullable(phoneTypes).orElseGet(() -> new PhoneType[] {})));
         
         // 获取文本框的基础测试用例
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = null;
@@ -1150,6 +1154,272 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
+     * 该方法用于生成上传文件相关的测试用例
+     * 
+     * @param operationName   操作类型名称
+     * @param name            控件名称
+     * @param isMust          是否必须上传
+     * @param isDelete        是否允许删除
+     * @param isPreview       是否允许预览
+     * @param sizeLimitText   文件大小限制的文本
+     * @param fileMinNum      最少上传文件数量
+     * @param fileMaxNum      最多上传文件数量
+     * @param uploadFileType  上传的文件类型枚举
+     * @param fileFormatNames 上传文件的限制格式名称组
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> commonUpdataFileCase(String operationName, String name,
+            boolean isMust, boolean isDelete, boolean isPreview, String sizeLimitText, Integer fileMinNum,
+            Integer fileMaxNum, UploadFileType uploadFileType, String... fileFormatNames) {
+        // 转换输入限制
+        Set<String> fileFormatNameSet = new HashSet<>(
+                Arrays.asList(Optional.ofNullable(fileFormatNames).orElseGet(() -> new String[] {})));
+
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = addCommonData(operationName, name);
+        
+        // 添加替换词语
+        addReplaceWord(ReplaceWord.FILE_TYPE, uploadFileType.getName());
+        addReplaceWord(ReplaceWord.FILE_UNIT, uploadFileType.getUnitName());
+
+        // 添加检查选项
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(
+                        new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "2", "4" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? "失败预期" : "文件成功预期", "文件成功预期" })));
+        // 判断文件是否能进行预览
+        if (isPreview) {
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "1" })));
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "1" })));
+        }
+        // 判断是否能删除文件
+        if (isDelete) {
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "3" })));
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "文件成功预期" })));
+        }
+        // 判断文件大小限制（当大小限制文本不为空时）
+        if (!Objects.equals("", sizeLimitText)) {
+            addReplaceWord(ReplaceWord.FILE_SIZE, sizeLimitText);
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "5", "11" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "文件成功预期" })));
+        }
+        // 判断文件个数限制
+        // 判断最大最小值是否一致
+        if (Objects.equals(fileMinNum, fileMaxNum) && fileMinNum != null && fileMinNum != 0) {
+            addReplaceWord(ReplaceWord.UPLOAD_MIN_LENGTH, String.valueOf(fileMinNum));
+            addReplaceWord(ReplaceWord.UPLOAD_MAX_LENGTH, String.valueOf(fileMaxNum));
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE,
+                            new String[] { "7", "8", "9" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { "失败预期", "输入成功预期", "失败预期" })));
+        } else {
+            // 判断最大与最小值是否需要调换，存储正确最大最小值
+            if (fileMinNum != null && fileMaxNum != null && fileMinNum > fileMaxNum) {
+                int temp = fileMinNum;
+                fileMinNum = fileMaxNum;
+                fileMaxNum = temp;
+            }
+            // 判断是否存在最小长度限制
+            if (Optional.ofNullable(fileMinNum).filter(min -> min > 0).isPresent()) {
+                addReplaceWord(ReplaceWord.UPLOAD_MIN_LENGTH, String.valueOf(fileMinNum));
+                addContent(allContentMap, LabelType.STEP, Arrays.asList(
+                        new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "7", "8" })));
+                addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+            }
+            // 判断是否存在最大长度限制
+            if (Optional.ofNullable(fileMaxNum).filter(max -> max > 0).isPresent()) {
+                addReplaceWord(ReplaceWord.UPLOAD_MAX_LENGTH, String.valueOf(fileMaxNum));
+                addContent(allContentMap, LabelType.STEP, Arrays.asList(
+                        new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "9", "10" })));
+                addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+            }
+        }
+        // 判断是否存在格式限制
+        if (!fileFormatNameSet.isEmpty()) {
+            // 格式限制
+            StringJoiner fileRule = new StringJoiner("、");
+            fileFormatNameSet.forEach(fileRule::add);
+            // 添加替换词以及用例
+            addReplaceWord(ReplaceWord.FILE_RULE, fileRule.toString());
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "6" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期" })));
+        }
+
+        // 根据是否必填，添加其文本框的优先级
+        addContent(allContentMap, LabelType.RANK, Arrays
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中，上传文件相关的测试用例
+     * <p>
+     * 传入文件个数限制的方法如下：
+     * <ol>
+     * <li>上传限制为2~10个文件时：{@code addUploadFileCase("文档", true, true, true, null, 2, 10)}</li>
+     * <li>上传限制为最多上传10个文件时：{@code addUploadFileCase("文档", true, true, true, null, 0, 10)}</li>
+     * <li>上传限制为最少上传2个文件时：{@code addUploadFileCase("文档", true, true, true, null, 2, 0)}</li>
+     * <li>上传限制为仅能上传2个文件时：{@code addUploadFileCase("文档", true, true, true, null, 2, 2)}</li>
+     * </ol>
+     * </p>
+     * <p>
+     * <b>注意：</b>文件大小显示文本需自行传入限制的大小及单位，例如，限制上传50M的文件，则传入{@code addUploadFileCase("文档", true, true, true, "50M", 2, 2)}；
+     * 若为空或传入null，则表示没有文件大小限制
+     * </p>
+     * 
+     * @param name            控件名称
+     * @param isMust          是否必须上传
+     * @param isDelete        是否允许删除
+     * @param isPreview       是否允许预览
+     * @param sizeLimitText   文件大小限制的文本，例如，限制上传50M的文件，则传入“50M”
+     * @param fileMinNum      最少上传文件数量
+     * @param fileMaxNum      最多上传文件数量
+     * @param fileFormatNames 上传文件的限制格式名称组
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addUploadFileCase(String name, boolean isMust, boolean isDelete, boolean isPreview,
+            String sizeLimitText, Integer fileMinNum, Integer fileMaxNum, String... fileFormatNames) {
+        return createCaseDataList(this, commonUpdataFileCase(OPERATION_ADD, name, isMust, isDelete, isPreview,
+                sizeLimitText, fileMinNum, fileMaxNum, UploadFileType.FILE, fileFormatNames));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中，上传文件相关的测试用例
+     * <p>
+     * 关于文件大小、个数限制的传参，可参考{@link #addUploadFileCase(String, boolean, boolean, boolean, String, Integer, Integer, String...)}方法
+     * </p>
+     * 
+     * @param name            控件名称
+     * @param isMust          是否必须上传
+     * @param isDelete        是否允许删除
+     * @param isPreview       是否允许预览
+     * @param sizeLimitText   文件大小限制的文本，例如，限制上传50M的文件，则传入“50M”
+     * @param fileMinNum      最少上传文件数量
+     * @param fileMaxNum      最多上传文件数量
+     * @param fileFormatNames 上传文件的限制格式名称组
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editUploadFileCase(String name, boolean isMust, boolean isDelete, boolean isPreview,
+            String sizeLimitText, Integer fileMinNum, Integer fileMaxNum, String... fileFormatNames) {
+        return createCaseDataList(this, commonUpdataFileCase(OPERATION_EDIT, name, isMust, isDelete, isPreview,
+                sizeLimitText, fileMinNum, fileMaxNum, UploadFileType.FILE, fileFormatNames));
+    }
+
+    /**
+     * 该方法用于生成上传图片相关的测试用例
+     * 
+     * @param operationName   操作类型名称
+     * @param name            控件名称
+     * @param isMust          是否必须上传
+     * @param isDelete        是否允许删除
+     * @param isPreview       是否允许预览
+     * @param isPhoto         是否允许拍照上传
+     * @param sizeLimitText   文件大小限制的文本
+     * @param fileMinNum      最少上传文件数量
+     * @param fileMaxNum      最多上传文件数量
+     * @param fileFormatNames 上传文件的限制格式名称组
+     * @return 用例集合
+     * @since autest 4.0.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> uploadImageCase(String operationName, String name,
+            boolean isMust, boolean isDelete, boolean isPreview, boolean isPhoto, String sizeLimitText,
+            Integer fileMinNum, Integer fileMaxNum, String... fileFormatNames) {
+        // 获取文本框的基础测试用例
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = commonUpdataFileCase(operationName, name, isMust,
+                isDelete, isPreview, sizeLimitText, fileMinNum, fileMaxNum, UploadFileType.IMAGE, fileFormatNames);
+
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_IMAGE_CASE, new String[] { "3" })));
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_IMAGE_CASE, new String[] { "3" })));
+        // 判断是否允许拍照上传
+        if (isPhoto) {
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_IMAGE_CASE, new String[] { "1", "2" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_IMAGE_CASE, new String[] { "1", "2" })));
+        }
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息中，上传图片相关的测试用例
+     * <p>
+     * 传入图片个数限制的方法如下：
+     * <ol>
+     * <li>上传限制为2~10张图片时：{@code addUploadImageCase("图片", true, true, true, true, null, 2, 10)}</li>
+     * <li>上传限制为最多上传10张图片时：{@code addUploadImageCase("图片", true, true, true, true, null, 0, 10)}</li>
+     * <li>上传限制为最少上传2张图片时：{@code addUploadImageCase("图片", true, true, true, true, null, 2, 0)}</li>
+     * <li>上传限制为仅能上传2张图片时：{@code addUploadImageCase("图片", true, true, true, true, null, 2, 2)}</li>
+     * </ol>
+     * </p>
+     * <p>
+     * <b>注意：</b>文件大小显示文本需自行传入限制的大小及单位，例如，限制上传50M的文件，则传入{@code addUploadImageCase("图片", true, true, true, true, "50M", 2, 2)}；
+     * 若为空或传入null，则表示没有文件大小限制
+     * </p>
+     * 
+     * @param name            控件名称
+     * @param isMust          是否必须上传
+     * @param isDelete        是否允许删除
+     * @param isPreview       是否允许预览
+     * @param isPhoto         是否允许拍照上传
+     * @param sizeLimitText   文件大小限制的文本，例如，限制上传50M的文件，则传入“50M”
+     * @param fileMinNum      最少上传文件数量
+     * @param fileMaxNum      最多上传文件数量
+     * @param fileFormatNames 上传文件的限制格式名称组
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addUploadImageCase(String name, boolean isMust, boolean isDelete, boolean isPreview,
+            boolean isPhoto, String sizeLimitText, Integer fileMinNum, Integer fileMaxNum, String... fileFormatNames) {
+        return createCaseDataList(this, uploadImageCase(OPERATION_ADD, name, isMust, isDelete, isPreview, isPhoto,
+                sizeLimitText, fileMinNum, fileMaxNum, fileFormatNames));
+    }
+
+    /**
+     * 该方法用于生成编辑信息中，上传图片相关的测试用例
+     * <p>
+     * 关于文件大小、个数限制的传参，可参考{@link #addUploadImageCase(String, boolean, boolean, boolean, boolean, String, Integer, Integer, String...)}方法
+     * </p>
+     * 
+     * @param name            控件名称
+     * @param isMust          是否必须上传
+     * @param isDelete        是否允许删除
+     * @param isPreview       是否允许预览
+     * @param isPhoto         是否允许拍照上传
+     * @param sizeLimitText   文件大小限制的文本，例如，限制上传50M的文件，则传入“50M”
+     * @param fileMinNum      最少上传文件数量
+     * @param fileMaxNum      最多上传文件数量
+     * @param fileFormatNames 上传文件的限制格式名称组
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> editUploadImageCase(String name, boolean isMust, boolean isDelete, boolean isPreview,
+            boolean isPhoto, String sizeLimitText, Integer fileMinNum, Integer fileMaxNum, String... fileFormatNames) {
+        return createCaseDataList(this, uploadImageCase(OPERATION_EDIT, name, isMust, isDelete, isPreview, isPhoto,
+                sizeLimitText, fileMinNum, fileMaxNum, fileFormatNames));
+    }
+
+    /**
      * <p>
      * <b>文件名：InformationTempletCase.java</b>
      * </p>
@@ -1231,6 +1501,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         public static final String UPLOAD_MIN_LENGTH = "文件最小个数";
         public static final String FILE_SIZE = "文件大小";
         public static final String FILE_RULE = "文件格式";
+        public static final String FILE_UNIT = "文件单位";
         public static final String OPERATION_TYPE = "操作类型";
     }
 
@@ -1432,7 +1703,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * <b>编码时间：</b>2020年3月18日上午9:56:51
      * </p>
      * <p>
-     * <b>修改时间：</b>2020年3月18日上午9:56:51
+     * <b>修改时间：</b>2023年3月15日 下午4:18:30
      * </p>
      * 
      * @author 彭宇琦
@@ -1444,16 +1715,20 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         /**
          * 上传文件
          */
-        FILE("文件"),
+        FILE("文件", "个"),
         /**
          * 上传图片
          */
-        IMAGE("图片");
+        IMAGE("图片", "张");
 
         /**
          * 上传文件类型名称
          */
         private String name;
+        /**
+         * 枚举单位
+         */
+        private String unitName;
 
         /**
          * 返回枚举名称
@@ -1465,12 +1740,23 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         }
 
         /**
+         * 该方法用于返回枚举对应的单位
+         * 
+         * @return 单位名称
+         * @since autest 4.0.0
+         */
+        public String getUnitName() {
+            return unitName;
+        }
+
+        /**
          * 初始化枚举值名称
          * 
          * @param name 枚举值名称
          */
-        private UploadFileType(String name) {
+        private UploadFileType(String name, String unitName) {
             this.name = name;
+            this.unitName = unitName;
         }
     }
 }
