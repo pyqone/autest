@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -11,8 +12,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
-import com.auxiliary.tool.common.VoidSupplier;
+import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
+import com.auxiliary.tool.common.VoidSupplier;
 import com.google.common.base.Objects;
 
 /**
@@ -54,7 +56,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
     /**
      * 待替换词语的标记
      */
-    protected final String WORD_SIGN = "#";
+    public static final String WORD_SIGN = "#";
 
     /**
      * 存储需要写入到文件中的数据
@@ -167,7 +169,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
         JSONArray defaultListJson = new JSONArray();
 
         // 查找特殊词语，并对词语进行替换，并将内容写入到字段中
-        Arrays.stream(contents).map(text -> replaceWord(text)).map(text -> {
+        Arrays.stream(contents).map(text -> replaceWord(text, data.getReplaceWordMap())).map(text -> {
             JSONObject fieldJson = new JSONObject();
             fieldJson.put(KEY_TEXT, text);
 
@@ -374,8 +376,33 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * @param contents 相应字段的内容
      * @return 类本身
      */
-    @SuppressWarnings("unchecked")
     public T addContent(String field, int index, String... contents) {
+        return addContent(field, index, null, contents);
+    }
+
+    /**
+     * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下，并且可传入临时的替换词语，对文本中的占位符进行替换，且不影响已添加的替换词语
+     * <p>
+     * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
+     * </p>
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>当设置了自动换行字段时，则在插入该字段内容后（内容非空时），则会在插入当前内容前自动进行换行，再插入该内容，可参考{@link #setEndField(String)}的设置方法</li>
+     * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
+     * </ol>
+     * </p>
+     * 
+     * @param field          字段id
+     * @param index          指定插入的位置
+     * @param replaceWordMap 临时替换词语集合
+     * @param contents       相应字段的内容
+     * 
+     * @return 类本身
+     * @since autest 4.0.0
+     */
+    @SuppressWarnings("unchecked")
+    public T addContent(String field, int index, Map<String, DataFunction> replaceWordMap, String... contents) {
         data.getCaseJson();
         // 判断字段是否存在，若不存在，则不进行操作
         if (!data.getTemplet().containsField(field)) {
@@ -399,7 +426,16 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
                 .orElse(new JSONArray());
 
         // 查找特殊词语，并对词语进行替换，并将内容写入到字段中
-        Arrays.stream(contents).map(text -> replaceWord(text)).map(text -> {
+        Arrays.stream(contents).map(text -> {
+            // 判断replaceWordMap是否为null，若为null则将replaceWordMap设置为默认替换词；若不为null，则将默认替换词添加到replaceWordMap中
+            if (replaceWordMap == null) {
+                return replaceWord(text, data.getReplaceWordMap());
+            } else {
+                replaceWordMap.putAll(data.getReplaceWordMap());
+                return replaceWord(text, replaceWordMap);
+            }
+
+        }).map(text -> {
             JSONObject fieldTextJson = new JSONObject();
             fieldTextJson.put(KEY_TEXT, text);
             return fieldTextJson;
@@ -416,6 +452,30 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
         fieldJson.put(WriteTempletFile.KEY_DATA, contentListJson);
         data.getCaseJson().put(field, fieldJson);
         return (T) this;
+    }
+
+    /**
+     * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下，并且可传入临时的替换词语，对文本中的占位符进行替换，且不影响已添加的替换词语
+     * <p>
+     * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
+     * </p>
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>当设置了自动换行字段时，则在插入该字段内容后（内容非空时），则会在插入当前内容前自动进行换行，再插入该内容，可参考{@link #setEndField(String)}的设置方法</li>
+     * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
+     * </ol>
+     * </p>
+     * 
+     * @param field          字段id
+     * @param replaceWordMap 临时替换词语集合
+     * @param contents       相应字段的内容
+     * 
+     * @return 类本身
+     * @since autest 4.0.0
+     */
+    public T addContent(String field, Map<String, DataFunction> replaceWordMap, String... contents) {
+        return addContent(field, -1, replaceWordMap, contents);
     }
 
     /**
@@ -633,23 +693,24 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
     /**
      * 用于对当前文本内容中的词语进行提取，并返回替换后的内容
      *
-     * @param content 文本内容
+     * @param content        文本内容
+     * @param replaceWordMap 待替换词语集合
      * @return 替换词语后的文本内容
      */
-    protected String replaceWord(String content) {
+    protected String replaceWord(String content, Map<String, DataFunction> replaceWordMap) {
         // 获取内容中的待替换词语
         ArrayList<String> wordList = getReplaceWord(content);
 
         // 循环，遍历待替换词语，并对内容进行替换
         for (String word : wordList) {
             // 将词语与每一个规则进行匹配
-            for (String key : data.getReplaceWordMap().keySet()) {
+            for (String key : replaceWordMap.keySet()) {
                 // 若传入的内容与正则匹配，则将数据进行处理，并返回处理结果
                 if (Pattern.compile(key).matcher(word).matches()) {
                     // 将待替换的词语进行拼装
                     String oldWord = WORD_SIGN + word + WORD_SIGN;
                     // 获取替换的词语
-                    String newWord = data.getReplaceWordMap().get(key).apply(word);
+                    String newWord = replaceWordMap.get(key).apply(word);
                     // 循环，替换所有与oldWord相同的内容
                     // 由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
                     while (content.contains(oldWord)) {

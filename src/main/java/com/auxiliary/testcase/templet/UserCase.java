@@ -3,16 +3,25 @@ package com.auxiliary.testcase.templet;
 import java.io.File;
 
 /**
- * <p><b>文件名：</b>UserCase.java</p>
- * <p><b>用途：</b>
- * 提供生成与用户登录、注册、忘记密码等相关操作测试用例的方法
+ * <p>
+ * <b>文件名：</b>UserCase.java
  * </p>
- * <p><b>编码时间：</b>2020年11月12日上午7:24:27</p>
- * <p><b>修改时间：</b>2020年11月12日上午7:24:27</p>
+ * <p>
+ * <b>用途：</b> 提供生成与用户登录、注册、忘记密码等相关操作测试用例的方法
+ * </p>
+ * <p>
+ * <b>编码时间：</b>2020年11月12日上午7:24:27
+ * </p>
+ * <p>
+ * <b>修改时间：</b>2020年11月12日上午7:24:27
+ * </p>
+ * 
  * @author 彭宇琦
  * @version Ver1.0
- *
+ * @since autest 2.0.0
+ * @deprecated 用例生成类已重构，可参考{@link AbstractCaseTemplet}及其相应的子类，原始用例生成类将于4.1.0或后续版本中删除
  */
+@Deprecated
 public class UserCase extends Case {
 	/**
 	 * 通过测试用例模板库的xml配置文件来构造MapCase对象

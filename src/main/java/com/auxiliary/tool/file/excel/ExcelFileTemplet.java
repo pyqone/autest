@@ -135,19 +135,6 @@ public class ExcelFileTemplet extends FileTemplet {
 		return this;
 	}
 
-	/**
-     * 用于在模板中添加字段指向的单元格的宽度
-     * 
-     * @param field 字段
-     * @param wide  宽度
-     * @return 类本身
-     * @deprecated 该方法已由带可变参数的相同方法代替，将在3.8.0或后续版本中删除
-     */
-    @Deprecated
-    public ExcelFileTemplet setWide(String field, double wide) {
-        return setWide(wide, field);
-	}
-
     /**
      * 用于在模板中添加指定多个字段指向的单元格的宽度
      * <p>
@@ -183,29 +170,6 @@ public class ExcelFileTemplet extends FileTemplet {
 		}
 
 		return this;
-	}
-
-	/**
-     * 用于存储字段指向的单元格的对齐方式
-     * <p>
-     * 对齐方式包括水平对齐与垂直对齐，通过{@link AlignmentType}枚举可兼容两者的设置，但相同的对齐方式只存在一种。例如：
-     * <code><pre>
-     * test.addHorizontalAlignment("title", AlignmentType.HORIZONTAL_CENTER);
-     * test.addHorizontalAlignment("title", AlignmentType.VERTICAL_CENTER);
-     * </pre></code> 以上代码表示设置“title”字段的对齐方式为水平居中和垂直居中对齐；而以下代码： <code><pre>
-     * test.addHorizontalAlignment("title", AlignmentType.HORIZONTAL_CENTER);
-     * test.addHorizontalAlignment("title", AlignmentType.HORIZONTAL_LEFT);
-     * </pre></code> 表示设置“title”字段的对齐方式为水平左对齐（取最后一次设置的内容）
-     * </p>
-     * 
-     * @param field         字段
-     * @param alignmentType 对齐方式枚举
-     * @return 类本身
-     * @deprecated 该方法已由带可变参数的相同方法代替，将在3.8.0或后续版本中删除
-     */
-	@Deprecated
-    public ExcelFileTemplet setAlignment(String field, AlignmentType alignmentType) {
-        return setAlignment(alignmentType, field);
 	}
 
     /**
@@ -244,22 +208,6 @@ public class ExcelFileTemplet extends FileTemplet {
         return this;
     }
 
-	/**
-     * 用于设置字段内容分行写入的段落数
-     * <p>
-     * 当添加的内容段落达到指定的段落数时，则分成多个单元格写入。
-     * </p>
-     * 
-     * @param field        字段
-     * @param paragraphNum 分行段落数
-     * @return 类本身
-     * @deprecated 该方法已由带可变参数的相同方法代替，将在3.8.0或后续版本中删除
-     */
-	@Deprecated
-    public ExcelFileTemplet setContentBranch(String field, int paragraphNum) {
-        return setContentBranch(paragraphNum, field);
-	}
-
     /**
      * 用于设置字段内容分行写入的段落数
      * <p>
@@ -286,22 +234,6 @@ public class ExcelFileTemplet extends FileTemplet {
 
         return this;
     }
-
-	/**
-     * 用于设置字段段落内容是否自动编号
-     * <p>
-     * 设置自动编号后，当写入文件时，将在每段内容前，加上“序号 + .”的内容
-     * </p>
-     * 
-     * @param field  字段
-     * @param isAuto 是否自动编号
-     * @return 类本身
-     * @deprecated 该方法已由带可变参数的相同方法代替，将在3.8.0或后续版本中删除
-     */
-	@Deprecated
-    public ExcelFileTemplet setAutoSerialNumber(String field, boolean isAuto) {
-        return setAutoSerialNumber(isAuto, field);
-	}
 
     /**
      * 用于设置字段段落内容是否自动编号

@@ -112,7 +112,11 @@ public class ExcelUtil {
                     if (mergeStartRowIndex != -1 && mergeStartRowIndex != rowIndex - 1) {
                         CellRangeAddress mergeragex = new CellRangeAddress(mergeStartRowIndex, rowIndex - 1,
                                 columnIndex, columnIndex);
-                        sheet.addMergedRegion(mergeragex);
+                        // 若当前行无法合并，则跳过
+                        try {
+                            sheet.addMergedRegion(mergeragex);
+                        } catch (IllegalStateException e) {
+                        }
                     }
                     // 将该列的当前行作为新的起始行进行存储
                     columnStartIndexMap.put(columnIndex, rowIndex);
@@ -125,7 +129,10 @@ public class ExcelUtil {
             if (rowStartIndex != -1 && rowStartIndex != sheet.getLastRowNum()) {
                 CellRangeAddress mergeragex = new CellRangeAddress(rowStartIndex, rowLastIndex, columnIndex,
                         columnIndex);
-                sheet.addMergedRegion(mergeragex);
+                try {
+                    sheet.addMergedRegion(mergeragex);
+                } catch (IllegalStateException e) {
+                }
             }
         });
     }

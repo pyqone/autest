@@ -24,7 +24,10 @@ import com.auxiliary.testcase.templet.InformationCase.PhoneType;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
+ * @since autest 2.4.0
+ * @deprecated 用例生成类已重构，可参考{@link AbstractCaseTemplet}及其相应的子类，原始用例生成类将于4.1.0或后续版本中删除
  */
+@Deprecated
 public class InterfaceCase extends Case {
 	private final String FIELD_TYPE = "字段类型";
 	private final String INTER_NAME = "接口名称";
