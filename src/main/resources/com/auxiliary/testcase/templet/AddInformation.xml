@@ -560,7 +560,7 @@
             <stepdetail value='查看编辑#信息#界面的内容' />
         </step>
 		
-		<precondition id='1' value='存在#信息#数据' />
+		<precondition id='1' value='#信息#列表存在数据' />
         
         <except id='1'
             value='界面中可选择或可填写的信息均与需求一致，UI与设计图一致，且控件排布友好' />

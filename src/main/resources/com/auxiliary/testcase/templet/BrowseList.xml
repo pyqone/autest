@@ -1,11 +1,217 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <cases project='BrowseList'>
-	<case name='addAppBrowseListCase'>
+	<group name='commonContent'>
+		<rank id='1' value='#rank-1#' />
+		<rank id='2' value='#rank-2#' />
+		<rank id='3' value='#rank-3#' />
+		<rank id='4' value='#rank-4#' />
+
+		<precondition id='1' value='#信息#列表存在数据' />
+
+	</group>
+	
+	<group name='examineUI'>
+        <step id='1' value='查看#信息#列表页面'
+            intention='检查#信息#列表界面是否符合需求设计' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='查看#信息#列表页面的控件布局' />
+            <stepdetail value='查看#信息#列表上的搜索条件' />
+            <stepdetail value='查看#信息#列表上显示的列表字段' />
+        </step>
+        
+        <except id='1' value='UI与设计图一致，且控件排布友好，其可搜索的字段以及列表显示的字段均符合需求' />
+        
+        <title id='1' value='检查#信息#列表界面是否符合需求设计' />
+        
+        <key id='1' value='#信息#列表' />
+    </group>
+
+	<group name='BrowseListCase'>
+		<title id='1' value='浏览#信息#列表' />
+
+		<key id='web1' value='#信息#列表,刷新,加载' />
+		<key id='app1' value='#信息#列表,翻页' />
+
+		<step id='com1' value='查看#信息#列表数据'
+			intention='检查#信息#列表中的数据排列是否符合预期' rank='#rank-1#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='查看#信息#列表中的数据' />
+		</step>
+
+		<step id='app1' value='下拉刷新列表'
+			intention='验证#信息#列表是否允许下拉刷新数据' rank='#rank-1#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下拉#信息#列表' />
+		</step>
+		<step id='app2' value='上拉加载列表'
+			intention='验证#信息#列表是否允许上拉加载数据' rank='#rank-1#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在列表存在数据的情况下，上拉#信息#列表' />
+		</step>
+		<step id='app3' value='在无剩余数据时，上拉加载列表'
+			intention='验证#信息#列表是否重复加载数据' rank='#rank-2#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在列表存在多页数据的情况下，上拉#信息#列表' />
+            <stepdetail value='在最后一页数据加载后，再次上拉#信息#列表' />
+		</step>
+		<step id='app4' value='刷新列表时点击界面的一个按钮'
+			intention='验证#信息#列表刷新时是否能操作其他控件' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下拉刷新列表' />
+            <stepdetail value='在列表刷新时，点击界面上的某一个按钮' />
+		</step>
+		<step id='app5' value='列表加载数据时点击界面上的一个按钮'
+            intention='验证#信息#列表加载数据时是否能操作其他控件' rank='#rank-3#'>
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='上拉加载列表' />
+            <stepdetail value='在列表加载数据时，点击界面上的某一个按钮' />
+        </step>
+
+		<step id='web1' value='翻页查看#信息#列表'
+			intention='验证#信息#列表能否正常进行翻页' rank='#rank-1#'>
+			<stepdetail value='进入#信息#列表页面（列表存在多条数据）' />
+            <stepdetail value='点击“下一页”按钮' />
+            <stepdetail value='点击“尾页”按钮' />
+            <stepdetail value='点击“上一页”按钮' />
+            <stepdetail value='点击“首页”按钮' />
+		</step>
+		<step id='web2' value='在首页上点击“首页”按钮'
+			intention='验证#信息#列表能否在首页点击“首页”按钮' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击“首页”按钮' />
+		</step>
+		<step id='web3' value='在首页上点击“上一页”按钮'
+			intention='验证#信息#列表能否在首页点击“上一页 ”按钮' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面（列表存在多条数据）' />
+            <stepdetail value='点击“上一页”按钮' />
+		</step>
+		<step id='web4' value='在尾页上点击“尾页”按钮'
+			intention='验证#信息#列表能否在尾页点击“尾页”按钮' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面（列表存在多条数据）' />
+            <stepdetail value='将列表翻至最后一页' />
+            <stepdetail value='点击“尾页”按钮' />
+		</step>
+		<step id='web5' value='在尾页上点击“下一页”按钮'
+			intention='验证#信息#列表能否在尾页点击“下一页”按钮' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面（列表存在多条数据）' />
+			<stepdetail value='将列表翻至最后一页' />
+            <stepdetail value='点击“下一页”按钮' />
+		</step>
+
+		<except id='com1' value='能看到当前存在的所有信息，且信息按一定规则排序' />
+
+		<except id='app1' value='列表被刷新，若有新增信息则被显示出来，且原有数据排序不会混乱' />
+		<except id='app2' value='能加载剩下的信息' />
+		<except id='app3' value='上拉有效，但不加载出数据或数据不会错乱' />
+		<except id='app4' value='app不会闪退，且能正常显示' />
+
+		<except id='web1' value='能看到不同页上的列表信息，且切换页后列表的排序不变' />
+		<except id='web2' value='按钮无法点击或点击无效，且当前页列表排序不变' />
+		<except id='web3' value='按钮无法点击或点击无效，且当前页列表排序不变' />
+		<except id='web4' value='按钮无法点击或点击无效，且当前页列表排序不变' />
+		<except id='web5' value='按钮无法点击或点击无效，且当前页列表排序不变' />
+	</group>
+	
+	<group name='commonSearchCase'>
+	    <title id='1' value='通过#搜索条件#对#信息#进行搜索' />
+	    
+	    <key id='1' value='#信息#列表,#搜索条件#,搜索' />
+	</group>
+
+	<group name='addInputSearchCase'>
+		<step id='1' value='通过#搜索条件#对#信息#进行模糊搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='2' value='通过#搜索条件#对#信息#进行精准搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='3' value='不输入信息进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='4' value='输入#信息#中都不包含的关键词进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='5' value='输入“*”符号等特殊字符进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		
+		<except id='1' value='能搜索出包含输入内容的结果' />
+		<except id='2' value='能搜索出与输入相对应的结果' />
+		<except id='3' value='能查看到所有的结果' />
+		<except id='4' value='无搜索结果' />
+		<except id='5' value='只能搜索出包含特殊字符的结果' />
+	</group>
+
+	<group name='addSelectSearchCase'>
+		<step id='1' value='选择#搜索条件#的第一个有效选项对#信息#进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='2' value='选择#搜索条件#非第一个选项和非最后一个选项对#信息#进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='3' value='选择#搜索条件#的最后一个选项对#信息#进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='4' value='不选择任何选项进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='5' value='选择所有#信息#中都不包含的选项进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		
+		<except id='1' value='能搜索出符合选项的结果' />
+		<except id='2'
+			value='#下级选项#内容置空，其中的选项随之改变，且能搜索出所有符合#搜索条件#选中的选项结果，以及符合#下级选项#所有选项的结果' />
+		<except id='3'
+			value='#下级选项#内容置空，其中的选项也置空，且能搜索出符合#搜索条件#所有选项的结果' />
+		<except id='4' value='能查看到所有的结果，或者默认选项相应的结果' />
+		<except id='5' value='无搜索结果' />
+	</group>
+
+	<group name='addDateSearchCase'>
+		<step id='1' value='选择一个列表中存在的#搜索条件#数据进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='2' value='选择一个列表中不存在的#搜索条件#数据进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='3' value='不选择#搜索条件#进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='4' value='选择一个#开始时间#大于#结束时间#的时间段进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='5' value='不选择#开始时间#，只选择#结束时间#的时间段进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='6' value='通过不选择#结束时间#，只选择#开始时间#的时间段进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='7' value='选择一个在#开始时间#至#结束时间#存在数据的时间段进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='8' value='选择一个在#开始时间#至#结束时间#不存在数据的时间段进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		<step id='9' value='不选择#开始时间#与#结束时间#进行搜索'
+            intention='' rank='#rank-3#' >
+		</step>
+		
+		<except id='1' value='能搜索出在该#搜索条件#内所有的结果' />
+		<except id='2' value='搜索无结果' />
+		<except id='3' value='能搜索出所有的结果' />
+		<except id='4' value='无搜索结果或弹出错误输入的提示' />
+		<except id='5' value='能搜索出从有数据以来至#结束时间#的所有结果' />
+		<except id='6' value='能搜索出从#开始时间#至今的所有结果' />
+		<except id='7' value='能搜索出从#开始时间#至#结束时间#的所有结果且时间边界上的数据也能展示' />
+	</group>
+
+	<group name='addListSortCase'>
 		<titles>
-			<title id='1' value='浏览*{信息}*列表' />
+			<title id='1' value='对#信息#列表按照#搜索条件#进行排序' />
 		</titles>
 		<keys>
-			<key id='1' value='*{信息}*列表,刷新,加载' />
+			<key id='1' value='#信息#列表,排序' />
 		</keys>
 		<ranks>
 			<rank id='1' value='1' />
@@ -14,27 +220,23 @@
 			<precondition id='1' value='列表中有信息存在' />
 		</preconditions>
 		<steps>
-			<step id='1' value='查看*{信息}*列表' />
-			<step id='2' value='下拉刷新列表' />
-			<step id='3' value='上拉加载列表' />
-			<step id='4' value='在无剩余数据时，上拉加载列表' />
-			<step id='5' value='加载或刷新列表时点击某一个信息或某一个按钮' />
+			<step id='1' value='点击列表中的#搜索条件#列' />
+			<step id='2' value='再次点击列表中的#搜索条件#列' />
+			<step id='3' value='当#搜索条件#列为空时，对该列排序' />
 		</steps>
 		<excepts>
-			<except id='1' value='能看到当前存在的所有信息，且信息按一定规则排序'/>
-			<except id='2' value='列表被刷新，若有新增信息则被显示出来，且原有数据排序不会混乱'/>
-			<except id='3' value='能加载剩下的信息'/>
-			<except id='4' value='上拉有效，但不加载出数据或数据不会错乱'/>
-			<except id='5' value='app不会闪退，且能正常显示'/>
+			<except id='1' value='列表中的数据按照所选的项目进行某种规律的排序' />
+			<except id='2' value='列表中的数据按照第一步相反的顺序排序' />
+			<except id='3' value='列表中的数据排序不变' />
 		</excepts>
-	</case>
-	
-	<case name='addWebBrowseListCase'>
+	</group>
+
+	<group name='addExportListCase'>
 		<titles>
-			<title id='1' value='浏览*{信息}*列表' />
+			<title id='1' value='导出#信息#列表的数据' />
 		</titles>
 		<keys>
-			<key id='1' value='*{信息}*列表,刷新,加载' />
+			<key id='1' value='#信息#列表,导出' />
 		</keys>
 		<ranks>
 			<rank id='1' value='1' />
@@ -43,176 +245,29 @@
 			<precondition id='1' value='列表中有信息存在' />
 		</preconditions>
 		<steps>
-			<step id='1' value='查看*{信息}*列表' />
-			<step id='2' value='翻页查看*{信息}*列表' />
-			<step id='3' value='在首页上点击“首页”按钮' />
-			<step id='4' value='在首页上点击“上一页”按钮' />
-			<step id='5' value='在尾页上点击“尾页”按钮' />
-			<step id='6' value='在尾页上点击“下一页”按钮' />
+			<step id='1' value='在列表上有数据的情况下点击“#导出按钮#”按钮' />
+			<step id='2' value='在列表上勾选一条数据，点击“#导出按钮#”按钮' />
+			<step id='3' value='在列表上勾选多条数据，点击“#导出按钮#”按钮' />
+			<step id='4' value='不勾选列表上的数据，点击“#导出按钮#”按钮' />
+			<step id='5' value='在列表上无数据的情况下点击“#导出按钮#”按钮' />
+			<step id='6' value='对列表搜索后点击“#导出按钮#”按钮' />
 		</steps>
 		<excepts>
-			<except id='1' value='能看到当前存在的所有信息，且信息按一定规则排序'/>
-			<except id='2' value='能看到不同页上的列表信息，且切换页后列表的排序不变'/>
-			<except id='3' value='按钮无法点击或点击无效，且当前页列表排序不变'/>
-			<except id='4' value='按钮无法点击或点击无效，且当前页列表排序不变'/>
-			<except id='5' value='按钮无法点击或点击无效，且当前页列表排序不变'/>
-			<except id='6' value='按钮无法点击或点击无效，且当前页列表排序不变'/>
+			<except id='1' value='能导出文件，且文件上显示的信息与列表上所有的信息保持一致' />
+			<except id='2'
+				value='能导出文件，导出的文件中只有勾选的#信息#数据且文件上显示的信息与列表上的信息保持一致' />
+			<except id='4' value='导出的文件中有所有的#信息#信息且文件上显示的信息与列表上的信息保持一致' />
+			<except id='5'
+				value='若能导出相应的文件，则文件中只有表格的表头，无其他数据；若不能导出，则给出相应的提示' />
 		</excepts>
-	</case>
-	
-	<case name='addInputSearchCase'>
+	</group>
+
+	<group name='addImportListCase'>
 		<titles>
-			<title id='1' value='通过*{搜索条件}*对*{信息}*进行搜索' />
+			<title id='1' value='导入#信息#列表的数据' />
 		</titles>
 		<keys>
-			<key id='1' value='*{信息}*列表,搜索' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='通过*{搜索条件}*对*{信息}*进行模糊搜索' />
-			<step id='2' value='通过*{搜索条件}*对*{信息}*进行精准搜索' />
-			<step id='3' value='不输入信息进行搜索' />
-			<step id='4' value='输入*{信息}*中都不包含的关键词进行搜索' />
-			<step id='5' value='输入“*”符号等特殊字符进行搜索' />
-		</steps>
-		<excepts>
-			<except id='1' value='能搜索出包含输入内容的结果'/>
-			<except id='2' value='能搜索出与输入相对应的结果'/>
-			<except id='3' value='能查看到所有的结果'/>
-			<except id='4' value='无搜索结果'/>
-			<except id='5' value='只能搜索出包含特殊字符的结果'/>
-		</excepts>
-	</case>
-	
-	<case name='addSelectSearchCase'>
-		<titles>
-			<title id='1' value='通过*{搜索条件}*对*{信息}*进行搜索' />
-		</titles>
-		<keys>
-			<key id='1' value='*{信息}*列表,搜索' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='选择*{搜索条件}*的第一个有效选项对*{信息}*进行搜索' />
-			<step id='2' value='选择*{搜索条件}*非第一个选项和非最后一个选项对*{信息}*进行搜索' />
-			<step id='3' value='选择*{搜索条件}*的最后一个选项对*{信息}*进行搜索' />
-			<step id='4' value='不选择任何选项进行搜索' />
-			<step id='5' value='选择所有*{信息}*中都不包含的选项进行搜索' />
-		</steps>
-		<excepts>
-			<except id='1' value='能搜索出符合选项的结果'/>
-			<except id='2' value='*{下级选项}*内容置空，其中的选项随之改变，且能搜索出所有符合*{搜索条件}*选中的选项结果，以及符合*{下级选项}*所有选项的结果'/>
-			<except id='3' value='*{下级选项}*内容置空，其中的选项也置空，且能搜索出符合*{搜索条件}*所有选项的结果'/>
-			<except id='4' value='能查看到所有的结果，或者默认选项相应的结果'/>
-			<except id='5' value='无搜索结果'/>
-		</excepts>
-	</case>
-	
-	<case name='addDateSearchCase'>
-		<titles>
-			<title id='1' value='通过*{搜索条件}*对*{信息}*进行搜索' />
-		</titles>
-		<keys>
-			<key id='1' value='*{信息}*列表,搜索' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='选择一个列表中存在的*{搜索条件}*数据进行搜索' />
-			<step id='2' value='选择一个列表中不存在的*{搜索条件}*数据进行搜索' />
-			<step id='3' value='不选择*{搜索条件}*进行搜索' />
-			<step id='4' value='选择一个*{开始时间}*大于*{结束时间}*的时间段进行搜索' />
-			<step id='5' value='不选择*{开始时间}*，只选择*{结束时间}*的时间段进行搜索' />
-			<step id='6' value='通过不选择*{结束时间}*，只选择*{开始时间}*的时间段进行搜索' />
-			<step id='7' value='选择一个在*{开始时间}*至*{结束时间}*存在数据的时间段进行搜索' />
-			<step id='8' value='选择一个在*{开始时间}*至*{结束时间}*不存在数据的时间段进行搜索' />
-			<step id='9' value='不选择*{开始时间}*与*{结束时间}*进行搜索' />
-		</steps>
-		<excepts>
-			<except id='1' value='能搜索出在该*{搜索条件}*内所有的结果'/>
-			<except id='2' value='搜索无结果'/>
-			<except id='3' value='能搜索出所有的结果'/>
-			<except id='4' value='无搜索结果或弹出错误输入的提示'/>
-			<except id='5' value='能搜索出从有数据以来至*{结束时间}*的所有结果'/>
-			<except id='6' value='能搜索出从*{开始时间}*至今的所有结果'/>
-			<except id='7' value='能搜索出从*{开始时间}*至*{结束时间}*的所有结果且时间边界上的数据也能展示'/>
-		</excepts>
-	</case>
-	
-	<case name='addListSortCase'>
-		<titles>
-			<title id='1' value='对*{信息}*列表按照*{搜索条件}*进行排序' />
-		</titles>
-		<keys>
-			<key id='1' value='*{信息}*列表,排序' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='点击列表中的*{搜索条件}*列' />
-			<step id='2' value='再次点击列表中的*{搜索条件}*列' />
-			<step id='3' value='当*{搜索条件}*列为空时，对该列排序' />
-		</steps>
-		<excepts>
-			<except id='1' value='列表中的数据按照所选的项目进行某种规律的排序'/>
-			<except id='2' value='列表中的数据按照第一步相反的顺序排序'/>
-			<except id='3' value='列表中的数据排序不变'/>
-		</excepts>
-	</case>
-	
-	<case name='addExportListCase'>
-		<titles>
-			<title id='1' value='导出*{信息}*列表的数据' />
-		</titles>
-		<keys>
-			<key id='1' value='*{信息}*列表,导出' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='在列表上有数据的情况下点击“*{导出按钮}*”按钮' />
-			<step id='2' value='在列表上勾选一条数据，点击“*{导出按钮}*”按钮' />
-			<step id='3' value='在列表上勾选多条数据，点击“*{导出按钮}*”按钮' />
-			<step id='4' value='不勾选列表上的数据，点击“*{导出按钮}*”按钮' />
-			<step id='5' value='在列表上无数据的情况下点击“*{导出按钮}*”按钮' />
-			<step id='6' value='对列表搜索后点击“*{导出按钮}*”按钮' />
-		</steps>
-		<excepts>
-			<except id='1' value='能导出文件，且文件上显示的信息与列表上所有的信息保持一致'/>
-			<except id='2' value='能导出文件，导出的文件中只有勾选的*{信息}*数据且文件上显示的信息与列表上的信息保持一致'/>
-			<except id='4' value='导出的文件中有所有的*{信息}*信息且文件上显示的信息与列表上的信息保持一致'/>
-			<except id='5' value='若能导出相应的文件，则文件中只有表格的表头，无其他数据；若不能导出，则给出相应的提示'/>
-		</excepts>
-	</case>
-	
-	<case name='addImportListCase'>
-		<titles>
-			<title id='1' value='导入*{信息}*列表的数据' />
-		</titles>
-		<keys>
-			<key id='1' value='*{信息}*列表,导入' />
+			<key id='1' value='#信息#列表,导入' />
 		</keys>
 		<ranks>
 			<rank id='1' value='1' />
@@ -225,13 +280,13 @@
 			<step id='3' value='导入非模版文件' />
 		</steps>
 		<excepts>
-			<except id='1' value='信息导入成功，能在列表上看到新导入的帐号信息'/>
-			<except id='2' value='信息导入失败，并给出相应的提示'/>
-			<except id='3' value='信息导入失败，并给出相应的提示'/>
+			<except id='1' value='信息导入成功，能在列表上看到新导入的帐号信息' />
+			<except id='2' value='信息导入失败，并给出相应的提示' />
+			<except id='3' value='信息导入失败，并给出相应的提示' />
 		</excepts>
-	</case>
-	
-	<case name='addResetSearchCase'>
+	</group>
+
+	<group name='addResetSearchCase'>
 		<titles>
 			<title id='1' value='重置搜索' />
 		</titles>
@@ -248,11 +303,11 @@
 			<step id='1' value='先对列表进行一次搜索，之后点击重置按钮' />
 		</steps>
 		<excepts>
-			<except id='1' value='所有的搜索条件回到初次进入界面的状态，且列表中的数据也被还原'/>
+			<except id='1' value='所有的搜索条件回到初次进入界面的状态，且列表中的数据也被还原' />
 		</excepts>
-	</case>
-	
-	<case name='addSwitchListShowDataCase'>
+	</group>
+
+	<group name='addSwitchListShowDataCase'>
 		<titles>
 			<title id='1' value='修改列表每页显示的数据量' />
 		</titles>
@@ -273,20 +328,20 @@
 			<step id='5' value='在列表无数据的情况下切换单页数据显示量' />
 		</steps>
 		<excepts>
-			<except id='1' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序'/>
-			<except id='2' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序'/>
-			<except id='3' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序'/>
-			<except id='4' value='列表中数据无变化，且顺序保持不变'/>
-			<except id='5' value='列表无任何变化'/>
+			<except id='1' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序' />
+			<except id='2' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序' />
+			<except id='3' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序' />
+			<except id='4' value='列表中数据无变化，且顺序保持不变' />
+			<except id='5' value='列表无任何变化' />
 		</excepts>
-	</case>
-	
-	<case name='delectDataCase'>
+	</group>
+
+	<group name='delectDataCase'>
 		<titles>
-			<title id='1' value='删除*{信息}*列表的数据' />
+			<title id='1' value='删除#信息#列表的数据' />
 		</titles>
 		<keys>
-			<key id='1' value='*{信息}*列表,删除' />
+			<key id='1' value='#信息#列表,删除' />
 		</keys>
 		<ranks>
 			<rank id='1' value='1' />
@@ -295,21 +350,23 @@
 			<precondition id='1' value='列表中有信息存在' />
 		</preconditions>
 		<steps>
-			<step id='1' value='不选择数据，点击“*{删除按钮}*”按钮' />
-			<step id='2' value='选择第一条数据，点击“*{删除按钮}*”按钮' />
-			<step id='3' value='选择最后一条数据，点击“*{删除按钮}*”按钮' />
-			<step id='4' value='选择多条数据，点击“*{删除按钮}*”按钮' />
-			<step id='5' value='选择一页数据，点击“*{删除按钮}*”按钮' />
-			<step id='6' value='在只有一页数据的情况下，全选，点击“*{删除按钮}*”按钮' />
-			<step id='7' value='列表搜索后勾选部分数据，点击“*{删除按钮}*”按钮' />
-			<step id='8' value='列表搜索后数据全选，点击“*{删除按钮}*”按钮' />
+			<step id='1' value='不选择数据，点击“#删除按钮#”按钮' />
+			<step id='2' value='选择第一条数据，点击“#删除按钮#”按钮' />
+			<step id='3' value='选择最后一条数据，点击“#删除按钮#”按钮' />
+			<step id='4' value='选择多条数据，点击“#删除按钮#”按钮' />
+			<step id='5' value='选择一页数据，点击“#删除按钮#”按钮' />
+			<step id='6' value='在只有一页数据的情况下，全选，点击“#删除按钮#”按钮' />
+			<step id='7' value='列表搜索后勾选部分数据，点击“#删除按钮#”按钮' />
+			<step id='8' value='列表搜索后数据全选，点击“#删除按钮#”按钮' />
 		</steps>
 		<excepts>
-			<except id='1' value='无法删除数据，并给出相应选择数据的提示'/>
-			<except id='2' value='数据被删除，列表不再显示被删除的数据，其后的数据顶替被删除的数据的位置，且数据列表排序不变，数据总条数减少'/>
-			<except id='3' value='一页数据数据被删除，其下一页的数据将顶替该页数据，其列表的页数与总条数相应减少'/>
-			<except id='4' value='数据被全部删除，列表显示为空，其数据总条数变为0'/>
-			<except id='5' value='当前搜索条件下的数据被全部删除，列表显示为空，但重置搜索后能看到非搜索内容的选项'/>
+			<except id='1' value='无法删除数据，并给出相应选择数据的提示' />
+			<except id='2'
+				value='数据被删除，列表不再显示被删除的数据，其后的数据顶替被删除的数据的位置，且数据列表排序不变，数据总条数减少' />
+			<except id='3' value='一页数据数据被删除，其下一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
+			<except id='4' value='数据被全部删除，列表显示为空，其数据总条数变为0' />
+			<except id='5'
+				value='当前搜索条件下的数据被全部删除，列表显示为空，但重置搜索后能看到非搜索内容的选项' />
 		</excepts>
-	</case>
+	</group>
 </cases>

@@ -20,7 +20,8 @@ import com.auxiliary.tool.regex.ConstType;
  * <b>文件名：InformationTempletCase.java</b>
  * </p>
  * <p>
- * <b>用途：</b>
+ * <b>用途：</b>用于根据新增信息相关的测试用例模板，输出与页面新增或编辑信息相关的用例。相关的测试用例模板可参考“<a href=
+ * 'https://gitee.com/pyqone/autest/blob/master/src/main/resources/com/auxiliary/testcase/templet/AddInformation.xml'>AddInformation.xml</a>”文件
  * </p>
  * <p>
  * <b>编码时间：2023年1月19日 上午9:56:13
