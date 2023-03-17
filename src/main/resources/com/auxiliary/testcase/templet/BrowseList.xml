@@ -18,7 +18,14 @@
             <stepdetail value='查看#信息#列表上的搜索条件' />
             <stepdetail value='查看#信息#列表上显示的列表字段' />
         </step>
+        <step id='2' value='查看“#搜索条件#”中的选项'
+            intention='检查“#搜索条件#”中的选项是否符合需求' rank='#rank-1#' >
+           <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='查看“#搜索条件#”中的选项内容' />
+        </step>
         
+        <!-- ，且存在能搜索所有数据的选项 -->
+        <except id='2' value='“#搜索条件#”信息中的选项与需求一致#空选项文本#' />
         <except id='1' value='UI与设计图一致，且控件排布友好，其可搜索的字段以及列表显示的字段均符合需求' />
         
         <title id='1' value='检查#信息#列表界面是否符合需求设计' />
@@ -69,7 +76,7 @@
 
 		<step id='web1' value='翻页查看#信息#列表'
 			intention='验证#信息#列表能否正常进行翻页' rank='#rank-1#'>
-			<stepdetail value='进入#信息#列表页面（列表存在多条数据）' />
+			<stepdetail value='进入#信息#列表页面（列表存在多页数据）' />
             <stepdetail value='点击“下一页”按钮' />
             <stepdetail value='点击“尾页”按钮' />
             <stepdetail value='点击“上一页”按钮' />
@@ -82,18 +89,18 @@
 		</step>
 		<step id='web3' value='在首页上点击“上一页”按钮'
 			intention='验证#信息#列表能否在首页点击“上一页 ”按钮' rank='#rank-3#'>
-			<stepdetail value='进入#信息#列表页面（列表存在多条数据）' />
+			<stepdetail value='进入#信息#列表页面（列表存在多页数据）' />
             <stepdetail value='点击“上一页”按钮' />
 		</step>
 		<step id='web4' value='在尾页上点击“尾页”按钮'
 			intention='验证#信息#列表能否在尾页点击“尾页”按钮' rank='#rank-3#'>
-			<stepdetail value='进入#信息#列表页面（列表存在多条数据）' />
+			<stepdetail value='进入#信息#列表页面（列表存在多页数据）' />
             <stepdetail value='将列表翻至最后一页' />
             <stepdetail value='点击“尾页”按钮' />
 		</step>
 		<step id='web5' value='在尾页上点击“下一页”按钮'
 			intention='验证#信息#列表能否在尾页点击“下一页”按钮' rank='#rank-3#'>
-			<stepdetail value='进入#信息#列表页面（列表存在多条数据）' />
+			<stepdetail value='进入#信息#列表页面（列表存在多页数据）' />
 			<stepdetail value='将列表翻至最后一页' />
             <stepdetail value='点击“下一页”按钮' />
 		</step>
@@ -116,48 +123,95 @@
 	    <title id='1' value='通过#搜索条件#对#信息#进行搜索' />
 	    
 	    <key id='1' value='#信息#列表,#搜索条件#,搜索' />
+	    
+	    <!-- 搜索内容时，按照是否必须输入来判断3与4 -->
+        <except id='3' value='能搜索出所有的结果' />
+        <except id='4' value='无搜索结果' />
 	</group>
 
 	<group name='addInputSearchCase'>
 		<step id='1' value='通过#搜索条件#对#信息#进行模糊搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#是否能进行模糊搜索' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入列表相应字段下，其中一条数据中的部分文本' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='2' value='通过#搜索条件#对#信息#进行精准搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#是否能进行精准搜索' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入列表相应字段下，其中一条数据中的完整文本' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='3' value='不输入信息进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#不输入内容搜索时是否能忽略该条件' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中不输入任何内容' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='4' value='输入#信息#中都不包含的关键词进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#输入不存在的信息是否会展示数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入列表相应字段下，均不存在的一串文本' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='5' value='输入“*”符号等特殊字符进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#输入特殊字符是否会展示数据' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入“*”、“+”、“%”等特殊符号' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
+		<step id='6' value='输入内容搜索后，清空输入的内容，再次进行搜索'
+            intention='验证清空#搜索条件#中的内容后进行搜索是否出现清空内容前的数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入能搜索出数据的内容' />
+            <stepdetail value='点击搜索相关的按钮' />
+            <stepdetail value='点击清空输入内容相关的按钮' />
+            <stepdetail value='再次点击搜索相关的按钮' />
+        </step>
 		
 		<except id='1' value='能搜索出包含输入内容的结果' />
 		<except id='2' value='能搜索出与输入相对应的结果' />
-		<except id='3' value='能查看到所有的结果' />
-		<except id='4' value='无搜索结果' />
-		<except id='5' value='只能搜索出包含特殊字符的结果' />
+		<except id='3' value='只能搜索出包含特殊字符的结果' />
 	</group>
 
 	<group name='addSelectSearchCase'>
 		<step id='1' value='选择#搜索条件#的第一个有效选项对#信息#进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#选择第一个有效选项进行搜索是否生效' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择第一个有效选项（非“请选择”等选项）' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='2' value='选择#搜索条件#非第一个选项和非最后一个选项对#信息#进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#选择中间的选项进行搜索是否正常' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择中间的有效选项' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='3' value='选择#搜索条件#的最后一个选项对#信息#进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#选择最后一个选项进行搜索是否正常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择最后一个选项' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='4' value='不选择任何选项进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#不选择选择选项进行搜索是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不进行任何选择，点击搜索相关的按钮' />
 		</step>
 		<step id='5' value='选择所有#信息#中都不包含的选项进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证#搜索条件#选择无数据的选项进行搜索是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择一个列表相应字段下，均不存在的一个选项' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
+		<step id='6' value='选择一个存在数据的选项，清空选择的内容，再次进行搜索'
+            intention='验证清空#搜索条件#中的内容后进行搜索是否出现清空内容前的数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择能搜索出数据的选项' />
+            <stepdetail value='点击搜索相关的按钮' />
+            <stepdetail value='点击清空输入内容相关的按钮' />
+            <stepdetail value='再次点击搜索相关的按钮' />
+        </step>
 		
 		<except id='1' value='能搜索出符合选项的结果' />
 		<except id='2'
@@ -165,7 +219,6 @@
 		<except id='3'
 			value='#下级选项#内容置空，其中的选项也置空，且能搜索出符合#搜索条件#所有选项的结果' />
 		<except id='4' value='能查看到所有的结果，或者默认选项相应的结果' />
-		<except id='5' value='无搜索结果' />
 	</group>
 
 	<group name='addDateSearchCase'>
