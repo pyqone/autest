@@ -142,6 +142,7 @@
             <stepdetail value='在#搜索条件#中输入列表相应字段下，其中一条数据中的完整文本' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
+		<!-- 仅判断是否必填时添加 -->
 		<step id='3' value='不输入信息进行搜索'
             intention='验证#搜索条件#不输入内容搜索时是否能忽略该条件' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
@@ -172,6 +173,7 @@
 		<except id='1' value='能搜索出包含输入内容的结果' />
 		<except id='2' value='能搜索出与输入相对应的结果' />
 		<except id='3' value='只能搜索出包含特殊字符的结果' />
+		<except id='4' value='提示必须输入#搜索条件#，且列表不展示任何数据' />
 	</group>
 
 	<group name='addSelectSearchCase'>
@@ -215,43 +217,72 @@
 		
 		<except id='1' value='能搜索出符合选项的结果' />
 		<except id='2'
-			value='#下级选项#内容置空，其中的选项随之改变，且能搜索出所有符合#搜索条件#选中的选项结果，以及符合#下级选项#所有选项的结果' />
+			value='#下级选项#内容置空，其中的选项随之改变，且能搜索出所有符合#搜索条件#选中的选项结果，以及符合#下级选项#所有选项的结果' /> 
 		<except id='3'
 			value='#下级选项#内容置空，其中的选项也置空，且能搜索出符合#搜索条件#所有选项的结果' />
 		<except id='4' value='能查看到所有的结果，或者默认选项相应的结果' />
+		<except id='5' value='提示必须选择#搜索条件#，且列表不展示任何数据' />
 	</group>
 
 	<group name='addDateSearchCase'>
 		<step id='1' value='选择一个列表中存在的#搜索条件#数据进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证“#搜索条件#”条件选择一个有数据的时间后能否正常进行搜索' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择能搜索出数据的选项' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='2' value='选择一个列表中不存在的#搜索条件#数据进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证“#搜索条件#”条件选择一个无数据的时间后能否正常进行搜索' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择不能搜索出数据的选项' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='3' value='不选择#搜索条件#进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证不选择“#搜索条件#”条件时搜索结果是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不对#搜索条件#进行选择' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='4' value='选择一个#开始时间#大于#结束时间#的时间段进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证选择#开始时间#大于#结束时间#的时间段时搜索结果是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='选择一个#开始时间#大于#结束时间#的时间段' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='5' value='不选择#开始时间#，只选择#结束时间#的时间段进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证不选择#开始时间#时搜索结果是否正常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不选择#开始时间#，选择一个存在数据的#结束时间#' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='6' value='通过不选择#结束时间#，只选择#开始时间#的时间段进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证不选择#结束时间#时搜索结果是否正常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不选择#结束时间#，选择一个存在数据的#开始时间#' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='7' value='选择一个在#开始时间#至#结束时间#存在数据的时间段进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证选择一个存在数据的时间段时能否进行搜索' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='选择一个在#开始时间#与#结束时间#范围内存在数据的时间段' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='8' value='选择一个在#开始时间#至#结束时间#不存在数据的时间段进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证选择一个不存在数据的时间段时能否进行搜索' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='选择一个在#开始时间#与#结束时间#范围内不存在数据的时间段' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='9' value='不选择#开始时间#与#结束时间#进行搜索'
-            intention='' rank='#rank-3#' >
+            intention='验证不选择一时间段时能否正常进行搜索' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不对#开始时间#与#结束时间#进行选择' />
+            <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		
 		<except id='1' value='能搜索出在该#搜索条件#内所有的结果' />
 		<except id='2' value='搜索无结果' />
+		<except id='5' value='提示必须选择#搜索条件#，且列表不展示任何数据' />
 		<except id='3' value='能搜索出所有的结果' />
 		<except id='4' value='无搜索结果或弹出错误输入的提示' />
 		<except id='5' value='能搜索出从有数据以来至#结束时间#的所有结果' />
@@ -260,83 +291,108 @@
 	</group>
 
 	<group name='addListSortCase'>
-		<titles>
-			<title id='1' value='对#信息#列表按照#搜索条件#进行排序' />
-		</titles>
-		<keys>
-			<key id='1' value='#信息#列表,排序' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='点击列表中的#搜索条件#列' />
-			<step id='2' value='再次点击列表中的#搜索条件#列' />
-			<step id='3' value='当#搜索条件#列为空时，对该列排序' />
-		</steps>
-		<excepts>
-			<except id='1' value='列表中的数据按照所选的项目进行某种规律的排序' />
-			<except id='2' value='列表中的数据按照第一步相反的顺序排序' />
-			<except id='3' value='列表中的数据排序不变' />
-		</excepts>
+		<title id='1' value='对#信息#列表按照#列表字段#进行排序' />
+		
+		<key id='1' value='#信息#列表,#列表字段#,排序' />
+		
+		<step id='1' value='点击列表标题中的#列表字段#字段，之后再次点击#列表字段#字段' 
+            intention='验证点击列表的#列表字段#字段后列表是否按照字段排序' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在列表的标题行中，点击“#列表字段#”字段' />
+            <stepdetail value='再次点击“#列表字段#”' />
+		</step>
+		<step id='2' value='当#列表字段#列为空时，对该列排序' 
+            intention='验证列表的#列表字段#字段无数据时点击字段是否会排序' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面（#列表字段#列数据为空）' />
+            <stepdetail value='在列表的标题行中，点击“#列表字段#”字段' />
+		</step>
+		
+		<except id='1' value='列表中的数据按照所选的项目进行某种规律的排序，再次点击时，则列按照相反的顺序排序' />
+		<except id='2' value='列表中的数据排序不变' />
 	</group>
 
 	<group name='addExportListCase'>
-		<titles>
-			<title id='1' value='导出#信息#列表的数据' />
-		</titles>
-		<keys>
-			<key id='1' value='#信息#列表,导出' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='在列表上有数据的情况下点击“#导出按钮#”按钮' />
-			<step id='2' value='在列表上勾选一条数据，点击“#导出按钮#”按钮' />
-			<step id='3' value='在列表上勾选多条数据，点击“#导出按钮#”按钮' />
-			<step id='4' value='不勾选列表上的数据，点击“#导出按钮#”按钮' />
-			<step id='5' value='在列表上无数据的情况下点击“#导出按钮#”按钮' />
-			<step id='6' value='对列表搜索后点击“#导出按钮#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1' value='能导出文件，且文件上显示的信息与列表上所有的信息保持一致' />
-			<except id='2'
-				value='能导出文件，导出的文件中只有勾选的#信息#数据且文件上显示的信息与列表上的信息保持一致' />
-			<except id='4' value='导出的文件中有所有的#信息#信息且文件上显示的信息与列表上的信息保持一致' />
-			<except id='5'
-				value='若能导出相应的文件，则文件中只有表格的表头，无其他数据；若不能导出，则给出相应的提示' />
-		</excepts>
+		<title id='1' value='导出#信息#列表的数据' />
+		
+		<key id='1' value='#信息#列表,导出' />
+		
+		<step id='1' value='在列表上无数据的情况下点击“#导出按钮#”按钮' 
+            intention='验证列表无数据时能否进行导出' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面（列表不存在数据）' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+        </step>
+		<step id='2' value='在列表上有数据的情况下点击“#导出按钮#”按钮' 
+            intention='验证列表有数据时能否进行导出' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面（列表存在数据）' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		<step id='3' value='在列表上勾选一条数据，点击“#导出按钮#”按钮' 
+            intention='验证勾选一条数据后能否进行导出' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='勾选列表中的一条数据' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		<step id='4' value='在列表上勾选多条数据，点击“#导出按钮#”按钮' 
+            intention='验证勾选多条数据后能否进行导出' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='勾选列表中的多条数据' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		<step id='5' value='不勾选列表上的数据，点击“#导出按钮#”按钮' 
+            intention='验证不勾选数据时能否进行导出' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不勾选列表中的任何数据' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		<step id='6' value='对列表搜索后点击“#导出按钮#”按钮' 
+            intention='验证搜索列表后能否进行导出' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='通过其中一个搜索条件对列表进行搜索' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		
+		<except id='1' value='能导出文件，且文件上显示的信息与列表上所有的信息保持一致' />
+		<except id='2'
+			value='能导出文件，导出的文件中只有勾选的#信息#数据且文件上显示的信息与列表上的信息保持一致' />
+		<except id='4' value='导出的文件中有所有的#信息#信息且文件上显示的信息与列表上的信息保持一致' />
+		<except id='5'
+			value='若能导出相应的文件，则文件中只有表格的表头，无其他数据；若不能导出，则给出相应的提示' />
 	</group>
 
 	<group name='addImportListCase'>
-		<titles>
-			<title id='1' value='导入#信息#列表的数据' />
-		</titles>
-		<keys>
-			<key id='1' value='#信息#列表,导入' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-		</preconditions>
-		<steps>
-			<step id='1' value='按照模版正确的输入信息后，导入' />
-			<step id='2' value='在模版中部分必填信息不输入或信息错误输入，导入' />
-			<step id='3' value='导入非模版文件' />
-		</steps>
-		<excepts>
-			<except id='1' value='信息导入成功，能在列表上看到新导入的帐号信息' />
-			<except id='2' value='信息导入失败，并给出相应的提示' />
-			<except id='3' value='信息导入失败，并给出相应的提示' />
-		</excepts>
+		<title id='1' value='导入#信息#列表的数据' />
+		
+		<key id='1' value='#信息#列表,导入' />
+		
+		<step id='1' value='按照模版正确的输入信息后，点击“#导入按钮#”按钮，选择编辑好的文件' 
+            intention='验证正确编写模板后能否导入到系统' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下载导入数据的模板' />
+            <stepdetail value='本地在模板中正确编写所有的字段' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择编辑好的模板文件进行上传' />
+		</step>
+		<step id='2' value='在模版中必填信息不输入，点击“#导入按钮#”按钮，选择编辑好的文件' 
+            intention='验证不输入必填项时模板能否导入到系统' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下载导入数据的模板' />
+            <stepdetail value='本地在模板中不输入必填项字段' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择编辑好的模板文件进行上传' />
+		</step>
+		<step id='3' value='在模版中错误输入有格式限制的信息，点击“#导入按钮#”按钮，选择编辑好的文件' 
+            intention='验证错误输入有格式限制的字段时模板能否导入到系统' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下载导入数据的模板' />
+            <stepdetail value='本地在模板中错误填写有格式限制的字段' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择编辑好的模板文件进行上传' />
+        </step>
+		<step id='4' value='导入非模版文件' 
+            intention='验证非相应模板的文件能否导入到系统' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择与模板格式一致，但文件内容不一样的文件' />
+		</step>
+		
+		<except id='1' value='信息导入成功，能在列表上看到新导入的帐号信息' />
+		<except id='2' value='信息导入失败，并给出相应的提示' />
 	</group>
 
 	<group name='addResetSearchCase'>
