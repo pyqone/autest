@@ -25,11 +25,6 @@ import java.io.File;
  */
 public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
 	/**
-	 * 用于列表名称
-	 */
-	public static final String DATA_NAME = WordType.INFORMATION.getName();
-	
-	/**
      * 构造对象，并指定读取的模板xml文件
      * 
      * @param xmlTempletFile 用例模板文件类对象
@@ -48,65 +43,57 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
         super("BrowseList");
     }
 	
-	/**
-	 * <p><b>文件名：</b>DataListCase.java</p>
-	 * <p><b>用途：</b>枚举在预设测试用例中需要被替换的词语</p>
-	 * <p><b>编码时间：</b>2020年3月15日下午5:50:28</p>
-	 * <p><b>修改时间：</b>2020年3月15日下午5:50:28</p>
-	 * @author 彭宇琦
-	 * @version Ver1.0
-	 * @since JDK 1.8
-	 *
-	 */
-	private enum WordType {
+    /**
+     * <p>
+     * <b>文件名：DataListCaseTemplet.java</b>
+     * </p>
+     * <p>
+     * <b>用途：</b>定义所有需要替换的词语
+     * </p>
+     * <p>
+     * <b>编码时间：2023年3月22日 上午8:54:31
+     * </p>
+     * <p>
+     * <b>修改时间：2023年3月22日 上午8:54:31
+     * </p>
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     * @since autest 4.1.0
+     */
+    protected class ReplaceWord {
 		/**
 		 * 提交按钮名称
 		 */
-		INFORMATION("信息"), 
+        public static final String INFORMATION = "信息";
 		/**
 		 * 取消按钮名称
 		 */
-		SEARCH_CONDITION("搜索条件"), 
+        public static final String SEARCH_CONDITION = "搜索条件";
 		/**
 		 * 开始时间
 		 */
-		START_TIME("开始时间"), 
+        public static final String START_TIME = "开始时间";
 		/**
 		 * 结束时间
 		 */
-		END_TIME("结束时间"), 
+        public static final String END_TIME = "结束时间";
 		/**
 		 * 导出按钮
 		 */
-		EXPORT_BUTTON_NAME("导出按钮"), 
+        public static final String EXPORT_BUTTON_NAME = "导出按钮";
 		/**
 		 * 下级选项
 		 */
-		DONW_CONDITION("下级选项"), 
+        public static final String DONW_CONDITION = "下级选项";
+        /**
+         * 批量删除按钮
+         */
+        public static final String BATCHES_DELECT_BUTTON = "批量删除按钮";
 		/**
 		 * 删除按钮
 		 */
-		DELECT_BUTTON("删除按钮"), 
-		;
-		/**
-		 * 存储需要替换的单词名称
-		 */
-		private String name;
-
-		/**
-		 * 初始化枚举值
-		 * @param name 枚举的名称
-		 */
-		private WordType(String name) {
-			this.name = name;
-		}
-
-		/**
-		 * 返回需要替换的单词的名称
-		 * @return 需要替换的单词的名称
-		 */
-		public String getName() {
-			return name;
-		}
+        public static final String DELECT_BUTTON = "删除按钮";
 	}
 }

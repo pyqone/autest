@@ -396,86 +396,117 @@
 	</group>
 
 	<group name='addResetSearchCase'>
-		<titles>
-			<title id='1' value='重置搜索' />
-		</titles>
-		<keys>
-			<key id='1' value='重置,搜索' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='已对列表进行搜索' />
-		</preconditions>
-		<steps>
-			<step id='1' value='先对列表进行一次搜索，之后点击重置按钮' />
-		</steps>
-		<excepts>
-			<except id='1' value='所有的搜索条件回到初次进入界面的状态，且列表中的数据也被还原' />
-		</excepts>
+		<title id='1' value='重置搜索' />
+		
+		<key id='1' value='重置,搜索' />
+		
+		<step id='1' value='先对列表进行一次搜索，之后点击重置按钮' 
+            intention='验证重置搜索条件是否生效' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='输入或选择所有的搜索条件' />
+            <stepdetail value='点击重置按钮' />
+		</step>
+		
+		<except id='1' value='所有的搜索条件回到初始状态' />
 	</group>
 
 	<group name='addSwitchListShowDataCase'>
-		<titles>
-			<title id='1' value='修改列表每页显示的数据量' />
-		</titles>
-		<keys>
-			<key id='1' value='切换,数据量' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有多条数据存在，且能分页显示' />
-		</preconditions>
-		<steps>
-			<step id='1' value='选择分页下拉框的第一个选项' />
-			<step id='2' value='选择分页下拉框的最后一个选项' />
-			<step id='3' value='选择分页下拉框的非第一个和最后一个选项' />
-			<step id='4' value='在数据量较少的情况下选择一个较大的单页显示量（如只有5条数据时选择单页显示20条数据）' />
-			<step id='5' value='在列表无数据的情况下切换单页数据显示量' />
-		</steps>
-		<excepts>
-			<except id='1' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序' />
-			<except id='2' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序' />
-			<except id='3' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序' />
-			<except id='4' value='列表中数据无变化，且顺序保持不变' />
-			<except id='5' value='列表无任何变化' />
-		</excepts>
+		<title id='1' value='修改列表每页显示的数据量' />
+		 
+		<key id='1' value='切换,数据量' />
+		
+		<step id='1' value='选择单页数据量下拉框的第一个选项' 
+            intention='验证第一个单页数据量选项是否生效' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击切换单页数据量的选项，选择第一个选项' />
+		</step>
+		<step id='2' value='选择数据量下拉框的最后一个选项' 
+            intention='验证最后一个单页数据量选项是否生效' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击切换单页数据量的选项，选择最后一个选项' />
+		</step>
+		<step id='3' value='选择分页下拉框的非第一个和最后一个选项' 
+            intention='验证中间的单页数据量选项是否生效' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击切换单页数据量的选项，选择非第一个和最后一个选项' />
+		</step>
+		<step id='4' value='在数据量较少的情况下选择一个较大的单页显示量（如只有5条数据时选择单页显示20条数据）' 
+            intention='验证单页数据量大于列表数据总量时是否生效' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='切换一个单页显示数据量大于总条数的选项' />
+		</step>
+		<step id='5' value='在列表无数据的情况下切换单页数据显示量' 
+            intention='验证列表无数据时切换单页数据量是否异常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面（列表无数据）' />
+            <stepdetail value='任意切换一个单页数据显示量' />
+		</step>
+		
+		<except id='3' value='列表中每页显示相应的数据量，且修改后不改变原数据的顺序' />
+		<except id='4' value='列表中数据无变化，且顺序保持不变' />
+		<except id='5' value='列表无任何变化' />
 	</group>
 
 	<group name='delectDataCase'>
-		<titles>
-			<title id='1' value='删除#信息#列表的数据' />
-		</titles>
-		<keys>
-			<key id='1' value='#信息#列表,删除' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='列表中有信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='不选择数据，点击“#删除按钮#”按钮' />
-			<step id='2' value='选择第一条数据，点击“#删除按钮#”按钮' />
-			<step id='3' value='选择最后一条数据，点击“#删除按钮#”按钮' />
-			<step id='4' value='选择多条数据，点击“#删除按钮#”按钮' />
-			<step id='5' value='选择一页数据，点击“#删除按钮#”按钮' />
-			<step id='6' value='在只有一页数据的情况下，全选，点击“#删除按钮#”按钮' />
-			<step id='7' value='列表搜索后勾选部分数据，点击“#删除按钮#”按钮' />
-			<step id='8' value='列表搜索后数据全选，点击“#删除按钮#”按钮' />
-		</steps>
-		<excepts>
-			<except id='1' value='无法删除数据，并给出相应选择数据的提示' />
-			<except id='2'
-				value='数据被删除，列表不再显示被删除的数据，其后的数据顶替被删除的数据的位置，且数据列表排序不变，数据总条数减少' />
-			<except id='3' value='一页数据数据被删除，其下一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
-			<except id='4' value='数据被全部删除，列表显示为空，其数据总条数变为0' />
-			<except id='5'
-				value='当前搜索条件下的数据被全部删除，列表显示为空，但重置搜索后能看到非搜索内容的选项' />
-		</excepts>
+		<title id='1' value='删除#信息#列表的数据' />
+		
+		<key id='1' value='#信息#列表,删除' />
+		
+		<step id='1' value='不选择数据，点击“#批量删除按钮#”按钮' 
+            intention='验证不选择数据时点击“#批量删除按钮#”按钮是否异常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='2' value='选择第一条数据，点击“#批量删除按钮#”按钮' 
+            intention='验证选择一条数据时能否删除勾选的数据' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击勾选列表第一条数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='3' value='选择最后一条数据，点击“#批量删除按钮#”按钮' 
+            intention='验证选择最后一条数据时能否删除勾选的数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击勾选列表最后一条数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='4' value='选择多条数据，点击“#批量删除按钮#”按钮' 
+            intention='验证选择多条数据时能否删除勾选的数据' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击勾选列表多条数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='5' value='全选尾页页数据，点击“#批量删除按钮#”按钮' 
+            intention='验证全选尾页单页数据时能否正常删除当页数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='将列表翻至尾页' />
+            <stepdetail value='点击全选按钮或逐个勾选当页所有数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='6' value='在只有一页数据的情况下，全选，点击“#批量删除按钮#”按钮' 
+            intention='验证仅一页数据时全选能否删除整页数据' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击全选按钮或逐个勾选当页所有数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='7' value='列表搜索后数据全选，点击“#批量删除按钮#”按钮' 
+            intention='验证搜索后全选搜索的结果时能否正常删除被搜索出的整页数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='对列表根据任意条件进行搜索（能搜索出数据）' />
+            <stepdetail value='点击全选按钮或逐个勾选当页所有数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		
+		<step id='8' value='点击列表任意数据的“#删除按钮#”按钮' 
+            intention='验证能否单独删除列表中的任意一条数据' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击列表任意一条数据上的“#删除按钮#”按钮' />
+        </step>
+		
+		<except id='1' value='无法删除数据，并给出相应选择数据的提示' />
+		<except id='2'
+			value='数据被删除，列表不再显示被删除的数据，其后的数据顶替被删除的数据的位置，且数据列表排序不变，数据总条数减少' />
+		<except id='3' value='一页数据数据被删除，其下一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
+		<except id='4' value='数据被全部删除，列表显示为空，其数据总条数变为0' />
+		<except id='5'
+			value='当前搜索条件下的数据被全部删除，列表显示为空，但重置搜索后能看到非搜索内容的选项' />
 	</group>
 </cases>
