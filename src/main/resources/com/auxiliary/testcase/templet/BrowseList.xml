@@ -6,7 +6,7 @@
 		<rank id='3' value='#rank-3#' />
 		<rank id='4' value='#rank-4#' />
 
-		<precondition id='1' value='#信息#列表存在数据' />
+		<precondition id='basic' value='#信息#列表存在数据' />
 
 	</group>
 	
@@ -120,13 +120,14 @@
 	</group>
 	
 	<group name='commonSearchCase'>
-	    <title id='1' value='通过#搜索条件#对#信息#进行搜索' />
+	    <title id='basic' value='通过#搜索条件#对#信息#进行搜索' />
 	    
-	    <key id='1' value='#信息#列表,#搜索条件#,搜索' />
+	    <key id='basic' value='#信息#列表,#搜索条件#,搜索' />
 	    
 	    <!-- 搜索内容时，按照是否必须输入来判断3与4 -->
-        <except id='3' value='能搜索出所有的结果' />
-        <except id='4' value='无搜索结果' />
+        <except id='allResult' value='能搜索出所有的结果' />
+		<except id='containResult' value='能搜索出包含搜索条件的结果' />
+        <except id='noResult' value='无搜索结果' />
 	</group>
 
 	<group name='addInputSearchCase'>

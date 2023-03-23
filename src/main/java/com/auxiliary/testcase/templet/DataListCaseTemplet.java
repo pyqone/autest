@@ -42,6 +42,54 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
     public DataListCaseTemplet() {
         super("BrowseList");
     }
+
+    /**
+     * <p>
+     * <b>文件名：DataListCaseTemplet.java</b>
+     * </p>
+     * <p>
+     * <b>用途：</b>用于标记“BrowseList”用例模板中存在的用例组名称
+     * </p>
+     * <p>
+     * <b>编码时间：2023年3月23日 上午8:56:08
+     * </p>
+     * <p>
+     * <b>修改时间：2023年3月23日 上午8:56:08
+     * </p>
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     * @since autest 4.1.0
+     */
+    public class BrowseListTemplet {
+        public static final String GROUP_COMMON_CONTENT = "commonContent";
+        public static final String COMMON_CONTENT_RANK_1 = "1";
+        public static final String COMMON_CONTENT_RANK_2 = "2";
+        public static final String COMMON_CONTENT_RANK_3 = "3";
+        public static final String COMMON_CONTENT_RANK_4 = "4";
+        public static final String COMMON_CONTENT_PRECONDITION_BASIC = "basic";
+
+        public static final String GROUP_COMMON_SEARCH_CASE = "commonSearchCase";
+        public static final String COMMON_SEARCH_CASE_TITLE_BASIC = "basic";
+        public static final String COMMON_SEARCH_CASE_KEY_BASIC = "basic";
+        public static final String COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT = "allResult";
+        public static final String COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT = "containResult";
+        public static final String COMMON_SEARCH_CASE_EXCEPT_NO_RESULT = "noResult";
+
+        public static final String GROUP_EXAMINE_UI = "examineUI";
+        public static final String GROUP_BROWSE_LIST_CASE = "BrowseListCase";
+        public static final String GROUP_ADD_INPUT_SEARCH_CASE = "addInputSearchCase";
+        public static final String GROUP_ADD_SELECT_SEARCH_CASE = "addSelectSearchCase";
+        public static final String GROUP_ADD_DATE_SEARCH_CASE = "addDateSearchCase";
+        public static final String GROUP_ADD_LIST_SORT_CASE = "addListSortCase";
+        public static final String GROUP_ADD_EXPORT_LIST_CASE = "addExportListCase";
+        public static final String GROUP_ADD_IMPORT_LIST_CASE = "addImportListCase";
+        public static final String GROUP_ADD_RESET_SEARCH_CASE = "addResetSearchCase";
+        public static final String GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE = "addSwitchListShowDataCase";
+        public static final String GROUP_DELECT_DATA_CASE = "delectDataCase";
+
+    }
 	
     /**
      * <p>
@@ -63,37 +111,13 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.1.0
      */
     protected class ReplaceWord {
-		/**
-		 * 提交按钮名称
-		 */
         public static final String INFORMATION = "信息";
-		/**
-		 * 取消按钮名称
-		 */
         public static final String SEARCH_CONDITION = "搜索条件";
-		/**
-		 * 开始时间
-		 */
         public static final String START_TIME = "开始时间";
-		/**
-		 * 结束时间
-		 */
         public static final String END_TIME = "结束时间";
-		/**
-		 * 导出按钮
-		 */
         public static final String EXPORT_BUTTON_NAME = "导出按钮";
-		/**
-		 * 下级选项
-		 */
         public static final String DONW_CONDITION = "下级选项";
-        /**
-         * 批量删除按钮
-         */
         public static final String BATCHES_DELECT_BUTTON = "批量删除按钮";
-		/**
-		 * 删除按钮
-		 */
         public static final String DELECT_BUTTON = "删除按钮";
 	}
 }
