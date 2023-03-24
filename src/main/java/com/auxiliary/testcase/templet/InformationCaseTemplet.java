@@ -1565,7 +1565,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * <b>文件名：InformationTempletCase.java</b>
      * </p>
      * <p>
-     * <b>用途：</b>用于标记当前用例模板中存在的用例组名称
+     * <b>用途：</b>用于标记“AddInformation”用例模板中存在的用例组名称
      * </p>
      * <p>
      * <b>编码时间：2023年1月31日 上午8:14:52
