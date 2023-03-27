@@ -123,45 +123,45 @@
 	    
 	    <!-- 搜索内容时，按照是否必须输入来判断3与4 -->
         <except id='allResult' value='能搜索出所有的结果' />
-		<except id='containResult' value='能搜索出包含搜索条件的结果' />
+		<except id='containResult' value='能搜索出符合搜索条件的结果' />
         <except id='noResult' value='无搜索结果' />
 		<except id='mustWriteContidion' value='提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
 	</group>
 
 	<group name='addInputSearchCase'>
 		<step id='1' value='通过#搜索条件#对#信息#进行模糊搜索'
-            intention='验证#搜索条件#是否能进行模糊搜索' rank='#rank-1#' >
+            intention='验证#搜索条件#是否能模糊搜索#信息#列表' rank='#rank-1#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中输入列表相应字段下，其中一条数据中的部分文本' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='2' value='通过#搜索条件#对#信息#进行精准搜索'
-            intention='验证#搜索条件#是否能进行精准搜索' rank='#rank-1#' >
+            intention='验证#搜索条件#是否能精准搜索#信息#列表' rank='#rank-1#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中输入列表相应字段下，其中一条数据中的完整文本' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<!-- 仅判断是否必填时添加 -->
 		<step id='3' value='不输入信息进行搜索'
-            intention='验证#搜索条件#不输入内容搜索时是否能忽略该条件' rank='#rank-2#' >
+            intention='验证#搜索条件#不输入内容搜索#信息#列表时是否能忽略该条件' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中不输入任何内容' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='4' value='输入#信息#中都不包含的关键词进行搜索'
-            intention='验证#搜索条件#输入不存在的信息是否会展示数据' rank='#rank-2#' >
+            intention='验证#搜索条件#搜索不存在的信息时#信息#列表是否会展示数据' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中输入列表相应字段下，均不存在的一串文本' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='5' value='输入“*”符号等特殊字符进行搜索'
-            intention='验证#搜索条件#输入特殊字符是否会展示数据' rank='#rank-3#' >
+            intention='验证#搜索条件#输入特殊字符搜索#信息#列表时是否会展示数据' rank='#rank-3#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中输入“*”、“+”、“%”等特殊符号' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='6' value='输入内容搜索后，清空输入的内容，再次进行搜索'
-            intention='验证清空#搜索条件#中的内容后进行搜索是否出现清空内容前的数据' rank='#rank-2#' >
+            intention='验证清空#搜索条件#中的内容后进行搜索#信息#列表是否出现清空内容前的数据' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中输入能搜索出数据的内容' />
             <stepdetail value='点击搜索相关的按钮' />
@@ -172,36 +172,36 @@
 
 	<group name='addSelectSearchCase'>
 		<step id='1' value='选择#搜索条件#的第一个有效选项对#信息#进行搜索'
-            intention='验证#搜索条件#选择第一个有效选项进行搜索是否生效' rank='#rank-2#' >
+		    intention='验证#搜索条件#选择第一个有效选项进行搜索#信息#列表是否正常' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中选择第一个有效选项（非“请选择”等选项）' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='2' value='选择#搜索条件#非第一个选项和非最后一个选项对#信息#进行搜索'
-            intention='验证#搜索条件#选择中间的选项进行搜索是否正常' rank='#rank-1#' >
+            intention='验证#搜索条件#选择中间的选项搜索#信息#列表是否正常' rank='#rank-1#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中选择中间的有效选项' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='3' value='选择#搜索条件#的最后一个选项对#信息#进行搜索'
-            intention='验证#搜索条件#选择最后一个选项进行搜索是否正常' rank='#rank-2#' >
+            intention='验证#搜索条件#选择最后一个选项搜索#信息#列表是否正常' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中选择最后一个选项' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
-		<step id='4' value='不选择任何选项进行搜索'
-            intention='验证#搜索条件#不选择选择选项进行搜索是否正常' rank='#rank-3#' >
-            <stepdetail value='进入#信息#列表页面' />
-            <stepdetail value='不进行任何选择，点击搜索相关的按钮' />
-		</step>
-		<step id='5' value='选择所有#信息#中都不包含的选项进行搜索'
-            intention='验证#搜索条件#选择无数据的选项进行搜索是否正常' rank='#rank-3#' >
+		<step id='4' value='选择所有#信息#中都不包含的选项进行搜索'
+            intention='验证#搜索条件#选择无数据的选项搜索#信息#列表是否正常' rank='#rank-3#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中选择一个列表相应字段下，均不存在的一个选项' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
+		<step id='5' value='不选择任何选项进行搜索'
+            intention='验证#搜索条件#不选择选择选项进行搜索#信息#列表是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不进行任何选择，点击搜索相关的按钮' />
+		</step>
 		<step id='6' value='选择一个存在数据的选项，清空选择的内容，再次进行搜索'
-            intention='验证清空#搜索条件#中的内容后进行搜索是否出现清空内容前的数据' rank='#rank-2#' >
+            intention='验证清空#搜索条件#中的内容后搜索#信息#列表是否出现清空内容前的数据' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在#搜索条件#中选择能搜索出数据的选项' />
             <stepdetail value='点击搜索相关的按钮' />
@@ -210,75 +210,52 @@
         </step>
 		
 		<except id='1'
-			value='其下级选项内容置为默认内容，其中的选项随之改变，且能搜索出所有符合#搜索条件#选中的选项结果，以及符合下级选项所有选项的结果' /> 
-		<except id='2' value='下级选项内容置默认内容，且能搜索出符合#搜索条件#所有选项的结果' />
-		<except id='3' value='下级选项内容置默认内容，提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
+			value='其下级选项内容置为#选项内容#，其中的选项随之改变，且能搜索出所有符合#搜索条件#选中的选项结果，以及符合下级选项所有选项的结果' /> 
+		<except id='2' value='下级选项内容置为#选项内容#，且能搜索出符合选项选项的结果' />
+		<except id='3' value='下级选项内容置为#选项内容#，提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
+		<except id='4' value='下级选项内容置为#选项内容#，列表不展示任何数据' />
 	</group>
 
 	<group name='addDateSearchCase'>
-		<step id='1' value='选择一个列表中存在的#搜索条件#数据进行搜索'
-            intention='验证“#搜索条件#”条件选择一个有数据的时间后能否正常进行搜索' rank='#rank-1#' >
+		<step id='1' value='选择一个列表中存在#搜索条件#数据的#时间内容#进行搜索'
+            intention='验证在#搜索条件#条件中选择一个有数据的#时间内容#后能否正常搜索#信息#列表' rank='#rank-1#' >
             <stepdetail value='进入#信息#列表页面' />
-            <stepdetail value='在#搜索条件#中选择能搜索出数据的选项' />
+            <stepdetail value='在#搜索条件#中选择能搜索出数据的#时间内容#' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
-		<step id='2' value='选择一个列表中不存在的#搜索条件#数据进行搜索'
-            intention='验证“#搜索条件#”条件选择一个无数据的时间后能否正常进行搜索' rank='#rank-2#' >
+		<step id='2' value='选择一个列表中不存在#搜索条件#数据的#时间内容#进行搜索'
+            intention='验证在#搜索条件#条件中选择一个无数据的#时间内容#后能否正常搜索#信息#列表' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
-            <stepdetail value='在#搜索条件#中选择不能搜索出数据的选项' />
+            <stepdetail value='在#搜索条件#中选择不能搜索出数据的#时间内容#' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='3' value='不选择#搜索条件#进行搜索'
-            intention='验证不选择“#搜索条件#”条件时搜索结果是否正常' rank='#rank-3#' >
+            intention='验证不选择#搜索条件#条件搜索#信息#列表时结果是否正常' rank='#rank-3#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='不对#搜索条件#进行选择' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		<step id='4' value='选择一个#开始时间#大于#结束时间#的时间段进行搜索'
-            intention='验证选择#开始时间#大于#结束时间#的时间段时搜索结果是否正常' rank='#rank-3#' >
+            intention='验证选择#开始时间#大于#结束时间#的时间段搜索#信息#列表时结果是否正常' rank='#rank-3#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='选择一个#开始时间#大于#结束时间#的时间段' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
-		<step id='5' value='不选择#开始时间#，只选择#结束时间#的时间段进行搜索'
-            intention='验证不选择#开始时间#时搜索结果是否正常' rank='#rank-2#' >
+		<step id='5' value='不选择#开始时间#，只选择#结束时间#进行搜索'
+            intention='验证不选择#开始时间#搜索#信息#列表时结果是否正常' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='不选择#开始时间#，选择一个存在数据的#结束时间#' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
-		<step id='6' value='通过不选择#结束时间#，只选择#开始时间#的时间段进行搜索'
-            intention='验证不选择#结束时间#时搜索结果是否正常' rank='#rank-2#' >
+		<step id='6' value='不选择#结束时间#，只选择#开始时间#进行搜索'
+            intention='验证不选择#结束时间#搜索#信息#列表结果时是否正常' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='不选择#结束时间#，选择一个存在数据的#开始时间#' />
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
-		<step id='7' value='选择一个在#开始时间#至#结束时间#存在数据的时间段进行搜索'
-            intention='验证选择一个存在数据的时间段时能否进行搜索' rank='#rank-1#' >
-            <stepdetail value='进入#信息#列表页面' />
-            <stepdetail value='选择一个在#开始时间#与#结束时间#范围内存在数据的时间段' />
-            <stepdetail value='点击搜索相关的按钮' />
-		</step>
-		<step id='8' value='选择一个在#开始时间#至#结束时间#不存在数据的时间段进行搜索'
-            intention='验证选择一个不存在数据的时间段时能否进行搜索' rank='#rank-3#' >
-            <stepdetail value='进入#信息#列表页面' />
-            <stepdetail value='选择一个在#开始时间#与#结束时间#范围内不存在数据的时间段' />
-            <stepdetail value='点击搜索相关的按钮' />
-		</step>
-		<step id='9' value='不选择#开始时间#与#结束时间#进行搜索'
-            intention='验证不选择一时间段时能否正常进行搜索' rank='#rank-3#' >
-            <stepdetail value='进入#信息#列表页面' />
-            <stepdetail value='不对#开始时间#与#结束时间#进行选择' />
-            <stepdetail value='点击搜索相关的按钮' />
-		</step>
 		
-		<except id='1' value='能搜索出在该#搜索条件#内所有的结果' />
-		<except id='2' value='搜索无结果' />
-		<except id='5' value='提示必须选择#搜索条件#，且列表不展示任何数据' />
-		<except id='3' value='能搜索出所有的结果' />
-		<except id='4' value='无搜索结果或弹出错误输入的提示' />
-		<except id='5' value='能搜索出从有数据以来至#结束时间#的所有结果' />
-		<except id='6' value='能搜索出从#开始时间#至今的所有结果' />
-		<except id='7' value='能搜索出从#开始时间#至#结束时间#的所有结果且时间边界上的数据也能展示' />
+		<except id='1' value='能搜索出从有数据以来至#结束时间#的所有结果' />
+		<except id='2' value='能搜索出从#开始时间#至今的所有结果' />
 	</group>
 
 	<group name='addListSortCase'>
@@ -287,13 +264,13 @@
 		<key id='1' value='#信息#列表,#列表字段#,排序' />
 		
 		<step id='1' value='点击列表标题中的#列表字段#字段，之后再次点击#列表字段#字段' 
-            intention='验证点击列表的#列表字段#字段后列表是否按照字段排序' rank='#rank-2#' >
+            intention='验证点击#信息#列表的#列表字段#字段后列表是否按照字段排序' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='在列表的标题行中，点击“#列表字段#”字段' />
             <stepdetail value='再次点击“#列表字段#”' />
 		</step>
 		<step id='2' value='当#列表字段#列为空时，对该列排序' 
-            intention='验证列表的#列表字段#字段无数据时点击字段是否会排序' rank='#rank-3#' >
+            intention='验证#信息#列表的#列表字段#字段无数据时点击字段是否会排序' rank='#rank-3#' >
             <stepdetail value='进入#信息#列表页面（#列表字段#列数据为空）' />
             <stepdetail value='在列表的标题行中，点击“#列表字段#”字段' />
 		</step>
@@ -308,35 +285,35 @@
 		<key id='1' value='#信息#列表,导出' />
 		
 		<step id='1' value='在列表上无数据的情况下点击“#导出按钮#”按钮' 
-            intention='验证列表无数据时能否进行导出' rank='#rank-3#' >
+            intention='验证#信息#列表无数据时能否进行导出' rank='#rank-3#' >
             <stepdetail value='进入#信息#列表页面（列表不存在数据）' />
             <stepdetail value='点击“#导出按钮#”按钮' />
         </step>
 		<step id='2' value='在列表上有数据的情况下点击“#导出按钮#”按钮' 
-            intention='验证列表有数据时能否进行导出' rank='#rank-1#' >
+            intention='验证#信息#列表有数据时能否进行导出' rank='#rank-1#' >
             <stepdetail value='进入#信息#列表页面（列表存在数据）' />
             <stepdetail value='点击“#导出按钮#”按钮' />
 		</step>
 		<step id='3' value='在列表上勾选一条数据，点击“#导出按钮#”按钮' 
-            intention='验证勾选一条数据后能否进行导出' rank='#rank-1#' >
+            intention='验证#信息#列表勾选一条数据后能否进行导出' rank='#rank-1#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='勾选列表中的一条数据' />
             <stepdetail value='点击“#导出按钮#”按钮' />
 		</step>
 		<step id='4' value='在列表上勾选多条数据，点击“#导出按钮#”按钮' 
-            intention='验证勾选多条数据后能否进行导出' rank='#rank-1#' >
+            intention='验证#信息#列表勾选多条数据后能否进行导出' rank='#rank-1#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='勾选列表中的多条数据' />
             <stepdetail value='点击“#导出按钮#”按钮' />
 		</step>
 		<step id='5' value='不勾选列表上的数据，点击“#导出按钮#”按钮' 
-            intention='验证不勾选数据时能否进行导出' rank='#rank-2#' >
+            intention='验证#信息#列表不勾选数据时能否进行导出' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='不勾选列表中的任何数据' />
             <stepdetail value='点击“#导出按钮#”按钮' />
 		</step>
 		<step id='6' value='对列表搜索后点击“#导出按钮#”按钮' 
-            intention='验证搜索列表后能否进行导出' rank='#rank-2#' >
+            intention='验证#信息#列表搜索列表后能否进行导出' rank='#rank-2#' >
             <stepdetail value='进入#信息#列表页面' />
             <stepdetail value='通过其中一个搜索条件对列表进行搜索' />
             <stepdetail value='点击“#导出按钮#”按钮' />

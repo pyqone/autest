@@ -221,11 +221,13 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * 
      * @param conditionName         搜索条件名称
      * @param isAssociatedCondition 是否关联下级搜索条件
+     * @param isDefaultOption       是否存在默认值
      * @param isMust                是否必须输入
      * @return 用例数据对象集合
      * @since autest 4.1.0
      */
-    public List<CaseData> selectSearchCase(String conditionName, boolean isAssociatedCondition, boolean isMust) {
+    public List<CaseData> selectSearchCase(String conditionName, boolean isAssociatedCondition, boolean isDefaultOption,
+            boolean isMust) {
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = searchDataListCase(conditionName);
         // 步骤
         addContent(allContentMap, LabelType.STEP,
@@ -234,31 +236,206 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
 
         // 预期
         if (!isAssociatedCondition) {
-            // TODO 必填时，需要再判断是否存在默认选项，需要加入默认选项的用例，不能单纯给出搜索出包含选择的预期
             addContent(allContentMap, LabelType.EXCEPT,
                     Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
                             new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
                                     BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
                                     BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                    isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
-                                            : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
-                                    BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
-                                    isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
-                                            : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT })));
+                                    BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
+            if (isDefaultOption) {
+                addContent(allContentMap, LabelType.EXCEPT,
+                        Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                                new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                        BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT })));
+            } else {
+                if (isMust) {
+                    addContent(allContentMap, LabelType.EXCEPT,
+                            Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                                    new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION,
+                                            BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION })));
+                } else {
+                    addContent(allContentMap, LabelType.EXCEPT,
+                            Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                                    new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
+                                            BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
+                }
+            }
         } else {
+            addReplaceWord(ReplaceWord.OPTION_CONTENT, isDefaultOption ? "默认内容" : "空");
             addContent(allContentMap, LabelType.EXCEPT,
                     Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SELECT_SEARCH_CASE,
-                            new String[] { "1", "1", "1" })));
-            addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                            new String[] {
-                                    isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT
-                                            : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
-                                    BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(BrowseListTemplet.GROUP_ADD_SELECT_SEARCH_CASE, new String[] { isMust ? "3" : "2" })));
+                            new String[] { "1", "1", "1", "4" })));
+            if (isDefaultOption) {
+                addContent(allContentMap, LabelType.EXCEPT,
+                        Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                                new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT })));
+                addContent(allContentMap, LabelType.EXCEPT, Arrays
+                        .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SELECT_SEARCH_CASE, new String[] { "2" })));
+            } else {
+                if (isMust) {
+                    addContent(allContentMap, LabelType.EXCEPT,
+                            Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                                    new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
+                    addContent(allContentMap, LabelType.EXCEPT, Arrays
+                            .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SELECT_SEARCH_CASE, new String[] { "3" })));
+                } else {
+                    addContent(allContentMap, LabelType.EXCEPT,
+                            Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                                    new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
+                                            BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
+                }
+            }
         }
 
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成选择单个时间进行搜索相关的测试用例
+     * 
+     * @param conditionName 搜索条件名称
+     * @param isMust        是否必须选择
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> dateSearchCase(String conditionName, boolean isMust) {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = searchDataListCase(conditionName);
+        
+        addReplaceWord(ReplaceWord.TIME_CONTENT, "时间");
+        // 步骤
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_DATE_SEARCH_CASE, new String[] { "1", "2", "3" })));
+        
+        // 预期
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                        new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
+                                isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
+                                        : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
+        
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成选择时间段进行搜索相关的测试用例
+     * 
+     * @param startDateName 开始时间条件名称
+     * @param endDateName   结束时间条件名称
+     * @param isMust        是否必须选择
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> dateQuantumSearchCase(String startDateName, String endDateName, boolean isMust) {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = searchDataListCase(
+                startDateName + "与" + endDateName);
+
+        addReplaceWord(ReplaceWord.TIME_CONTENT, "时间段");
+        addReplaceWord(ReplaceWord.START_TIME, startDateName);
+        addReplaceWord(ReplaceWord.END_TIME, endDateName);
+        // 步骤
+        addContent(allContentMap, LabelType.STEP, Arrays
+                .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_DATE_SEARCH_CASE,
+                        new String[] { "1", "2", "3", "4", "5", "6" })));
+
+        // 预期
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                        new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
+                                isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
+                                        : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
+                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
+        if (isMust) {
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
+                            new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION,
+                                    BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION })));
+        } else {
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(
+                            new Entry<>(BrowseListTemplet.GROUP_ADD_DATE_SEARCH_CASE, new String[] { "1", "2" })));
+        }
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成列表排序相关的测试用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> listSortCase(String field) {
+        addReplaceWord(ReplaceWord.LIST_FIELD_NAME, field);
+        
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 优先级
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_LIST_SORT_CASE, new String[] { "1" })));
+
+        // 添加基础步骤
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_LIST_SORT_CASE, new String[] { "1", "2" })));
+
+        // 预期
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_LIST_SORT_CASE, new String[] { "1", "2" })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成导出列表数据相关的的测试用例
+     * 
+     * @param exportButton 导出按钮名称
+     * @param isCheck      是否允许勾选
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> exportListCase(String exportButton, boolean isCheck) {
+        addReplaceWord(ReplaceWord.EXPORT_BUTTON_NAME, exportButton);
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        
+        // 前置条件
+        addContent(allContentMap, LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+        // 优先级
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "1" })));
+        
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "1" })));
+        
+        // 步骤
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE,
+                        new String[] { "1", "2", "6" })));
+        // 预期
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(
+                        new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "5", "1", "1" })));
+        if (isCheck) {
+            // 步骤
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "3", "4", "5" })));
+            // 预期
+            addContent(allContentMap, LabelType.EXCEPT, Arrays
+                    .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "2", "2", "4" })));
+        }
+        
         return createCaseDataList(this, allContentMap);
     }
 
@@ -333,8 +510,11 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
     protected class ReplaceWord {
         public static final String INFORMATION = "信息";
         public static final String SEARCH_CONDITION = "搜索条件";
+        public static final String OPTION_CONTENT = "选项内容";
+        public static final String TIME_CONTENT = "时间内容";
         public static final String START_TIME = "开始时间";
         public static final String END_TIME = "结束时间";
+        public static final String LIST_FIELD_NAME = "列表字段";
         public static final String EXPORT_BUTTON_NAME = "导出按钮";
         public static final String DONW_CONDITION = "下级选项";
         public static final String BATCHES_DELECT_BUTTON = "批量删除按钮";
