@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.regex.ConstType;
@@ -393,13 +394,13 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
     /**
      * 该方法用于生成导出列表数据相关的的测试用例
      * 
-     * @param exportButton 导出按钮名称
-     * @param isCheck      是否允许勾选
+     * @param exportButtonName 导出按钮名称
+     * @param isCheck          是否允许勾选
      * @return 用例数据对象集合
      * @since autest 4.1.0
      */
-    public List<CaseData> exportListCase(String exportButton, boolean isCheck) {
-        addReplaceWord(ReplaceWord.EXPORT_BUTTON_NAME, exportButton);
+    public List<CaseData> exportListCase(String exportButtonName, boolean isCheck) {
+        addReplaceWord(ReplaceWord.EXPORT_BUTTON_NAME, exportButtonName);
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         
         // 前置条件
@@ -436,6 +437,166 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
                     .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "2", "2", "4" })));
         }
         
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成导入数据相关的测试用例
+     * 
+     * @param importButtonName 导入按钮名称
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> importListCase(String importButtonName) {
+        addReplaceWord(ReplaceWord.IMPORT_BUTTON_NAME, importButtonName);
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        
+        // 优先级
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_IMPORT_LIST_CASE, new String[] { "1" })));
+        
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_IMPORT_LIST_CASE, new String[] { "1" })));
+        
+        // 步骤
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_IMPORT_LIST_CASE,
+                        new String[] { "1", "2", "3", "4", "5" })));
+        
+        // 预期
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_IMPORT_LIST_CASE,
+                        new String[] { "1", "1", "2", "2", "2" })));
+        
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成重置搜索相关的测试用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> resetSearchCase(String resetButtonName, boolean isResetList) {
+        addReplaceWord(ReplaceWord.RESET_BUTTON_NAME, resetButtonName);
+        addReplaceWord(ReplaceWord.RESET_LIST_CONTENT, isResetList ? "，列表展示默认条件下的数据" : "");
+        
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        
+        // 优先级
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1" })));
+        
+        // 步骤
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1", "2" })));
+        
+        // 预期
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1", "2" })));
+        
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成切换列表单页显示数据量相关的测试用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> switchListShowDataCase() {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        
+        // 前置条件
+        addContent(allContentMap, LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+        // 优先级
+        addContent(allContentMap, LabelType.RANK,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
+                        new String[] { "1" })));
+        
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE, new String[] { "1" })));
+        
+        // 步骤
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
+                        new String[] { "1", "2", "3", "4", "5" })));
+        // 预期
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
+                        new String[] { "1", "1", "1", "2", "3" })));
+        
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成删除用例相关的测试用例
+     * <p>
+     * <b>注意：</b>若列表数据允许批量删除，则传入批量删除按钮的按钮名称，若其参数为null或空串，则不会生成批量删除数据相关的用例
+     * </p>
+     * 
+     * @param delectButtonName      删除按钮名称
+     * @param batchDelectButtonName 批量删除按钮名称
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> delectDataCase(String delectButtonName, String batchDelectButtonName) {
+        addReplaceWord(ReplaceWord.DELECT_BUTTON, delectButtonName);
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+
+        // 前置条件
+        addContent(allContentMap, LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+        // 优先级
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
+                new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        // 关键词
+        addContent(allContentMap, LabelType.KEY,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE, new String[] { "1" })));
+
+        // 标题
+        addContent(allContentMap, LabelType.TITLE,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE, new String[] { "1" })));
+
+        // 步骤
+        addContent(allContentMap, LabelType.STEP,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE, new String[] { "8" })));
+        // 预期
+        addContent(allContentMap, LabelType.EXCEPT,
+                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE, new String[] { "2" })));
+        if (Optional.ofNullable(batchDelectButtonName).filter(name -> !name.isEmpty()).isPresent()) {
+            addReplaceWord(ReplaceWord.BATCHES_DELECT_BUTTON, batchDelectButtonName);
+            addReplaceWord(ReplaceWord.PAGE_NAME, batchDelectButtonName);
+            // 步骤
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE,
+                            new String[] { "1", "2", "3", "4", "5", "6", "7" })));
+            // 预期
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE,
+                            new String[] { "1", "2", "2", "2", "4", "5", "6" })));
+        }
+
         return createCaseDataList(this, allContentMap);
     }
 
@@ -516,9 +677,13 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
         public static final String END_TIME = "结束时间";
         public static final String LIST_FIELD_NAME = "列表字段";
         public static final String EXPORT_BUTTON_NAME = "导出按钮";
+        public static final String IMPORT_BUTTON_NAME = "导入按钮";
+        public static final String RESET_BUTTON_NAME = "重置按钮";
+        public static final String RESET_LIST_CONTENT = "列表重置文本";
         public static final String DONW_CONDITION = "下级选项";
         public static final String BATCHES_DELECT_BUTTON = "批量删除按钮";
         public static final String DELECT_BUTTON = "删除按钮";
+        public static final String PAGE_NAME = "页名称";
 	}
 
     /**
