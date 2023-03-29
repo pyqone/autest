@@ -1,140 +1,133 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <cases project='Map'>
-	<case name='addRangeFindingCase'>
-		<titles>
-			<title id='1' value='在地图上进行测距' />
-		</titles>
-		<keys>
-			<key id='1' value='地图,测距' />
-		</keys>
-		<ranks>
-			<rank id='1' value='3' />
-		</ranks>
-		<preconditions>
-		</preconditions>
-		<steps>
-			<step id='1' value='设置画线的起点后拖动鼠标' />
-			<step id='2' value='在地图上画线后单击鼠标左键' />
-			<step id='3' value='在地图上画线后双击鼠标左键' />
-			<step id='4' value='停止画线后缩放地图' />
-			<step id='5' value='设置起点后直接双击左键' />
-			<step id='6' value='在不同的地图比例上画等长的线段' />
-			<step id='7' value='在画好的线段上，点击“×”按钮' />
-		</steps>
-		<excepts>
-			<except id='1' value='线随鼠标的移动而增长，且标注中显示的距离随鼠标的移动而改变'/>
-			<except id='2' value='还能继续画线测距，且标注中显示的距离应累加上一次定位的距离'/>
-			<except id='3' value='停止画线，且线段留在地图上'/>
-			<except id='4' value='线段随地图的缩放而改变其长度，且方框中的内容显示不变'/>
-			<except id='5' value='停止画线'/>
-			<except id='6' value='随地图缩放程度不同，其不同比例尺下画出的等长的线段在标注中显示的距离不同'/>
-			<except id='7' value='线段被清除'/>
-		</excepts>
-	</case>
+    <group name='commonContent'>
+        <rank id='1' value='#rank-1#' />
+        <rank id='2' value='#rank-2#' />
+        <rank id='3' value='#rank-3#' />
+        <rank id='4' value='#rank-4#' />
+    </group>
+    
+	<group name='addRangeFindingCase'>
+		<title id='1' value='在地图上进行测距' />
+		
+		<key id='1' value='地图,测距' />
+		
+		<step id='1' value='设置画线的起点后拖动鼠标' >
+		</step>
+		<step id='2' value='在地图上画线后单击鼠标左键' >
+		</step>
+		<step id='3' value='在地图上画线后双击鼠标左键' >
+		</step>
+		<step id='4' value='停止画线后缩放地图' >
+		</step>
+		<step id='5' value='设置起点后直接双击左键' >
+		</step>
+		<step id='6' value='在不同的地图比例上画等长的线段' >
+		</step>
+		<step id='7' value='在画好的线段上，点击“×”按钮' >
+		</step>
+		
+		<except id='1' value='线随鼠标的移动而增长，且标注中显示的距离随鼠标的移动而改变'/>
+		<except id='2' value='还能继续画线测距，且标注中显示的距离应累加上一次定位的距离'/>
+		<except id='3' value='停止画线，且线段留在地图上'/>
+		<except id='4' value='线段随地图的缩放而改变其长度，且方框中的内容显示不变'/>
+		<except id='5' value='停止画线'/>
+		<except id='6' value='随地图缩放程度不同，其不同比例尺下画出的等长的线段在标注中显示的距离不同'/>
+		<except id='7' value='线段被清除'/>
+	</group>
 	
-	<case name='addMapPointCase'>
-		<titles>
-			<title id='1' value='查看地图*{标记点名称}*定位点信息' />
-		</titles>
-		<keys>
-			<key id='1' value='地图,*{标记点名称}*,定位点' />
-		</keys>
-		<ranks>
-			<rank id='1' value='2' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='地图上有多个*{标记点名称}*定位点以及聚合点存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='在地图上点击*{标记点名称}*的定位点' />
-			<step id='2' value='在地图上点击*{标记点名称}*的聚合点' />
-		</steps>
-		<excepts>
-			<except id='1' value='能查看到该*{标记点名称}*的详细信息'/>
-			<except id='2' value='地图能自动缩放到能看到*{标记点名称}*定位点的比例'/>
-		</excepts>
-	</case>
+	<group name='addMapPointCase'>
+		<title id='1' value='查看地图#标记点名称#定位点信息' />
+		
+		<key id='1' value='地图,#标记点名称#,定位点' />
+		
+		<precondition id='1' value='地图上有多个#标记点名称#定位点以及聚合点存在' />
+		
+		<step id='1' value='在地图上点击#标记点名称#的定位点' >
+		</step>
+		<step id='2' value='在地图上点击#标记点名称#的聚合点' >
+		</step>
+		
+		<except id='1' value='能查看到该#标记点名称#的详细信息'/>
+		<except id='2' value='地图能自动缩放到能看到#标记点名称#定位点的比例'/>
+	</group>
 	
-	<case name='addMapSearchInformationCase'>
-		<titles>
-			<title id='1' value='通过*{搜索条件}*在地图上的*{信息}*信息进行搜索' />
-		</titles>
-		<keys>
-			<key id='1' value='地图,*{信息}*,搜索' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='地图上有*{信息}*信息存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='通过*{搜索条件}*对*{信息}*进行模糊搜索' />
-			<step id='2' value='通过*{搜索条件}*对*{信息}*进行精准搜索' />
-			<step id='3' value='不输入信息进行搜索' />
-			<step id='4' value='输入*{信息}*中都不包含的关键词进行搜索' />
-		</steps>
-		<excepts>
-			<except id='1' value='地图上显示所有符合条件的*{信息}*定位点'/>
-			<except id='2' value='地图上显示*{信息}*对应的定位点'/>
-			<except id='3' value='地图界面保持不变'/>
-			<except id='4' value='提示无搜索结果'/>
-		</excepts>
-	</case>
+	<group name='addMapSearchInformationCase'>
+		<title id='1' value='通过#搜索条件#在地图上的#信息#信息进行搜索' />
+		
+		<key id='1' value='地图,#信息#,搜索' />
+		
+		<precondition id='1' value='地图上有#信息#信息存在' />
+		
+		<step id='1' value='通过#搜索条件#对#信息#进行模糊搜索' >
+		</step>
+		<step id='2' value='通过#搜索条件#对#信息#进行精准搜索' >
+		</step>
+		<step id='3' value='不输入信息进行搜索' >
+		</step>
+		<step id='4' value='输入#信息#中都不包含的关键词进行搜索' >
+		</step>
+		
+		<except id='1' value='地图上显示所有符合条件的#信息#定位点'/>
+		<except id='2' value='地图上显示#信息#对应的定位点'/>
+		<except id='3' value='地图界面保持不变'/>
+		<except id='4' value='提示无搜索结果'/>
+	</group>
 	
-	<case name='addCarLocusPlaybackCase'>
-		<titles>
-			<title id='1' value='回放车辆轨迹' />
-		</titles>
-		<keys>
-			<key id='1' value='车辆轨迹' />
-		</keys>
-		<ranks>
-			<rank id='1' value='1' />
-		</ranks>
-		<preconditions>
-			<precondition id='1' value='车辆有轨迹存在' />
-		</preconditions>
-		<steps>
-			<step id='1' value='查询到车辆的轨迹后点击回放或播放按钮' />
-			<step id='2' value='从最小的回放速度开始依次点击到最大的播放速度' />
-			<step id='3' value='在轨迹播放时点击播放按钮' />
-			<step id='4' value='在轨迹播放时点击暂停按钮，再点击回放按钮' />
-			<step id='5' value='在轨迹播放时点击停止按钮，再点击回放按钮' />
-		</steps>
-		<excepts>
-			<except id='1' value='地图上的车辆点以默认速度沿着轨迹在地图上移动'/>
-			<except id='2' value='车辆点的回放速度依次加快'/>
-			<except id='3' value='车辆点移动后不受任何影响，且在继续移动'/>
-			<except id='4' value='车辆点停止移动后又重新在停止的位置继续移动'/>
-			<except id='5' value='车辆点停止移动后又从起点开始重新移动'/>
-		</excepts>
-	</case>
-	
-	<case name='mapGraphSignCase'>
-		<title id='1' value='在地图上绘制*{标记名称}*' />
-		<key id='1' value='*{标记名称}*' />
+	<group name='addCarLocusPlaybackCase'>
+		<title id='1' value='回放车辆轨迹' />
+		
+		<key id='1' value='车辆轨迹' />
+		
 		<rank id='1' value='1' />
-		<preconditions>
-		</preconditions>
-		<steps>
-			<step id='1' value='点击*{图形类型}*图形，在地图中绘制相应的图形' />
-			<step id='2' value='点击多边形图形，在起始位置双击结束绘制' />
-			<step id='3' value='点击多边形图形，开始绘制后，不双击结束绘制，直接点击切换其他图形或地图外空白处' />
-			<step id='4' value='绘制多个图形' />
-			<step id='5' value='绘制图形时，框画大片区域，保存绘制' />
-			<step id='6' value='绘制图形后，关闭弹窗或取消保存弹窗' />
-			<step id='7' value='绘制图形后，清除图形' />
-		</steps>
-		<excepts>
-			<except id='1' value='地图上能绘制出相应的图形'/>
-			<except id='2' value='若允许绘制，则显示一个点在地图；若无法绘制，则应给出提示'/>
-			<except id='3' value='多边形绘制停止，且地图不会不断得向鼠标移动方向移动'/>
-			<except id='4' value='图形绘制成功，地图上显示相应的图形'/>
-			<except id='5' value='图形绘制失败，并给出无法绘制多个图形相关的提示'/>
-			<except id='6' value='若允许绘制，则在地图上显示相应的图形；若无法绘制，则应给出提示'/>
-			<except id='7' value='绘制的图形无法保存'/>
-			<except id='8' value='绘制的图形消失'/>
-		</excepts>
-	</case>
+		
+		<precondition id='1' value='车辆有轨迹存在' />
+		
+		<step id='1' value='查询到车辆的轨迹后点击回放或播放按钮' >
+		</step>
+		<step id='2' value='从最小的回放速度开始依次点击到最大的播放速度' >
+		</step>
+		<step id='3' value='在轨迹播放时点击播放按钮' >
+		</step>
+		<step id='4' value='在轨迹播放时点击暂停按钮，再点击回放按钮' >
+		</step>
+		<step id='5' value='在轨迹播放时点击停止按钮，再点击回放按钮' >
+		</step>
+		
+		<except id='1' value='地图上的车辆点以默认速度沿着轨迹在地图上移动'/>
+		<except id='2' value='车辆点的回放速度依次加快'/>
+		<except id='3' value='车辆点移动后不受任何影响，且在继续移动'/>
+		<except id='4' value='车辆点停止移动后又重新在停止的位置继续移动'/>
+		<except id='5' value='车辆点停止移动后又从起点开始重新移动'/>
+	</group>
+	
+	<group name='mapGraphSignCase'>
+		<title id='1' value='在地图上绘制#标记名称#' />
+		
+		<key id='1' value='#标记名称#' />
+		
+		<step id='1' value='点击#图形类型#图形，在地图中绘制相应的图形' >
+		</step>
+		<step id='2' value='点击多边形图形，在起始位置双击结束绘制' >
+		</step>
+		<step id='3' value='点击多边形图形，开始绘制后，不双击结束绘制，直接点击切换其他图形或地图外空白处' >
+		</step>
+		<step id='4' value='绘制多个图形' >
+		</step>
+		<step id='5' value='绘制图形时，框画大片区域，保存绘制' >
+		</step>
+		<step id='6' value='绘制图形后，关闭弹窗或取消保存弹窗' >
+		</step>
+		<step id='7' value='绘制图形后，清除图形' >
+		</step>
+		
+		<except id='1' value='地图上能绘制出相应的图形'/>
+		<except id='2' value='若允许绘制，则显示一个点在地图；若无法绘制，则应给出提示'/>
+		<except id='3' value='多边形绘制停止，且地图不会不断得向鼠标移动方向移动'/>
+		<except id='4' value='图形绘制成功，地图上显示相应的图形'/>
+		<except id='5' value='图形绘制失败，并给出无法绘制多个图形相关的提示'/>
+		<except id='6' value='若允许绘制，则在地图上显示相应的图形；若无法绘制，则应给出提示'/>
+		<except id='7' value='绘制的图形无法保存'/>
+		<except id='8' value='绘制的图形消失'/>
+	</group>
 </cases>
