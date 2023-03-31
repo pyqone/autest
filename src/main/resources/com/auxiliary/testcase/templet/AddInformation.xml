@@ -6,24 +6,23 @@
 		<rank id='3' value='#rank-3#' />
 		<rank id='4' value='#rank-4#' />
 
-		<key id='1' value='#控件名称#、#信息#、#操作类型#' />
+		<key id='basic' value='#控件名称#、#信息#、#操作类型#' />
 
-		<precondition id='1' value='已在新增#信息#的页面上' />
-		<precondition id='2' value='已在编辑#信息#的页面上' />
-		<precondition id='3' value='除“#控件名称#”外，其他信息均正确填写或选择' />
-		<precondition id='4' value='除“#控件名称#”外，其他信息均不做修改' />
-		<precondition id='5' value='清除#控件名称#内容，其他信息均不改变' />
+		<precondition id='alreadyOnThePage' value='已在#操作类型##信息#的页面上' />
+		<precondition id='successInput' value='除“#控件名称#”外，其他信息均正确填写或选择' />
+		<precondition id='notModify' value='除“#控件名称#”外，其他信息均不做修改' />
+		<precondition id='clearContent' value='清除#控件名称#内容，其他信息均不改变' />
 		
-		<title id='1' value='对#操作类型##信息#界面的“#控件名称#”进行测试' />
+		<title id='basic' value='对#操作类型##信息#界面的“#控件名称#”进行测试' />
 		
-		<except id='失败预期' value='#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
-		<except id='输入成功预期'
+		<except id='failExcept' value='#失败预期前文##信息##操作类型#失败，并给出相应的提示#失败预期后文#' />
+		<except id='inputSuccessExcept'
 			value='#成功预期前文##信息##操作类型#成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为所填写的信息#成功预期后文#' />
-		<except id='选择成功预期'
+		<except id='selectSuccessExcept'
             value='#成功预期前文##信息##操作类型#成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为所选择的信息#成功预期后文#' />
-        <except id='文件成功预期'
+        <except id='fileSuccessExcept'
             value='#成功预期前文##信息##操作类型#成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为所选择的#文件类型##成功预期后文#' />
-		<except id='空成功预期'
+		<except id='emptySuccessExcept'
             value='#成功预期前文##信息##操作类型#成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为空或默认的信息#成功预期后文#' />
 	</group>
 	<group name='textboxBasicCase'>
@@ -537,7 +536,7 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 	    </step>
 		
-		<title id='1' value='添加内容完整的#信息#' />
+		<title id='1' value='#操作类型#内容完整的#信息#' />
 		
 		<key id='1' value='#信息#' />
 	</group>

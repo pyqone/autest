@@ -20,14 +20,15 @@ import com.auxiliary.tool.regex.ConstType;
  * <b>文件名：InformationTempletCase.java</b>
  * </p>
  * <p>
- * <b>用途：</b>用于根据新增信息相关的测试用例模板，输出与页面新增或编辑信息相关的用例。相关的测试用例模板可参考“<a href=
+ * <b>用途：</b>用于根据相关的测试用例模板，输出与页面新增、编辑和注册信息相关的用例，亦可根据部分参数的不同，适配更多自定义的内容，但其生成的测试用例可能不符合预期。
+ * 相关的测试用例模板可参考“<a href=
  * 'https://gitee.com/pyqone/autest/blob/master/src/main/resources/com/auxiliary/testcase/templet/AddInformation.xml'>AddInformation.xml</a>”文件
  * </p>
  * <p>
  * <b>编码时间：2023年1月19日 上午9:56:13
  * </p>
  * <p>
- * <b>修改时间：2023年1月19日 上午9:56:13
+ * <b>修改时间：2023年3月31日 下午3:52:44
  * </p>
  *
  * @author 彭宇琦
@@ -44,6 +45,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * 新增操作名称
      */
     public final String OPERATION_ADD = "新增";
+    /**
+     * 注册账号操作
+     */
+    public final String OPERATION_REGISTERED = "注册";
 
     /**
      * 构造对象，并指定读取的模板xml文件
@@ -53,6 +58,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public InformationCaseTemplet(File xmlTempletFile) {
         super(xmlTempletFile);
+
+        // 默认成功与失败预期前后文都为空
+        setSuccessExceptContent("", "");
+        setFailExceptContent("", "");
     }
 
     /**
@@ -62,6 +71,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public InformationCaseTemplet() {
         super("AddInformation");
+
+        // 默认成功与失败预期前后文都为空
+        setSuccessExceptContent("", "");
+        setFailExceptContent("", "");
     }
 
     /**
@@ -100,7 +113,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public InformationCaseTemplet setSaveButtonName(String saveButtonName) {
-        addReplaceWord(ReplaceWord.SAVE_BUTTON_NAME, Optional.ofNullable(saveButtonName).orElse(""));
+        if (saveButtonName != null) {
+            addReplaceWord(ReplaceWord.SAVE_BUTTON_NAME, saveButtonName);
+        }
         return this;
     }
 
@@ -112,17 +127,23 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public InformationCaseTemplet setInformationName(String informationName) {
-        addReplaceWord(ReplaceWord.ADD_INFORMATION, Optional.ofNullable(informationName).orElse(""));
+        if (informationName != null) {
+            addReplaceWord(ReplaceWord.ADD_INFORMATION, informationName);
+        }
         return this;
     }
 
     /**
      * 该方法用于生成正确填写所有信息的用例
+     * <p>
+     * 可适配新增信息（传入{@link #OPERATION_ADD}参数）、注册信息（传入{@link #OPERATION_REGISTERED}参数）
+     * </p>
      * 
      * @return 用例数据对象集合
-     * @since autest 4.0.0
+     * @since autest 4.1.0
      */
-    public List<CaseData> addWholeInformationCase() {
+    public List<CaseData> wholeInformationCase(String operationName) {
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 标题
@@ -134,18 +155,32 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { "输入成功预期" })));
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
         // 关键词
         addContent(allContentMap, LabelType.KEY, Arrays.asList(
                         new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 前置条件
         addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_PRECONDITION_ALREADY_ON_THE_PAGE })));
 
         return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成正确填写所有信息的用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     * @deprecated 该方法已由{@link #wholeInformationCase(String)}方法代替，后续版本中将删除
+     */
+    @Deprecated
+    public List<CaseData> addWholeInformationCase() {
+        return wholeInformationCase(OPERATION_ADD);
     }
 
     /**
@@ -155,28 +190,31 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public List<CaseData> addUnWholeInformationCase() {
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_ADD);
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 标题
         addContent(allContentMap, LabelType.TITLE, Arrays
                 .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 步骤
-        addContent(allContentMap, LabelType.STEP, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE,
-                        new String[] { "1", "2", "3" })));
+        addContent(allContentMap, LabelType.STEP, Arrays.asList(
+                new Entry<>(AddInformationTemplet.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1", "2", "3" })));
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { "失败预期", "输入成功预期", "失败预期" })));
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         // 优先级
-        addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
         // 关键词
         addContent(allContentMap, LabelType.KEY, Arrays
                 .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 前置条件
         addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_PRECONDITION_ALREADY_ON_THE_PAGE })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -198,24 +236,33 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         
         // 标题
         addContent(allContentMap, LabelType.TITLE, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_TITLE_BASIC })));
         
+        addContent(allContentMap, LabelType.PRECONDITION,
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_PRECONDITION_ALREADY_ON_THE_PAGE })));
         // 根据操作名称，添加前置条件
-        if (Objects.equals(OPERATION_ADD, operationName)) {
+        switch(operationName) {
+        case OPERATION_ADD:
+        case OPERATION_REGISTERED:
             addContent(allContentMap, LabelType.PRECONDITION,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_PRECONDITION_SUCCESS_INPUT })));
+            break;
+        case OPERATION_EDIT:
             addContent(allContentMap, LabelType.PRECONDITION,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "3" })));
-        } else {
-            addContent(allContentMap, LabelType.PRECONDITION,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
-            addContent(allContentMap, LabelType.PRECONDITION,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "4" })));
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_PRECONDITION_NOT_MODIFY })));
+            break;
+        default:
+            break;
         }
 
         // 关键词
         addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_KEY_BASIC })));
 
         return allContentMap;
     }
@@ -245,10 +292,14 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         List<Entry<String, String[]>> exceptList = new ArrayList<>();
         stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "1", "2" }));
         if (isMust) {
-            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "失败预期" }));
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                    new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                            AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT }));
         } else {
             exceptList
-                    .add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "空成功预期", "空成功预期" }));
+                    .add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_EMPTY_SUCCESS_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_EMPTY_SUCCESS_EXCEPT }));
         }
 
         // 判断是否没有输入限制，或者允许输入大、小写字母和特殊字符，以添加SQL注入漏洞与XSS攻击漏洞用例
@@ -256,13 +307,15 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 || ((inputRuleTypeSet.contains(InputRuleType.LOW) || inputRuleTypeSet.contains(InputRuleType.CAP))
                         && inputRuleTypeSet.contains(InputRuleType.SPE))) {
             stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "3", "8" }));
-            exceptList
-                    .add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "输入成功预期", "输入成功预期" }));
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                    new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
+                            AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT }));
         }
         // 判断是否允许输入emoji表情
         if (inputRuleTypeSet.size() == 0 || inputRuleTypeSet.contains(InputRuleType.EMOJI)) {
             stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "7" }));
-            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "输入成功预期" }));
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                    new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT }));
         }
         // 判断是否有输入限制，以添加输入限制相关的用例
         if (!inputRuleTypeSet.isEmpty()) {
@@ -272,18 +325,22 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             // 添加替换词以及用例
             addReplaceWord(ReplaceWord.INPUT_RULE, inputRule.toString());
             stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "4" }));
-            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期" }));
+            exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                    new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT }));
         }
         // 判断是否能清空内容，添加清空后提交的用例
         if (isClear) {
             stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "6" }));
             exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                    new String[] { isMust ? "失败预期" : "输入成功预期" }));
+                    new String[] { isMust ? AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
+                            : AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT }));
         }
         // 添加重复提交相关的用例
         stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "5" }));
         exceptList.add(
-                new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isRepeat ? "输入成功预期" : "失败预期" }));
+                new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isRepeat ? AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT
+                                : AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT }));
 
         // 添加步骤与预期
         addContent(allContentMap, LabelType.STEP, stepList);
@@ -309,7 +366,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 isRepeat, isClear, inputRuleTypes);
         
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -331,7 +389,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 isRepeat, isClear, inputRuleTypes);
 
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "2" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -366,7 +425,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2", "3" })));
             addContent(allContentMap, LabelType.EXCEPT,
                     Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                            new String[] { "失败预期", "输入成功预期", "失败预期" })));
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         } else {
             // 判断最大与最小值是否需要调换，存储正确最大最小值
             if (minLen != null && maxLen != null && minLen > maxLen) {
@@ -380,7 +441,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 addContent(allContentMap, LabelType.STEP, Arrays
                         .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2" })));
                 addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                                new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                        AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
             }
             // 判断是否存在最大长度限制
             if (Optional.ofNullable(maxLen).filter(max -> max > 0).isPresent()) {
@@ -388,13 +451,17 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 addContent(allContentMap, LabelType.STEP, Arrays
                         .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "3", "4" })));
                 addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                                new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                        AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
             }
         }
 
         // 根据是否必填，添加其文本框的优先级
         addContent(allContentMap, LabelType.RANK, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? AddInformationTemplet.COMMON_CONTENT_RANK_1
+                                : AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return allContentMap;
     }
@@ -519,14 +586,18 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "6", "7" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
         }
         // 判断是否有最大数字限制
         if (maxNum != null) {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "8", "9" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
         }
 
         // 若传入的小数位数大于0，则添加小数位相关的用例
@@ -540,12 +611,14 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                     new Entry<>(AddInformationTemplet.GROUP_ADD_TEXTBOX_CASE, new String[] { "2" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
                     new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                            new String[] { "输入成功预期", "输入成功预期" })));
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT, AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
         }
 
         // 根据是否必填，添加其文本框的优先级
         addContent(allContentMap, LabelType.RANK, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? AddInformationTemplet.COMMON_CONTENT_RANK_1
+                                : AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return allContentMap;
     }
@@ -654,14 +727,16 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_PHONE_CASE, new String[] { "1" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期" })));
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         }
         // 添加座机用例
         if (phoneTypeSet.contains(PhoneType.FIXED)) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_PHONE_CASE, new String[] { "2" })));
             addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "输入成功预期" })));
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
         }
 
         return allContentMap;
@@ -720,11 +795,14 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 new Entry<>(AddInformationTemplet.GROUP_ADD_ID_CARD_CASE, new String[] { "1", "2", "3", "4" })));
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { "输入成功预期", "输入成功预期", "输入成功预期", "失败预期" })));
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT, AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT, AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
 
         // 根据是否必填，添加其文本框的优先级
         addContent(allContentMap, LabelType.RANK, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? AddInformationTemplet.COMMON_CONTENT_RANK_1
+                                : AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return allContentMap;
     }
@@ -783,7 +861,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 new Entry<>(AddInformationTemplet.GROUP_ADD_SELECTBOX_CASE, new String[] { "0", "2", "3" })));
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { isMust && isEmptyOption ? "失败预期" : "选择成功预期", "选择成功预期", "选择成功预期" })));
+                        new String[] { isMust && isEmptyOption ? AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
+                                : AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
         // 判断下拉框是否包含空选项
         if (isEmptyOption) {
             addContent(allContentMap, LabelType.STEP,
@@ -793,7 +874,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                         .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_SELECTBOX_CASE, new String[] { "1" })));
             } else {
                 addContent(allContentMap, LabelType.EXCEPT, Arrays
-                        .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期" })));
+                        .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                                new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
             }
         }
         // 判断是否可清空
@@ -806,7 +888,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
 
         // 根据是否必填，添加其文本框的优先级
         addContent(allContentMap, LabelType.RANK, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? AddInformationTemplet.COMMON_CONTENT_RANK_1
+                                : AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return allContentMap;
     }
@@ -866,10 +950,13 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_RADIO_BUTTON_CASE, new String[] { "1" })));
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { "选择成功预期", "选择成功预期", "选择成功预期" })));
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
 
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
 
         return allContentMap;
     }
@@ -924,10 +1011,16 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
 
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { isMust ? "失败预期" : "选择成功预期", "选择成功预期", "选择成功预期", "选择成功预期" })));
+                        new String[] {
+                                isMust ? AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
+                                        : AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
 
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
 
         return allContentMap;
     }
@@ -977,26 +1070,35 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "1", "2" })));
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { isMust ? "失败预期" : "选择成功预期", "选择成功预期" })));
+                        new String[] {
+                                isMust ? AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
+                                        : AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
         // 判断是否能清空
         if (isClear) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "3" })));
             addContent(allContentMap, LabelType.EXCEPT,
                     Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                            new String[] { isMust ? "失败预期" : "选择成功预期" })));
+                            new String[] {
+                                    isMust ? AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
+                                            : AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
         }
         // 判断能输入
         if (isInput) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "4", "5" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "选择成功预期", "失败预期" })));
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         }
 
         // 根据是否必填，添加其文本框的优先级
         addContent(allContentMap, LabelType.RANK, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? AddInformationTemplet.COMMON_CONTENT_RANK_1
+                                : AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return allContentMap;
     }
@@ -1055,7 +1157,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "6", "7" })));
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { "失败预期", "选择成功预期" })));
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
 
         return allContentMap;
     }
@@ -1117,7 +1220,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_DATE_CASE, new String[] { "8", "9" })));
         addContent(allContentMap, LabelType.EXCEPT, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "选择成功预期" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
 
         return allContentMap;
     }
@@ -1190,7 +1295,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                         new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "2", "4" })));
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { isMust ? "失败预期" : "文件成功预期", "文件成功预期" })));
+                        new String[] {
+                                isMust ? AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
+                                        : AddInformationTemplet.COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT })));
         // 判断文件是否能进行预览
         if (isPreview) {
             addContent(allContentMap, LabelType.STEP,
@@ -1203,7 +1311,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "3" })));
             addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "文件成功预期" })));
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT })));
         }
         // 判断文件大小限制（当大小限制文本不为空时）
         if (!Objects.equals("", sizeLimitText)) {
@@ -1211,7 +1320,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "5", "11" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "文件成功预期" })));
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT })));
         }
         // 判断文件个数限制
         // 判断最大最小值是否一致
@@ -1223,7 +1334,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                             new String[] { "7", "8", "9" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
                     new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                            new String[] { "失败预期", "输入成功预期", "失败预期" })));
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
+                                    AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         } else {
             // 判断最大与最小值是否需要调换，存储正确最大最小值
             if (fileMinNum != null && fileMaxNum != null && fileMinNum > fileMaxNum) {
@@ -1237,7 +1350,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 addContent(allContentMap, LabelType.STEP, Arrays.asList(
                         new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "7", "8" })));
                 addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                                new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                        AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
             }
             // 判断是否存在最大长度限制
             if (Optional.ofNullable(fileMaxNum).filter(max -> max > 0).isPresent()) {
@@ -1245,7 +1360,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 addContent(allContentMap, LabelType.STEP, Arrays.asList(
                         new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "9", "10" })));
                 addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期", "输入成功预期" })));
+                        new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                                new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
+                                        AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
             }
         }
         // 判断是否存在格式限制
@@ -1258,12 +1375,15 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(AddInformationTemplet.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "6" })));
             addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
-                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "失败预期" })));
+                    new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                            new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         }
 
         // 根据是否必填，添加其文本框的优先级
         addContent(allContentMap, LabelType.RANK, Arrays
-                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { isMust ? "1" : "2" })));
+                .asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { isMust ? AddInformationTemplet.COMMON_CONTENT_RANK_1
+                                : AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return allContentMap;
     }
@@ -1448,7 +1568,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
 
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -1485,7 +1606,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
 
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -1520,7 +1642,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
 
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -1555,7 +1678,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
 
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -1582,6 +1706,22 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public class AddInformationTemplet {
         // 分组名称
         public static final String GROUP_COMMON_CONTENT = "commonContent";
+        public static final String COMMON_CONTENT_EXCEPT_FAIL_EXCEPT = "failExcept";
+        public static final String COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT = "inputSuccessExcept";
+        public static final String COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT = "selectSuccessExcept";
+        public static final String COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT = "fileSuccessExcept";
+        public static final String COMMON_CONTENT_EXCEPT_EMPTY_SUCCESS_EXCEPT = "emptySuccessExcept";
+        public static final String COMMON_CONTENT_TITLE_BASIC = "basic";
+        public static final String COMMON_CONTENT_PRECONDITION_ALREADY_ON_THE_PAGE = "alreadyOnThePage";
+        public static final String COMMON_CONTENT_PRECONDITION_SUCCESS_INPUT = "successInput";
+        public static final String COMMON_CONTENT_PRECONDITION_NOT_MODIFY = "notModify";
+        public static final String COMMON_CONTENT_PRECONDITION_CLEAR_CONTENT = "clearContent";
+        public static final String COMMON_CONTENT_RANK_1 = "1";
+        public static final String COMMON_CONTENT_RANK_2 = "2";
+        public static final String COMMON_CONTENT_RANK_3 = "3";
+        public static final String COMMON_CONTENT_RANK_4 = "4";
+        public static final String COMMON_CONTENT_KEY_BASIC = "basic";
+
         public static final String GROUP_TEXTBOX_BASIC_CASE = "textboxBasicCase";
         public static final String GROUP_ADD_TEXTBOX_CASE = "addTextboxCase";
         public static final String GROUP_ADD_SELECTBOX_CASE = "addSelectboxCase";
