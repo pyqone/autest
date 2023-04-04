@@ -698,25 +698,26 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * @return 替换词语后的文本内容
      */
     protected String replaceWord(String content, Map<String, DataFunction> replaceWordMap) {
-        // 获取内容中的待替换词语
-        ArrayList<String> wordList = getReplaceWord(content);
-
-        // 循环，遍历待替换词语，并对内容进行替换
-        for (String word : wordList) {
-            // 将词语与每一个规则进行匹配
-            for (String key : replaceWordMap.keySet()) {
-                // 若传入的内容与正则匹配，则将数据进行处理，并返回处理结果
-                if (Pattern.compile(key).matcher(word).matches()) {
-                    // 将待替换的词语进行拼装
-                    String oldWord = WORD_SIGN + word + WORD_SIGN;
-                    // 获取替换的词语
-                    String newWord = replaceWordMap.get(key).apply(word);
-                    // 循环，替换所有与oldWord相同的内容
-                    // 由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
-                    while (content.contains(oldWord)) {
-                        int startIndex = content.indexOf(oldWord);
-                        int endIndex = startIndex + oldWord.length();
-                        content = content.substring(0, startIndex) + newWord + content.substring(endIndex);
+        // 获取内容中的待替换词语，并循环获取，以便于被替换的词语中仍包含替换词语的情况时，也能将其内的词语进行替换
+        ArrayList<String> wordList = null;
+        while (!(wordList = getReplaceWord(content)).isEmpty()) {
+            // 循环，遍历待替换词语，并对内容进行替换
+            for (String word : wordList) {
+                // 将词语与每一个规则进行匹配
+                for (String key : replaceWordMap.keySet()) {
+                    // 若传入的内容与正则匹配，则将数据进行处理，并返回处理结果
+                    if (Pattern.compile(key).matcher(word).matches()) {
+                        // 将待替换的词语进行拼装
+                        String oldWord = WORD_SIGN + word + WORD_SIGN;
+                        // 获取替换的词语
+                        String newWord = replaceWordMap.get(key).apply(word);
+                        // 循环，替换所有与oldWord相同的内容
+                        // 由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
+                        while (content.contains(oldWord)) {
+                            int startIndex = content.indexOf(oldWord);
+                            int endIndex = startIndex + oldWord.length();
+                            content = content.substring(0, startIndex) + newWord + content.substring(endIndex);
+                        }
                     }
                 }
             }

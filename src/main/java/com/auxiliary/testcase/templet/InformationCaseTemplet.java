@@ -51,6 +51,24 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public final String OPERATION_REGISTERED = "注册";
 
     /**
+     * 新增或编辑返回页页面名称
+     */
+    protected final String PAGE_NAME_ADD_OR_EDIT = "列表页";
+    /**
+     * 注册返回页页面名称
+     */
+    protected final String PAGE_NAME_REGISTERED = "登录页";
+
+    /**
+     * 新增或编辑时，成功输入的返回文本
+     */
+    protected final String BREAK_TEXT_ADD_OR_EDIT = "其#信息#列表上或详情中显示";
+    /**
+     * 注册时，成功输入的返回文本
+     */
+    protected final String BREAK_TEXT_REGISTERED = "可使用注册的信息进行登录，登录后，其账号";
+
+    /**
      * 构造对象，并指定读取的模板xml文件
      * 
      * @param xmlTempletFile 用例模板文件类对象
@@ -135,15 +153,25 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
 
     /**
      * 该方法用于生成正确填写所有信息的用例
-     * <p>
-     * 可适配新增信息（传入{@link #OPERATION_ADD}参数）、注册信息（传入{@link #OPERATION_REGISTERED}参数）
-     * </p>
      * 
      * @return 用例数据对象集合
      * @since autest 4.1.0
      */
-    public List<CaseData> wholeInformationCase(String operationName) {
+    protected Map<LabelType, List<Entry<String, String[]>>> wholeInformationCase(String operationName) {
         addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
+        switch (operationName) {
+        case OPERATION_REGISTERED:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_REGISTERED);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_REGISTERED);
+            break;
+        case OPERATION_ADD:
+        case OPERATION_EDIT:
+        default:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_ADD_OR_EDIT);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_ADD_OR_EDIT);
+            break;
+        }
+
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 标题
@@ -156,6 +184,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                         new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
+
         // 优先级
         addContent(allContentMap, LabelType.RANK,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
@@ -168,19 +197,27 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                         new String[] { AddInformationTemplet.COMMON_CONTENT_PRECONDITION_ALREADY_ON_THE_PAGE })));
 
-        return createCaseDataList(this, allContentMap);
+        return allContentMap;
     }
 
     /**
-     * 该方法用于生成正确填写所有信息的用例
+     * 该方法用于生成新增信息时正确填写所有信息的用例
      * 
      * @return 用例数据对象集合
      * @since autest 4.0.0
-     * @deprecated 该方法已由{@link #wholeInformationCase(String)}方法代替，后续版本中将删除
      */
-    @Deprecated
     public List<CaseData> addWholeInformationCase() {
-        return wholeInformationCase(OPERATION_ADD);
+        return createCaseDataList(this, wholeInformationCase(OPERATION_ADD));
+    }
+
+    /**
+     * 该方法用于生成注册信息时正确填写所有信息的用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredWholeInformationCase() {
+        return createCaseDataList(this, wholeInformationCase(OPERATION_REGISTERED));
     }
 
     /**
@@ -189,8 +226,21 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @return 用例数据对象集合
      * @since autest 4.0.0
      */
-    public List<CaseData> addUnWholeInformationCase() {
-        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_ADD);
+    protected Map<LabelType, List<Entry<String, String[]>>> unWholeInformationCase(String operationName) {
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
+        switch (operationName) {
+        case OPERATION_REGISTERED:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_REGISTERED);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_REGISTERED);
+            break;
+        case OPERATION_ADD:
+        case OPERATION_EDIT:
+        default:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_ADD_OR_EDIT);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_ADD_OR_EDIT);
+            break;
+        }
+
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 标题
@@ -216,7 +266,27 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                         new String[] { AddInformationTemplet.COMMON_CONTENT_PRECONDITION_ALREADY_ON_THE_PAGE })));
 
-        return createCaseDataList(this, allContentMap);
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成新增信息时不完全填写所有信息的用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> addUnWholeInformationCase() {
+        return createCaseDataList(this, unWholeInformationCase(OPERATION_ADD));
+    }
+
+    /**
+     * 该方法用于生成注册信息时不完全填写所有信息的用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> registeredUnWholeInformationCase() {
+        return createCaseDataList(this, unWholeInformationCase(OPERATION_REGISTERED));
     }
 
     /**
@@ -233,6 +303,18 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         // 添加替换词语
         addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
         addReplaceWord(ReplaceWord.CONTROL_NAME, name);
+        switch (operationName) {
+        case OPERATION_REGISTERED:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_REGISTERED);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_REGISTERED);
+            break;
+        case OPERATION_ADD:
+        case OPERATION_EDIT:
+        default:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_ADD_OR_EDIT);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_ADD_OR_EDIT);
+            break;
+        }
         
         // 标题
         addContent(allContentMap, LabelType.TITLE, Arrays
@@ -346,6 +428,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         addContent(allContentMap, LabelType.STEP, stepList);
         addContent(allContentMap, LabelType.EXCEPT, exceptList);
 
+
         return allContentMap;
     }
 
@@ -365,9 +448,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(OPERATION_ADD, name, isMust,
                 isRepeat, isClear, inputRuleTypes);
         
-        addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -391,6 +473,28 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         addContent(allContentMap, LabelType.RANK,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                         new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
+
+        return createCaseDataList(this, allContentMap);
+    }
+
+    /**
+     * 该方法用于生成注册信息中对普通文本测试的用例
+     * 
+     * @param name           控件名称
+     * @param isMust         是否必填
+     * @param isRepeat       是否允许保存相同内容
+     * @param isClear        是否可以通过按钮清除内容
+     * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）组
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredBasicTextboxCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            InputRuleType... inputRuleTypes) {
+        Map<LabelType, List<Entry<String, String[]>>> allContentMap = textboxCommonCase(OPERATION_REGISTERED, name,
+                isMust, isRepeat, isClear, inputRuleTypes);
+
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_2 })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -517,6 +621,29 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             Integer minLen, Integer maxLen, InputRuleType... inputRuleTypes) {
         return createCaseDataList(this,
                 lengthRuleTextboxCase(OPERATION_EDIT, name, isMust, isRepeat, isClear, minLen, maxLen, inputRuleTypes));
+    }
+
+    /**
+     * 该方法用于生成注册信息中带长度限制的文本框测试用例
+     * <p>
+     * 传入长度限制的方法可参考生成新增用例的方法{@link #addLengthRuleTextboxCase(String, boolean, boolean, boolean, int, int, InputRuleType...)}
+     * </p>
+     * 
+     * @param name           控件名称
+     * @param isMust         是否必填
+     * @param isRepeat       是否可以与存在的内容重复
+     * @param isClear        是否有按钮可以清空文本框
+     * @param minLen         最小输入长度限制
+     * @param maxLen         最大输入长度限制
+     * @param inputRuleTypes 输入限制（{@link InputRuleType}枚举类）
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredLengthRuleTextboxCase(String name, boolean isMust, boolean isRepeat,
+            boolean isClear, Integer minLen, Integer maxLen, InputRuleType... inputRuleTypes) {
+        return createCaseDataList(this,
+                lengthRuleTextboxCase(OPERATION_REGISTERED, name, isMust, isRepeat, isClear, minLen, maxLen,
+                        inputRuleTypes));
     }
 
     /**
@@ -691,6 +818,28 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
+     * 该方法用于生成注册信息中带数字限制的文本框测试用例
+     * <p>
+     * 传入数字限制的方法可参考生成新增用例的方法：{@link #addNumberRuleTextboxCase(String, boolean, boolean, boolean, Integer, Integer, Integer)}
+     * </p>
+     * 
+     * @param name     控件名称
+     * @param isMust   是否必填
+     * @param isRepeat 是否可以与存在的内容重复
+     * @param isClear  是否有按钮可以清空文本框
+     * @param minNum   数字最大限制
+     * @param maxNum   数字最小限制
+     * @param decimals 小数位限制
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredNumberRuleTextboxCase(String name, boolean isMust, boolean isRepeat,
+            boolean isClear, Integer minNum, Integer maxNum, Integer decimals) {
+        return createCaseDataList(this,
+                numberRuleTextboxCase(OPERATION_REGISTERED, name, isMust, isRepeat, isClear, minNum, maxNum, decimals));
+    }
+
+    /**
      * 该方法用于生成电话号码相关的测试用例
      * 
      * @param operationName 操作类型名称
@@ -775,6 +924,22 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
+     * 该方法用于生成注册信息中电话号码类型文本框相关的测试用例
+     * 
+     * @param name       控件名称
+     * @param isMust     是否必填
+     * @param isRepeat   是否可以与存在的内容重复
+     * @param isClear    是否有按钮可以清空文本框
+     * @param phoneTypes 号码类型
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredPhoneCase(String name, boolean isMust, boolean isRepeat, boolean isClear,
+            PhoneType... phoneTypes) {
+        return createCaseDataList(this, phoneCase(OPERATION_REGISTERED, name, isMust, isRepeat, isClear, phoneTypes));
+    }
+
+    /**
      * 该方法用于生成身份证相关的测试用例
      * 
      * @param operationName 操作类型名称
@@ -833,6 +998,20 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public List<CaseData> editIdCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
         return createCaseDataList(this, idCardCase(OPERATION_EDIT, name, isMust, isRepeat, isClear));
+    }
+
+    /**
+     * 该方法用于生成注册信息中身份证号码类型文本框相关的测试用例
+     * 
+     * @param name     控件名称
+     * @param isMust   是否必填
+     * @param isRepeat 是否可以与存在的内容重复
+     * @param isClear  是否有按钮可以清空文本框
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredIdCardCase(String name, boolean isMust, boolean isRepeat, boolean isClear) {
+        return createCaseDataList(this, idCardCase(OPERATION_REGISTERED, name, isMust, isRepeat, isClear));
     }
 
     /**
@@ -926,6 +1105,21 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
+     * 该方法用于生成注册信息中下拉选项控件相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @param name          控件名称
+     * @param isMust        是否必填
+     * @param isEmptyOption 是否存在空选项
+     * @param isClear       是否能清空
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredSelectboxCase(String name, boolean isMust, boolean isEmptyOption, boolean isClear) {
+        return createCaseDataList(this, selectboxCase(OPERATION_REGISTERED, name, isMust, isEmptyOption, isClear));
+    }
+
+    /**
      * 该方法用于生成单选控件相关的测试用例
      * 
      * @param operationName 操作类型名称
@@ -981,6 +1175,17 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public List<CaseData> editRadioButtonCase(String name) {
         return createCaseDataList(this, radioButtonCase(OPERATION_EDIT, name));
+    }
+
+    /**
+     * 该方法用于生成注册信息中单选控件相关的测试用例
+     * 
+     * @param name 控件名称
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredRadioButtonCase(String name) {
+        return createCaseDataList(this, radioButtonCase(OPERATION_REGISTERED, name));
     }
 
     /**
@@ -1047,6 +1252,18 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public List<CaseData> editCheckboxCase(String name, boolean isMust) {
         return createCaseDataList(this, checkboxCase(OPERATION_EDIT, name, isMust));
+    }
+
+    /**
+     * 该方法用于生成注册信息中多选控件相关的测试用例
+     * 
+     * @param name   控件名称
+     * @param isMust 是否必填
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredCheckboxCase(String name, boolean isMust) {
+        return createCaseDataList(this, checkboxCase(OPERATION_REGISTERED, name, isMust));
     }
 
     /**
@@ -1132,6 +1349,20 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
+     * 该方法用于生成注册信息中独立日期相关的测试用例
+     * 
+     * @param name    控件名称
+     * @param isMust  是否必填
+     * @param isInput 是否可输入
+     * @param isClear 是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredDateCase(String name, boolean isMust, boolean isInput, boolean isClear) {
+        return createCaseDataList(this, commonDateCase(OPERATION_REGISTERED, name, isMust, isInput, isClear));
+    }
+
+    /**
      * 该方法用于生成开始时间相关的测试用例
      * 
      * @param operationName 操作类型名称
@@ -1193,6 +1424,23 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public List<CaseData> editStartDateCase(String name, String endDateName, boolean isMust, boolean isInput,
             boolean isClear) {
         return createCaseDataList(this, startDateCase(OPERATION_EDIT, name, endDateName, isMust, isInput, isClear));
+    }
+    
+    /**
+     * 该方法用于生成注册信息中开始日期类型相关的测试用例
+     * 
+     * @param name        控件名称
+     * @param endDateName 结束时间控件名称
+     * @param isMust      是否必填
+     * @param isInput     是否可输入
+     * @param isClear     是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredStartDateCase(String name, String endDateName, boolean isMust, boolean isInput,
+            boolean isClear) {
+        return createCaseDataList(this,
+                startDateCase(OPERATION_REGISTERED, name, endDateName, isMust, isInput, isClear));
     }
 
     /**
@@ -1257,6 +1505,23 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     public List<CaseData> editEndDateCase(String name, String startDateName, boolean isMust, boolean isInput,
             boolean isClear) {
         return createCaseDataList(this, endDateCase(OPERATION_EDIT, name, startDateName, isMust, isInput, isClear));
+    }
+
+    /**
+     * 该方法用于生成注册信息中结束日期类型相关的测试用例
+     * 
+     * @param name          控件名称
+     * @param startDateName 结束时间控件名称
+     * @param isMust        是否必填
+     * @param isInput       是否可输入
+     * @param isClear       是否可清空
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredEndDateCase(String name, String startDateName, boolean isMust, boolean isInput,
+            boolean isClear) {
+        return createCaseDataList(this,
+                endDateCase(OPERATION_REGISTERED, name, startDateName, isMust, isInput, isClear));
     }
 
     /**
@@ -1445,6 +1710,29 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
+     * 该方法用于生成注册信息中，上传文件相关的测试用例
+     * <p>
+     * 关于文件大小、个数限制的传参，可参考{@link #addUploadFileCase(String, boolean, boolean, boolean, String, Integer, Integer, String...)}方法
+     * </p>
+     * 
+     * @param name            控件名称
+     * @param isMust          是否必须上传
+     * @param isDelete        是否允许删除
+     * @param isPreview       是否允许预览
+     * @param sizeLimitText   文件大小限制的文本，例如，限制上传50M的文件，则传入“50M”
+     * @param fileMinNum      最少上传文件数量
+     * @param fileMaxNum      最多上传文件数量
+     * @param fileFormatNames 上传文件的限制格式名称组
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> registeredUploadFileCase(String name, boolean isMust, boolean isDelete, boolean isPreview,
+            String sizeLimitText, Integer fileMinNum, Integer fileMaxNum, String... fileFormatNames) {
+        return createCaseDataList(this, commonUpdataFileCase(OPERATION_REGISTERED, name, isMust, isDelete, isPreview,
+                sizeLimitText, fileMinNum, fileMaxNum, UploadFileType.FILE, fileFormatNames));
+    }
+
+    /**
      * 该方法用于生成上传图片相关的测试用例
      * 
      * @param operationName   操作类型名称
@@ -1541,25 +1829,56 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     }
 
     /**
-     * 该方法用于生成检查新增信息页面相关的测试用例
+     * 该方法用于生成注册信息中，上传图片相关的测试用例
+     * <p>
+     * 关于文件大小、个数限制的传参，可参考{@link #addUploadImageCase(String, boolean, boolean, boolean, boolean, String, Integer, Integer, String...)}方法
+     * </p>
      * 
+     * @param name            控件名称
+     * @param isMust          是否必须上传
+     * @param isDelete        是否允许删除
+     * @param isPreview       是否允许预览
+     * @param isPhoto         是否允许拍照上传
+     * @param sizeLimitText   文件大小限制的文本，例如，限制上传50M的文件，则传入“50M”
+     * @param fileMinNum      最少上传文件数量
+     * @param fileMaxNum      最多上传文件数量
+     * @param fileFormatNames 上传文件的限制格式名称组
      * @return 用例数据对象集合
-     * @since autest 4.0.0
+     * @since autest 4.1.0
      */
-    public List<CaseData> examineAddUICase() {
+    public List<CaseData> registeredUploadImageCase(String name, boolean isMust, boolean isDelete, boolean isPreview,
+            boolean isPhoto, String sizeLimitText, Integer fileMinNum, Integer fileMaxNum, String... fileFormatNames) {
+        return createCaseDataList(this, uploadImageCase(OPERATION_REGISTERED, name, isMust, isDelete, isPreview,
+                isPhoto, sizeLimitText, fileMinNum, fileMaxNum, fileFormatNames));
+    }
+
+    /**
+     * 该方法用于生成检查页面相关的测试用例
+     * 
+     * @param operationName 操作类型名称
+     * @return 用例集合
+     * @since autest 4.1.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> examineUICase(String operationName) {
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 添加替换词语
-        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_ADD);
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
+        switch (operationName) {
+        case OPERATION_REGISTERED:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_REGISTERED);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_REGISTERED);
+            break;
+        case OPERATION_ADD:
+        case OPERATION_EDIT:
+        default:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_ADD_OR_EDIT);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_ADD_OR_EDIT);
+            break;
+        }
 
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
-
-        // 步骤与预期
-        addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
-        addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
 
         // 关键词
@@ -1567,11 +1886,39 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
 
         // 优先级
-        addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
 
-        return createCaseDataList(this, allContentMap);
+        // 步骤与预期
+        switch (operationName) {
+        case OPERATION_ADD:
+        case OPERATION_REGISTERED:
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+            break;
+        case OPERATION_EDIT:
+            addContent(allContentMap, LabelType.STEP,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "3" })));
+            addContent(allContentMap, LabelType.EXCEPT,
+                    Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "3" })));
+            break;
+        default:
+            break;
+        }
+
+        return allContentMap;
+    }
+
+    /**
+     * 该方法用于生成检查新增信息页面相关的测试用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.0.0
+     */
+    public List<CaseData> examineAddUICase() {
+        return createCaseDataList(this, examineUICase(OPERATION_ADD));
     }
 
     /**
@@ -1581,35 +1928,80 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public List<CaseData> examineEditUICase() {
+        return createCaseDataList(this, examineUICase(OPERATION_EDIT));
+    }
+
+    /**
+     * 该方法用于生成检查注册信息页面相关的测试用例
+     * 
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> examineRegisteredUICase() {
+        return createCaseDataList(this, examineUICase(OPERATION_REGISTERED));
+    }
+
+    /**
+     * 该方法用于生成新增信息界面取消保存信息的用例
+     * 
+     * @param operationName    操作类型名称
+     * @param cencelButtonName 取消保存按钮名称
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    protected Map<LabelType, List<Entry<String, String[]>>> cencelSaveDataCase(String operationName,
+            String cencelButtonName) {
+
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 添加替换词语
-        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_EDIT);
+        addReplaceWord(ReplaceWord.OPERATION_TYPE, operationName);
+        addReplaceWord(ReplaceWord.CENCEL_BUTTON_NAME, cencelButtonName);
+        switch (operationName) {
+        case OPERATION_REGISTERED:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_REGISTERED);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_REGISTERED);
+            break;
+        case OPERATION_ADD:
+        case OPERATION_EDIT:
+        default:
+            addReplaceWord(ReplaceWord.PAGE_NAME, PAGE_NAME_ADD_OR_EDIT);
+            addReplaceWord(ReplaceWord.BREAK_TEXT, BREAK_TEXT_ADD_OR_EDIT);
+            break;
+        }
 
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
-
-        // 步骤与预期
-        addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "3" })));
-        addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "3" })));
-
-        // 前置条件
-        addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
 
         // 关键词
         addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
 
         // 优先级
-        addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
+                new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
 
-        return createCaseDataList(this, allContentMap);
+        // 步骤与预期
+        switch (operationName) {
+        case OPERATION_ADD:
+        case OPERATION_REGISTERED:
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1", "3" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1", "1" })));
+            break;
+        case OPERATION_EDIT:
+            addContent(allContentMap, LabelType.STEP, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "2", "4" })));
+            addContent(allContentMap, LabelType.EXCEPT, Arrays
+                    .asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "2", "2" })));
+            break;
+        default:
+            break;
+        }
+
+        return allContentMap;
     }
 
     /**
@@ -1620,32 +2012,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public List<CaseData> cencelSaveAddDataCase(String cencelButtonName) {
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-
-        // 添加替换词语
-        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_ADD);
-        addReplaceWord(ReplaceWord.CENCEL_BUTTON_NAME, cencelButtonName);
-
-        // 标题
-        addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
-
-        // 步骤与预期
-        addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1", "3" })));
-        addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1", "1" })));
-
-        // 关键词
-        addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
-
-        // 优先级
-        addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
-
-        return createCaseDataList(this, allContentMap);
+        return createCaseDataList(this, cencelSaveDataCase(OPERATION_ADD, cencelButtonName));
     }
 
     /**
@@ -1656,32 +2023,18 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public List<CaseData> cencelSaveEditDataCase(String cencelButtonName) {
-        Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+        return createCaseDataList(this, cencelSaveDataCase(OPERATION_EDIT, cencelButtonName));
+    }
 
-        // 添加替换词语
-        addReplaceWord(ReplaceWord.OPERATION_TYPE, OPERATION_EDIT);
-        addReplaceWord(ReplaceWord.CENCEL_BUTTON_NAME, cencelButtonName);
-
-        // 标题
-        addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
-
-        // 步骤与预期
-        addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "2", "4" })));
-        addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "2", "2" })));
-
-        // 关键词
-        addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_CANCEL_SAVE_DATA, new String[] { "1" })));
-
-        // 优先级
-        addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { AddInformationTemplet.COMMON_CONTENT_RANK_1 })));
-
-        return createCaseDataList(this, allContentMap);
+    /**
+     * 该方法用于生成注册信息界面取消保存信息的用例
+     * 
+     * @param cencelButtonName 取消保存按钮名称
+     * @return 用例数据对象集合
+     * @since autest 4.1.0
+     */
+    public List<CaseData> cencelSaveRegisteredDataCase(String cencelButtonName) {
+        return createCaseDataList(this, cencelSaveDataCase(OPERATION_REGISTERED, cencelButtonName));
     }
 
     /**
@@ -1784,6 +2137,8 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         public static final String FILE_RULE = "文件格式";
         public static final String FILE_UNIT = "文件单位";
         public static final String OPERATION_TYPE = "操作类型";
+        public static final String PAGE_NAME = "页面名称";
+        public static final String BREAK_TEXT = "返回文本";
     }
 
     /**
