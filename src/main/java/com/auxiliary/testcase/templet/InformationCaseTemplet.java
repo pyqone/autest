@@ -53,11 +53,11 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
     /**
      * 新增或编辑返回页页面名称
      */
-    protected final String PAGE_NAME_ADD_OR_EDIT = "列表页";
+    protected final String PAGE_NAME_ADD_OR_EDIT = "列表";
     /**
      * 注册返回页页面名称
      */
-    protected final String PAGE_NAME_REGISTERED = "登录页";
+    protected final String PAGE_NAME_REGISTERED = "登录";
 
     /**
      * 新增或编辑时，成功输入的返回文本
@@ -183,7 +183,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
+                        new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_ALL_SUCCESS_EXCEPT })));
 
         // 优先级
         addContent(allContentMap, LabelType.RANK,
@@ -253,7 +253,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                         new String[] { AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
-                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
+                                AddInformationTemplet.COMMON_CONTENT_EXCEPT_ALL_SUCCESS_EXCEPT,
                                 AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         // 优先级
         addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
@@ -2064,6 +2064,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
         public static final String COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT = "selectSuccessExcept";
         public static final String COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT = "fileSuccessExcept";
         public static final String COMMON_CONTENT_EXCEPT_EMPTY_SUCCESS_EXCEPT = "emptySuccessExcept";
+        public static final String COMMON_CONTENT_EXCEPT_ALL_SUCCESS_EXCEPT = "allSuccessExcept";
         public static final String COMMON_CONTENT_TITLE_BASIC = "basic";
         public static final String COMMON_CONTENT_PRECONDITION_ALREADY_ON_THE_PAGE = "alreadyOnThePage";
         public static final String COMMON_CONTENT_PRECONDITION_SUCCESS_INPUT = "successInput";

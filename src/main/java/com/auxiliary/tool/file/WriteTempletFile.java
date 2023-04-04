@@ -3,6 +3,7 @@ package com.auxiliary.tool.file;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -698,9 +699,11 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * @return 替换词语后的文本内容
      */
     protected String replaceWord(String content, Map<String, DataFunction> replaceWordMap) {
+        HashSet<String> wordSet = new HashSet<>();
         // 获取内容中的待替换词语，并循环获取，以便于被替换的词语中仍包含替换词语的情况时，也能将其内的词语进行替换
         ArrayList<String> wordList = null;
         while (!(wordList = getReplaceWord(content)).isEmpty()) {
+            wordSet.addAll(wordList);
             // 循环，遍历待替换词语，并对内容进行替换
             for (String word : wordList) {
                 // 将词语与每一个规则进行匹配
@@ -718,8 +721,14 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
                             int endIndex = startIndex + oldWord.length();
                             content = content.substring(0, startIndex) + newWord + content.substring(endIndex);
                         }
+
+                        wordSet.remove(word);
                     }
                 }
+            }
+            
+            if (!wordSet.isEmpty()) {
+                throw new UnsupportedFileException(String.format("关键词“%s”不存在替换的词语，无法完成词语的替换", wordSet.toString()));
             }
         }
 
