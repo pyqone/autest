@@ -415,7 +415,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet {
             stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "6" }));
             exceptList.add(new Entry<>(AddInformationTemplet.GROUP_COMMON_CONTENT,
                     new String[] { isMust ? AddInformationTemplet.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
-                            : AddInformationTemplet.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT }));
+                            : AddInformationTemplet.COMMON_CONTENT_EXCEPT_EMPTY_SUCCESS_EXCEPT }));
         }
         // 添加重复提交相关的用例
         stepList.add(new Entry<>(AddInformationTemplet.GROUP_TEXTBOX_BASIC_CASE, new String[] { "5" }));

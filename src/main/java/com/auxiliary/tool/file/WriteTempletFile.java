@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.alibaba.fastjson.JSONArray;
@@ -699,13 +700,20 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * @return 替换词语后的文本内容
      */
     protected String replaceWord(String content, Map<String, DataFunction> replaceWordMap) {
-        HashSet<String> wordSet = new HashSet<>();
+        // 用于存储需要被替换的词语，用于判断当前词语是否被替换完毕
+        Set<String> doneReplaceWordSet = new HashSet<>();
         // 获取内容中的待替换词语，并循环获取，以便于被替换的词语中仍包含替换词语的情况时，也能将其内的词语进行替换
-        ArrayList<String> wordList = null;
-        while (!(wordList = getReplaceWord(content)).isEmpty()) {
-            wordSet.addAll(wordList);
+        Set<String> wordSet = null;
+        // TODO 增加自定义占位符标志后，此处使用的“#”符号也需要修改
+        while (!(wordSet = getReplaceWord(content, WORD_SIGN, WORD_SIGN)).isEmpty()) {
+            // 若当前需要替换的词语均被替换干净，则继续循环，判断是否还存在需要替换的内容；若
+            if (wordSet.equals(doneReplaceWordSet) && !doneReplaceWordSet.isEmpty()) {
+                break;
+            }
+
+            doneReplaceWordSet.addAll(wordSet);
             // 循环，遍历待替换词语，并对内容进行替换
-            for (String word : wordList) {
+            for (String word : wordSet) {
                 // 将词语与每一个规则进行匹配
                 for (String key : replaceWordMap.keySet()) {
                     // 若传入的内容与正则匹配，则将数据进行处理，并返回处理结果
@@ -716,19 +724,16 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
                         String newWord = replaceWordMap.get(key).apply(word);
                         // 循环，替换所有与oldWord相同的内容
                         // 由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
+                        // TODO 替换占位符的方法可移至“DisposeCodeUtils”类中
                         while (content.contains(oldWord)) {
                             int startIndex = content.indexOf(oldWord);
                             int endIndex = startIndex + oldWord.length();
                             content = content.substring(0, startIndex) + newWord + content.substring(endIndex);
                         }
 
-                        wordSet.remove(word);
+                        doneReplaceWordSet.remove(word);
                     }
                 }
-            }
-            
-            if (!wordSet.isEmpty()) {
-                throw new UnsupportedFileException(String.format("关键词“%s”不存在替换的词语，无法完成词语的替换", wordSet.toString()));
             }
         }
 
@@ -740,29 +745,44 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      *
      * @param content 文本内容
      * @return 替换的词语集合
+     * @deprecated 该方法已由{@link #getReplaceWord(String, String, String)}方法代替，将在后续版本中删除
      */
+    @Deprecated
     protected ArrayList<String> getReplaceWord(String content) {
-        ArrayList<String> wordList = new ArrayList<>();
+        return new ArrayList<>(getReplaceWord(content, WORD_SIGN, WORD_SIGN));
+    }
+
+    /**
+     * 用于获取内容中的所有的带替换符号的词语
+     *
+     * @param content   文本内容
+     * @param startSign 占位符开始标志
+     * @param endSign   占位符结束标志
+     * @return 替换的词语集合
+     * @since autest 4.1.0
+     */
+    protected Set<String> getReplaceWord(String content, String startSign, String endSign) {
+        // TODO 重构此处逻辑，目前DisposeCodeUtils类中包含转义正则的方法，即使自定义的内容中包含需要转义为正则内容，亦可按照正则切分，故此处考虑重构
+        Set<String> wordSet = new HashSet<>();
         // 获取当前数据中是否存在符号
-        int index = content.indexOf("#");
+        int index = -1;
         // 循环，判断是否存在标记符号
-        while (index > -1) {
+        while ((index = content.indexOf(startSign)) > -1) {
             // 存在编号，则将内容按第一个符号切分，使其不包括第一个符号
-            content = content.substring(index + 1);
+            content = content.substring(index + startSign.length());
             // 再次获取符号所在的编号
-            index = content.indexOf("#");
+            index = content.indexOf(endSign);
 
             // 若存在符号，则获取符号后的词语，到当前index位置
             if (index > -1) {
-                wordList.add(content.substring(0, index));
+                wordSet.add(content.substring(0, index));
 
                 // 再次按照符号切分，并获取index
-                content = content.substring(index + 1);
-                index = content.indexOf("#");
+                content = content.substring(index + endSign.length());
             }
         }
 
-        return wordList;
+        return wordSet;
     }
 
     /**
