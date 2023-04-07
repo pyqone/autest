@@ -57,72 +57,33 @@
 			<stepdetail value='在“用户名”和“密码”输入框中输入中文或特殊字符' />
 			<stepdetail value='点击登录按钮' />
 		</step>
-        <step id="2" value="不输入验证码，登录"
+        <step id="6" value="不输入验证码，登录"
             intention='验证不输入验证码是否能正常登录' rank='#rank-3#' >
             <stepdetail value='进入登录页面' />
             <stepdetail value='在正确输入用户名、密码，不输入验证码' />
             <stepdetail value='点击登录按钮' />
         </step>
-        <step id="3" value="输入错误的验证码，登录"
+        <step id="7" value="输入错误的验证码，登录"
             intention='验证输入错误的验证码是否能正常登录' rank='#rank-2#' >
             <stepdetail value='进入登录页面' />
             <stepdetail value='在正确输入用户名、密码，输入错误的验证码' />
             <stepdetail value='点击登录按钮' />
         </step>
+        <step id="8" value="输入不同权限的帐号和密码，登录"
+            intention='验证输入不同权限的账号登录后页面内容是否一致' rank='#rank-1#' >
+            <stepdetail value='进入登录页面' />
+            <stepdetail value='正确输入一个账号进行登录' />
+            <stepdetail value='记录菜单、页面内容' />
+            <stepdetail value='退出登录' />
+            <stepdetail value='使用另一个与之权限不同的账号进行登录（菜单权限、操作权限等不同）' />
+            <stepdetail value='记录菜单、页面内容，并进行两账号内容的对比' />
+        </step>
 		
-		<except id="4" value="无法登录，并给出相应的提示" />
-		<except id="5"
+		
+		<except id="1" value="无法登录，并给出相应的提示" />
+		<except id="2"
 			value="若带中文的用户名或密码能注册，则能正常登录系统，且登陆后跳转的页面正确；若不能注册，则无法登录，并给出相应的提示" />
-	</group>
-
-	<group name="addLoginAuthorityCase">
-		<title id='1' value="通过不同权限的帐号进行登录" />
-		
-		<key id='1' value="权限,登录" />
-		
-		<precondition id='1' value="帐号和密码输入正确" />
-		
-		<step id="1" value="输入不同权限的帐号和密码，登录"
-            intention='验证输入错误的验证码是否能正常登录' rank='#rank-2#' >
-        </step>
-		<step id="2" value="在所有登录页面上输入与之权限不对应的帐号，登录"
-            intention='验证输入错误的验证码是否能正常登录' rank='#rank-2#' >
-        </step>
-		
-		<except id="1" value="能正常登录系统，且登陆后能看到权限对应的页面及功能" />
-		<except id="2" value="无法登录，并给出相应的提示" />
-	</group>
-
-	<group name="addUsernameRegisterCase">
-		<title id='1' value="注册不同用户名的账号" />
-		
-		<key id='1' value="用户名,注册" />
-		
-		<precondition id='1' value="已在注册账号界面" />
-		<precondition id='2' value="除用户名外，其他信息均正确填写" />
-		
-		<step id="1" value="通过一个未被注册且正确的用户名进行注册操作" >
-		</step>
-		<step id="2" value="通过一个已注册的用户名进行注册操作" >
-		</step>
-		<step id="3" value="输入一个大于11位的数字字符进行注册操作" >
-		</step>
-		<step id="4" value="输入一个小于11位的数字字符进行注册操作" >
-		</step>
-		<step id="5" value="输入非数字字符进行注册操作" >
-		</step>
-		<step id="6" value="通过一个不符合要求的用户名进行注册操作" >
-		</step>
-		<step id="7" value="不输入用户名进行注册操作" >
-		</step>
-		
-		<except id="1" value="注册完成后能通过该帐号及对应的密码进行登录" />
-		<except id="2" value="提示用户名已存在" />
-		<except id="3" value="提示用户名不合理" />
-		<except id="4" value="提示用户名不合理" />
-		<except id="5" value="提示用户名不合理" />
-		<except id="6" value="提示用户名不合理" />
-		<except id="7" value="提示请输入用户名" />
+		<except id="3" value="能正常登录系统，且登陆后能看到权限对应的页面及功能" />
 	</group>
 
 	<group name="addUsernameForgetCase">
