@@ -60,13 +60,13 @@
         <step id="6" value="不输入验证码，登录"
             intention='验证不输入验证码是否能正常登录' rank='#rank-3#' >
             <stepdetail value='进入登录页面' />
-            <stepdetail value='在正确输入用户名、密码，不输入验证码' />
+            <stepdetail value='正确输入用户名、密码，不输入验证码' />
             <stepdetail value='点击登录按钮' />
         </step>
         <step id="7" value="输入错误的验证码，登录"
             intention='验证输入错误的验证码是否能正常登录' rank='#rank-2#' >
             <stepdetail value='进入登录页面' />
-            <stepdetail value='在正确输入用户名、密码，输入错误的验证码' />
+            <stepdetail value='正确输入用户名、密码，输入错误的验证码' />
             <stepdetail value='点击登录按钮' />
         </step>
         <step id="8" value="输入不同权限的帐号和密码，登录"
@@ -85,66 +85,95 @@
 			value="若带中文的用户名或密码能注册，则能正常登录系统，且登陆后跳转的页面正确；若不能注册，则无法登录，并给出相应的提示" />
 		<except id="3" value="能正常登录系统，且登陆后能看到权限对应的页面及功能" />
 	</group>
+	
+	<group name="forgetAndAlterPassword">
+        <title id='1' value="填写不同的#控件名称#对账号进行#操作类型#操作" />
+        
+        <key id='1' value="#控件名称#,#操作类型#" />
+        
+        <precondition id='1' value="已在#操作类型#界面" />
+        <precondition id='2' value="除#控件名称#外，其他信息均正确填写" />
+        
+        <except id="1" value="提示密码修改成功，并且可以使用修改后的密码进行登录，且原密码无法登录" />
+        <except id="1" value="密码未更改，并给出相应的错误提示" />
+    </group>
+    
+    <group name="rightWriteForgetAndAlterPasswordInfo">
+        <title id='1' value="正确填写所有信息对账号进行#操作类型#操作" />
+        
+        <key id='1' value="#操作类型#" />
+        
+        <step id="1" value="通过一个已存在且正确的用户名进行#操作类型#操作"
+            intention='验证正确填所有信息时能否进行#操作类型#操作' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型#界面' />
+            <stepdetail value='在正确输入所有的信息' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
+        </step>
+    </group>
 
-	<group name="addUsernameForgetCase">
-		<title id='1' value="通过不同用户名的账号进行忘记密码操作" />
-		
-		<key id='1' value="用户名,忘记密码" />
-		
-		<precondition id='1' value="已在忘记密码界面" />
-		<precondition id='2' value="除用户名外，其他信息均正确填写" />
-		
-		<step id="1" value="通过一个已存在且正确的用户名进行忘记密码操作" >
+	<group name="operateUsername">
+		<step id="1" value="通过一个不存在的用户名进行#操作类型#操作"
+            intention='验证填写不存在的用户名时能否进行#操作类型#操作' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='输入一个不存在的用户名，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="2" value="通过一个不存在的用户名进行忘记密码操作" >
+		<step id="2" value="不输入用户名进行#操作类型#操作"
+            intention='验证填写不填写用户名时能否进行#操作类型#操作' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='不输入用户名，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="3" value="通过一个不符合要求的用户名进行忘记密码操作" >
-		</step>
-		<step id="4" value="不输入用户名进行忘记密码操作" >
-		</step>
-		
-		<except id="1" value="密码修改成功，并且可以使用该帐号及修改的密码进行登录操作" />
-		<except id="2" value="提示用户名不存在" />
-		<except id="3" value="提示用户名不合理" />
-		<except id="4" value="提示请输入用户名" />
 	</group>
 
-	<group name="addPasswordRegisterOrForgetCase">
-		<title id='1' value="通过不同的密码进行#操作类型#操作" />
-		
-		<key id='1' value="密码,#操作类型#" />
-		
-		<precondition id='1' value="已在#操作类型#界面" />
-		<precondition id='2' value="除密码外，其他信息均正确填写" />
-		
-		<step id="1" value="通过正确的密码进行#操作类型#操作" >
+	<group name="operatePassword">
+		<step id="1" value="通过一个不符合要求的密码进行#操作类型#操作"
+            intention='验证填写不符合要求的新密码时能否进行#操作类型#操作' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='输入一个不符合系统要求的新密码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="2" value="通过一个不符合要求的密码进行#操作类型#操作" >
+		<step id="2" value="输入错误的原密码后进行#操作类型#操作"
+            intention='验证填写错误的原密码时能否进行#操作类型#操作' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='输入一个错误的原密码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
+        </step>
+        <step id="3" value="新密码中输入与原密码一致的内容进行#操作类型#操作"
+            intention='验证填写新旧密码一致时能否进行#操作类型#操作' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='在新密码中输入与原密码一致的内容，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
+        </step>
+        <step id="4" value="不输入原密码进行#操作类型#操作"
+            intention='验证不填写原密码时能否进行#操作类型#操作' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='不输入原密码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
+        </step>
+		<step id="5" value="不输入新密码进行#操作类型#操作"
+            intention='验证不填写新密码时能否进行#操作类型#操作' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='不输入新密码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="3" value="不输入密码进行#操作类型#操作" >
+		<step id="6" value="不输入二次确认密码进行#操作类型#操作"
+            intention='验证不填写二次确认密码时能否进行#操作类型#操作' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='不输入二次确认密码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="4" value="不再次输入密码，#操作类型#操作" >
+		<step id="7" value="两次新密码输入不一致时，进行#操作类型#操作"
+            intention='验证两次填写的新密码不一致时能否进行#操作类型#操作' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='正确输入新密码' />
+            <stepdetail value='在二次确认密码中输入正确的但与第一次输入的密码不同的内容' />
+            <stepdetail value='其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="5" value="两次密码输入不一致后进行#操作类型#操作" >
-		</step>
-		
-		<except id="1" value="#操作类型#操作完成后能通过该帐号及对应的密码进行登录" />
-		<except id="2" value="提示密码不合理" />
-		<except id="3" value="提示请输入密码" />
-		<except id="4" value="提示两次密码输入不一致或者提示输入确认密码" />
-		<except id="5" value="提示两次密码输入不一致" />
 	</group>
 
-	<group name="captchaOprateCase">
-		<title id='1' value="通过不同的验证码进行#操作类型#操作" />
-		
-		<key id='1' value="验证码,#操作类型#" />
-		
-		<precondition id='1' value="已在#操作类型#账号界面" />
-		<precondition id='2' value="除密码外，其他信息均正确填写" />
-		
-		<step id="1" value="通过正确的验证码进行#操作类型#" >
-		</step>
+	<group name="operateCode">
 		<step id="2" value="通过一个不正确的验证码进行#操作类型#" >
 		</step>
 		<step id="3" value="不输入验证码进行#操作类型#" >
@@ -162,37 +191,5 @@
 		<except id="4" value="提示验证码输入有误" />
 		<except id="5" value="#操作类型#操作完成后能通过该帐号及对应的密码进行登录" />
 		<except id="6" value="提示验证码不正确" />
-	</group>
-
-	<group name="addAlterPasswordCase">
-		<title id='1' value="修改用户密码" />
-		
-		<key id='1' value="修改,密码" />
-		
-		<precondition id='1' value="已登录系统" />
-		<precondition id='2' value="除密码外，其他信息均正确填写" />
-		
-		<step id="1" value="正确输入原密码并按要求输入新密码后修改密码" >
-		</step>
-		<step id="2" value="输入错误的原密码后修改密码" >
-		</step>
-		<step id="3" value="不输入原密码进行修改密码" >
-		</step>
-		<step id="4" value="输入一个不符合要求的密码进行修改密码" >
-		</step>
-		<step id="5" value="不输入密码进行修改密码" >
-		</step>
-		<step id="6" value="不再次输入密码进行修改密码" >
-		</step>
-		<step id="7" value="两次密码输入不一致后进行修改密码" >
-		</step>
-		
-		<except id="1" value="修改密码成功，该帐号能通过新修改的密码进行登录" />
-		<except id="2" value="提示用户原密码输入有误" />
-		<except id="3" value="提示请输入原密码" />
-		<except id="4" value="提示密码不合理" />
-		<except id="5" value="提示请输入密码" />
-		<except id="6" value="提示两次密码输入不一致或者提示输入确认密码" />
-		<except id="7" value="提示两次密码输入不一致" />
 	</group>
 </cases>
