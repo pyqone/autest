@@ -174,22 +174,50 @@
 	</group>
 
 	<group name="operateCode">
-		<step id="2" value="通过一个不正确的验证码进行#操作类型#" >
+		<step id="1" value="输入一个不正确的#验证码类型#验证码进行#操作类型#"
+            intention='验证填写错误的#验证码类型#验证码时能否进行#操作类型#操作' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='点击#验证码操作#验证相关的按钮' />
+            <stepdetail value='不输入#验证码类型#验证码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="3" value="不输入验证码进行#操作类型#" >
+		<step id="2" value="不输入#验证码类型#验证码进行#操作类型#"
+            intention='验证不填写#验证码类型#验证码时能否进行#操作类型#操作' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='点击#验证码操作#验证相关的按钮' />
+            <stepdetail value='输入错误的#验证码类型#验证码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="4" value="重新发送验证码后输入上一次的验证码" >
+		<step id="3" value="#验证码操作##验证码类型#验证码后输入新的#验证码类型#验证码"
+            intention='验证使用新#验证码类型#验证码时能否进行#操作类型#操作' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='点击#验证码操作#验证相关的按钮' />
+            <stepdetail value='再次点击#验证码操作#验证相关的按钮' />
+            <stepdetail value='输入当前的#验证码类型#验证码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
+        </step>
+        <step id="4" value="#验证码操作##验证码类型#验证码后输入旧的#验证码类型#验证码"
+            intention='验证使用旧#验证码类型#验证码时能否进行#操作类型#操作' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='点击#验证码操作#验证相关的按钮，记录当前的验证内容' />
+            <stepdetail value='再次点击#验证码操作#验证相关的按钮' />
+            <stepdetail value='输入之前记录的#验证码类型#验证码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
+        </step>
+		<step id="5" value="超过#验证码类型#验证码的过期时间后再输入验证码进行#操作类型#"
+            intention='验证超过时效的#验证码类型#验证码时能否进行#操作类型#操作' rank='#rank-2#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='点击#验证码操作#验证相关的按钮' />
+            <stepdetail value='等待验证码失效（超过验证码失效时间）' />
+            <stepdetail value='输入#验证码类型#验证码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
 		</step>
-		<step id="5" value="重新发送验证码后输入新的验证码" >
-		</step>
-		<step id="6" value="超过验证码的过期时间后再输入验证码，#操作类型#" >
-		</step>
-		
-		<except id="1" value="#操作类型#操作完成后能通过该帐号及对应的密码进行登录" />
-		<except id="2" value="提示验证码不正确" />
-		<except id="3" value="提示请输入验证码" />
-		<except id="4" value="提示验证码输入有误" />
-		<except id="5" value="#操作类型#操作完成后能通过该帐号及对应的密码进行登录" />
-		<except id="6" value="提示验证码不正确" />
+		<step id="6" value="不#验证码操作##验证码类型#验证码，在#验证码类型#验证码中输入任意格式正确的内容，进行#操作类型#"
+            intention='验证不#验证码操作##验证码类型#验证码时能否进行#操作类型#操作' rank='#rank-3#' >
+            <stepdetail value='进入#操作类型#页面' />
+            <stepdetail value='不点击#验证码操作#验证相关的按钮' />
+            <stepdetail value='任意输入格式正确的#验证码类型#验证码，其他信息正确填写' />
+            <stepdetail value='点击#操作类型#相关的按钮' />
+        </step>
 	</group>
 </cases>
