@@ -30,7 +30,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since JDK 1.8
  * @since autest 4.1.0
  */
-public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
+public class DataListCaseTemplet extends AbstractPresetCaseTemplet implements StepDetailTemplet {
 	/**
      * 构造对象，并指定读取的模板xml文件
      * 
@@ -40,7 +40,7 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      */
     public DataListCaseTemplet(File xmlTempletFile, String dataListName) {
         super(xmlTempletFile);
-        addReplaceWord(ReplaceWord.INFORMATION, dataListName);
+        addReplaceWord(DataListCaseTempletReplaceWord.INFORMATION, dataListName);
     }
 
     /**
@@ -50,8 +50,14 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.0.0
      */
     public DataListCaseTemplet(String dataListName) {
-        super("BrowseList");
-        addReplaceWord(ReplaceWord.INFORMATION, dataListName);
+        super("DataListCaseTemplet");
+        addReplaceWord(DataListCaseTempletReplaceWord.INFORMATION, dataListName);
+    }
+
+    @Override
+    public void setReadStepDetail(boolean isStepDetail, boolean isStepIndependentCase) {
+        this.isStepDetail = isStepDetail;
+        this.isStepIndependentCase = isStepIndependentCase;
     }
 
     /**
@@ -65,26 +71,26 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
 
         // 前置条件
         addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_PRECONDITION_BASIC })));
         // 优先级
-        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
 
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_EXAMINE_UI, new String[] { "1" })));
 
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_EXAMINE_UI, new String[] { "1" })));
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_EXAMINE_UI, new String[] { "1" })));
 
         // 关键词
         addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_EXAMINE_UI, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_EXAMINE_UI, new String[] { "1" })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -101,51 +107,51 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
 
         // 前置条件
         addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_PRECONDITION_BASIC })));
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
 
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE, new String[] { "1" })));
 
         // 添加基础步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE, new String[] { "com1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE, new String[] { "com1" })));
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE, new String[] { "com1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE, new String[] { "com1" })));
 
         // 根据浏览器的类型，添加剩余的步骤与预期
         switch (dataListType) {
         case APP_LIST:
             // 步骤
             addContent(allContentMap, LabelType.STEP,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE,
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE,
                             new String[] { "app1", "app2", "app3", "app4", "app5" })));
             // 预期
             addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE,
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE,
                             new String[] { "app1", "app2", "app3", "app4", "app4" })));
             // 关键词
             addContent(allContentMap, LabelType.KEY,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE, new String[] { "app1" })));
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE, new String[] { "app1" })));
             break;
         case WEB_LIST:
             // 步骤
             addContent(allContentMap, LabelType.STEP,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE,
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE,
                             new String[] { "web1", "web2", "web3", "web4", "web5" })));
             // 预期
             addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE,
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE,
                             new String[] { "web1", "web2", "web2", "web2", "web2" })));
             // 关键词
             addContent(allContentMap, LabelType.KEY,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_BROWSE_LIST_CASE, new String[] { "web1" })));
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_BROWSE_LIST_CASE, new String[] { "web1" })));
             break;
         default:
             break;
@@ -161,27 +167,27 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.1.0
      */
     protected Map<LabelType, List<Entry<String, String[]>>> searchDataListCase(String conditionName) {
-        addReplaceWord(ReplaceWord.SEARCH_CONDITION, conditionName);
+        addReplaceWord(DataListCaseTempletReplaceWord.SEARCH_CONDITION, conditionName);
 
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         
         // 前置条件
         addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_PRECONDITION_BASIC })));
 
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                        new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_TITLE_BASIC })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                        new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_TITLE_BASIC })));
         
         // 关键词
-        addContent(allContentMap, LabelType.KEY, Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_KEY_BASIC })));
+        addContent(allContentMap, LabelType.KEY, Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_KEY_BASIC })));
         
         // 优先级
-        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
         
         return allContentMap;
     }
@@ -199,20 +205,20 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
         
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_INPUT_SEARCH_CASE,
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_INPUT_SEARCH_CASE,
                         new String[] { "1", "2", "3", "4", "5", "6" })));
         
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                        new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
-                                        : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
-                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
-                                isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
-                                        : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                        new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                isMust ? DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
+                                        : DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
+                                DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
+                                isMust ? DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
+                                        : DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
         
         return createCaseDataList(this, allContentMap);
     }
@@ -232,58 +238,58 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = searchDataListCase(conditionName);
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SELECT_SEARCH_CASE,
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_SELECT_SEARCH_CASE,
                         new String[] { "1", "2", "3", "4", "5", "6" })));
 
         // 预期
         if (!isAssociatedCondition) {
             addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                            new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                    BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                    BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                    BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                            new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                    DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                    DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                    DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
             if (isDefaultOption) {
                 addContent(allContentMap, LabelType.EXCEPT,
-                        Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                                new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                        BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT })));
+                        Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                                new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                        DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT })));
             } else {
                 if (isMust) {
                     addContent(allContentMap, LabelType.EXCEPT,
-                            Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                                    new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION,
-                                            BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION })));
+                            Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                                    new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION,
+                                            DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION })));
                 } else {
                     addContent(allContentMap, LabelType.EXCEPT,
-                            Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                                    new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
-                                            BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
+                            Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                                    new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
+                                            DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
                 }
             }
         } else {
-            addReplaceWord(ReplaceWord.OPTION_CONTENT, isDefaultOption ? "默认内容" : "空");
+            addReplaceWord(DataListCaseTempletReplaceWord.OPTION_CONTENT, isDefaultOption ? "默认内容" : "空");
             addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SELECT_SEARCH_CASE,
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_SELECT_SEARCH_CASE,
                             new String[] { "1", "1", "1", "4" })));
             if (isDefaultOption) {
                 addContent(allContentMap, LabelType.EXCEPT,
-                        Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                                new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT })));
+                        Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                                new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT })));
                 addContent(allContentMap, LabelType.EXCEPT, Arrays
-                        .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SELECT_SEARCH_CASE, new String[] { "2" })));
+                        .asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_SELECT_SEARCH_CASE, new String[] { "2" })));
             } else {
                 if (isMust) {
                     addContent(allContentMap, LabelType.EXCEPT,
-                            Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                                    new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
+                            Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                                    new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
                     addContent(allContentMap, LabelType.EXCEPT, Arrays
-                            .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SELECT_SEARCH_CASE, new String[] { "3" })));
+                            .asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_SELECT_SEARCH_CASE, new String[] { "3" })));
                 } else {
                     addContent(allContentMap, LabelType.EXCEPT,
-                            Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                                    new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
-                                            BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
+                            Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                                    new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
+                                            DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
                 }
             }
         }
@@ -302,18 +308,18 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
     public List<CaseData> dateSearchCase(String conditionName, boolean isMust) {
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = searchDataListCase(conditionName);
         
-        addReplaceWord(ReplaceWord.TIME_CONTENT, "时间");
+        addReplaceWord(DataListCaseTempletReplaceWord.TIME_CONTENT, "时间");
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_DATE_SEARCH_CASE, new String[] { "1", "2", "3" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_DATE_SEARCH_CASE, new String[] { "1", "2", "3" })));
         
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                        new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
-                                isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
-                                        : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                        new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
+                                isMust ? DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
+                                        : DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT })));
         
         return createCaseDataList(this, allContentMap);
     }
@@ -331,31 +337,31 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = searchDataListCase(
                 startDateName + "与" + endDateName);
 
-        addReplaceWord(ReplaceWord.TIME_CONTENT, "时间段");
-        addReplaceWord(ReplaceWord.START_TIME, startDateName);
-        addReplaceWord(ReplaceWord.END_TIME, endDateName);
+        addReplaceWord(DataListCaseTempletReplaceWord.TIME_CONTENT, "时间段");
+        addReplaceWord(DataListCaseTempletReplaceWord.START_TIME, startDateName);
+        addReplaceWord(DataListCaseTempletReplaceWord.END_TIME, endDateName);
         // 步骤
         addContent(allContentMap, LabelType.STEP, Arrays
-                .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_DATE_SEARCH_CASE,
+                .asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_DATE_SEARCH_CASE,
                         new String[] { "1", "2", "3", "4", "5", "6" })));
 
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                        new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
-                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
-                                isMust ? BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
-                                        : BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
-                                BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                        new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_CONTAIN_RESULT,
+                                DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT,
+                                isMust ? DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION
+                                        : DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_ALL_RESULT,
+                                DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_NO_RESULT })));
         if (isMust) {
             addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_SEARCH_CASE,
-                            new String[] { BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION,
-                                    BrowseListTemplet.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION })));
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_SEARCH_CASE,
+                            new String[] { DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION,
+                                    DataListCaseTempletField.COMMON_SEARCH_CASE_EXCEPT_MUST_WRITE_CONTIDION })));
         } else {
             addContent(allContentMap, LabelType.EXCEPT,
                     Arrays.asList(
-                            new Entry<>(BrowseListTemplet.GROUP_ADD_DATE_SEARCH_CASE, new String[] { "1", "2" })));
+                            new Entry<>(DataListCaseTempletField.GROUP_ADD_DATE_SEARCH_CASE, new String[] { "1", "2" })));
         }
 
         return createCaseDataList(this, allContentMap);
@@ -368,25 +374,25 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.1.0
      */
     public List<CaseData> listSortCase(String field) {
-        addReplaceWord(ReplaceWord.LIST_FIELD_NAME, field);
+        addReplaceWord(DataListCaseTempletReplaceWord.LIST_FIELD_NAME, field);
         
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 优先级
-        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
 
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_LIST_SORT_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_LIST_SORT_CASE, new String[] { "1" })));
 
         // 添加基础步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_LIST_SORT_CASE, new String[] { "1", "2" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_LIST_SORT_CASE, new String[] { "1", "2" })));
 
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_LIST_SORT_CASE, new String[] { "1", "2" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_LIST_SORT_CASE, new String[] { "1", "2" })));
 
         return createCaseDataList(this, allContentMap);
     }
@@ -400,41 +406,41 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.1.0
      */
     public List<CaseData> exportListCase(String exportButtonName, boolean isCheck) {
-        addReplaceWord(ReplaceWord.EXPORT_BUTTON_NAME, exportButtonName);
+        addReplaceWord(DataListCaseTempletReplaceWord.EXPORT_BUTTON_NAME, exportButtonName);
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         
         // 前置条件
         addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_PRECONDITION_BASIC })));
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
         
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "1" })));
         
         // 关键词
         addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "1" })));
         
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE,
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_EXPORT_LIST_CASE,
                         new String[] { "1", "2", "6" })));
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
                 Arrays.asList(
-                        new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "5", "1", "1" })));
+                        new Entry<>(DataListCaseTempletField.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "5", "1", "1" })));
         if (isCheck) {
             // 步骤
             addContent(allContentMap, LabelType.STEP, Arrays
-                    .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "3", "4", "5" })));
+                    .asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "3", "4", "5" })));
             // 预期
             addContent(allContentMap, LabelType.EXCEPT, Arrays
-                    .asList(new Entry<>(BrowseListTemplet.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "2", "2", "4" })));
+                    .asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_EXPORT_LIST_CASE, new String[] { "2", "2", "4" })));
         }
         
         return createCaseDataList(this, allContentMap);
@@ -448,30 +454,30 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.1.0
      */
     public List<CaseData> importListCase(String importButtonName) {
-        addReplaceWord(ReplaceWord.IMPORT_BUTTON_NAME, importButtonName);
+        addReplaceWord(DataListCaseTempletReplaceWord.IMPORT_BUTTON_NAME, importButtonName);
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
         
         // 关键词
         addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_IMPORT_LIST_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_IMPORT_LIST_CASE, new String[] { "1" })));
         
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_IMPORT_LIST_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_IMPORT_LIST_CASE, new String[] { "1" })));
         
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_IMPORT_LIST_CASE,
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_IMPORT_LIST_CASE,
                         new String[] { "1", "2", "3", "4", "5" })));
         
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_IMPORT_LIST_CASE,
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_IMPORT_LIST_CASE,
                         new String[] { "1", "1", "2", "2", "2" })));
         
         return createCaseDataList(this, allContentMap);
@@ -484,27 +490,27 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.1.0
      */
     public List<CaseData> resetSearchCase(String resetButtonName, boolean isResetList) {
-        addReplaceWord(ReplaceWord.RESET_BUTTON_NAME, resetButtonName);
-        addReplaceWord(ReplaceWord.RESET_LIST_CONTENT, isResetList ? "，列表展示默认条件下的数据" : "");
+        addReplaceWord(DataListCaseTempletReplaceWord.RESET_BUTTON_NAME, resetButtonName);
+        addReplaceWord(DataListCaseTempletReplaceWord.RESET_LIST_CONTENT, isResetList ? "，列表展示默认条件下的数据" : "");
         
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
         
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1" })));
         
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1", "2" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1", "2" })));
         
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1", "2" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_RESET_SEARCH_CASE, new String[] { "1", "2" })));
         
         return createCaseDataList(this, allContentMap);
     }
@@ -520,29 +526,29 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
         
         // 前置条件
         addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_PRECONDITION_BASIC })));
         // 优先级
         addContent(allContentMap, LabelType.RANK,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
         
         // 关键词
         addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
                         new String[] { "1" })));
         
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE, new String[] { "1" })));
         
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
                         new String[] { "1", "2", "3", "4", "5" })));
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_ADD_SWITCH_LIST_SHOW_DATA_CASE,
                         new String[] { "1", "1", "1", "2", "3" })));
         
         return createCaseDataList(this, allContentMap);
@@ -560,40 +566,40 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since autest 4.1.0
      */
     public List<CaseData> delectDataCase(String delectButtonName, String batchDelectButtonName) {
-        addReplaceWord(ReplaceWord.DELECT_BUTTON, delectButtonName);
+        addReplaceWord(DataListCaseTempletReplaceWord.DELECT_BUTTON, delectButtonName);
         Map<LabelType, List<Entry<String, String[]>>> allContentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
         // 前置条件
         addContent(allContentMap, LabelType.PRECONDITION,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                        new String[] { BrowseListTemplet.COMMON_CONTENT_PRECONDITION_BASIC })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                        new String[] { DataListCaseTempletField.COMMON_CONTENT_PRECONDITION_BASIC })));
         // 优先级
-        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_COMMON_CONTENT,
-                new String[] { BrowseListTemplet.COMMON_CONTENT_RANK_1 })));
+        addContent(allContentMap, LabelType.RANK, Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_COMMON_CONTENT,
+                new String[] { DataListCaseTempletField.COMMON_CONTENT_RANK_1 })));
         // 关键词
         addContent(allContentMap, LabelType.KEY,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_DELECT_DATA_CASE, new String[] { "1" })));
 
         // 标题
         addContent(allContentMap, LabelType.TITLE,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE, new String[] { "1" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_DELECT_DATA_CASE, new String[] { "1" })));
 
         // 步骤
         addContent(allContentMap, LabelType.STEP,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE, new String[] { "8" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_DELECT_DATA_CASE, new String[] { "8" })));
         // 预期
         addContent(allContentMap, LabelType.EXCEPT,
-                Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE, new String[] { "2" })));
+                Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_DELECT_DATA_CASE, new String[] { "2" })));
         if (Optional.ofNullable(batchDelectButtonName).filter(name -> !name.isEmpty()).isPresent()) {
-            addReplaceWord(ReplaceWord.BATCHES_DELECT_BUTTON, batchDelectButtonName);
-            addReplaceWord(ReplaceWord.PAGE_NAME, batchDelectButtonName);
+            addReplaceWord(DataListCaseTempletReplaceWord.BATCHES_DELECT_BUTTON, batchDelectButtonName);
+            addReplaceWord(DataListCaseTempletReplaceWord.PAGE_NAME, batchDelectButtonName);
             // 步骤
             addContent(allContentMap, LabelType.STEP,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE,
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_DELECT_DATA_CASE,
                             new String[] { "1", "2", "3", "4", "5", "6", "7" })));
             // 预期
             addContent(allContentMap, LabelType.EXCEPT,
-                    Arrays.asList(new Entry<>(BrowseListTemplet.GROUP_DELECT_DATA_CASE,
+                    Arrays.asList(new Entry<>(DataListCaseTempletField.GROUP_DELECT_DATA_CASE,
                             new String[] { "1", "2", "2", "2", "4", "5", "6" })));
         }
 
@@ -619,7 +625,7 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since JDK 1.8
      * @since autest 4.1.0
      */
-    public class BrowseListTemplet {
+    public class DataListCaseTempletField {
         public static final String GROUP_COMMON_CONTENT = "commonContent";
         public static final String COMMON_CONTENT_RANK_1 = "1";
         public static final String COMMON_CONTENT_RANK_2 = "2";
@@ -668,7 +674,7 @@ public class DataListCaseTemplet extends AbstractPresetCaseTemplet {
      * @since JDK 1.8
      * @since autest 4.1.0
      */
-    protected class ReplaceWord {
+    protected class DataListCaseTempletReplaceWord {
         public static final String INFORMATION = "信息";
         public static final String SEARCH_CONDITION = "搜索条件";
         public static final String OPTION_CONTENT = "选项内容";

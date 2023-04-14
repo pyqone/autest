@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -35,7 +34,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since JDK 1.8
  * @since autest 4.0.0
  */
-public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet implements StepDetailTemplet {
+public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet {
     /**
      * 1级优先级
      */
@@ -137,20 +136,19 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
         super(xmlTempletFile);
     }
 
+    /**
+     * 构造对象，根据资源文件夹中的默认模板文件名，对模板文件进行读取
+     * 
+     * @param fileName 文件名称
+     */
     protected AbstractPresetCaseTemplet(String fileName) {
         super();
         try {
             configXml = new SAXReader().read(InformationCaseTemplet.class.getClassLoader()
                     .getResourceAsStream(String.format("%s%s.xml", DEFAULT_TEMPLET_FOLDER, fileName)));
-        } catch (DocumentException e) {
-            throw new TestCaseException("jar包异常，无法读取模板xml文件", e);
+        } catch (Exception e) {
+            throw new TestCaseException(String.format("jar包异常，无法读取“%s.xml”模板文件", fileName), e);
         }
-    }
-
-    @Override
-    public void setReadStepDetail(boolean isStepDetail, boolean isStepIndependentCase) {
-        this.isStepDetail = isStepDetail;
-        this.isStepIndependentCase = isStepIndependentCase;
     }
 
     /**
