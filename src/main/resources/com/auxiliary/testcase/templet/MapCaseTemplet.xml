@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<cases project='Map'>
+    <group name='commonContent'>
+        <rank id='1' value='#rank-1#' />
+        <rank id='2' value='#rank-2#' />
+        <rank id='3' value='#rank-3#' />
+        <rank id='4' value='#rank-4#' />
+    </group>
+    
+	<group name='addRangeFindingCase'>
+		<title id='1' value='在地图上进行测距' />
+		
+		<key id='1' value='地图,测距' />
+		
+		<step id='1' value='设置划线起点，移动鼠标后，在地图上多次单击鼠标左键'
+            intention='验证测距工具功能是否能绘制折线' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+			<stepdetail value='使用鼠标在地图上找到起点位置，并单击鼠标左键，设置起点' />
+			<stepdetail value='移动鼠标以绘制划线路径' />
+			<stepdetail value='在需要的位置单击鼠标左键以添加转折点，可以多次单击添加多个转折点' />
+		</step>
+		<step id='2' value='设置划线起点，移动鼠标后，在地图上双击鼠标左键'
+            intention='验证是否能结束测距' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+			<stepdetail value='使用鼠标在地图上找到起点位置，并单击鼠标左键，设置起点' />
+			<stepdetail value='移动鼠标以绘制划线路径' />
+			<stepdetail value='在需要的位置双击鼠标左键，完成划线操作' />
+		</step>
+		<step id='3' value='在地图上进行划线测距后，缩放地图'
+            intention='验证缩放地图后绘制的折线是否跟随地图缩放' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+			<stepdetail value='使用鼠标在地图上找到起点位置，并单击鼠标左键，设置起点' />
+			<stepdetail value='移动鼠标以绘制划线路径' />
+			<stepdetail value='在需要的位置双击鼠标左键，完成划线操作' />
+			<stepdetail value='使用缩放功能放大或缩小地图，以查看划线测距的结果' />
+		</step>
+		<step id='4' value='设置划线起点后直接双击左键'
+            intention='验证在起点位置设置终点时测距显示是否正常' rank='#rank-3#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='使用鼠标在地图上找到起点位置，并双击鼠标左键' />
+		</step>
+		<step id='5' value='在不同的地图比例上画等长的线段'
+            intention='验证在不同比例下绘制等长的线段其距离显示是否正确' rank='#rank-3#' >
+            <stepdetail value='进入地图' />
+			<stepdetail value='确定需要画等长线段的长度，记录下当前显示的距离' />
+			<stepdetail value='使用缩放功能调整地图比例' />
+			<stepdetail value='再次绘制与之前等长的线段，记录下当前显示的距离' />
+			<stepdetail value='对比两测距结果' />
+		</step>
+		<step id='6' value='在画好的线段上，点击“×”按钮'
+            intention='验证能否删除已绘制的测距线段' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+			<stepdetail value='绘制一条线段' />
+			<stepdetail value='点击线段上的“×”按钮' />
+		</step>
+		
+		<except id='1' value='还能继续划线测距，且标注中显示的距离应累加上一次定位的距离'/>
+		<except id='2' value='停止划线，且线段留在地图上'/>
+		<except id='3' value='线段随地图的缩放而改变其长度，且方框中的内容显示不变'/>
+		<except id='4' value='停止划线，距离显示为0米或不显示划线'/>
+		<except id='5' value='随地图缩放程度不同，其不同比例尺下画出的等长的线段在标注中显示的距离不同'/>
+		<except id='6' value='线段被清除'/>
+	</group>
+	
+	<group name='addMapPointCase'>
+		<title id='1' value='查看地图#标记点名称#定位点信息' />
+		
+		<key id='1' value='地图,#标记点名称#,定位点' />
+		
+		<precondition id='1' value='地图上有多个#标记点名称#定位点以及聚合点存在' />
+		
+		<step id='1' value='在地图上点击#标记点名称#的标记点'
+            intention='验证点击定位点时能否展示定位点的相关信息' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='点击地图中#标记点名称#的标记' />
+		</step>
+		<step id='2' value='在地图上点击#标记点名称#的聚合点'
+            intention='验证点击聚合点时能否展示聚合点中的标记点' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='点击地图中#标记点名称#的聚合标记点' />
+		</step>
+		<step id='3' value='在最小比例尺上，查看地图上的标记点'
+            intention='验证地图在最小比例尺时展示的标记点是否正常' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='将地图缩放至最小' />
+            <stepdetail value='查看地图中的标记点' />
+        </step>
+		
+		<except id='1' value='能查看到该#标记点名称#的详细信息'/>
+		<except id='2' value='地图能自动缩放到能看到#标记点名称#定位点的比例'/>
+		<except id='2' value='地图只展示#标记点名称#的标记点，不展示相应的聚合点'/>
+	</group>
+	
+	<group name='addMapSearchInformationCase'>
+		<title id='1' value='通过#搜索条件#在地图上的#信息#信息进行搜索' />
+		
+		<key id='1' value='地图,#信息#,搜索' />
+		
+		<precondition id='1' value='地图上有#信息#信息存在' />
+		
+		<step id='1' value='通过#搜索条件#对#信息#进行精准搜索'
+            intention='验证能否对地图的#信息#通过#搜索条件#进行精准搜索' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='在#搜索条件#中输入一个地图上存在的#信息#完整内容' />
+            <stepdetail value='点击搜索，查看地图内容' />
+		</step>
+		<step id='2' value='通过#搜索条件#对#信息#进行模糊搜索'
+            intention='验证能否对地图的#信息#通过#搜索条件#进行模糊搜索' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='在#搜索条件#中输入一个地图上存在的#信息#所包含的部分内容' />
+            <stepdetail value='点击搜索，查看地图内容' />
+		</step>
+		<step id='3' value='不输入信息进行搜索'
+            intention='验证不输入#搜索条件#能否对地图的#信息#进行搜索' rank='#rank-3#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='不进行操作，点击搜索，查看地图内容' />
+		</step>
+		<step id='4' value='输入#信息#中都不包含的关键词进行搜索'
+            intention='验证在输入#搜索条件#输入不存在的#信息#能否对地图进行搜索' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='在#搜索条件#中输入一个地图上不存在的#信息#内容' />
+            <stepdetail value='点击搜索，查看地图内容' />
+		</step>
+		
+		<except id='1' value='地图上显示所有符合条件的#信息#定位点'/>
+		<except id='2' value='地图上显示#信息#对应的定位点'/>
+		<except id='3' value='地图界面保持不变'/>
+		<except id='4' value='提示无搜索结果'/>
+	</group>
+	
+	<group name='addCarLocusPlaybackCase'>
+		<title id='1' value='回放车辆轨迹' />
+		
+		<key id='1' value='车辆轨迹' />
+		
+		<precondition id='1' value='车辆有轨迹存在' />
+		
+		<step id='1' value='查询到车辆的轨迹后点击回放或播放按钮'
+            intention='验证车辆轨迹是否能正常回放' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='对车辆信息进行查询，并选择一条车辆数据' />
+            <stepdetail value='对车辆进行轨迹回放' />
+		</step>
+		<step id='2' value='回放轨迹后，依次从最小的回放速度开始依次切换到最大的播放速度'
+            intention='验证修改轨迹回放速度是否生效' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='对车辆信息进行查询，并选择一条车辆数据' />
+            <stepdetail value='对车辆进行轨迹回放' />
+            <stepdetail value='从最慢速到最高速，依次点击所有的变速按钮' />
+		</step>
+		<step id='3' value='在轨迹播放时点击暂停按钮，再点击播放按钮'
+            intention='验证暂停/播放轨迹按钮是否生效' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='对车辆信息进行查询，并选择一条车辆数据' />
+            <stepdetail value='对车辆进行轨迹回放' />
+            <stepdetail value='点击暂停回放按钮' />
+            <stepdetail value='点击回放轨迹按钮' />
+		</step>
+		<step id='4' value='在轨迹播放时点击停止按钮，再点击回放按钮'
+            intention='验证停止/播放按钮是否生效' rank='#rank-1#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='对车辆信息进行查询，并选择一条车辆数据' />
+            <stepdetail value='对车辆进行轨迹回放' />
+            <stepdetail value='点击暂停回放按钮' />
+            <stepdetail value='点击回放轨迹按钮' />
+		</step>
+		
+		<except id='1' value='地图上的车辆点以默认速度沿着轨迹在地图上移动'/>
+		<except id='2' value='车辆点的回放速度依次加快'/>
+		<except id='3' value='车辆点停止移动后又重新在停止的位置继续移动'/>
+		<except id='4' value='车辆点停止移动后又从起点开始重新移动'/>
+	</group>
+	
+	<group name='mapGraphSignCase'>
+		<title id='1' value='在地图上绘制#标记名称#' />
+		
+		<key id='1' value='#标记名称#' />
+		
+		<step id='1' value='点击#图形类型#中的图形，在地图中绘制相应的图形'
+            intention='验证各种图形类型是否能在地图上绘制' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='依次点击#图形类型#中的一个图形' />
+            <stepdetail value='在地图上进行绘制' />
+		</step>
+		<step id='2' value='在#图形类型#中选择一个需双击结束绘制的图形，在起始位置双击结束绘制'
+            intention='验证在起始位置双击结束绘制图形 其显示是否正常' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='在#图形类型#中选择一个需双击结束绘制的图形' />
+            <stepdetail value='在地图上点击左键进行绘制' />
+            <stepdetail value='不结束鼠标的情况下，双击结束绘制' />
+		</step>
+		<step id='3' value='点击任意图形（需双击结束绘制的图形），开始绘制后，不双击结束绘制，直接点击切换其他图形或地图外空白处'
+            intention='验证在地图外点击鼠标时其图形显示是否正常' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='在#图形类型#中选择一个需双击结束绘制的图形' />
+            <stepdetail value='在地图上点击左键进行绘制' />
+            <stepdetail value='之后将鼠标拉至地图外' />
+            <stepdetail value='在地图外空白处点击鼠标左键' />
+		</step>
+		<step id='4' value='绘制多个图形'
+            intention='验证地图上是否允许绘制多个图形' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='在#图形类型#中选择一个图形' />
+            <stepdetail value='在地图上进行绘制' />
+            <stepdetail value='再次在#图形类型#中选择一个图形' />
+            <stepdetail value='在地图上进行绘制' />
+		</step>
+		<step id='5' value='绘制图形时，框画大片区域，保存绘制'
+            intention='验证图形占大片地图区域时其显示是否正常' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='将地图比例尺拉至最大' />
+            <stepdetail value='在#图形类型#中选择一个图形' />
+            <stepdetail value='在地图上点击左键进行绘制' />
+            <stepdetail value='绘制一个类似国家大小图形' />
+            <stepdetail value='双击鼠标结束绘制' />
+		</step>
+		<step id='6' value='绘制图形后，清除图形'
+            intention='验证图形是否能清除' rank='#rank-2#' >
+            <stepdetail value='进入地图' />
+            <stepdetail value='在#图形类型#中选择一个图形' />
+            <stepdetail value='在地图上绘制相应的图形' />
+            <stepdetail value='点击删除图形按钮' />
+		</step>
+		
+		<except id='1' value='地图上能绘制出相应的图形'/>
+		<except id='2' value='若允许绘制，则显示一个点在地图；若无法绘制，则应给出提示'/>
+		<except id='3' value='多边形绘制停止，且地图不会不断得向鼠标移动方向移动'/>
+		<except id='4' value='图形绘制成功，地图上显示相应的图形'/>
+		<except id='5' value='图形绘制失败，并给出无法绘制多个图形相关的提示'/>
+		<except id='6' value='若允许绘制，则在地图上显示相应的图形；若无法绘制，则应给出提示'/>
+		<except id='7' value='绘制的图形消失'/>
+	</group>
+</cases>
