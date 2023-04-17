@@ -63,14 +63,14 @@
 	</group>
 	
 	<group name='addMapPointCase'>
-		<title id='1' value='查看地图#标记点名称#定位点信息' />
+		<title id='1' value='查看地图#标记点名称#标记点信息' />
 		
-		<key id='1' value='地图,#标记点名称#,定位点' />
+		<key id='1' value='地图,#标记点名称#,标记点' />
 		
-		<precondition id='1' value='地图上有多个#标记点名称#定位点以及聚合点存在' />
+		<precondition id='1' value='地图上有多个#标记点名称#标记点以及聚合点存在' />
 		
 		<step id='1' value='在地图上点击#标记点名称#的标记点'
-            intention='验证点击定位点时能否展示定位点的相关信息' rank='#rank-1#' >
+            intention='验证点击标记点时能否展示标记点的相关信息' rank='#rank-1#' >
             <stepdetail value='进入地图' />
             <stepdetail value='点击地图中#标记点名称#的标记' />
 		</step>
@@ -87,43 +87,43 @@
         </step>
 		
 		<except id='1' value='能查看到该#标记点名称#的详细信息'/>
-		<except id='2' value='地图能自动缩放到能看到#标记点名称#定位点的比例'/>
-		<except id='2' value='地图只展示#标记点名称#的标记点，不展示相应的聚合点'/>
+		<except id='2' value='地图能自动缩放到能看到#标记点名称#标记点的比例'/>
+		<except id='3' value='地图只展示#标记点名称#的标记点，不展示相应的聚合点'/>
 	</group>
 	
 	<group name='addMapSearchInformationCase'>
-		<title id='1' value='通过#搜索条件#在地图上的#信息#信息进行搜索' />
+		<title id='1' value='通过“#搜索条件#”在地图上的#信息#信息进行搜索' />
 		
 		<key id='1' value='地图,#信息#,搜索' />
 		
 		<precondition id='1' value='地图上有#信息#信息存在' />
 		
-		<step id='1' value='通过#搜索条件#对#信息#进行精准搜索'
-            intention='验证能否对地图的#信息#通过#搜索条件#进行精准搜索' rank='#rank-1#' >
+		<step id='1' value='通过“#搜索条件#”对#信息#进行精准搜索'
+            intention='验证能否对地图的#信息#通过“#搜索条件#”进行精准搜索' rank='#rank-1#' >
             <stepdetail value='进入地图' />
-            <stepdetail value='在#搜索条件#中输入一个地图上存在的#信息#完整内容' />
+            <stepdetail value='在“#搜索条件#”中输入一个地图上存在的#信息#完整内容' />
             <stepdetail value='点击搜索，查看地图内容' />
 		</step>
-		<step id='2' value='通过#搜索条件#对#信息#进行模糊搜索'
-            intention='验证能否对地图的#信息#通过#搜索条件#进行模糊搜索' rank='#rank-1#' >
+		<step id='2' value='通过“#搜索条件#”对#信息#进行模糊搜索'
+            intention='验证能否对地图的#信息#通过“#搜索条件#”进行模糊搜索' rank='#rank-1#' >
             <stepdetail value='进入地图' />
-            <stepdetail value='在#搜索条件#中输入一个地图上存在的#信息#所包含的部分内容' />
+            <stepdetail value='在“#搜索条件#”中输入一个地图上存在的#信息#所包含的部分内容' />
             <stepdetail value='点击搜索，查看地图内容' />
 		</step>
 		<step id='3' value='不输入信息进行搜索'
-            intention='验证不输入#搜索条件#能否对地图的#信息#进行搜索' rank='#rank-3#' >
+            intention='验证不输入“#搜索条件#”能否对地图的#信息#进行搜索' rank='#rank-3#' >
             <stepdetail value='进入地图' />
             <stepdetail value='不进行操作，点击搜索，查看地图内容' />
 		</step>
-		<step id='4' value='输入#信息#中都不包含的关键词进行搜索'
-            intention='验证在输入#搜索条件#输入不存在的#信息#能否对地图进行搜索' rank='#rank-2#' >
+		<step id='4' value='输入地图上不存在的#信息#内容'
+            intention='验证在输入“#搜索条件#”输入不存在的#信息#能否对地图进行搜索' rank='#rank-2#' >
             <stepdetail value='进入地图' />
-            <stepdetail value='在#搜索条件#中输入一个地图上不存在的#信息#内容' />
+            <stepdetail value='在“#搜索条件#”中输入地图上不存在的#信息#内容' />
             <stepdetail value='点击搜索，查看地图内容' />
 		</step>
 		
-		<except id='1' value='地图上显示所有符合条件的#信息#定位点'/>
-		<except id='2' value='地图上显示#信息#对应的定位点'/>
+		<except id='1' value='地图上显示所有符合条件的#信息#标记点'/>
+		<except id='2' value='地图上显示#信息#对应的标记点'/>
 		<except id='3' value='地图界面保持不变'/>
 		<except id='4' value='提示无搜索结果'/>
 	</group>
@@ -176,21 +176,22 @@
 		
 		<key id='1' value='#标记名称#' />
 		
-		<step id='1' value='点击#图形类型#中的图形，在地图中绘制相应的图形'
-            intention='验证各种图形类型是否能在地图上绘制' rank='#rank-2#' >
+		<step id='1' value='依次将#图形类型#中的图形在地图中进行绘制'
+            intention='验证各种图形类型是否能在地图上绘制' rank='#rank-1#' >
             <stepdetail value='进入地图' />
-            <stepdetail value='依次点击#图形类型#中的一个图形' />
+            <stepdetail value='点击#图形类型#中的一个图形' />
             <stepdetail value='在地图上进行绘制' />
+			<stepdetail value='再次点击#图形类型#中的另一个图形，直至所有的图形均在地图中绘制' />
 		</step>
-		<step id='2' value='在#图形类型#中选择一个需双击结束绘制的图形，在起始位置双击结束绘制'
-            intention='验证在起始位置双击结束绘制图形 其显示是否正常' rank='#rank-2#' >
+		<step id='2' value='选择任意一个需双击结束绘制的图形，在起始位置双击结束绘制'
+            intention='验证在起始位置双击结束绘制图形其显示是否正常' rank='#rank-1#' >
             <stepdetail value='进入地图' />
             <stepdetail value='在#图形类型#中选择一个需双击结束绘制的图形' />
             <stepdetail value='在地图上点击左键进行绘制' />
             <stepdetail value='不结束鼠标的情况下，双击结束绘制' />
 		</step>
-		<step id='3' value='点击任意图形（需双击结束绘制的图形），开始绘制后，不双击结束绘制，直接点击切换其他图形或地图外空白处'
-            intention='验证在地图外点击鼠标时其图形显示是否正常' rank='#rank-2#' >
+		<step id='3' value='选择任意一个需双击结束绘制的图形，开始绘制后，不双击结束绘制，直接点击切换其他图形或地图外空白处'
+            intention='验证在地图外点击鼠标时其图形显示是否正常' rank='#rank-3#' >
             <stepdetail value='进入地图' />
             <stepdetail value='在#图形类型#中选择一个需双击结束绘制的图形' />
             <stepdetail value='在地图上点击左键进行绘制' />
@@ -206,7 +207,7 @@
             <stepdetail value='在地图上进行绘制' />
 		</step>
 		<step id='5' value='绘制图形时，框画大片区域，保存绘制'
-            intention='验证图形占大片地图区域时其显示是否正常' rank='#rank-2#' >
+            intention='验证图形占大片地图区域时其显示是否正常' rank='#rank-3#' >
             <stepdetail value='进入地图' />
             <stepdetail value='将地图比例尺拉至最大' />
             <stepdetail value='在#图形类型#中选择一个图形' />
@@ -215,7 +216,7 @@
             <stepdetail value='双击鼠标结束绘制' />
 		</step>
 		<step id='6' value='绘制图形后，清除图形'
-            intention='验证图形是否能清除' rank='#rank-2#' >
+            intention='验证图形是否能清除' rank='#rank-1#' >
             <stepdetail value='进入地图' />
             <stepdetail value='在#图形类型#中选择一个图形' />
             <stepdetail value='在地图上绘制相应的图形' />
@@ -224,7 +225,7 @@
 		
 		<except id='1' value='地图上能绘制出相应的图形'/>
 		<except id='2' value='若允许绘制，则显示一个点在地图；若无法绘制，则应给出提示'/>
-		<except id='3' value='多边形绘制停止，且地图不会不断得向鼠标移动方向移动'/>
+		<except id='3' value='多边形绘制停止，且地图不会不断地向鼠标移动方向移动'/>
 		<except id='4' value='图形绘制成功，地图上显示相应的图形'/>
 		<except id='5' value='图形绘制失败，并给出无法绘制多个图形相关的提示'/>
 		<except id='6' value='若允许绘制，则在地图上显示相应的图形；若无法绘制，则应给出提示'/>
