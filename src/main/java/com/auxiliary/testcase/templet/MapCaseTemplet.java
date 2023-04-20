@@ -80,7 +80,7 @@ public class MapCaseTemplet extends AbstractPresetCaseTemplet implements StepDet
                         new String[] { "1", "2", "3", "4", "5", "6" })));
         
         // 预期
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(MapCaseTempletField.GROUP_ADD_RANGE_FINDING_CASE,
                         new String[] { "1", "2", "3", "4", "5", "6" })));
         
@@ -116,7 +116,7 @@ public class MapCaseTemplet extends AbstractPresetCaseTemplet implements StepDet
                 .asList(new Entry<>(MapCaseTempletField.GROUP_ADD_MAP_POINT_CASE, new String[] { "1", "2", "3" })));
 
         // 预期
-        addContent(allContentMap, LabelType.EXCEPT, Arrays
+        addContent(allContentMap, LabelType.EXPECT, Arrays
                 .asList(new Entry<>(MapCaseTempletField.GROUP_ADD_MAP_POINT_CASE, new String[] { "1", "2", "3" })));
 
         return createCaseDataList(this, allContentMap);
@@ -156,7 +156,7 @@ public class MapCaseTemplet extends AbstractPresetCaseTemplet implements StepDet
                         new String[] { "1", "2", "3", "4" })));
 
         // 预期
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(MapCaseTempletField.GROUP_ADD_MAP_SEARCH_INFORMATION_CASE,
                         new String[] { "1", "2", "3", "4" })));
 
@@ -191,7 +191,7 @@ public class MapCaseTemplet extends AbstractPresetCaseTemplet implements StepDet
                         new String[] { "1", "2", "3", "4" })));
         
         // 预期
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(MapCaseTempletField.GROUP_ADD_CAR_LOCUS_PLAYBACK_CASE,
                         new String[] { "1", "2", "3", "4" })));
         
@@ -238,7 +238,7 @@ public class MapCaseTemplet extends AbstractPresetCaseTemplet implements StepDet
                         new String[] { "1", "4", "5", "6" })));
         
         // 预期
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(MapCaseTempletField.GROUP_MAP_GRAPH_SIGN_CASE,
                         new String[] { "1", isMultiple ? "4" : "5", "6", "7" })));
 
@@ -249,7 +249,7 @@ public class MapCaseTemplet extends AbstractPresetCaseTemplet implements StepDet
                     .asList(new Entry<>(MapCaseTempletField.GROUP_MAP_GRAPH_SIGN_CASE, new String[] { "2", "3" })));
 
             // 预期
-            addContent(allContentMap, LabelType.EXCEPT, Arrays
+            addContent(allContentMap, LabelType.EXPECT, Arrays
                     .asList(new Entry<>(MapCaseTempletField.GROUP_MAP_GRAPH_SIGN_CASE, new String[] { "2", "3" })));
         }
         

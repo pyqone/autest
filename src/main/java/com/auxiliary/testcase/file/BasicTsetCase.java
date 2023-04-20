@@ -43,7 +43,7 @@ public interface BasicTsetCase<T extends BasicTsetCase<T>> {
     /**
      * 用例预期字段
      */
-    public String CASE_EXCEPT = LabelType.EXCEPT.getName();
+    public String CASE_EXCEPT = LabelType.EXPECT.getName();
     /**
      * 用例模块字段
      */

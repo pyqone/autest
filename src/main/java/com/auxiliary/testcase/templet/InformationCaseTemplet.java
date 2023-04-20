@@ -187,7 +187,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         addContent(allContentMap, LabelType.STEP, Arrays
                 .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_WHOLE_INFORMATION_CASE, new String[] { "1" })));
         // 预期
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_ALL_SUCCESS_EXCEPT })));
 
@@ -256,7 +256,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         addContent(allContentMap, LabelType.STEP, Arrays.asList(
                 new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UNWHOLE_INFORMATION_CASE, new String[] { "1", "2", "3" })));
         // 预期
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                 WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_ALL_SUCCESS_EXCEPT,
@@ -432,7 +432,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
 
         // 添加步骤与预期
         addContent(allContentMap, LabelType.STEP, stepList);
-        addContent(allContentMap, LabelType.EXCEPT, exceptList);
+        addContent(allContentMap, LabelType.EXPECT, exceptList);
 
 
         return allContentMap;
@@ -533,7 +533,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
             addReplaceWord(WriteInformationCaseTempletReplaceWord.INPUT_MAX_LENGTH, String.valueOf(maxLen));
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2", "3" })));
-            addContent(allContentMap, LabelType.EXCEPT,
+            addContent(allContentMap, LabelType.EXPECT,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                     WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
@@ -550,7 +550,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
                 addReplaceWord(WriteInformationCaseTempletReplaceWord.INPUT_MIN_LENGTH, String.valueOf(minLen));
                 addContent(allContentMap, LabelType.STEP, Arrays
                         .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_TEXTBOX_CASE, new String[] { "1", "2" })));
-                addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                         new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                                 new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                         WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
@@ -560,7 +560,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
                 addReplaceWord(WriteInformationCaseTempletReplaceWord.INPUT_MAX_LENGTH, String.valueOf(maxLen));
                 addContent(allContentMap, LabelType.STEP, Arrays
                         .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_TEXTBOX_CASE, new String[] { "3", "4" })));
-                addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                         new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                                 new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                         WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
@@ -718,7 +718,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         if (minNum != null) {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_TEXTBOX_CASE, new String[] { "6", "7" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                     WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
@@ -727,7 +727,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         if (maxNum != null) {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_TEXTBOX_CASE, new String[] { "8", "9" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                     WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
@@ -740,9 +740,9 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_TEXTBOX_CASE,
                             new String[] { "10", "11", "12" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_TEXTBOX_CASE, new String[] { "2" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT, WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
         }
@@ -881,7 +881,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         if (phoneTypeSet.contains(PhoneType.MOBLE)) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_PHONE_CASE, new String[] { "1" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         }
@@ -889,7 +889,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         if (phoneTypeSet.contains(PhoneType.FIXED)) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_PHONE_CASE, new String[] { "2" })));
-            addContent(allContentMap, LabelType.EXCEPT,
+            addContent(allContentMap, LabelType.EXPECT,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
         }
@@ -964,7 +964,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
 
         addContent(allContentMap, LabelType.STEP, Arrays.asList(
                 new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_ID_CARD_CASE, new String[] { "1", "2", "3", "4" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT, WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT, WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
                                 WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
@@ -1039,12 +1039,12 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         // 添加检查选项
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "2" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "2" })));
         // 添加基础步骤
         addContent(allContentMap, LabelType.STEP, Arrays.asList(
                 new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_SELECTBOX_CASE, new String[] { "0", "2", "3" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] { isMust && isEmptyOption ? WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
                                 : WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
@@ -1055,10 +1055,10 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_SELECTBOX_CASE, new String[] { "1" })));
             if (isMust) {
-                addContent(allContentMap, LabelType.EXCEPT, Arrays
+                addContent(allContentMap, LabelType.EXPECT, Arrays
                         .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_SELECTBOX_CASE, new String[] { "1" })));
             } else {
-                addContent(allContentMap, LabelType.EXCEPT, Arrays
+                addContent(allContentMap, LabelType.EXPECT, Arrays
                         .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                                 new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
             }
@@ -1067,7 +1067,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         if (isClear) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_SELECTBOX_CASE, new String[] { "4" })));
-            addContent(allContentMap, LabelType.EXCEPT,
+            addContent(allContentMap, LabelType.EXPECT,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_SELECTBOX_CASE, new String[] { "2" })));
         }
 
@@ -1140,15 +1140,15 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         // 添加检查选项
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "2" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "2" })));
         // 添加基础步骤
         addContent(allContentMap, LabelType.STEP, Arrays
                 .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_RADIO_BUTTON_CASE,
                         new String[] { "1", "2", "3", "4" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_RADIO_BUTTON_CASE, new String[] { "1" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
                                 WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
@@ -1211,16 +1211,16 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         // 添加检查选项
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "2" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "2" })));
 
         // 添加基础步骤
         addContent(allContentMap, LabelType.STEP, Arrays.asList(
                 new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_CHECKBOX_CASE, new String[] { "1", "2", "3", "4", "5" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_CHECKBOX_CASE, new String[] { "1" })));
 
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] {
                                 isMust ? WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
@@ -1291,7 +1291,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         // 添加检查选项
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_DATE_CASE, new String[] { "1", "2" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] {
                                 isMust ? WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
@@ -1301,7 +1301,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         if (isClear) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_DATE_CASE, new String[] { "3" })));
-            addContent(allContentMap, LabelType.EXCEPT,
+            addContent(allContentMap, LabelType.EXPECT,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] {
                                     isMust ? WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
@@ -1311,7 +1311,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         if (isInput) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_DATE_CASE, new String[] { "4", "5" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT,
                                     WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
@@ -1392,7 +1392,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         // 添加检查选项
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_DATE_CASE, new String[] { "6", "7" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                 WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
@@ -1473,7 +1473,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         // 添加检查选项
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_DATE_CASE, new String[] { "8", "9" })));
-        addContent(allContentMap, LabelType.EXCEPT, Arrays
+        addContent(allContentMap, LabelType.EXPECT, Arrays
                 .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                 WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT })));
@@ -1564,7 +1564,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(
                         new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "2", "4" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                         new String[] {
                                 isMust ? WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT
@@ -1574,14 +1574,14 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         if (isPreview) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "1" })));
-            addContent(allContentMap, LabelType.EXCEPT,
+            addContent(allContentMap, LabelType.EXPECT,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "1" })));
         }
         // 判断是否能删除文件
         if (isDelete) {
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "3" })));
-            addContent(allContentMap, LabelType.EXCEPT,
+            addContent(allContentMap, LabelType.EXPECT,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT })));
         }
@@ -1590,7 +1590,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
             addReplaceWord(WriteInformationCaseTempletReplaceWord.FILE_SIZE, sizeLimitText);
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "5", "11" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                     WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT })));
@@ -1603,7 +1603,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE,
                             new String[] { "7", "8", "9" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                     WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT,
@@ -1620,7 +1620,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
                 addReplaceWord(WriteInformationCaseTempletReplaceWord.UPLOAD_MIN_LENGTH, String.valueOf(fileMinNum));
                 addContent(allContentMap, LabelType.STEP, Arrays.asList(
                         new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "7", "8" })));
-                addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                         new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                                 new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                         WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
@@ -1630,7 +1630,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
                 addReplaceWord(WriteInformationCaseTempletReplaceWord.UPLOAD_MAX_LENGTH, String.valueOf(fileMaxNum));
                 addContent(allContentMap, LabelType.STEP, Arrays.asList(
                         new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "9", "10" })));
-                addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+                addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                         new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                                 new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT,
                                         WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT })));
@@ -1645,7 +1645,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
             addReplaceWord(WriteInformationCaseTempletReplaceWord.FILE_RULE, fileRule.toString());
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_FILE_CASE, new String[] { "6" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays.asList(
+            addContent(allContentMap, LabelType.EXPECT, Arrays.asList(
                     new Entry<>(WriteInformationCaseTempletField.GROUP_COMMON_CONTENT,
                             new String[] { WriteInformationCaseTempletField.COMMON_CONTENT_EXCEPT_FAIL_EXCEPT })));
         }
@@ -1763,13 +1763,13 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
 
         addContent(allContentMap, LabelType.STEP,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_IMAGE_CASE, new String[] { "3" })));
-        addContent(allContentMap, LabelType.EXCEPT,
+        addContent(allContentMap, LabelType.EXPECT,
                 Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_IMAGE_CASE, new String[] { "3" })));
         // 判断是否允许拍照上传
         if (isPhoto) {
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_IMAGE_CASE, new String[] { "1", "2" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays
+            addContent(allContentMap, LabelType.EXPECT, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_ADD_UPLOAD_IMAGE_CASE, new String[] { "1", "2" })));
         }
 
@@ -1901,13 +1901,13 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         case OPERATION_REGISTERED:
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "1" })));
-            addContent(allContentMap, LabelType.EXCEPT,
+            addContent(allContentMap, LabelType.EXPECT,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "1" })));
             break;
         case OPERATION_EDIT:
             addContent(allContentMap, LabelType.STEP,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "3" })));
-            addContent(allContentMap, LabelType.EXCEPT,
+            addContent(allContentMap, LabelType.EXPECT,
                     Arrays.asList(new Entry<>(WriteInformationCaseTempletField.GROUP_EXAMINE_UI, new String[] { "3" })));
             break;
         default:
@@ -1994,13 +1994,13 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
         case OPERATION_REGISTERED:
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_CANCEL_SAVE_DATA, new String[] { "1", "3" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays
+            addContent(allContentMap, LabelType.EXPECT, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_CANCEL_SAVE_DATA, new String[] { "1", "1" })));
             break;
         case OPERATION_EDIT:
             addContent(allContentMap, LabelType.STEP, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_CANCEL_SAVE_DATA, new String[] { "2", "4" })));
-            addContent(allContentMap, LabelType.EXCEPT, Arrays
+            addContent(allContentMap, LabelType.EXPECT, Arrays
                     .asList(new Entry<>(WriteInformationCaseTempletField.GROUP_CANCEL_SAVE_DATA, new String[] { "2", "2" })));
             break;
         default:
@@ -2065,12 +2065,12 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
     public class WriteInformationCaseTempletField {
         // 分组名称
         public static final String GROUP_COMMON_CONTENT = "commonContent";
-        public static final String COMMON_CONTENT_EXCEPT_FAIL_EXCEPT = "failExcept";
-        public static final String COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT = "inputSuccessExcept";
-        public static final String COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT = "selectSuccessExcept";
-        public static final String COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT = "fileSuccessExcept";
-        public static final String COMMON_CONTENT_EXCEPT_EMPTY_SUCCESS_EXCEPT = "emptySuccessExcept";
-        public static final String COMMON_CONTENT_EXCEPT_ALL_SUCCESS_EXCEPT = "allSuccessExcept";
+        public static final String COMMON_CONTENT_EXCEPT_FAIL_EXCEPT = "failExpect";
+        public static final String COMMON_CONTENT_EXCEPT_INPUT_SUCCESS_EXCEPT = "inputSuccessExpect";
+        public static final String COMMON_CONTENT_EXCEPT_SELECT_SUCCESS_EXCEPT = "selectSuccessExpect";
+        public static final String COMMON_CONTENT_EXCEPT_FILE_SUCCESS_EXCEPT = "fileSuccessExpect";
+        public static final String COMMON_CONTENT_EXCEPT_EMPTY_SUCCESS_EXCEPT = "emptySuccessExpect";
+        public static final String COMMON_CONTENT_EXCEPT_ALL_SUCCESS_EXCEPT = "allSuccessExpect";
         public static final String COMMON_CONTENT_TITLE_BASIC = "basic";
         public static final String COMMON_CONTENT_PRECONDITION_ALREADY_ON_THE_PAGE = "alreadyOnThePage";
         public static final String COMMON_CONTENT_PRECONDITION_SUCCESS_INPUT = "successInput";

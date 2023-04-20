@@ -6,19 +6,20 @@
         <rank id='3' value='#rank-3#' />
         <rank id='4' value='#rank-4#' />
     </group>
-    
-	<group name="addRightLoginCase">
-		<title id='1' value="通过正确的#用户名名称#进行登录" />
+	
+	<group name="rightWriteOperateInfo">
+        <title id='1' value="正确填写所有信息对账号进行#操作类型#操作" />
+        
+        <key id='1' value="#操作类型#" />
+        
+        <step id="1" value="通过一个已存在且正确的#用户名名称#进行#操作类型#操作"
+            intention='验证正确填所有信息时能否进行#操作类型#操作' rank='#rank-1#' >
+            <stepdetail value='进入#操作类型#界面' />
+            <stepdetail value='在正确输入所有的信息' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
+        </step>
 		
-		<key id='1' value="登录" />
-		
-		<step id="1" value="正确输入#用户名名称#及相应的密码或验证码，登录"
-            intention='验证正确输入#用户名名称#与密码是否能正常登录' rank='#rank-1#' >
-            <stepdetail value='进入登录页面' />
-            <stepdetail value='正确输入#用户名名称#与密码及其他内容' />
-            <stepdetail value='点击登录按钮' />
-		</step>
-		<step id="2" value="输入不同权限的#用户名名称#，登录"
+		<step id="2" value="输入不同权限的#用户名名称#进行登录操作"
             intention='验证输入不同权限的账号登录后页面内容是否一致' rank='#rank-1#' >
             <stepdetail value='进入登录页面' />
             <stepdetail value='正确输入一个#用户名名称#进行登录' />
@@ -27,10 +28,11 @@
             <stepdetail value='使用另一个与之权限不同的#用户名名称#进行登录（菜单权限、操作权限等不同）' />
             <stepdetail value='记录菜单、页面内容，并进行两账号内容的对比' />
         </step>
-		<except id="1" value="能正常登录系统，且登陆后跳转的页面正确" />
-		<except id="2" value="能正常登录系统，且登陆后能看到权限对应的页面及功能" />
-	</group>
-
+		
+		<expect id="1" value="#修改或忘记密码用语#能正常登录系统，且登陆后跳转的页面正确" />
+		<expect id="2" value="能正常登录系统，且登陆后能看到权限对应的页面及功能" />
+    </group>
+    
 	<group name="addErrorLoginCase">
 		<title id='1' value="通过非常规的#登录信息#进行登录" />
 		
@@ -72,35 +74,22 @@
 			<stepdetail value='点击登录按钮' />
 		</step>
 		
-		<except id="1" value="无法登录，并给出相应的提示" />
-		<except id="2"
+		<expect id="1" value="无法登录，并给出相应的提示" />
+		<expect id="2"
 			value="若带中文的#用户名名称#或密码能注册，则能正常登录系统，且登陆后跳转的页面正确；若不能注册，则无法登录，并给出相应的提示" />
-		<except id="3" value="能正常登录系统，且登陆后跳转的页面正确" />
+		<expect id="3" value="能正常登录系统，且登陆后跳转的页面正确" />
 	</group>
 	
 	<group name="forgetAndAlterPassword">
-        <title id='basic' value="填写不同的#控件名称#对账号进行#操作类型#操作" />
+        <title id='basic' value="通过非常规的#控件名称#进行#操作类型#操作" />
         
         <key id='basic' value="#控件名称#,#操作类型#" />
         
         <precondition id='step1' value="已在#操作类型#界面" />
         <precondition id='step2' value="除#控件名称#外，其他信息均正确填写" />
         
-        <except id="alterSuccess" value="提示密码修改成功，并且可以使用修改后的密码进行登录，且原密码无法登录" />
-        <except id="alterFail" value="密码未更改，并给出相应的错误提示" />
-    </group>
-    
-    <group name="rightWriteForgetAndAlterPasswordInfo">
-        <title id='1' value="正确填写所有信息对账号进行#操作类型#操作" />
-        
-        <key id='1' value="#操作类型#" />
-        
-        <step id="1" value="通过一个已存在且正确的#用户名名称#进行#操作类型#操作"
-            intention='验证正确填所有信息时能否进行#操作类型#操作' rank='#rank-1#' >
-            <stepdetail value='进入#操作类型#界面' />
-            <stepdetail value='在正确输入所有的信息' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
-        </step>
+        <expect id="alterSuccess" value="提示密码修改成功，并且可以使用修改后的密码进行登录，且原密码无法登录" />
+        <expect id="alterFail" value="密码未更改，并给出相应的错误提示" />
     </group>
 
 	<group name="operateUsername">
@@ -108,13 +97,13 @@
             intention='验证填写不存在的#用户名名称#时能否进行#操作类型#操作' rank='#rank-2#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='输入一个不存在的#用户名名称#，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 		<step id="2" value="不输入#用户名名称#进行#操作类型#操作"
             intention='验证填写不填写#用户名名称#时能否进行#操作类型#操作' rank='#rank-3#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='不输入#用户名名称#，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 	</group>
 
@@ -123,37 +112,37 @@
             intention='验证填写不符合要求的新密码时能否进行#操作类型#操作' rank='#rank-2#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='输入一个不符合系统要求的新密码，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 		<step id="2" value="输入错误的原密码后进行#操作类型#操作"
             intention='验证填写错误的原密码时能否进行#操作类型#操作' rank='#rank-2#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='输入一个错误的原密码，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
         </step>
         <step id="3" value="新密码中输入与原密码一致的内容进行#操作类型#操作"
             intention='验证填写新旧密码一致时能否进行#操作类型#操作' rank='#rank-2#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='在新密码中输入与原密码一致的内容，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
         </step>
         <step id="4" value="不输入原密码进行#操作类型#操作"
             intention='验证不填写原密码时能否进行#操作类型#操作' rank='#rank-3#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='不输入原密码，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
         </step>
 		<step id="5" value="不输入新密码进行#操作类型#操作"
             intention='验证不填写新密码时能否进行#操作类型#操作' rank='#rank-3#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='不输入新密码，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 		<step id="6" value="不输入二次确认密码进行#操作类型#操作"
             intention='验证不填写二次确认密码时能否进行#操作类型#操作' rank='#rank-3#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='不输入二次确认密码，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 		<step id="7" value="两次新密码输入不一致时，进行#操作类型#操作"
             intention='验证两次填写的新密码不一致时能否进行#操作类型#操作' rank='#rank-2#' >
@@ -161,7 +150,7 @@
             <stepdetail value='正确输入新密码' />
             <stepdetail value='在二次确认密码中输入正确的但与第一次输入的密码不同的内容' />
             <stepdetail value='其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 	</group>
 
@@ -170,15 +159,15 @@
             intention='验证填写错误的#验证码类型#时能否进行#操作类型#操作' rank='#rank-2#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='点击#验证码操作#验证相关的按钮' />
-            <stepdetail value='不输入#验证码类型#，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='输入错误的#验证码类型#，其他信息正确填写' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 		<step id="2" value="不输入#验证码类型#进行#操作类型#"
             intention='验证不填写#验证码类型#时能否进行#操作类型#操作' rank='#rank-3#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='点击#验证码操作#验证相关的按钮' />
-            <stepdetail value='输入错误的#验证码类型#，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='不输入的#验证码类型#，其他信息正确填写' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 		<step id="3" value="#验证码操作##验证码类型#后输入新的#验证码类型#"
             intention='验证使用新#验证码类型#时能否进行#操作类型#操作' rank='#rank-1#' >
@@ -186,7 +175,7 @@
             <stepdetail value='点击#验证码操作#验证相关的按钮' />
             <stepdetail value='再次点击#验证码操作#验证相关的按钮' />
             <stepdetail value='输入当前的#验证码类型#，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
         </step>
         <step id="4" value="#验证码操作##验证码类型#后输入旧的#验证码类型#"
             intention='验证使用旧#验证码类型#时能否进行#操作类型#操作' rank='#rank-2#' >
@@ -194,7 +183,7 @@
             <stepdetail value='点击#验证码操作#验证相关的按钮，记录当前的验证内容' />
             <stepdetail value='再次点击#验证码操作#验证相关的按钮' />
             <stepdetail value='输入之前记录的#验证码类型#，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
         </step>
 		<step id="5" value="超过#验证码类型#的过期时间后再输入验证码进行#操作类型#"
             intention='验证超过时效的#验证码类型#时能否进行#操作类型#操作' rank='#rank-2#' >
@@ -202,14 +191,14 @@
             <stepdetail value='点击#验证码操作#验证相关的按钮' />
             <stepdetail value='等待验证码失效（超过验证码失效时间）' />
             <stepdetail value='输入#验证码类型#，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
 		</step>
 		<step id="6" value="不#验证码操作##验证码类型#，在#验证码类型#中输入任意格式正确的内容，进行#操作类型#"
             intention='验证不#验证码操作##验证码类型#时能否进行#操作类型#操作' rank='#rank-3#' >
             <stepdetail value='进入#操作类型#页面' />
             <stepdetail value='不点击#验证码操作#验证相关的按钮' />
             <stepdetail value='任意输入格式正确的#验证码类型#，其他信息正确填写' />
-            <stepdetail value='点击#操作类型#相关的按钮' />
+            <stepdetail value='点击#操作名称#相关的按钮' />
         </step>
 	</group>
 </cases>

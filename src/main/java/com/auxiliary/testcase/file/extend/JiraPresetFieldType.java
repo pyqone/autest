@@ -75,7 +75,7 @@ public class JiraPresetFieldType {
      * 
      * @since autest 4.0.0
      */
-    public static final String FIELD_EXCEPT = LabelType.EXCEPT.getName();
+    public static final String FIELD_EXCEPT = LabelType.EXPECT.getName();
     /**
      * 模板模块字段
      * 

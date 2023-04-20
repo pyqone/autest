@@ -25,8 +25,8 @@
         </step>
         
         <!-- ，且存在能搜索所有数据的选项 -->
-        <except id='2' value='“#搜索条件#”信息中的选项与需求一致#空选项文本#' />
-        <except id='1' value='UI与设计图一致，且控件排布友好，其可搜索的字段以及列表显示的字段均符合需求' />
+        <expect id='2' value='“#搜索条件#”信息中的选项与需求一致#空选项文本#' />
+        <expect id='1' value='UI与设计图一致，且控件排布友好，其可搜索的字段以及列表显示的字段均符合需求' />
         
         <title id='1' value='检查#信息#列表界面是否符合需求设计' />
         
@@ -105,15 +105,15 @@
             <stepdetail value='点击“下一页”按钮' />
 		</step>
 
-		<except id='com1' value='能看到当前存在的所有信息，且信息按一定规则排序' />
+		<expect id='com1' value='能看到当前存在的所有信息，且信息按一定规则排序' />
 
-		<except id='app1' value='列表被刷新，若有新增信息则被显示出来，且原有数据排序不会混乱' />
-		<except id='app2' value='能加载剩下的信息' />
-		<except id='app3' value='不会加载出数据且原有数据不会错乱' />
-		<except id='app4' value='app不会闪退，且能正常显示' />
+		<expect id='app1' value='列表被刷新，若有新增信息则被显示出来，且原有数据排序不会混乱' />
+		<expect id='app2' value='能加载剩下的信息' />
+		<expect id='app3' value='不会加载出数据且原有数据不会错乱' />
+		<expect id='app4' value='app不会闪退，且能正常显示' />
 
-		<except id='web1' value='能看到不同页上的列表信息，且切换页后列表的排序不变' />
-		<except id='web2' value='按钮无法点击或点击无效，且当前页列表排序不变' />
+		<expect id='web1' value='能看到不同页上的列表信息，且切换页后列表的排序不变' />
+		<expect id='web2' value='按钮无法点击或点击无效，且当前页列表排序不变' />
 	</group>
 	
 	<group name='commonSearchCase'>
@@ -122,10 +122,10 @@
 	    <key id='basic' value='#信息#列表,#搜索条件#,搜索' />
 	    
 	    <!-- 搜索内容时，按照是否必须输入来判断3与4 -->
-        <except id='allResult' value='能搜索出所有的结果' />
-		<except id='containResult' value='能搜索出符合搜索条件的结果' />
-        <except id='noResult' value='无搜索结果' />
-		<except id='mustWriteContidion' value='提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
+        <expect id='allResult' value='能搜索出所有的结果' />
+		<expect id='containResult' value='能搜索出符合搜索条件的结果' />
+        <expect id='noResult' value='无搜索结果' />
+		<expect id='mustWriteContidion' value='提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
 	</group>
 
 	<group name='addInputSearchCase'>
@@ -209,11 +209,11 @@
             <stepdetail value='再次点击搜索相关的按钮' />
         </step>
 		
-		<except id='1'
+		<expect id='1'
 			value='其下级选项内容置为#选项内容#，其中的选项随之改变，且能搜索出所有符合#搜索条件#选中的选项结果，以及符合下级选项所有选项的结果' /> 
-		<except id='2' value='下级选项内容置为#选项内容#，且能搜索出符合选项选项的结果' />
-		<except id='3' value='下级选项内容置为#选项内容#，提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
-		<except id='4' value='下级选项内容置为#选项内容#，列表不展示任何数据' />
+		<expect id='2' value='下级选项内容置为#选项内容#，且能搜索出符合选项选项的结果' />
+		<expect id='3' value='下级选项内容置为#选项内容#，提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
+		<expect id='4' value='下级选项内容置为#选项内容#，列表不展示任何数据' />
 	</group>
 
 	<group name='addDateSearchCase'>
@@ -254,8 +254,8 @@
             <stepdetail value='点击搜索相关的按钮' />
 		</step>
 		
-		<except id='1' value='能搜索出从有数据以来至#结束时间#的所有结果' />
-		<except id='2' value='能搜索出从#开始时间#至今的所有结果' />
+		<expect id='1' value='能搜索出从有数据以来至#结束时间#的所有结果' />
+		<expect id='2' value='能搜索出从#开始时间#至今的所有结果' />
 	</group>
 
 	<group name='addListSortCase'>
@@ -275,8 +275,8 @@
             <stepdetail value='在列表的标题行中，点击“#列表字段#”字段' />
 		</step>
 		
-		<except id='1' value='列表中的数据按照所选的项目进行某种规律的排序，再次点击时，则列按照相反的顺序排序' />
-		<except id='2' value='列表中的数据排序不变' />
+		<expect id='1' value='列表中的数据按照所选的项目进行某种规律的排序，再次点击时，则列按照相反的顺序排序' />
+		<expect id='2' value='列表中的数据排序不变' />
 	</group>
 
 	<group name='addExportListCase'>
@@ -319,11 +319,11 @@
             <stepdetail value='点击“#导出按钮#”按钮' />
 		</step>
 		
-		<except id='1' value='能导出文件，且文件上显示的信息与列表上所有的信息保持一致' />
-		<except id='2'
+		<expect id='1' value='能导出文件，且文件上显示的信息与列表上所有的信息保持一致' />
+		<expect id='2'
 			value='能导出文件，导出的文件中只有勾选的#信息#数据且文件上显示的信息与列表上的信息保持一致' />
-		<except id='4' value='导出的文件中有所有的#信息#信息且文件上显示的信息与列表上的信息保持一致' />
-		<except id='5'
+		<expect id='4' value='导出的文件中有所有的#信息#信息且文件上显示的信息与列表上的信息保持一致' />
+		<expect id='5'
 			value='若能导出相应的文件，则文件中只有表格的表头，无其他数据；若不能导出，则给出相应的提示' />
 	</group>
 
@@ -366,8 +366,8 @@
             <stepdetail value='点击“#导入按钮#”按钮，选择与模板格式一致，但文件内容不一样的文件' />
 		</step>
 		
-		<except id='1' value='信息导入成功，能在列表上看到新导入的信息，且数据信息中展示的内容与导入的文件中编写的内容一致' />
-		<except id='2' value='信息导入失败，并给出相应的提示' />
+		<expect id='1' value='信息导入成功，能在列表上看到新导入的信息，且数据信息中展示的内容与导入的文件中编写的内容一致' />
+		<expect id='2' value='信息导入失败，并给出相应的提示' />
 	</group>
 
 	<group name='addResetSearchCase'>
@@ -388,8 +388,8 @@
             <stepdetail value='点击重置按钮' />
 		</step>
 		
-		<except id='1' value='点击按钮后不会生效，页面无任何变化' />
-		<except id='2' value='所有的搜索条件回到初始（默认）状态#列表重置文本#' />
+		<expect id='1' value='点击按钮后不会生效，页面无任何变化' />
+		<expect id='2' value='所有的搜索条件回到初始（默认）状态#列表重置文本#' />
 	</group>
 
 	<group name='addSwitchListShowDataCase'>
@@ -423,9 +423,9 @@
             <stepdetail value='任意切换一个单页数据显示量' />
 		</step>
 		
-		<except id='1' value='列表中每页显示所选的数据量，且修改后不改变原数据的排序' />
-		<except id='2' value='列表中数据无变化，且数据排序保持不变' />
-		<except id='3' value='列表无任何变化' />
+		<expect id='1' value='列表中每页显示所选的数据量，且修改后不改变原数据的排序' />
+		<expect id='2' value='列表中数据无变化，且数据排序保持不变' />
+		<expect id='3' value='列表无任何变化' />
 	</group>
 
 	<group name='delectDataCase'>
@@ -483,13 +483,13 @@
             <stepdetail value='点击列表任意一条数据上的“#删除按钮#”按钮' />
         </step>
 		
-		<except id='1' value='无法删除数据，并给出相应选择数据的提示' />
-		<except id='2'
+		<expect id='1' value='无法删除数据，并给出相应选择数据的提示' />
+		<expect id='2'
 			value='数据被删除，列表不再显示被删除的数据，其后的数据顶替被删除的数据的位置，且数据列表排序不变，数据总条数减少' />
-		<except id='3' value='一页数据数据被删除，其下一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
-		<except id='4' value='一页数据数据被删除，其上一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
-		<except id='5' value='数据被全部删除，列表显示为空，其数据总条数变为0' />
-		<except id='6'
+		<expect id='3' value='一页数据数据被删除，其下一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
+		<expect id='4' value='一页数据数据被删除，其上一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
+		<expect id='5' value='数据被全部删除，列表显示为空，其数据总条数变为0' />
+		<expect id='6'
 			value='当前搜索条件下的数据被删除，但重置搜索后能看到非搜索内容的选项' />
 	</group>
 </cases>

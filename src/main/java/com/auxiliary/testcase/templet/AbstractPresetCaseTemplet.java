@@ -92,7 +92,7 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet {
     /**
      * 预期（except）标签
      */
-    protected final String LABEL_EXCEPT = "except";
+    protected final String LABEL_EXPECT = "expect";
     /**
      * 名称（name）属性
      */
@@ -180,8 +180,8 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet {
             return getContentList(groupName, LABEL_STEP, (isStepDetail ? LABEL_STEPDETAIL : ""), ATT_VALUE, ids);
         case STEPDETAIL:
             return getContentList(groupName, LABEL_STEP, LABEL_STEPDETAIL, ATT_VALUE, ids);
-        case EXCEPT:
-            return getContentList(groupName, LABEL_EXCEPT, "", ATT_VALUE, ids);
+        case EXPECT:
+            return getContentList(groupName, LABEL_EXPECT, "", ATT_VALUE, ids);
         case KEY:
             return getContentList(groupName, LABEL_KEY, "", ATT_VALUE, ids);
         case PRECONDITION:
@@ -338,9 +338,9 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet {
                         getTempletContent(LabelType.RANK, stepEntry.getKey(), stepEntry.getValue()));
                 
                 // 添加预期
-                Entry<String, String> exceptEntry = contentMap.get(LabelType.EXCEPT).get(index);
-                caseData.addContent(LabelType.EXCEPT.getName(), -1,
-                        getTempletContent(LabelType.EXCEPT, exceptEntry.getKey(), exceptEntry.getValue()));
+                Entry<String, String> exceptEntry = contentMap.get(LabelType.EXPECT).get(index);
+                caseData.addContent(LabelType.EXPECT.getName(), -1,
+                        getTempletContent(LabelType.EXPECT, exceptEntry.getKey(), exceptEntry.getValue()));
                 caseDataList.add(caseData);
             }
         }

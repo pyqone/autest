@@ -58,12 +58,12 @@
             <stepdetail value='按住键盘空格键不放' />
 		</step>
 		
-		<except id='1' value='#视频名称#播放不受影响'/>
-		<except id='2' value='#视频名称#暂停，#视频名称#画面定格在按下按钮的瞬间，再次按下播放时#视频名称#会从暂停的位置继续播放'/>
-		<except id='3' value='#视频名称#停止，#视频名称#画面定格在按下按钮的瞬间或画面消失，再次按下播放时#视频名称#会重新播放'/>
-		<except id='4' value='#视频名称#停止，#视频名称#画面定格在按下按钮的瞬间或画面消失，再次按下播放时#视频名称#会重新播放'/>
-		<except id='5' value='系统只执行一次按下空格按键的操作，或#视频名称#在不断地暂停/播放，但页面不会崩溃'/>
-		<except id='6' value='#视频名称#不会播放'/>
+		<expect id='1' value='#视频名称#播放不受影响'/>
+		<expect id='2' value='#视频名称#暂停，#视频名称#画面定格在按下按钮的瞬间，再次按下播放时#视频名称#会从暂停的位置继续播放'/>
+		<expect id='3' value='#视频名称#停止，#视频名称#画面定格在按下按钮的瞬间或画面消失，再次按下播放时#视频名称#会重新播放'/>
+		<expect id='4' value='#视频名称#停止，#视频名称#画面定格在按下按钮的瞬间或画面消失，再次按下播放时#视频名称#会重新播放'/>
+		<expect id='5' value='系统只执行一次按下空格按键的操作，或#视频名称#在不断地暂停/播放，但页面不会崩溃'/>
+		<expect id='6' value='#视频名称#不会播放'/>
 	</group>
 	
 	<group name='addVideoScreenshotCase'>
@@ -93,8 +93,8 @@
             <stepdetail value='点击截图按钮，对#视频名称#进行截图' />
 		</step>
 		
-		<except id='1' value='弹出截图成功提示，截图的画面是按下截图按钮时的画面'/>
-		<except id='2' value='截图失败，弹出未保存或#视频名称#未播放的提示'/>
+		<expect id='1' value='弹出截图成功提示，截图的画面是按下截图按钮时的画面'/>
+		<expect id='2' value='截图失败，弹出未保存或#视频名称#未播放的提示'/>
 	</group>
 	
 	<group name='addVideoAdvanceCase'>
@@ -165,16 +165,16 @@
             <stepdetail value='不输入跳秒数，直接点击跳秒按钮' />
 		</step>
 		
-		<except id='1' value='#视频名称#进度条向前或向后跳跃，#视频名称#画面前进或后退对应的时间后继续播放'/>
-		<except id='2' value='#视频名称#进度条向前或向后跳跃，#视频名称#画面前进或后退对应的时间后仍暂停播放'/>
-		<except id='3' value='#视频名称#重新播放'/>
-		<except id='4' value='#视频名称#停止播放'/>
-		<except id='5' value='快进或快退无效'/>
-		<except id='6' value='进度条一直向前或向后跳跃，直至进度条到达端点时按住方向键将无效'/>
-		<except id='7' value='#视频名称#跳跃相应的秒数'/>
-		<except id='8' value='提示跳跃秒数不允许小于1，或者#视频名称#不跳跃'/>
-		<except id='9' value='提示跳跃秒数不允许超过#视频名称#的播放时间，或者#视频名称#停止播放'/>
-		<except id='10' value='提示输入正确的数字，或者#视频名称#不跳跃'/>
+		<expect id='1' value='#视频名称#进度条向前或向后跳跃，#视频名称#画面前进或后退对应的时间后继续播放'/>
+		<expect id='2' value='#视频名称#进度条向前或向后跳跃，#视频名称#画面前进或后退对应的时间后仍暂停播放'/>
+		<expect id='3' value='#视频名称#重新播放'/>
+		<expect id='4' value='#视频名称#停止播放'/>
+		<expect id='5' value='快进或快退无效'/>
+		<expect id='6' value='进度条一直向前或向后跳跃，直至进度条到达端点时按住方向键将无效'/>
+		<expect id='7' value='#视频名称#跳跃相应的秒数'/>
+		<expect id='8' value='提示跳跃秒数不允许小于1，或者#视频名称#不跳跃'/>
+		<expect id='9' value='提示跳跃秒数不允许超过#视频名称#的播放时间，或者#视频名称#停止播放'/>
+		<expect id='10' value='提示输入正确的数字，或者#视频名称#不跳跃'/>
 	</group>
 	
 	<group name='addVideoSpeedCase'>
@@ -231,9 +231,9 @@
             <stepdetail value='依次调整视频慢放倍率' />
 		</step>
 		
-		<except id='1' value='#视频名称#播放仍在播放，但其播放速度明显比默认播放速度快或慢'/>
-		<except id='3' value='按钮点击无效，再次播放时，#视频名称#按照#播放速度#进行播放'/>
-		<except id='4' value='#视频名称#的播放速度较点击前的播放速度有明显的变化'/>
+		<expect id='1' value='#视频名称#播放仍在播放，但其播放速度明显比默认播放速度快或慢'/>
+		<expect id='3' value='按钮点击无效，再次播放时，#视频名称#按照#播放速度#进行播放'/>
+		<expect id='4' value='#视频名称#的播放速度较点击前的播放速度有明显的变化'/>
 	</group>
 	
 	<group name='addVideoProgressBarCase'>
@@ -277,10 +277,10 @@
             <stepdetail value='点击进度条的某一位置' />
         </step>
 		
-		<except id='1' value='#视频名称#跳跃到进度条相对应的时间上继续播放'/>
-		<except id='2' value='#视频名称#跳跃到进度条相对应的时间上仍暂停播放'/>
-		<except id='3' value='#视频名称#从进度条对应的时间上开始播放'/>
-		<except id='4' value='进度条不会超出端点，且放开拖动后，#视频名称#播放结束'/>
+		<expect id='1' value='#视频名称#跳跃到进度条相对应的时间上继续播放'/>
+		<expect id='2' value='#视频名称#跳跃到进度条相对应的时间上仍暂停播放'/>
+		<expect id='3' value='#视频名称#从进度条对应的时间上开始播放'/>
+		<expect id='4' value='进度条不会超出端点，且放开拖动后，#视频名称#播放结束'/>
 	</group>
 	
 	<group name='addFullScreenPlayCase'>
@@ -315,7 +315,7 @@
             <stepdetail value='再次双击#视频名称#画面' />
 		</step>
 		
-		<except id='1' value='#视频名称#全屏播放'/>
-		<except id='2' value='#视频名称#退出全屏播放'/>
+		<expect id='1' value='#视频名称#全屏播放'/>
+		<expect id='2' value='#视频名称#退出全屏播放'/>
 	</group>
 </cases>

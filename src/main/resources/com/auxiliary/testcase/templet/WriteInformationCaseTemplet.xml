@@ -15,16 +15,16 @@
 		
 		<title id='basic' value='对#操作类型##信息#界面的“#控件名称#”进行测试' />
 		
-		<except id='failExcept' value='#失败预期前文##信息##操作类型#失败，并给出相应的提示#失败预期后文#' />
-		<except id='inputSuccessExcept'
+		<expect id='failExpect' value='#失败预期前文##信息##操作类型#失败，并给出相应的提示#失败预期后文#' />
+		<expect id='inputSuccessExpect'
             value='#成功预期前文##信息##操作类型#成功，界面返回到#页面名称#页，#返回文本#的“#控件名称#”信息为#操作类型#时所填写的信息#成功预期后文#' />
-        <except id='selectSuccessExcept'
+        <expect id='selectSuccessExpect'
             value='#成功预期前文##信息##操作类型#成功，界面返回到#页面名称#页，#返回文本#的“#控件名称#”信息为#操作类型#时为所选择的信息#成功预期后文#' />
-        <except id='fileSuccessExcept'
+        <expect id='fileSuccessExpect'
             value='#成功预期前文##信息##操作类型#成功，界面返回到#页面名称#页，#返回文本#的“#控件名称#”信息为#操作类型#时所选择的#文件类型##成功预期后文#' />
-        <except id='emptySuccessExcept'
+        <expect id='emptySuccessExpect'
             value='#成功预期前文##信息##操作类型#成功，界面返回到#页面名称#页，#返回文本#的“#控件名称#”信息为空或默认的信息#成功预期后文#' />
-        <except id='allSuccessExcept'
+        <expect id='allSuccessExpect'
             value='#成功预期前文##信息##操作类型#成功，界面返回到#页面名称#页，#返回文本#的信息为#操作类型#时所填写或选择的信息#成功预期后文#' />
 	</group>
 	<group name='textboxBasicCase'>
@@ -87,9 +87,9 @@
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='1'
+		<expect id='1'
             value='点击清空按钮后，填写的内容被清空，点击“#保存按钮名称#”按钮后，#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上显示#操作类型#的信息#成功预期后文#' />
-        <except id='2'
+        <expect id='2'
             value='点击清空按钮后，填写的内容被清空，点击“#保存按钮名称#”按钮后，#失败预期前文##信息#创建失败，并给出相应的提示#失败预期后文#' />
 	</group>
 
@@ -175,8 +175,8 @@
 			<stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 
-		<except id='1' value='页面不会报错，若允许，则能进行输入，若不允许，则给出正确的提示' />
-		<except id='2'
+		<expect id='1' value='页面不会报错，若允许，则能进行输入，若不允许，则给出正确的提示' />
+		<expect id='2'
 			value='#成功预期前文##信息#创建成功，多余的小数位将按照规则舍弃，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息#成功预期后文#' />
 	</group>
 
@@ -217,8 +217,8 @@
             <stepdetail value='点击清除选项的按钮' />
 		</step>
 		
-		<except id='1' value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为默认选项或为空#成功预期后文#' />
-		<except id='2' value='选项变为空选项或默认选项' />
+		<expect id='1' value='#成功预期前文##信息#创建成功，界面返回到列表页，其#信息#列表上或详情中显示#操作类型#的信息为默认选项或为空#成功预期后文#' />
+		<expect id='2' value='选项变为空选项或默认选项' />
 	</group>
 
 	<group name='addRadioButtonCase'>
@@ -248,8 +248,8 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='1' value='不会出现有两个或以上的选项被选中的情况' />
-		<except id='2' value='#控件名称#选项应有一个默认选项' />
+		<expect id='1' value='不会出现有两个或以上的选项被选中的情况' />
+		<expect id='2' value='#控件名称#选项应有一个默认选项' />
 	</group>
 
 	<group name='addCheckboxCase'>
@@ -288,7 +288,7 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='1' value='在未勾选状态下，点击选项后，选项会被勾选，且可以勾选多个；在勾选状态下，点击选项后，选项被取消勾选' />
+		<expect id='1' value='在未勾选状态下，点击选项后，选项会被勾选，且可以勾选多个；在勾选状态下，点击选项后，选项被取消勾选' />
 	</group>
 
 	<group name='addDateCase'>
@@ -431,9 +431,9 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
 		</step>
 		
-		<except id='1' value='界面上不显示任何图片' />
-		<except id='2' value='无法调取手机相机，且app不会闪退' />
-		<except id='3' value='文件不能选择，或选择后，弹出相应的提示' />
+		<expect id='1' value='界面上不显示任何图片' />
+		<expect id='2' value='无法调取手机相机，且app不会闪退' />
+		<expect id='3' value='文件不能选择，或选择后，弹出相应的提示' />
 	</group>
 
 	<group name='addUploadFileCase'>
@@ -521,12 +521,12 @@
             <stepdetail value='点击“#保存按钮名称#”按钮' />
         </step>
 		
-		<except id='1' value='弹出预览#文件类型#的弹窗，#文件类型#能进行预览' />
-		<except id='2' value='上传的#文件类型#被放大显示在页面中' />
-		<except id='3' value='上传的文件被下载或者在新的页面中显示' />
-		<except id='4' value='给出文件超过大小限制相关的提示' />
-		<except id='5' value='给出文件格式不正确相关的提示' />
-		<except id='6'
+		<expect id='1' value='弹出预览#文件类型#的弹窗，#文件类型#能进行预览' />
+		<expect id='2' value='上传的#文件类型#被放大显示在页面中' />
+		<expect id='3' value='上传的文件被下载或者在新的页面中显示' />
+		<expect id='4' value='给出文件超过大小限制相关的提示' />
+		<expect id='5' value='给出文件格式不正确相关的提示' />
+		<expect id='6'
 			value='若允许上传则点击“#保存按钮名称#”按钮后#信息#创建成功，若无法上传，则给出相应的友好提示' />
 	</group>
 
@@ -563,10 +563,10 @@
 		
 		<precondition id='1' value='#信息#列表存在数据' />
         
-        <except id='1'
+        <expect id='1'
             value='界面中可选择或可填写的信息均与需求一致，UI与设计图一致，且控件排布友好' />
-        <except id='2' value='“#控件名称#”信息中的选项与需求一致' />
-		<except id='3' value='界面中可选择或可填写的信息均与需求一致，UI与设计图一致，控件排布友好，且新增时填写的内容能在界面上回填' />
+        <expect id='2' value='“#控件名称#”信息中的选项与需求一致' />
+		<expect id='3' value='界面中可选择或可填写的信息均与需求一致，UI与设计图一致，控件排布友好，且新增时填写的内容能在界面上回填' />
         
         <title id='1' value='检查#操作类型##信息#界面是否符合需求设计' />
         
@@ -627,9 +627,9 @@
             <stepdetail value='点击关闭界面按钮，将编辑#信息#界面关闭' />
         </step>
 		
-		<except id='1'
+		<expect id='1'
 			value='#操作类型##信息#界面关闭，数据不被保存，#信息#列表上不显示在新增界面上填写的数据' />
-		<except id='2' value='#操作类型##信息#界面关闭，数据不被保存，其#信息#信息仍显示为之前的内容' />
+		<expect id='2' value='#操作类型##信息#界面关闭，数据不被保存，其#信息#信息仍显示为之前的内容' />
 		
 		<title id='1' value='取消保存#操作类型#的#信息#' />
 		
