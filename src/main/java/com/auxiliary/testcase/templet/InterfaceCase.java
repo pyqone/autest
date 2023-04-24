@@ -100,7 +100,7 @@ public class InterfaceCase extends Case {
 		addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "1"));
 
 		// 存储预期信息
-		addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, "1"));
 
 		// 存储前置条件信息
 
@@ -131,22 +131,22 @@ public class InterfaceCase extends Case {
 		// 存储步骤与预期信息
 		if (existAttestation) {
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "2"));
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, "2"));
 
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "8"));
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "3"));
+			addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, "3"));
 
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "5"));
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, "1"));
 
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "6"));
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, "2"));
 		} else {
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, "1"));
 
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "4"));
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, "2"));
 		}
 
 		// 存储前置条件信息
@@ -186,24 +186,24 @@ public class InterfaceCase extends Case {
 		addFieldText(LabelType.STEP, getLabelText(basicCaseName, LabelType.STEP, "1"));
 		if (isMust) {
 			if (attestationFieldList.contains(constraintCaseName)) {
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "3"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "3"));
 			} else {
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 			}
 		} else {
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 		}
 
 		addFieldText(LabelType.STEP, getLabelText(basicCaseName, LabelType.STEP, "2"));
 		if (jsonFieldType == JsonFieldType.STRING) {
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 		} else {
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 		}
 
 		if (!isRepeat) {
 			addFieldText(LabelType.STEP, getLabelText(basicCaseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 		}
 
 		addConstraintCase(isMust, jsonFieldType);
@@ -237,7 +237,7 @@ public class InterfaceCase extends Case {
 		wordMap.put(FIELD_TYPE, jsonFieldType.getTypeName());
 
 		addFieldText(LabelType.STEP, getLabelText(constraintCaseName, LabelType.STEP, "1"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 		// 存储步骤与预期信息
 		switch (jsonFieldType) {
@@ -245,54 +245,54 @@ public class InterfaceCase extends Case {
 			addFieldText(LabelType.STEP, getLabelText(constraintCaseName, LabelType.STEP, "2"));
 			if (isMust) {
 				if (attestationFieldList.contains(constraintCaseName)) {
-					addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "3"));
+					addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "3"));
 				} else {
-					addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+					addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 				}
 			} else {
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 			}
 
 			addFieldText(LabelType.STEP, getLabelText(exceptionCaseName, LabelType.STEP, "1"));
-			addFieldText(LabelType.EXCEPT, getLabelText(exceptionCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(exceptionCaseName, LabelType.EXPECT, "1"));
 
 			addFieldText(LabelType.STEP, getLabelText(exceptionCaseName, LabelType.STEP, "2"));
-			addFieldText(LabelType.EXCEPT, getLabelText(exceptionCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(exceptionCaseName, LabelType.EXPECT, "1"));
 			break;
 		case NUMBER:
 			addFieldText(LabelType.STEP, getLabelText(constraintCaseName, LabelType.STEP, "5"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 			break;
 		case BOOLEAN:
 			addFieldText(LabelType.STEP, getLabelText(constraintCaseName, LabelType.STEP, "6"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 			break;
 		case JSON:
 			addFieldText(LabelType.STEP, getLabelText(constraintCaseName, LabelType.STEP, "3"));
 			if (isMust) {
 				if (attestationFieldList.contains(constraintCaseName)) {
-					addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "3"));
+					addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "3"));
 				} else {
-					addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+					addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 				}
 			} else {
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 			}
 			break;
 		case ARRAY:
 			addFieldText(LabelType.STEP, getLabelText(constraintCaseName, LabelType.STEP, "4"));
 			if (isMust) {
 				if (attestationFieldList.contains(constraintCaseName)) {
-					addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "3"));
+					addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "3"));
 				} else {
-					addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+					addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 				}
 			} else {
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 			}
 
 			addFieldText(LabelType.STEP, getLabelText(exceptionCaseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, getLabelText(exceptionCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(exceptionCaseName, LabelType.EXPECT, "1"));
 			break;
 		default:
 			break;
@@ -340,7 +340,7 @@ public class InterfaceCase extends Case {
 		String businessCaseName = "字段业务约束";
 		String basicCaseName = "字段基础用例";
 		addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP, "12"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 		return this;
 	}
@@ -369,13 +369,13 @@ public class InterfaceCase extends Case {
 		String basicCaseName = "字段基础用例";
 		if (decimalsNum > 0) {
 			addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP, "9"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 			addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP, "10"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 			addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP, "11"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 		}
 
 		return this;
@@ -426,51 +426,51 @@ public class InterfaceCase extends Case {
 				// 若限制两边相等
 				addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 						String.format("%s_%s_%s", jsonFieldType.getTypeName(), "小于", "最小限制")));
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 				addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 						String.format("%s_%s_%s", jsonFieldType.getTypeName(), "等于", "最小限制")));
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 				addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 						String.format("%s_%s_%s", jsonFieldType.getTypeName(), "大于", "最大限制")));
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 			} else {
 				// 若限制两边不等
 				addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 						String.format("%s_%s_%s", jsonFieldType.getTypeName(), "小于", "最小限制")));
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 				addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 						String.format("%s_%s_%s", jsonFieldType.getTypeName(), "等于", "最小限制")));
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 				addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 						String.format("%s_%s_%s", jsonFieldType.getTypeName(), "大于", "最大限制")));
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 				addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 						String.format("%s_%s_%s", jsonFieldType.getTypeName(), "等于", "最大限制")));
-				addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+				addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 			}
 		} else if (ruleMin == RULE_MIN && ruleMax != RULE_MAX) {
 			// 若只有最大限制
 			addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 					String.format("%s_%s_%s", jsonFieldType.getTypeName(), "大于", "最大限制")));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 			addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 					String.format("%s_%s_%s", jsonFieldType.getTypeName(), "等于", "最大限制")));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 		} else if (ruleMin != RULE_MIN && ruleMax == RULE_MAX) {
 			// 若只有最小限制
 			addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 					String.format("%s_%s_%s", jsonFieldType.getTypeName(), "小于", "最小限制")));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 			addFieldText(LabelType.STEP, getLabelText(businessCaseName, LabelType.STEP,
 					String.format("%s_%s_%s", jsonFieldType.getTypeName(), "等于", "最小限制")));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 		} else {
 			// 若两边均为无限制，则不做处理
 		}
@@ -497,26 +497,26 @@ public class InterfaceCase extends Case {
 		// 添加手机相关的测试用例
 		if (phoneRules.contains(PhoneType.MOBLE)) {
 			addFieldText(LabelType.STEP, getLabelText(phoneCaseName, LabelType.STEP, "1"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 			addFieldText(LabelType.STEP, getLabelText(phoneCaseName, LabelType.STEP, "2"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 		}
 
 		// 添加座机相关的测试用例
 		if (phoneRules.contains(PhoneType.FIXED)) {
 			addFieldText(LabelType.STEP, getLabelText(phoneCaseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 			addFieldText(LabelType.STEP, getLabelText(phoneCaseName, LabelType.STEP, "4"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 			addFieldText(LabelType.STEP, getLabelText(phoneCaseName, LabelType.STEP, "6"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 		}
 
 		addFieldText(LabelType.STEP, getLabelText(phoneCaseName, LabelType.STEP, "5"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 		return this;
 	}
@@ -537,25 +537,25 @@ public class InterfaceCase extends Case {
 		String basicCaseName = "字段基础用例";
 
 		addFieldText(LabelType.STEP, getLabelText(idCardCaseName, LabelType.STEP, "1"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 		addFieldText(LabelType.STEP, getLabelText(idCardCaseName, LabelType.STEP, "2"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 		addFieldText(LabelType.STEP, getLabelText(idCardCaseName, LabelType.STEP, "3"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 		addFieldText(LabelType.STEP, getLabelText(idCardCaseName, LabelType.STEP, "4"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 		addFieldText(LabelType.STEP, getLabelText(idCardCaseName, LabelType.STEP, "5"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 		addFieldText(LabelType.STEP, getLabelText(idCardCaseName, LabelType.STEP, "6"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 		addFieldText(LabelType.STEP, getLabelText(idCardCaseName, LabelType.STEP, "7"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 		return this;
 	}
@@ -580,17 +580,17 @@ public class InterfaceCase extends Case {
 		String basicCaseName = "字段基础用例";
 
 		addFieldText(LabelType.STEP, getLabelText(dateCaseName, LabelType.STEP, "1"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 		if (isFormat) {
 			addFieldText(LabelType.STEP, getLabelText(dateCaseName, LabelType.STEP, "2"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 			addFieldText(LabelType.STEP, getLabelText(dateCaseName, LabelType.STEP, "4"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 		} else {
 			addFieldText(LabelType.STEP, getLabelText(dateCaseName, LabelType.STEP, "3"));
-			addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+			addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 		}
 
 		return this;
@@ -614,10 +614,10 @@ public class InterfaceCase extends Case {
 		wordMap.put(END_DATE_NAME, endDateFieldName);
 
 		addFieldText(LabelType.STEP, getLabelText(dateCaseName, LabelType.STEP, "5"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 		addFieldText(LabelType.STEP, getLabelText(dateCaseName, LabelType.STEP, "6"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 		return this;
 	}
@@ -640,10 +640,10 @@ public class InterfaceCase extends Case {
 		wordMap.put(START_DATE_NAME, startDateFieldName);
 
 		addFieldText(LabelType.STEP, getLabelText(dateCaseName, LabelType.STEP, "7"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "2"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "2"));
 
 		addFieldText(LabelType.STEP, getLabelText(dateCaseName, LabelType.STEP, "8"));
-		addFieldText(LabelType.EXCEPT, getLabelText(basicCaseName, LabelType.EXCEPT, "1"));
+		addFieldText(LabelType.EXPECT, getLabelText(basicCaseName, LabelType.EXPECT, "1"));
 
 		return this;
 	}

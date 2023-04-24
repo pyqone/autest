@@ -40,7 +40,7 @@ public enum LabelType {
 	/**
 	 * 预期
 	 */
-	EXCEPT("except"), 
+    EXPECT("expect"),
 	/**
 	 * 标题
 	 */
