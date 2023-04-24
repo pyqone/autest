@@ -127,7 +127,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 	protected void initField() {
         // 关联用例字段
         relevanceCase(LabelType.STEP.getName(), JiraPresetFieldType.FIELD_STEP);
-        relevanceCase(LabelType.EXCEPT.getName(), JiraPresetFieldType.FIELD_EXCEPT);
+        relevanceCase(LabelType.EXPECT.getName(), JiraPresetFieldType.FIELD_EXCEPT);
         relevanceCase(LabelType.TITLE.getName(), JiraPresetFieldType.FIELD_TITLE);
         relevanceCase(LabelType.PRECONDITION.getName(), JiraPresetFieldType.FIELD_PRECONDITION);
         relevanceCase(LabelType.RANK.getName(), JiraPresetFieldType.FIELD_RANK);

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -35,7 +34,7 @@ import com.auxiliary.tool.regex.ConstType;
  * @since JDK 1.8
  * @since autest 4.0.0
  */
-public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet implements StepDetailTemplet {
+public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet {
     /**
      * 1级优先级
      */
@@ -93,7 +92,7 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
     /**
      * 预期（except）标签
      */
-    protected final String LABEL_EXCEPT = "except";
+    protected final String LABEL_EXPECT = "expect";
     /**
      * 名称（name）属性
      */
@@ -137,33 +136,31 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
         super(xmlTempletFile);
     }
 
+    /**
+     * 构造对象，根据资源文件夹中的默认模板文件名，对模板文件进行读取
+     * 
+     * @param fileName 文件名称
+     */
     protected AbstractPresetCaseTemplet(String fileName) {
         super();
         try {
             configXml = new SAXReader().read(InformationCaseTemplet.class.getClassLoader()
                     .getResourceAsStream(String.format("%s%s.xml", DEFAULT_TEMPLET_FOLDER, fileName)));
-        } catch (DocumentException e) {
-            throw new TestCaseException("jar包异常，无法读取模板xml文件", e);
+        } catch (Exception e) {
+            throw new TestCaseException(String.format("jar包异常，无法读取“%s.xml”模板文件", fileName), e);
         }
-    }
-
-    @Override
-    public void setReadStepDetail(boolean isStepDetail, boolean isStepIndependentCase) {
-        this.isStepDetail = isStepDetail;
-        this.isStepIndependentCase = isStepIndependentCase;
     }
 
     /**
      * 该方法用于返回用指定例组中的指定id对应的内容
      * 
-     * @param LabelType 预设用例模板内容枚举
+     * @param labelType 预设用例模板内容枚举
      * @param groupName 用例组名称
      * @param ids       用例id组
      * @return 获取到的内容集合
      * @since autest 4.0.0
      */
-    public List<String> getTempletContent(LabelType labelType, String groupName,
-            String... ids) {
+    public List<String> getTempletContent(LabelType labelType, String groupName, String... ids) {
         // 根据相应的模板内容枚举，返回相应的内容
         switch (labelType) {
         case RANK:
@@ -182,8 +179,8 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
             return getContentList(groupName, LABEL_STEP, (isStepDetail ? LABEL_STEPDETAIL : ""), ATT_VALUE, ids);
         case STEPDETAIL:
             return getContentList(groupName, LABEL_STEP, LABEL_STEPDETAIL, ATT_VALUE, ids);
-        case EXCEPT:
-            return getContentList(groupName, LABEL_EXCEPT, "", ATT_VALUE, ids);
+        case EXPECT:
+            return getContentList(groupName, LABEL_EXPECT, "", ATT_VALUE, ids);
         case KEY:
             return getContentList(groupName, LABEL_KEY, "", ATT_VALUE, ids);
         case PRECONDITION:
@@ -340,9 +337,9 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet i
                         getTempletContent(LabelType.RANK, stepEntry.getKey(), stepEntry.getValue()));
                 
                 // 添加预期
-                Entry<String, String> exceptEntry = contentMap.get(LabelType.EXCEPT).get(index);
-                caseData.addContent(LabelType.EXCEPT.getName(), -1,
-                        getTempletContent(LabelType.EXCEPT, exceptEntry.getKey(), exceptEntry.getValue()));
+                Entry<String, String> exceptEntry = contentMap.get(LabelType.EXPECT).get(index);
+                caseData.addContent(LabelType.EXPECT.getName(), -1,
+                        getTempletContent(LabelType.EXPECT, exceptEntry.getKey(), exceptEntry.getValue()));
                 caseDataList.add(caseData);
             }
         }

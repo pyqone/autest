@@ -1,0 +1,495 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<cases project='BrowseList'>
+	<group name='commonContent'>
+		<rank id='1' value='#rank-1#' />
+		<rank id='2' value='#rank-2#' />
+		<rank id='3' value='#rank-3#' />
+		<rank id='4' value='#rank-4#' />
+
+		<precondition id='basic' value='#信息#列表存在数据' />
+
+	</group>
+	
+	<group name='examineUI'>
+        <step id='1' value='查看#信息#列表页面'
+            intention='检查#信息#列表界面是否符合需求设计' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='查看#信息#列表页面的控件布局' />
+            <stepdetail value='查看#信息#列表上的搜索条件' />
+            <stepdetail value='查看#信息#列表上显示的列表字段' />
+        </step>
+        <step id='2' value='查看“#搜索条件#”中的选项'
+            intention='检查“#搜索条件#”中的选项是否符合需求' rank='#rank-1#' >
+           <stepdetail value='进入#信息#列表页面' />
+           <stepdetail value='查看“#搜索条件#”中的选项内容' />
+        </step>
+        
+        <!-- ，且存在能搜索所有数据的选项 -->
+        <expect id='2' value='“#搜索条件#”信息中的选项与需求一致#空选项文本#' />
+        <expect id='1' value='UI与设计图一致，且控件排布友好，其可搜索的字段以及列表显示的字段均符合需求' />
+        
+        <title id='1' value='检查#信息#列表界面是否符合需求设计' />
+        
+        <key id='1' value='#信息#列表' />
+    </group>
+
+	<group name='BrowseListCase'>
+		<title id='1' value='浏览#信息#列表' />
+
+		<key id='web1' value='#信息#列表,刷新,加载' />
+		<key id='app1' value='#信息#列表,翻页' />
+
+		<step id='com1' value='查看#信息#列表数据'
+			intention='检查#信息#列表中的数据排列是否符合预期' rank='#rank-1#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='查看#信息#列表中的数据' />
+		</step>
+
+		<step id='app1' value='下拉刷新列表'
+			intention='验证#信息#列表是否允许下拉刷新数据' rank='#rank-1#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下拉#信息#列表' />
+		</step>
+		<step id='app2' value='上拉加载列表'
+			intention='验证#信息#列表是否允许上拉加载数据' rank='#rank-1#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在列表存在数据的情况下，上拉#信息#列表' />
+		</step>
+		<step id='app3' value='在无剩余数据时，上拉加载列表'
+			intention='验证#信息#列表是否重复加载数据' rank='#rank-2#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在列表存在多页数据的情况下，上拉#信息#列表' />
+            <stepdetail value='在最后一页数据加载后，再次上拉#信息#列表' />
+		</step>
+		<step id='app4' value='刷新列表时点击界面的一个按钮'
+			intention='验证#信息#列表刷新时是否能操作其他控件' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下拉刷新列表' />
+            <stepdetail value='在列表刷新时，点击界面上的某一个按钮' />
+		</step>
+		<step id='app5' value='列表加载数据时点击界面上的一个按钮'
+            intention='验证#信息#列表加载数据时是否能操作其他控件' rank='#rank-3#'>
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='上拉加载列表' />
+            <stepdetail value='在列表加载数据时，点击界面上的某一个按钮' />
+        </step>
+
+		<step id='web1' value='翻页查看#信息#列表'
+			intention='验证#信息#列表能否正常进行翻页' rank='#rank-1#'>
+			<stepdetail value='进入#信息#列表页面（列表存在多页数据）' />
+            <stepdetail value='点击“下一页”按钮' />
+            <stepdetail value='点击“尾页”按钮' />
+            <stepdetail value='点击“上一页”按钮' />
+            <stepdetail value='点击“首页”按钮' />
+		</step>
+		<step id='web2' value='在首页上点击“首页”按钮'
+			intention='验证#信息#列表能否在首页点击“首页”按钮' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击“首页”按钮' />
+		</step>
+		<step id='web3' value='在首页上点击“上一页”按钮'
+			intention='验证#信息#列表能否在首页点击“上一页 ”按钮' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面（列表存在多页数据）' />
+            <stepdetail value='点击“上一页”按钮' />
+		</step>
+		<step id='web4' value='在尾页上点击“尾页”按钮'
+			intention='验证#信息#列表能否在尾页点击“尾页”按钮' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面（列表存在多页数据）' />
+            <stepdetail value='将列表翻至最后一页' />
+            <stepdetail value='点击“尾页”按钮' />
+		</step>
+		<step id='web5' value='在尾页上点击“下一页”按钮'
+			intention='验证#信息#列表能否在尾页点击“下一页”按钮' rank='#rank-3#'>
+			<stepdetail value='进入#信息#列表页面（列表存在多页数据）' />
+			<stepdetail value='将列表翻至最后一页' />
+            <stepdetail value='点击“下一页”按钮' />
+		</step>
+
+		<expect id='com1' value='能看到当前存在的所有信息，且信息按一定规则排序' />
+
+		<expect id='app1' value='列表被刷新，若有新增信息则被显示出来，且原有数据排序不会混乱' />
+		<expect id='app2' value='能加载剩下的信息' />
+		<expect id='app3' value='不会加载出数据且原有数据不会错乱' />
+		<expect id='app4' value='app不会闪退，且能正常显示' />
+
+		<expect id='web1' value='能看到不同页上的列表信息，且切换页后列表的排序不变' />
+		<expect id='web2' value='按钮无法点击或点击无效，且当前页列表排序不变' />
+	</group>
+	
+	<group name='commonSearchCase'>
+	    <title id='basic' value='通过#搜索条件#对#信息#进行搜索' />
+	    
+	    <key id='basic' value='#信息#列表,#搜索条件#,搜索' />
+	    
+	    <!-- 搜索内容时，按照是否必须输入来判断3与4 -->
+        <expect id='allResult' value='能搜索出所有的结果' />
+		<expect id='containResult' value='能搜索出符合搜索条件的结果' />
+        <expect id='noResult' value='无搜索结果' />
+		<expect id='mustWriteContidion' value='提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
+	</group>
+
+	<group name='addInputSearchCase'>
+		<step id='1' value='通过#搜索条件#对#信息#进行模糊搜索'
+            intention='验证#搜索条件#是否能模糊搜索#信息#列表' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入列表相应字段下，其中一条数据中的部分文本' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='2' value='通过#搜索条件#对#信息#进行精准搜索'
+            intention='验证#搜索条件#是否能精准搜索#信息#列表' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入列表相应字段下，其中一条数据中的完整文本' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<!-- 仅判断是否必填时添加 -->
+		<step id='3' value='不输入信息进行搜索'
+            intention='验证#搜索条件#不输入内容搜索#信息#列表时是否能忽略该条件' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中不输入任何内容' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='4' value='输入#信息#中都不包含的关键词进行搜索'
+            intention='验证#搜索条件#搜索不存在的信息时#信息#列表是否会展示数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入列表相应字段下，均不存在的一串文本' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='5' value='输入“*”符号等特殊字符进行搜索'
+            intention='验证#搜索条件#输入特殊字符搜索#信息#列表时是否会展示数据' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入“*”、“+”、“%”等特殊符号' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='6' value='输入内容搜索后，清空输入的内容，再次进行搜索'
+            intention='验证清空#搜索条件#中的内容后进行搜索#信息#列表是否出现清空内容前的数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中输入能搜索出数据的内容' />
+            <stepdetail value='点击搜索相关的按钮' />
+            <stepdetail value='点击清空输入内容相关的按钮' />
+            <stepdetail value='再次点击搜索相关的按钮' />
+        </step>
+	</group>
+
+	<group name='addSelectSearchCase'>
+		<step id='1' value='选择#搜索条件#的第一个有效选项对#信息#进行搜索'
+		    intention='验证#搜索条件#选择第一个有效选项进行搜索#信息#列表是否正常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择第一个有效选项（非“请选择”等选项）' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='2' value='选择#搜索条件#非第一个选项和非最后一个选项对#信息#进行搜索'
+            intention='验证#搜索条件#选择中间的选项搜索#信息#列表是否正常' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择中间的有效选项' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='3' value='选择#搜索条件#的最后一个选项对#信息#进行搜索'
+            intention='验证#搜索条件#选择最后一个选项搜索#信息#列表是否正常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择最后一个选项' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='4' value='选择所有#信息#中都不包含的选项进行搜索'
+            intention='验证#搜索条件#选择无数据的选项搜索#信息#列表是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择一个列表相应字段下，均不存在的一个选项' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='5' value='不选择任何选项进行搜索'
+            intention='验证#搜索条件#不选择选择选项进行搜索#信息#列表是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不进行任何选择，点击搜索相关的按钮' />
+		</step>
+		<step id='6' value='选择一个存在数据的选项，清空选择的内容，再次进行搜索'
+            intention='验证清空#搜索条件#中的内容后搜索#信息#列表是否出现清空内容前的数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择能搜索出数据的选项' />
+            <stepdetail value='点击搜索相关的按钮' />
+            <stepdetail value='点击清空输入内容相关的按钮' />
+            <stepdetail value='再次点击搜索相关的按钮' />
+        </step>
+		
+		<expect id='1'
+			value='其下级选项内容置为#选项内容#，其中的选项随之改变，且能搜索出所有符合#搜索条件#选中的选项结果，以及符合下级选项所有选项的结果' /> 
+		<expect id='2' value='下级选项内容置为#选项内容#，且能搜索出符合选项选项的结果' />
+		<expect id='3' value='下级选项内容置为#选项内容#，提示必须输入或选择#搜索条件#，且列表不展示任何数据' />
+		<expect id='4' value='下级选项内容置为#选项内容#，列表不展示任何数据' />
+	</group>
+
+	<group name='addDateSearchCase'>
+		<step id='1' value='选择一个列表中存在#搜索条件#数据的#时间内容#进行搜索'
+            intention='验证在#搜索条件#条件中选择一个有数据的#时间内容#后能否正常搜索#信息#列表' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择能搜索出数据的#时间内容#' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='2' value='选择一个列表中不存在#搜索条件#数据的#时间内容#进行搜索'
+            intention='验证在#搜索条件#条件中选择一个无数据的#时间内容#后能否正常搜索#信息#列表' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在#搜索条件#中选择不能搜索出数据的#时间内容#' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='3' value='不选择#搜索条件#进行搜索'
+            intention='验证不选择#搜索条件#条件搜索#信息#列表时结果是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不对#搜索条件#进行选择' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='4' value='选择一个#开始时间#大于#结束时间#的时间段进行搜索'
+            intention='验证选择#开始时间#大于#结束时间#的时间段搜索#信息#列表时结果是否正常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='选择一个#开始时间#大于#结束时间#的时间段' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='5' value='不选择#开始时间#，只选择#结束时间#进行搜索'
+            intention='验证不选择#开始时间#搜索#信息#列表时结果是否正常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不选择#开始时间#，选择一个存在数据的#结束时间#' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		<step id='6' value='不选择#结束时间#，只选择#开始时间#进行搜索'
+            intention='验证不选择#结束时间#搜索#信息#列表结果时是否正常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不选择#结束时间#，选择一个存在数据的#开始时间#' />
+            <stepdetail value='点击搜索相关的按钮' />
+		</step>
+		
+		<expect id='1' value='能搜索出从有数据以来至#结束时间#的所有结果' />
+		<expect id='2' value='能搜索出从#开始时间#至今的所有结果' />
+	</group>
+
+	<group name='addListSortCase'>
+		<title id='1' value='对#信息#列表按照#列表字段#进行排序' />
+		
+		<key id='1' value='#信息#列表,#列表字段#,排序' />
+		
+		<step id='1' value='点击列表标题中的#列表字段#字段，之后再次点击#列表字段#字段' 
+            intention='验证点击#信息#列表的#列表字段#字段后列表是否按照字段排序' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='在列表的标题行中，点击“#列表字段#”字段' />
+            <stepdetail value='再次点击“#列表字段#”' />
+		</step>
+		<step id='2' value='当#列表字段#列为空时，对该列排序' 
+            intention='验证#信息#列表的#列表字段#字段无数据时点击字段是否会排序' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面（#列表字段#列数据为空）' />
+            <stepdetail value='在列表的标题行中，点击“#列表字段#”字段' />
+		</step>
+		
+		<expect id='1' value='列表中的数据按照所选的项目进行某种规律的排序，再次点击时，则列按照相反的顺序排序' />
+		<expect id='2' value='列表中的数据排序不变' />
+	</group>
+
+	<group name='addExportListCase'>
+		<title id='1' value='导出#信息#列表的数据' />
+		
+		<key id='1' value='#信息#列表,导出' />
+		
+		<step id='1' value='在列表上无数据的情况下点击“#导出按钮#”按钮' 
+            intention='验证#信息#列表无数据时能否进行导出' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面（列表不存在数据）' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+        </step>
+		<step id='2' value='在列表上有数据的情况下点击“#导出按钮#”按钮' 
+            intention='验证#信息#列表有数据时能否进行导出' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面（列表存在数据）' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		<step id='3' value='在列表上勾选一条数据，点击“#导出按钮#”按钮' 
+            intention='验证#信息#列表勾选一条数据后能否进行导出' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='勾选列表中的一条数据' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		<step id='4' value='在列表上勾选多条数据，点击“#导出按钮#”按钮' 
+            intention='验证#信息#列表勾选多条数据后能否进行导出' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='勾选列表中的多条数据' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		<step id='5' value='不勾选列表上的数据，点击“#导出按钮#”按钮' 
+            intention='验证#信息#列表不勾选数据时能否进行导出' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='不勾选列表中的任何数据' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		<step id='6' value='对列表搜索后点击“#导出按钮#”按钮' 
+            intention='验证#信息#列表搜索列表后能否进行导出' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='通过其中一个搜索条件对列表进行搜索' />
+            <stepdetail value='点击“#导出按钮#”按钮' />
+		</step>
+		
+		<expect id='1' value='能导出文件，且文件上显示的信息与列表上所有的信息保持一致' />
+		<expect id='2'
+			value='能导出文件，导出的文件中只有勾选的#信息#数据且文件上显示的信息与列表上的信息保持一致' />
+		<expect id='4' value='导出的文件中有所有的#信息#信息且文件上显示的信息与列表上的信息保持一致' />
+		<expect id='5'
+			value='若能导出相应的文件，则文件中只有表格的表头，无其他数据；若不能导出，则给出相应的提示' />
+	</group>
+
+	<group name='addImportListCase'>
+		<title id='1' value='导入#信息#列表的数据' />
+		
+		<key id='1' value='#信息#列表,导入' />
+		
+		<step id='1' value='按照模版正确的输入信息后，点击“#导入按钮#”按钮，选择编辑好的文件' 
+            intention='验证正确编写模板后能否导入到#信息#列表' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下载导入数据的模板' />
+            <stepdetail value='本地在模板中正确编写所有的字段' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择编辑好的模板文件进行上传' />
+		</step>
+		<step id='2' value='在模版中只填写必填信息，点击“#导入按钮#”按钮，选择编辑好的文件' 
+            intention='验证不输入必填项时模板能否导入到#信息#列表' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下载导入数据的模板' />
+            <stepdetail value='本地在模板中只输入必填项字段' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择编辑好的模板文件进行上传' />
+		</step>
+		<step id='3' value='在模版中只填写非必填信息，点击“#导入按钮#”按钮，选择编辑好的文件' 
+            intention='验证不输入必填项时模板能否导入到#信息#列表' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下载导入数据的模板' />
+            <stepdetail value='本地在模板中只输入非必填项字段' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择编辑好的模板文件进行上传' />
+		</step>
+		<step id='4' value='在模版中错误输入有格式限制的信息，点击“#导入按钮#”按钮，选择编辑好的文件' 
+            intention='验证错误输入有格式限制的字段时模板能否导入到#信息#列表' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='下载导入数据的模板' />
+            <stepdetail value='本地在模板中错误填写有格式限制的字段' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择编辑好的模板文件进行上传' />
+        </step>
+		<step id='5' value='导入非模版文件' 
+            intention='验证非相应模板的文件能否导入到#信息#列表' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击“#导入按钮#”按钮，选择与模板格式一致，但文件内容不一样的文件' />
+		</step>
+		
+		<expect id='1' value='信息导入成功，能在列表上看到新导入的信息，且数据信息中展示的内容与导入的文件中编写的内容一致' />
+		<expect id='2' value='信息导入失败，并给出相应的提示' />
+	</group>
+
+	<group name='addResetSearchCase'>
+		<title id='1' value='重置搜索' />
+		
+		<key id='1' value='重置,搜索' />
+		
+		<step id='1' value='不对列表进行搜索，直接点击#重置按钮#按钮' 
+            intention='验证直接重置搜索时对#信息#列表是否有影响' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='输入或选择所有的搜索条件' />
+            <stepdetail value='点击重置按钮' />
+		</step>
+		<step id='2' value='对列表进行搜索，之后点击#重置按钮#按钮' 
+            intention='验证对#信息#列表搜索后重置搜索是否生效' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='输入或选择所有的搜索条件' />
+            <stepdetail value='点击重置按钮' />
+		</step>
+		
+		<expect id='1' value='点击按钮后不会生效，页面无任何变化' />
+		<expect id='2' value='所有的搜索条件回到初始（默认）状态#列表重置文本#' />
+	</group>
+
+	<group name='addSwitchListShowDataCase'>
+		<title id='1' value='修改列表每页显示的数据量' />
+		 
+		<key id='1' value='切换,数据量' />
+		
+		<step id='1' value='选择单页数据量下拉框的第一个选项' 
+            intention='验证第一个单页数据量选项是否生效' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击切换单页数据量的选项，选择第一个选项' />
+		</step>
+		<step id='2' value='选择数据量下拉框的最后一个选项' 
+            intention='验证最后一个单页数据量选项是否生效' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击切换单页数据量的选项，选择最后一个选项' />
+		</step>
+		<step id='3' value='选择分页下拉框的非第一个和最后一个选项' 
+            intention='验证中间的单页数据量选项是否生效' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击切换单页数据量的选项，选择非第一个和最后一个选项' />
+		</step>
+		<step id='4' value='在数据量较少的情况下选择一个较大的单页显示量（如只有5条数据时选择单页显示20条数据）' 
+            intention='验证单页数据量大于列表数据总量时是否生效' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='切换一个单页显示数据量大于总条数的选项' />
+		</step>
+		<step id='5' value='在列表无数据的情况下切换单页数据显示量' 
+            intention='验证列表无数据时切换单页数据量是否异常' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面（列表无数据）' />
+            <stepdetail value='任意切换一个单页数据显示量' />
+		</step>
+		
+		<expect id='1' value='列表中每页显示所选的数据量，且修改后不改变原数据的排序' />
+		<expect id='2' value='列表中数据无变化，且数据排序保持不变' />
+		<expect id='3' value='列表无任何变化' />
+	</group>
+
+	<group name='delectDataCase'>
+		<title id='1' value='删除#信息#列表的数据' />
+		
+		<key id='1' value='#信息#列表,删除' />
+		
+		<step id='1' value='不选择数据，点击“#批量删除按钮#”按钮' 
+            intention='验证不选择数据时点击“#批量删除按钮#”按钮是否异常' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='2' value='选择第一条数据，点击“#批量删除按钮#”按钮' 
+            intention='验证选择一条数据时能否删除勾选的数据' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击勾选列表第一条数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='3' value='选择最后一条数据，点击“#批量删除按钮#”按钮' 
+            intention='验证选择最后一条数据时能否删除勾选的数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击勾选列表最后一条数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='4' value='选择多条数据，点击“#批量删除按钮#”按钮' 
+            intention='验证选择多条数据时能否删除勾选的数据' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击勾选列表多条数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='5' value='全选尾页页数据，点击“#批量删除按钮#”按钮' 
+            intention='验证全选尾页单页数据时能否正常删除当页数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='将列表翻至尾页' />
+            <stepdetail value='点击全选按钮或逐个勾选当页所有数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='6' value='在只有一页数据的情况下，全选，点击“#批量删除按钮#”按钮' 
+            intention='验证仅一页数据时全选能否删除整页数据' rank='#rank-3#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击全选按钮或逐个勾选当页所有数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		<step id='7' value='列表搜索后数据全选，点击“#批量删除按钮#”按钮' 
+            intention='验证搜索后全选搜索的结果时能否正常删除被搜索出的整页数据' rank='#rank-2#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='对列表根据任意条件进行搜索（能搜索出数据）' />
+            <stepdetail value='点击全选按钮或逐个勾选当页所有数据' />
+            <stepdetail value='点击“#批量删除按钮#”按钮' />
+		</step>
+		
+		<step id='8' value='点击列表任意数据的“#删除按钮#”按钮' 
+            intention='验证能否单独删除列表中的任意一条数据' rank='#rank-1#' >
+            <stepdetail value='进入#信息#列表页面' />
+            <stepdetail value='点击列表任意一条数据上的“#删除按钮#”按钮' />
+        </step>
+		
+		<expect id='1' value='无法删除数据，并给出相应选择数据的提示' />
+		<expect id='2'
+			value='数据被删除，列表不再显示被删除的数据，其后的数据顶替被删除的数据的位置，且数据列表排序不变，数据总条数减少' />
+		<expect id='3' value='一页数据数据被删除，其下一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
+		<expect id='4' value='一页数据数据被删除，其上一页的数据将顶替该页数据，其列表的页数与总条数相应减少' />
+		<expect id='5' value='数据被全部删除，列表显示为空，其数据总条数变为0' />
+		<expect id='6'
+			value='当前搜索条件下的数据被删除，但重置搜索后能看到非搜索内容的选项' />
+	</group>
+</cases>

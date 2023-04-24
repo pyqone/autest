@@ -129,8 +129,8 @@ public class InformationCase extends Case {
         });
 		
         // 存储预期信息
-        getAllLabelText(caseName, LabelType.EXCEPT).forEach(text -> {
-            addFieldText(LabelType.EXCEPT, text);
+        getAllLabelText(caseName, LabelType.EXPECT).forEach(text -> {
+            addFieldText(LabelType.EXPECT, text);
         });
 		
 		//存储前置条件信息
@@ -1331,7 +1331,7 @@ public class InformationCase extends Case {
 		addFieldText(LabelType.STEP, getAllLabelText(caseName, LabelType.STEP));
 		
 		//存储预期信息
-		addFieldText(LabelType.EXCEPT, getAllLabelText(caseName, LabelType.EXCEPT));
+		addFieldText(LabelType.EXPECT, getAllLabelText(caseName, LabelType.EXPECT));
 		
 		//存储前置条件信息
 		addFieldText(LabelType.PRECONDITION, getAllLabelText(caseName, LabelType.PRECONDITION));
@@ -1462,7 +1462,7 @@ public class InformationCase extends Case {
 			//不填写或只输入空格
 			addFieldText(LabelType.STEP, getLabelText(caseName, LabelType.STEP, "13"));
 			//根据是否必填来判断填入成功或失败预期
-			addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, isMust ? "4" : "3"));
+			addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, isMust ? "4" : "3"));
 		}
 	}
 	

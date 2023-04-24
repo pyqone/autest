@@ -320,9 +320,9 @@ public abstract class Case {
 
         // 添加预期
         if (ids[1].equals(ALL)) {
-            addFieldText(LabelType.EXCEPT, getAllLabelText(caseName, LabelType.EXCEPT));
+            addFieldText(LabelType.EXPECT, getAllLabelText(caseName, LabelType.EXPECT));
         } else {
-            addFieldText(LabelType.EXCEPT, getLabelText(caseName, LabelType.EXCEPT, ids[1]));
+            addFieldText(LabelType.EXPECT, getLabelText(caseName, LabelType.EXPECT, ids[1]));
         }
     }
 }
