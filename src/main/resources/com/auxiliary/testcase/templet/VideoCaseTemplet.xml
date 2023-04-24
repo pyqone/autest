@@ -24,7 +24,7 @@
             <stepdetail value='播放#视频名称#' />
             <stepdetail value='点击停止按钮' />
         </step>
-		<step id='3' value='在#视频名称#播放状态下点击暂停按钮或单击#视频名称#画面，再点击播放按钮'
+		<step id='3' value='在#视频名称#播放状态下点击暂停按钮，再点击播放按钮'
             intention='验证暂停状态下能否继续播放#视频名称#' rank='#rank-1#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
@@ -39,31 +39,25 @@
             <stepdetail value='点击播放按钮' />
 		</step>
 		<step id='5' value='在#视频名称#播放状态下点击暂停按钮，再点击停止按钮'
-            intention='验证暂停状态下能否停止播放#视频名称#' rank='#rank-2#' >
+            intention='验证暂停状态下能否停止播放#视频名称#' rank='#rank-3#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
             <stepdetail value='点击暂停按钮' />
             <stepdetail value='点击停止按钮' />
 		</step>
-		<!-- 视频默认不播放的情况下 -->
-		<step id='6' value='在#视频名称#未播放状态下点击播放按钮'
-            intention='验证暂停状态下能否播放#视频名称#' rank='#rank-1#' >
-            <stepdetail value='进入#视频名称#播放页面' />
-            <stepdetail value='点击播放按钮' />
-        </step>
-		<step id='7' value='在#视频名称#播放状态下一直按住键盘上的空格按键'
+		<step id='6' value='在#视频名称#播放状态下一直按住键盘上的空格按键'
             intention='验证按住空格#视频名称#是否会出现异常' rank='#rank-3#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
             <stepdetail value='按住键盘空格键不放' />
 		</step>
 		
-		<expect id='1' value='#视频名称#播放不受影响'/>
-		<expect id='2' value='#视频名称#暂停，#视频名称#画面定格在按下按钮的瞬间，再次按下播放时#视频名称#会从暂停的位置继续播放'/>
-		<expect id='3' value='#视频名称#停止，#视频名称#画面定格在按下按钮的瞬间或画面消失，再次按下播放时#视频名称#会重新播放'/>
-		<expect id='4' value='#视频名称#停止，#视频名称#画面定格在按下按钮的瞬间或画面消失，再次按下播放时#视频名称#会重新播放'/>
-		<expect id='5' value='系统只执行一次按下空格按键的操作，或#视频名称#在不断地暂停/播放，但页面不会崩溃'/>
-		<expect id='6' value='#视频名称#不会播放'/>
+		<expect id='1' value='#视频名称#暂停，#视频名称#画面定格在按下按钮的瞬间'/>
+		<expect id='2' value='#视频名称#停止，#视频名称#画面定格在按下按钮的瞬间或画面消失'/>
+		<expect id='3' value='#视频名称#从暂停的位置继续播放'/>
+		<expect id='4' value='#视频名称#重新播放'/>
+		<expect id='5' value='#视频名称#停止，#视频名称#画面定格在按下按钮的瞬间或画面消失，再次按下播放时#视频名称#会重新播放'/>
+		<expect id='6' value='系统只执行一次按下空格按键的操作，或#视频名称#在不断地暂停/播放，但页面不会崩溃'/>
 	</group>
 	
 	<group name='addVideoScreenshotCase'>
@@ -94,7 +88,7 @@
 		</step>
 		
 		<expect id='1' value='弹出截图成功提示，截图的画面是按下截图按钮时的画面'/>
-		<expect id='2' value='截图失败，弹出未保存或#视频名称#未播放的提示'/>
+		<expect id='2' value='截图失败，弹出保存截图失败相关的提示'/>
 	</group>
 	
 	<group name='addVideoAdvanceCase'>
@@ -167,14 +161,13 @@
 		
 		<expect id='1' value='#视频名称#进度条向前或向后跳跃，#视频名称#画面前进或后退对应的时间后继续播放'/>
 		<expect id='2' value='#视频名称#进度条向前或向后跳跃，#视频名称#画面前进或后退对应的时间后仍暂停播放'/>
-		<expect id='3' value='#视频名称#重新播放'/>
-		<expect id='4' value='#视频名称#停止播放'/>
-		<expect id='5' value='快进或快退无效'/>
-		<expect id='6' value='进度条一直向前或向后跳跃，直至进度条到达端点时按住方向键将无效'/>
-		<expect id='7' value='#视频名称#跳跃相应的秒数'/>
-		<expect id='8' value='提示跳跃秒数不允许小于1，或者#视频名称#不跳跃'/>
-		<expect id='9' value='提示跳跃秒数不允许超过#视频名称#的播放时间，或者#视频名称#停止播放'/>
-		<expect id='10' value='提示输入正确的数字，或者#视频名称#不跳跃'/>
+		<expect id='3' value='快进或快退无效'/>
+		<expect id='4' value='#视频名称#重新播放'/>
+		<expect id='5' value='#视频名称#停止播放'/>
+		<expect id='6' value='#视频名称#跳跃相应的秒数'/>
+		<expect id='7' value='提示跳跃秒数不允许小于1，或者#视频名称#不跳跃'/>
+		<expect id='8' value='提示跳跃秒数不允许超过#视频名称#的播放时间，或者#视频名称#停止播放'/>
+		<expect id='9' value='提示输入正确的数字，或者#视频名称#不跳跃'/>
 	</group>
 	
 	<group name='addVideoSpeedCase'>
@@ -189,7 +182,7 @@
             <stepdetail value='点击快放按钮' />
             <stepdetail value='点击慢放按钮' />
 		</step>
-		<step id='2' value='在#视频名称#暂停状态下点击快放按钮'
+		<step id='2' value='在#视频名称#暂停状态下点击快放按钮后播放#视频名称#'
             intention='验证暂停状态下能否对#视频名称#进行慢放操作' rank='#rank-2#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
@@ -197,7 +190,7 @@
             <stepdetail value='点击快放按钮' />
             <stepdetail value='点击播放按钮' />
         </step>
-        <step id='3' value='在#视频名称#暂停状态下点击慢放按钮'
+        <step id='3' value='在#视频名称#暂停状态下点击慢放按钮后播放#视频名称#'
             intention='验证暂停状态下能否对#视频名称#进行慢放操作' rank='#rank-2#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
@@ -205,7 +198,7 @@
             <stepdetail value='点击慢放按钮' />
             <stepdetail value='点击播放按钮' />
         </step>
-		<step id='4' value='在#视频名称#未播放状态下点击快放按钮'
+		<step id='4' value='在#视频名称#未播放状态下点击快放按钮后播放#视频名称#'
             intention='验证停止状态下能否对#视频名称#进行快放操作' rank='#rank-3#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
@@ -213,7 +206,7 @@
             <stepdetail value='点击快放按钮' />
             <stepdetail value='点击播放按钮' />
 		</step>
-		<step id='5' value='在#视频名称#未播放状态下点击慢放按钮'
+		<step id='5' value='在#视频名称#未播放状态下点击慢放按钮后播放#视频名称#'
             intention='验证停止状态下能否对#视频名称#进行慢放操作' rank='#rank-3#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
@@ -231,9 +224,9 @@
             <stepdetail value='依次调整视频慢放倍率' />
 		</step>
 		
-		<expect id='1' value='#视频名称#播放仍在播放，但其播放速度明显比默认播放速度快或慢'/>
-		<expect id='3' value='按钮点击无效，再次播放时，#视频名称#按照#播放速度#进行播放'/>
-		<expect id='4' value='#视频名称#的播放速度较点击前的播放速度有明显的变化'/>
+		<expect id='1' value='#视频名称#继续播放，但其播放速度明显与默认播放速度不同'/>
+		<expect id='2' value='按钮点击无效，再次播放时，#视频名称#按照默认的播放速度进行播放'/>
+		<expect id='3' value='#视频名称#的播放速度较点击前的播放速度有明显的变化'/>
 	</group>
 	
 	<group name='addVideoProgressBarCase'>
@@ -270,7 +263,7 @@
             <stepdetail value='向右拖动进度条一段距离，并继续按住进度条，一直将焦点移至视频外' />
             <stepdetail value='向左拖动进度条一段距离，并继续按住进度条，一直将焦点移至视频外' />
 		</step>
-		<step id='4' value='在#视频名称#播放状态下点击进度条某一位置'
+		<step id='5' value='在#视频名称#播放状态下点击进度条某一位置'
             intention='验证进度条是否可以点击跳转进度' rank='#rank-1#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
@@ -281,6 +274,7 @@
 		<expect id='2' value='#视频名称#跳跃到进度条相对应的时间上仍暂停播放'/>
 		<expect id='3' value='#视频名称#从进度条对应的时间上开始播放'/>
 		<expect id='4' value='进度条不会超出端点，且放开拖动后，#视频名称#播放结束'/>
+		<expect id='5' value='进度条无法操作'/>
 	</group>
 	
 	<group name='addFullScreenPlayCase'>
@@ -288,7 +282,7 @@
 		
 		<key id='1' value='全屏#视频名称#' />
 		
-		<step id='1' value='点击全屏播放按钮'
+		<step id='1' value='非全屏状态下点击全屏播放按钮'
             intention='验证点击全屏按钮能否全屏播放' rank='#rank-1#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
@@ -301,7 +295,7 @@
             <stepdetail value='点击全屏按钮' />
             <stepdetail value='点击退出全屏按钮' />
         </step>
-		<step id='3' value='双击#视频名称#画面'
+		<step id='3' value='非全屏状态下双击#视频名称#画面'
             intention='验证双击画面按钮能否全屏播放' rank='#rank-1#' >
             <stepdetail value='进入#视频名称#播放页面' />
             <stepdetail value='播放#视频名称#' />
