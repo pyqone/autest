@@ -610,7 +610,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
     /**
      * 该方法用于生成编辑信息中带长度限制的文本框测试用例
      * <p>
-     * 传入长度限制的方法可参考生成新增用例的方法{@link #addLengthRuleTextboxCase(String, boolean, boolean, boolean, int, int, InputRuleType...)}
+     * 传入长度限制的方法可参考生成新增用例的方法{@link #addLengthRuleTextboxCase(String, boolean, boolean, boolean, Integer, Integer, InputRuleType...)}
      * </p>
      * 
      * @param name           控件名称
@@ -632,7 +632,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
     /**
      * 该方法用于生成注册信息中带长度限制的文本框测试用例
      * <p>
-     * 传入长度限制的方法可参考生成新增用例的方法{@link #addLengthRuleTextboxCase(String, boolean, boolean, boolean, int, int, InputRuleType...)}
+     * 传入长度限制的方法可参考生成新增用例的方法{@link #addLengthRuleTextboxCase(String, boolean, boolean, boolean, Integer, Integer, InputRuleType...)}
      * </p>
      * 
      * @param name           控件名称
@@ -1083,7 +1083,6 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
     /**
      * 该方法用于生成新增信息中下拉选项控件相关的测试用例
      * 
-     * @param operationName 操作类型名称
      * @param name          控件名称
      * @param isMust        是否必填
      * @param isEmptyOption 是否存在空选项
@@ -1098,7 +1097,6 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
     /**
      * 该方法用于生成编辑信息中下拉选项控件相关的测试用例
      * 
-     * @param operationName 操作类型名称
      * @param name          控件名称
      * @param isMust        是否必填
      * @param isEmptyOption 是否存在空选项
@@ -1113,7 +1111,6 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
     /**
      * 该方法用于生成注册信息中下拉选项控件相关的测试用例
      * 
-     * @param operationName 操作类型名称
      * @param name          控件名称
      * @param isMust        是否必填
      * @param isEmptyOption 是否存在空选项
@@ -1454,7 +1451,7 @@ public class InformationCaseTemplet extends AbstractPresetCaseTemplet implements
      * 
      * @param operationName 操作类型名称
      * @param name          控件名称
-     * @param endDateName   结束时间控件名称
+     * @param startDateName 开始时间控件名称
      * @param isMust        是否必填
      * @param isInput       是否可输入
      * @param isClear       是否可清空

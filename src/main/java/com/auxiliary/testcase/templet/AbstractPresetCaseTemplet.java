@@ -154,14 +154,13 @@ public abstract class AbstractPresetCaseTemplet extends AbstractXmlCaseTemplet {
     /**
      * 该方法用于返回用指定例组中的指定id对应的内容
      * 
-     * @param LabelType 预设用例模板内容枚举
+     * @param labelType 预设用例模板内容枚举
      * @param groupName 用例组名称
      * @param ids       用例id组
      * @return 获取到的内容集合
      * @since autest 4.0.0
      */
-    public List<String> getTempletContent(LabelType labelType, String groupName,
-            String... ids) {
+    public List<String> getTempletContent(LabelType labelType, String groupName, String... ids) {
         // 根据相应的模板内容枚举，返回相应的内容
         switch (labelType) {
         case RANK:
