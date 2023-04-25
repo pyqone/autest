@@ -148,8 +148,11 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
      * @param objective 用例目的
      * @return 类本身
      * @since autest 2.4.0
+     * @deprecated 该方法已无意义，为保证模板可扩展性，可通过调用
+     *             <code>addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_OBJECTIVE), objective)</code>方法进行代替
      */
-	public WriteJiraExcelTestCase addObjective(String objective) {
+	@Deprecated
+    public WriteJiraExcelTestCase addObjective(String objective) {
         addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_OBJECTIVE), objective);
 		return this;
 	}
@@ -163,8 +166,11 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
      * @param status 用例状态文本
      * @return 类本身
      * @since autest 2.4.0
+     * @deprecated 该方法已无意义，为保证模板可扩展性，可通过调用
+     *             <code>addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_STATUS), status)</code>方法进行代替
      */
-	public WriteJiraExcelTestCase addStatus(String status) {
+	@Deprecated
+    public WriteJiraExcelTestCase addStatus(String status) {
         addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_STATUS), status);
 		return this;
 	}
@@ -178,8 +184,11 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
      * @param component 用例模块文本
      * @return 类本身
      * @since autest 2.4.0
+     * @deprecated 该方法已无意义，为保证模板可扩展性，可通过调用
+     *             <code>addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_COMPONENT), component)</code>方法进行代替
      */
-	public WriteJiraExcelTestCase addComponent(String component) {
+	@Deprecated
+    public WriteJiraExcelTestCase addComponent(String component) {
         addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_COMPONENT), component);
 		return this;
 	}
@@ -193,8 +202,11 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
      * @param issues 用例关联需求文本
      * @return 类本身
      * @since autest 2.4.0
+     * @deprecated 该方法已无意义，为保证模板可扩展性，可通过调用
+     *             <code>addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_ISSUES), issues)</code>方法进行代替
      */
-	public WriteJiraExcelTestCase addIssues(String issues) {
+	@Deprecated
+    public WriteJiraExcelTestCase addIssues(String issues) {
         addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_ISSUES), issues);
 		return this;
 	}
@@ -208,8 +220,11 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
      * @param owner 用例设计者
      * @return 类本身
      * @since autest 2.4.0
+     * @deprecated 该方法已无意义，为保证模板可扩展性，可通过调用
+     *             <code>addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_OWNER), owner)</code>方法进行代替
      */
-	public WriteJiraExcelTestCase addOwner(String owner) {
+	@Deprecated
+    public WriteJiraExcelTestCase addOwner(String owner) {
         addContent(caseFieldMap.get(JiraPresetFieldType.FIELD_OWNER), owner);
 		return this;
 	}

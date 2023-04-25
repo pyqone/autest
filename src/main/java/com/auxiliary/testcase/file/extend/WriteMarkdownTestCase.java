@@ -184,42 +184,49 @@ public class WriteMarkdownTestCase extends WriteSingleTempletFile<WriteMarkdownT
 	}
 
 	@Override
+    @Deprecated
 	public WriteMarkdownTestCase addStep(String... stepTexts) {
 		addContent(caseFieldMap.get(CASE_STEP), stepTexts);
 		return this;
 	}
 
 	@Override
+    @Deprecated
 	public WriteMarkdownTestCase addTitle(String titleText) {
 		addContent(caseFieldMap.get(CASE_TITLE), titleText);
 		return this;
 	}
 
 	@Override
+    @Deprecated
 	public WriteMarkdownTestCase addExcept(String... exceptTexts) {
 		addContent(caseFieldMap.get(CASE_EXCEPT), exceptTexts);
 		return this;
 	}
 
 	@Override
+    @Deprecated
 	public WriteMarkdownTestCase addStepAndExcept(String step, String except) {
 		addStep(step);
 		return addExcept(except);
 	}
 
 	@Override
+    @Deprecated
 	public WriteMarkdownTestCase addModule(String module) {
 		addContent(caseFieldMap.get(CASE_MODULE), module);
 		return this;
 	}
 
 	@Override
+    @Deprecated
 	public WriteMarkdownTestCase addPrecondition(String... preconditions) {
 		addContent(caseFieldMap.get(CASE_PRECONDITION), preconditions);
 		return this;
 	}
 
 	@Override
+    @Deprecated
 	public WriteMarkdownTestCase addPriority(String priority) {
 		addContent(caseFieldMap.get(CASE_RANK), priority);
 		return this;
