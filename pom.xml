@@ -164,6 +164,13 @@
 			<artifactId>snakeyaml</artifactId>
 			<version>1.29</version>
 		</dependency>
+		
+		<!-- markdown转脑图工具 -->
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>1.2023.6</version>
+        </dependency>
 	</dependencies>
 
 	<!-- 许可证信息 -->

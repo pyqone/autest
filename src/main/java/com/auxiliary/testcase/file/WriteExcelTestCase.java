@@ -1,15 +1,12 @@
 package com.auxiliary.testcase.file;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.dom4j.Document;
 
-import com.auxiliary.testcase.templet.Case;
 import com.auxiliary.testcase.templet.CaseData;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.excel.WriteExcelTempletFile;
@@ -134,34 +131,6 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 	@Override
     public void relevanceCase(String caseField, String templetField) {
         caseFieldMap.put(templetField, caseField);
-	}
-
-	/**
-     * 用于将测试用例模板（继承自{@link Case}类的方法）所成的测试用例添加到测试用例文件中
-     * <p>
-     * <b>注意：</b>若写入的用例中包含有自动换行字段时，则会在插入内容前，进行自动换行，之后再插入相应内容
-     * </p>
-     *
-     * @param testCase 测试用例生成方法
-     * @return 类本身
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-	public T addCase(Case testCase) {
-		// 获取用例内容
-		HashMap<String, ArrayList<String>> labelMap = testCase.getFieldTextMap();
-		// 获取需要写入的字段集合
-		List<String> fieldList = labelMap.keySet().stream().map(caseFieldMap::get).filter(f -> f != null).collect(Collectors.toList());
-
-		// 遍历当前测试用例模板字段中的内容，将内容写入到相应的文件模板中
-		disposeWriteFieldsContent(fieldList, () -> {
-		    labelMap.forEach((field, content) -> {
-	            addContent(caseFieldMap.get(field), labelMap.get(field).toArray(new String[] {}));
-	        });
-		});
-
-		return (T) this;
 	}
 
     @SuppressWarnings("unchecked")
