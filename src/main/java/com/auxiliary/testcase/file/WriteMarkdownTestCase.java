@@ -46,7 +46,7 @@ public abstract class WriteMarkdownTestCase<T extends WriteMarkdownTestCase<T>> 
 	}
 
     /**
-     * 该方法用于模板与
+     * 该方法用于初始化已知的模板字段与已知的用例字段之间的联系，在构造方法时进行调用，亦可不编写其中内容
      * 
      * @since autest 4.2.0
      */
@@ -62,7 +62,7 @@ public abstract class WriteMarkdownTestCase<T extends WriteMarkdownTestCase<T>> 
      * @since autest 4.2.0
      */
     protected String appendSign(String signType, int signLength, String text) {
-        StringBuilder sign = new StringBuilder(signType);
+        StringBuilder sign = new StringBuilder();
 		for (int count = 0; count < signLength; count++) {
             sign.append(signType);
 		}

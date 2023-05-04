@@ -19,7 +19,7 @@ package com.auxiliary.testcase.file.extend;
  * @since JDK 1.8
  * @since autest 4.2.0
  */
-public class MarkdownPlantumlCasePresetFieldType {
+public class MarkdownPresetFieldType {
     /**
      * 模板“标题”字段
      * 
