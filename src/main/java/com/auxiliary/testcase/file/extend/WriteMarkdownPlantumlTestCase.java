@@ -2,26 +2,22 @@ package com.auxiliary.testcase.file.extend;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.OutputStream;
 import java.util.Optional;
 import java.util.StringJoiner;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.file.FileTemplet;
-import com.auxiliary.tool.file.UnsupportedFileException;
 import com.auxiliary.tool.file.WriteFileException;
-
-import net.sourceforge.plantuml.SourceStringReader;
 
 /**
  * <p>
  * <b>文件名：WriteMarkdownPlantumlTestCase.java</b>
  * </p>
  * <p>
- * <b>用途：</b>用于生成符合PlantUml语法的Markdown形式的测试用例模板，并调用PlantUml依赖提供的方法，生成相应的脑图图片。生成的测试用例按照标题进行分类
+ * <b>用途：</b>用于生成符合PlantUml语法的Markdown形式的测试用例模板，可通过生成文本文件，调用PlantUml依赖提供的方法，生成相应的脑图图片，即调用命令
+ * “{@code java -DPLANTUML_LIMIT_SIZE=图片大小 -jar plantUml的jar包所在路径 -charset UTF-8 md文件所在路径}”进行生成。
  * </p>
  * <p>
  * <b>编码时间：2023年4月28日 上午10:51:43
@@ -83,8 +79,6 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
     protected void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
         // 获取md文件的保存路径
         String mdFilePath = templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString();
-        // 修改文件后缀，生成图片文件的保存路径
-        String imageFilePath = mdFilePath.substring(0, mdFilePath.lastIndexOf(".") + 1) + "png";
 
         // 生成当前用例的markdown内容
         String markdownText = createMarkdownContent(templet, caseStartIndex, caseEndIndex);
@@ -95,9 +89,6 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
         } catch (Exception e) {
             throw new WriteFileException("文件写入异常", e);
         }
-
-        // 生成图片，并进行保存
-        createCaseMindImage(new File(imageFilePath), markdownText);
     }
 
 	@Override
@@ -221,24 +212,5 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
         }
         
         return markdownContent.toString();
-    }
-
-    /**
-     * 该方法用于根据Plantuml的语法创建脑图
-     * 
-     * @param saveFile     需要保存的文件类对象
-     * @param markdownText Plantuml语法文本
-     * @return 当前传入的保存文件类对象
-     * @since autest 4.2.0
-     */
-    public static File createCaseMindImage(File saveFile, String markdownText) {
-        SourceStringReader reader = new SourceStringReader(markdownText);
-        try (OutputStream out = new FileOutputStream(saveFile)) {
-            reader.outputImage(out, 0);
-        } catch (Exception e) {
-            throw new UnsupportedFileException("文件异常，无法写入图片：" + saveFile.getAbsolutePath(), e);
-        }
-
-        return saveFile;
     }
 }
