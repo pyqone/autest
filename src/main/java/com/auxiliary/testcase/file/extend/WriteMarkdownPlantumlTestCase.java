@@ -41,39 +41,39 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
      */
     private final String SIGN_RIGHT = "+";
 
-	/**
-	 * 构造用例写入类，使用默认模板
-	 * <p>
-	 * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
-	 * </p>
-	 */
-	public WriteMarkdownPlantumlTestCase() {
+    /**
+     * 构造用例写入类，使用默认模板
+     * <p>
+     * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
+     * </p>
+     */
+    public WriteMarkdownPlantumlTestCase() {
         super();
-	}
+    }
 
-	/**
-	 * 构造用例写入类，使用默认模板并重新设置文件保存路径
-	 * <p>
-	 * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
-	 * </p>
-	 * 
-	 * @param saveFile 保存路径文件类对象
-	 */
-	public WriteMarkdownPlantumlTestCase(File saveFile) {
-		this();
-		// 重新设置保存路径
-		data.getTemplet().setSaveFile(saveFile);
-	}
+    /**
+     * 构造用例写入类，使用默认模板并重新设置文件保存路径
+     * <p>
+     * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
+     * </p>
+     * 
+     * @param saveFile 保存路径文件类对象
+     */
+    public WriteMarkdownPlantumlTestCase(File saveFile) {
+        this();
+        // 重新设置保存路径
+        data.getTemplet().setSaveFile(saveFile);
+    }
 
-	/**
-	 * 构造用例写入类，并重新设置模板
-	 * 
-	 * @param templet 模板类对象
-	 */
-	public WriteMarkdownPlantumlTestCase(FileTemplet templet) {
-		super(templet);
-		initField();
-	}
+    /**
+     * 构造用例写入类，并重新设置模板
+     * 
+     * @param templet 模板类对象
+     */
+    public WriteMarkdownPlantumlTestCase(FileTemplet templet) {
+        super(templet);
+        initField();
+    }
 
     @Override
     protected void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
@@ -91,15 +91,15 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
         }
     }
 
-	@Override
-	protected void createTempletFile(FileTemplet templet) {
-		File tempFile = new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString());
+    @Override
+    protected void createTempletFile(FileTemplet templet) {
+        File tempFile = new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString());
 
-		File floderFile = tempFile.getParentFile();
-		if (floderFile.exists()) {
-			floderFile.mkdirs();
-		}
-	}
+        File floderFile = tempFile.getParentFile();
+        if (floderFile.exists()) {
+            floderFile.mkdirs();
+        }
+    }
 
     /**
      * 该方法用于重新生成markdown内容
@@ -125,20 +125,19 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
             JSONObject caseJson = caseArrJson.getJSONObject(index);
             // 定义标志
             String signType = index <= centreNum ? SIGN_LEFT : SIGN_RIGHT;
-            
+
             // 拼接用例的标题
-            markdownContent.add(appendSign(signType, 2, String.format(CONTENT_FORMAT,
-                    templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_TITLE, TEMPLET_ATTRI_NAME),
-                    Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_TITLE))
-                            .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
-                            .map(json -> json.getString(KEY_TEXT)).orElse(""))));
+            markdownContent.add(appendSign(signType, 2,
+                    String.format(CONTENT_FORMAT,
+                            templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_TITLE, TEMPLET_ATTRI_NAME),
+                            Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_TITLE))
+                                    .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
+                                    .map(json -> json.getString(KEY_TEXT)).orElse(""))));
 
             // 判断当前是否存在步骤，存在则拼接用例的步骤与预期模块
-            JSONArray stepArrJson = Optional.ofNullable(
-                    caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_STEP))
+            JSONArray stepArrJson = Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_STEP))
                     .map(json -> json.getJSONArray(KEY_DATA)).orElse(new JSONArray());
-            JSONArray expectpArrJson = Optional.ofNullable(
-                    caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_EXPECT))
+            JSONArray expectpArrJson = Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_EXPECT))
                     .map(json -> json.getJSONArray(KEY_DATA)).orElse(new JSONArray());
             if (!stepArrJson.isEmpty()) {
                 markdownContent.add(appendSign(signType, 3, "步骤与预期"));
@@ -146,8 +145,7 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
                     // 拼接步骤
                     markdownContent.add(appendSign(signType, 4,
                             String.format(CONTENT_FORMAT,
-                                    templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_STEP,
-                                            TEMPLET_ATTRI_NAME),
+                                    templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_STEP, TEMPLET_ATTRI_NAME),
                                     Optional.ofNullable(stepArrJson.getJSONObject(stepIndex))
                                             .map(json -> json.getString(KEY_TEXT)).orElse(""))));
                     // 拼接预期，若预期不足，则不进行拼接
@@ -163,8 +161,8 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
             }
 
             // 判断当前是否存在前置条件，存在则拼接用例的前置条件
-            JSONArray preconditionArrJson = Optional.ofNullable(
-                    caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_PRECONDITION))
+            JSONArray preconditionArrJson = Optional
+                    .ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_PRECONDITION))
                     .map(json -> json.getJSONArray(KEY_DATA)).orElse(new JSONArray());
             if (!preconditionArrJson.isEmpty()) {
                 markdownContent.add(appendSign(signType, 3, "前置条件"));
@@ -177,40 +175,44 @@ public class WriteMarkdownPlantumlTestCase extends MarkdownPresetCaseTemplet<Wri
             }
 
             // 拼接用例的优先级
-            markdownContent.add(appendSign(signType, 3, String.format(CONTENT_FORMAT,
-                    templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_RANK, TEMPLET_ATTRI_NAME),
-                    Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_RANK)
-                            .getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
-                            .map(json -> json.getString(KEY_TEXT)).orElse(""))));
+            markdownContent.add(appendSign(signType, 3,
+                    String.format(CONTENT_FORMAT,
+                            templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_RANK, TEMPLET_ATTRI_NAME),
+                            Optional.ofNullable(
+                                    caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_RANK).getJSONArray(KEY_DATA))
+                                    .map(arrJson -> arrJson.getJSONObject(0)).map(json -> json.getString(KEY_TEXT))
+                                    .orElse(""))));
 
             // 拼接用例的所属模块
-            markdownContent.add(appendSign(signType, 3, String.format(CONTENT_FORMAT,
-                    templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_MODULE, TEMPLET_ATTRI_NAME),
-                    Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_MODULE))
-                            .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
-                            .map(json -> json.getString(KEY_TEXT)).orElse(""))));
+            markdownContent.add(appendSign(signType, 3,
+                    String.format(CONTENT_FORMAT,
+                            templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_MODULE, TEMPLET_ATTRI_NAME),
+                            Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_MODULE))
+                                    .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
+                                    .map(json -> json.getString(KEY_TEXT)).orElse(""))));
             // 拼接用例的关键词
-            markdownContent.add(appendSign(signType, 3, String.format(CONTENT_FORMAT,
-                    templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_KEY, TEMPLET_ATTRI_NAME),
-                    Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_KEY))
-                            .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
-                            .map(json -> json.getString(KEY_TEXT)).orElse(""))));
+            markdownContent.add(appendSign(signType, 3,
+                    String.format(CONTENT_FORMAT,
+                            templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_KEY, TEMPLET_ATTRI_NAME),
+                            Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_KEY))
+                                    .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
+                                    .map(json -> json.getString(KEY_TEXT)).orElse(""))));
             // 拼接用例的创建人
-            markdownContent.add(appendSign(signType, 3, String.format(CONTENT_FORMAT,
-                    templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_CREATE_PERSON,
-                            TEMPLET_ATTRI_NAME),
-                    Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_CREATE_PERSON))
-                            .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
-                            .map(json -> json.getString(KEY_TEXT)).orElse(""))));
+            markdownContent.add(appendSign(signType, 3,
+                    String.format(CONTENT_FORMAT,
+                            templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_CREATE_PERSON, TEMPLET_ATTRI_NAME),
+                            Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_CREATE_PERSON))
+                                    .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
+                                    .map(json -> json.getString(KEY_TEXT)).orElse(""))));
             // 拼接用例的创建时间
-            markdownContent.add(appendSign(signType, 3, String.format(CONTENT_FORMAT,
-                    templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_CREATE_DATE,
-                            TEMPLET_ATTRI_NAME),
-                    Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_CREATE_DATE))
-                            .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
-                            .map(json -> json.getString(KEY_TEXT)).orElse(""))));
+            markdownContent.add(appendSign(signType, 3,
+                    String.format(CONTENT_FORMAT,
+                            templet.getFieldAttribute(MarkdownPresetFieldType.FIELD_CREATE_DATE, TEMPLET_ATTRI_NAME),
+                            Optional.ofNullable(caseJson.getJSONObject(MarkdownPresetFieldType.FIELD_CREATE_DATE))
+                                    .map(json -> json.getJSONArray(KEY_DATA)).map(arrJson -> arrJson.getJSONObject(0))
+                                    .map(json -> json.getString(KEY_TEXT)).orElse(""))));
         }
-        
+
         return markdownContent.toString();
     }
 }

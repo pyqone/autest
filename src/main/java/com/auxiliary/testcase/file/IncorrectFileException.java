@@ -23,32 +23,32 @@ import com.auxiliary.AuxiliaryToolsException;
  */
 public class IncorrectFileException extends AuxiliaryToolsException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public IncorrectFileException() {
-		super();
-		
-	}
+    public IncorrectFileException() {
+        super();
 
-	public IncorrectFileException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-		
-	}
+    }
 
-	public IncorrectFileException(String message, Throwable cause) {
-		super(message, cause);
-		
-	}
+    public IncorrectFileException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
 
-	public IncorrectFileException(String message) {
-		super(message);
-		
-	}
+    }
 
-	public IncorrectFileException(Throwable cause) {
-		super(cause);
-		
-	}
+    public IncorrectFileException(String message, Throwable cause) {
+        super(message, cause);
+
+    }
+
+    public IncorrectFileException(String message) {
+        super(message);
+
+    }
+
+    public IncorrectFileException(Throwable cause) {
+        super(cause);
+
+    }
 
 }

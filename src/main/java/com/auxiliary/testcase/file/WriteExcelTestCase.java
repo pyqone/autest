@@ -33,36 +33,36 @@ import com.auxiliary.tool.file.excel.WriteExcelTempletFile;
  */
 @SuppressWarnings("deprecation")
 public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extends WriteExcelTempletFile<T>
-		implements RelevanceTestCaseTemplet<T>, BasicTsetCase<T> {
-	/**
-	 * 用于存储测试用例与测试用例模板字段之间的关联
-	 */
-	protected HashMap<String, String> caseFieldMap = new HashMap<>();
+        implements RelevanceTestCaseTemplet<T>, BasicTsetCase<T> {
+    /**
+     * 用于存储测试用例与测试用例模板字段之间的关联
+     */
+    protected HashMap<String, String> caseFieldMap = new HashMap<>();
 
-	/**
-	 * 通过模板配置xml文件对文件写入类进行构造
-	 * <p>
-	 * 通过该方法构造的写入类为包含模板的写入类，可直接按照字段编写文件内容
-	 * </p>
-	 *
-	 * @param templetXml 模板配置文件
-	 * @param saveFile   文件保存路径
-	 */
-	public WriteExcelTestCase(Document templetXml, File saveFile) {
-		super(templetXml, saveFile);
+    /**
+     * 通过模板配置xml文件对文件写入类进行构造
+     * <p>
+     * 通过该方法构造的写入类为包含模板的写入类，可直接按照字段编写文件内容
+     * </p>
+     *
+     * @param templetXml 模板配置文件
+     * @param saveFile   文件保存路径
+     */
+    public WriteExcelTestCase(Document templetXml, File saveFile) {
+        super(templetXml, saveFile);
         initField();
-	}
+    }
 
-	/**
-	 * 构造用例写入类，并设置一个Sheet页的模板及相应的名称
-	 *
-	 * @param templetName 模板名称
-	 * @param templet     模板类
-	 */
-	public WriteExcelTestCase(String templetName, FileTemplet templet) {
-		super(templetName, templet);
+    /**
+     * 构造用例写入类，并设置一个Sheet页的模板及相应的名称
+     *
+     * @param templetName 模板名称
+     * @param templet     模板类
+     */
+    public WriteExcelTestCase(String templetName, FileTemplet templet) {
+        super(templetName, templet);
         initField();
-	}
+    }
 
     /**
      * 该方法用于初始化已知的模板字段与已知的用例字段之间的联系，在构造方法时进行调用，亦可不编写其中内容
@@ -71,67 +71,68 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
      */
     protected abstract void initField();
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     @Deprecated
-	public T addStep(String... stepTexts) {
-		addContent(caseFieldMap.get(CASE_STEP), stepTexts);
-		return (T) this;
-	}
+    public T addStep(String... stepTexts) {
+        addContent(caseFieldMap.get(CASE_STEP), stepTexts);
+        return (T) this;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     @Deprecated
-	public T addTitle(String titleText) {
-		addContent(caseFieldMap.get(CASE_TITLE), titleText);
-		return (T) this;
-	}
+    public T addTitle(String titleText) {
+        addContent(caseFieldMap.get(CASE_TITLE), titleText);
+        return (T) this;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     @Deprecated
-	public T addExcept(String... exceptTexts) {
-		addContent(caseFieldMap.get(CASE_EXCEPT), exceptTexts);
-		return (T) this;
-	}
+    public T addExcept(String... exceptTexts) {
+        addContent(caseFieldMap.get(CASE_EXCEPT), exceptTexts);
+        return (T) this;
+    }
 
-	@Override
+    @Override
     @Deprecated
-	public T addStepAndExcept(String step, String except) {
-		return disposeWriteFieldsContent(Arrays.asList(caseFieldMap.get(CASE_STEP), caseFieldMap.get(CASE_EXCEPT)), () -> {
-		    addStep(step);
-	        addExcept(except);
-		});
-	}
+    public T addStepAndExcept(String step, String except) {
+        return disposeWriteFieldsContent(Arrays.asList(caseFieldMap.get(CASE_STEP), caseFieldMap.get(CASE_EXCEPT)),
+                () -> {
+                    addStep(step);
+                    addExcept(except);
+                });
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     @Deprecated
-	public T addModule(String module) {
-		addContent(caseFieldMap.get(CASE_MODULE), module);
-		return (T) this;
-	}
+    public T addModule(String module) {
+        addContent(caseFieldMap.get(CASE_MODULE), module);
+        return (T) this;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     @Deprecated
-	public T addPrecondition(String... preconditions) {
-		addContent(caseFieldMap.get(CASE_PRECONDITION), preconditions);
-		return (T) this;
-	}
+    public T addPrecondition(String... preconditions) {
+        addContent(caseFieldMap.get(CASE_PRECONDITION), preconditions);
+        return (T) this;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     @Deprecated
-	public T addPriority(String priority) {
-		addContent(caseFieldMap.get(CASE_RANK), priority);
-		return (T) this;
-	}
+    public T addPriority(String priority) {
+        addContent(caseFieldMap.get(CASE_RANK), priority);
+        return (T) this;
+    }
 
-	@Override
+    @Override
     public void relevanceCase(String caseField, String templetField) {
         caseFieldMap.put(templetField, caseField);
-	}
+    }
 
     @SuppressWarnings("unchecked")
     @Override

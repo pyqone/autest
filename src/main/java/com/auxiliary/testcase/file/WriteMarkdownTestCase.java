@@ -29,21 +29,21 @@ import com.auxiliary.tool.file.WriteSingleTempletFile;
  */
 public abstract class WriteMarkdownTestCase<T extends WriteMarkdownTestCase<T>> extends WriteSingleTempletFile<T>
         implements RelevanceTestCaseTemplet<T> {
-	/**
-	 * 用于存储测试用例与测试用例模板字段之间的关联
-	 */
-	protected HashMap<String, String> caseFieldMap = new HashMap<>();
+    /**
+     * 用于存储测试用例与测试用例模板字段之间的关联
+     */
+    protected HashMap<String, String> caseFieldMap = new HashMap<>();
 
-	/**
+    /**
      * 构造用例写入类，并重新设置模板
      * 
      * @param templet 模板类对象
      * @since autest 4.2.0
      */
-	public WriteMarkdownTestCase(FileTemplet templet) {
-		super(templet);
-		initField();
-	}
+    public WriteMarkdownTestCase(FileTemplet templet) {
+        super(templet);
+        initField();
+    }
 
     /**
      * 该方法用于初始化已知的模板字段与已知的用例字段之间的联系，在构造方法时进行调用，亦可不编写其中内容
@@ -63,22 +63,22 @@ public abstract class WriteMarkdownTestCase<T extends WriteMarkdownTestCase<T>> 
      */
     protected String appendSign(String signType, int signLength, String text) {
         StringBuilder sign = new StringBuilder();
-		for (int count = 0; count < signLength; count++) {
+        for (int count = 0; count < signLength; count++) {
             sign.append(signType);
-		}
+        }
 
-		return String.format("%s %s", sign.toString(), text);
-	}
+        return String.format("%s %s", sign.toString(), text);
+    }
 
-	@Override
-	protected void createTempletFile(FileTemplet templet) {
-		File tempFile = new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString());
+    @Override
+    protected void createTempletFile(FileTemplet templet) {
+        File tempFile = new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString());
 
-		File floderFile = tempFile.getParentFile();
-		if (floderFile.exists()) {
-			floderFile.mkdirs();
-		}
-	}
+        File floderFile = tempFile.getParentFile();
+        if (floderFile.exists()) {
+            floderFile.mkdirs();
+        }
+    }
 
     @Override
     public void relevanceCase(String caseField, String templetField) {

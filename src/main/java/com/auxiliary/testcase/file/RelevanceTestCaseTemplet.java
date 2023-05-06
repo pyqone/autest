@@ -23,7 +23,7 @@ import com.auxiliary.testcase.templet.CaseData;
  * @since autest 2.4.0
  */
 public interface RelevanceTestCaseTemplet<T extends RelevanceTestCaseTemplet<T>> {
-	/**
+    /**
      * 用于将测试用例文件模板中的字段名与测试用例生成类（继承自{@link CaseData}的测试用例生成类）中
      * 的字段进行关联，通过该方法设置关联字段后，可将生成的测试用例写入到测试用例文件中
      * <p>
@@ -34,8 +34,8 @@ public interface RelevanceTestCaseTemplet<T extends RelevanceTestCaseTemplet<T>>
      * @param templetField 需要关联的文件字段，即需要写入的测试用例文件模板中自定义的字段
      * @since autest 2.4.0
      */
-	void relevanceCase(String caseField, String templetField);
-	
+    void relevanceCase(String caseField, String templetField);
+
     /**
      * 该方法用于将测试信息类中所存储的用例内容添加到测试用例模板文件中
      * 
