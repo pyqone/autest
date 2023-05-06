@@ -1,6 +1,5 @@
 package com.auxiliary.testcase.file;
 
-import com.auxiliary.testcase.templet.Case;
 import com.auxiliary.testcase.templet.CaseData;
 
 /**
@@ -14,40 +13,28 @@ import com.auxiliary.testcase.templet.CaseData;
  * <b>编码时间：</b>2021年6月17日上午8:04:22
  * </p>
  * <p>
- * <b>修改时间：</b>2023年2月6日 上午8:44:20
+ * <b>修改时间：</b>2023年4月28日 上午10:36:42
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver1.1
  * @since JDK 1.8
  * @param <T> 子类
  * @since autest 2.4.0
  */
-@SuppressWarnings("deprecation")
 public interface RelevanceTestCaseTemplet<T extends RelevanceTestCaseTemplet<T>> {
-	/**
-     * 用于将测试用例文件模板中的字段名与测试用例生成类（继承自{@link Case}的测试用例生成类）中
+    /**
+     * 用于将测试用例文件模板中的字段名与测试用例生成类（继承自{@link CaseData}的测试用例生成类）中
      * 的字段进行关联，通过该方法设置关联字段后，可将生成的测试用例写入到测试用例文件中
      * <p>
-     * <b>注意：</b>一个模板字段只能指向一个用例字段，但一个用例字段可被多个模板字段指向
+     * <b>注意：</b>一个文件字段只能指向一个用例模板字段，但一个用例模板字段可被多个文件字段指向
      * </p>
      * 
-     * @param caseField    测试用例文件模板字段
-     * @param templetField 需要关联的测试用例字段
+     * @param caseField    测试用例模板字段，即{@link LabelType}枚举类中列举的字段
+     * @param templetField 需要关联的文件字段，即需要写入的测试用例文件模板中自定义的字段
      * @since autest 2.4.0
      */
-	void relevanceCase(String caseField, String templetField);
-	
-	/**
-     * 用于将测试用例模板（继承自{@link Case}类的方法）所成的测试用例添加到测试用例文件中
-     * 
-     * @param testCase 测试用例生成方法
-     * @return 类本身
-     * @since autest 2.4.0
-     * @deprecated 该方法已由{@link #addCase(CaseData)}方法代替，将在4.1.0或后续版本中删除
-     */
-    @Deprecated
-	T addCase(Case testCase);
+    void relevanceCase(String caseField, String templetField);
 
     /**
      * 该方法用于将测试信息类中所存储的用例内容添加到测试用例模板文件中
