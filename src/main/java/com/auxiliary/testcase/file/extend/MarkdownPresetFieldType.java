@@ -25,110 +25,110 @@ public class MarkdownPresetFieldType {
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_TITLE = JiraPresetFieldType.FIELD_TITLE;
+    public static final String FIELD_TITLE = JiraPresetFieldType.FIELD_TITLE;
     /**
      * 模板“步骤”字段
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_STEP = JiraPresetFieldType.FIELD_STEP;
+    public static final String FIELD_STEP = JiraPresetFieldType.FIELD_STEP;
     /**
      * 模板“预期”字段
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_EXPECT = JiraPresetFieldType.FIELD_EXCEPT;
+    public static final String FIELD_EXPECT = JiraPresetFieldType.FIELD_EXCEPT;
     /**
      * 模板“模块”字段
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_MODULE = JiraPresetFieldType.FIELD_MODULE;
+    public static final String FIELD_MODULE = JiraPresetFieldType.FIELD_MODULE;
     /**
      * 模板“创建人”字段
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_CREATE_PERSON = JiraPresetFieldType.FIELD_OWNER;
+    public static final String FIELD_CREATE_PERSON = JiraPresetFieldType.FIELD_OWNER;
     /**
      * 模板“关键词”字段
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_KEY = "key";
+    public static final String FIELD_KEY = "key";
     /**
      * 模板“创建时间”字段
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_CREATE_DATE = "createDate";
+    public static final String FIELD_CREATE_DATE = "createDate";
     /**
      * 模板“前置条件”字段
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_PRECONDITION = JiraPresetFieldType.FIELD_PRECONDITION;
+    public static final String FIELD_PRECONDITION = JiraPresetFieldType.FIELD_PRECONDITION;
     /**
      * 模板“优先级”字段
      * 
      * @since autest 4.2.0
      */
-    public final static String FIELD_RANK = JiraPresetFieldType.FIELD_RANK;
+    public static final String FIELD_RANK = JiraPresetFieldType.FIELD_RANK;
 
     /**
      * 模板“标题”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_TITLE = "标题";
+    public static final String TITLE_TITLE = "标题";
     /**
      * 模板“步骤”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_STEP = "步骤";
+    public static final String TITLE_STEP = "步骤";
     /**
      * 模板“预期”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_EXPECT = "预期";
+    public static final String TITLE_EXPECT = "预期";
     /**
      * 模板“模块”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_MODULE = "模块";
+    public static final String TITLE_MODULE = "模块";
     /**
      * 模板“创建人”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_CREATE_PERSON = "创建人";
+    public static final String TITLE_CREATE_PERSON = "创建人";
     /**
      * 模板“关键词”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_KEY = "关键词";
+    public static final String TITLE_KEY = "关键词";
     /**
      * 模板“创建时间”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_CREATE_DATE = "创建时间";
+    public static final String TITLE_CREATE_DATE = "创建时间";
     /**
      * 模板“前置条件”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_PRECONDITION = "前置条件";
+    public static final String TITLE_PRECONDITION = "前置条件";
     /**
      * 模板“优先级”名称
      * 
      * @since autest 4.2.0
      */
-    public final static String TITLE_RANK = "优先级";
+    public static final String TITLE_RANK = "优先级";
 
     /**
      * 优先级1级

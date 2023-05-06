@@ -36,7 +36,7 @@ public abstract class MarkdownPresetCaseTemplet<T extends WriteMarkdownTestCase<
     /**
      * 模板中的name属性
      */
-    protected final static String TEMPLET_ATTRI_NAME = "name";
+    protected static final String TEMPLET_ATTRI_NAME = "name";
 
     /**
      * 构造用例写入类，使用默认模板
