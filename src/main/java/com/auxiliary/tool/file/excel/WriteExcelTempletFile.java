@@ -871,10 +871,10 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
                 // 添加有序列表标记
                 switch(type) {
                 case ENGLISH_LOWER:
-                    text = String.format("%s.%s", DisposeCodeUtils.arabicNum2EnglishLetters(textIndex + 1, true), text);
+                    text = String.format("%s.%s", DisposeCodeUtils.arabicNum2EnglishLetters(textIndex, true), text);
                     break;
                 case ENGLISH_UPPER:
-                    text = String.format("%s.%s", DisposeCodeUtils.arabicNum2EnglishLetters(textIndex + 1, false), text);
+                    text = String.format("%s.%s", DisposeCodeUtils.arabicNum2EnglishLetters(textIndex, false), text);
                     break;
                 case ROMAN_NUM_LOWER:
                     text = String.format("%s.%s", DisposeCodeUtils.arabicNum2RomanNum(textIndex + 1, true), text);
