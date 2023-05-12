@@ -258,13 +258,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
      */
     @Deprecated
     public ExcelFileTemplet setAutoSerialNumber(boolean isAuto, String... fields) {
-        // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
-        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
-        for (String field : fields) {
-            addFieldAttribute(field, KEY_AUTO_NUMBER, String.valueOf(isAuto));
-        }
-
-        return this;
+        return setOrderedListSign(OrderedListSignType.ARABIC_NUM, fields);
     }
 
     /**
