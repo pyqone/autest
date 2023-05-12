@@ -19,7 +19,7 @@ package com.auxiliary.tool.common.enums;
  * @since JDK 1.8
  * @since autest 4.2.0
  */
-public enum OrderedSignType {
+public enum OrderedListSignType {
     /**
      * 阿拉伯数字
      * 
@@ -62,7 +62,7 @@ public enum OrderedSignType {
      * @param code 编码
      * @since autest 4.2.0
      */
-    private OrderedSignType(int code) {
+    private OrderedListSignType(int code) {
         this.code = code;
     }
 
@@ -83,8 +83,8 @@ public enum OrderedSignType {
      * @return 相应编码的枚举
      * @since autest 4.2.0
      */
-    public OrderedSignType valueOf(int code) {
-        for (OrderedSignType type : values()) {
+    public OrderedListSignType valueOf(int code) {
+        for (OrderedListSignType type : values()) {
             if (type.code == code) {
                 return type;
             }
