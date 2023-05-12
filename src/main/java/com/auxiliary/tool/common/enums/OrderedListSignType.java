@@ -83,7 +83,7 @@ public enum OrderedListSignType {
      * @return 相应编码的枚举
      * @since autest 4.2.0
      */
-    public OrderedListSignType valueOf(int code) {
+    public static OrderedListSignType valueOf(int code) {
         for (OrderedListSignType type : values()) {
             if (type.code == code) {
                 return type;

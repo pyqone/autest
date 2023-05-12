@@ -42,6 +42,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.common.enums.OrderedListSignType;
 import com.auxiliary.tool.common.enums.OrientationType;
 import com.auxiliary.tool.data.TableData;
 import com.auxiliary.tool.file.FileTemplet;
@@ -51,6 +52,7 @@ import com.auxiliary.tool.file.MarkFieldLink;
 import com.auxiliary.tool.file.MarkTextColor;
 import com.auxiliary.tool.file.MarkTextFont;
 import com.auxiliary.tool.file.TableFileReadUtil;
+import com.auxiliary.tool.file.TempletAutoAddListSign;
 import com.auxiliary.tool.file.WriteFileException;
 import com.auxiliary.tool.file.WriteMultipleTempletFile;
 import com.auxiliary.tool.regex.RegexType;
@@ -169,10 +171,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
                         .filter(f -> !f.isEmpty()).filter(f -> f.matches("\\d+")).orElse("0")), fieldId);
 
                 // 存储字段是否自动编号
-                excel.setAutoSerialNumber(
-                        Boolean.valueOf(Optional.ofNullable(fieldElement.attributeValue("index"))
-                                .filter(f -> !f.isEmpty()).filter(f -> f.matches("(true)|(false)")).orElse("false")),
-                        fieldId);
+                excel.setOrderedListSign(OrderedListSignType.ARABIC_NUM, fieldId);
             }
 
             // 获取模板中的数据有效性信息
@@ -751,8 +750,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
                     fieldContentJson, contentJson));
 
             // 根据样式与内容，拼接文本
-            appendContent(content, style, textJson.getString(KEY_TEXT),
-                    fieldTempletJson.getBooleanValue(ExcelFileTemplet.KEY_AUTO_NUMBER), textIndex);
+            appendContent(content, style, textJson.getString(KEY_TEXT), fieldTempletJson, textIndex);
         }
 
         // 由于统一字段单元格样式一致，故此处取最后一个样式作为单元格的样式
@@ -802,8 +800,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
                     fieldContentJson, contentJson));
 
             // 根据样式与内容，拼接文本
-            appendContent(content, style, textJson.getString(KEY_TEXT),
-                    fieldTempletJson.getBooleanValue(ExcelFileTemplet.KEY_AUTO_NUMBER), textIndex);
+            appendContent(content, style, textJson.getString(KEY_TEXT), fieldTempletJson, textIndex);
         }
 
         // 遍历需要写入的数据内容，根据内容下标，创建相应的单元格
@@ -827,12 +824,70 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
      * @param isAutoNumber 是否自动编号
      * @param textIndex    文本下标
      * @return 拼接后的富文本对象
+     * @deprecated 该方法已由{@link #appendContent(XSSFRichTextString, XSSFCellStyle, String, String, int)}方法代替，
+     *             且不再进行引用，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     protected XSSFRichTextString appendContent(XSSFRichTextString content, XSSFCellStyle style, String text,
             boolean isAutoNumber, int textIndex) {
         // 获取单元格内容，判断内容是否需要自动标号
         if (isAutoNumber) {
             text = String.format("%d.%s", (textIndex + 1), text);
+        }
+
+        // 判断当前文本前是否包含了文本，若存在文本，则添加换行
+        text = (content.length() == 0 ? "" : "\n") + text;
+        content.append(text, style.getFont());
+
+        return content;
+    }
+
+    /**
+     * 用于对需要写入单元格的文本进行拼接
+     *
+     * @param content     需要拼接的富文本内容
+     * @param style       样式
+     * @param text        文本内容
+     * @param templetJson 模板json
+     * @param textIndex   文本下标
+     * @return 拼接后的富文本对象
+     */
+    protected XSSFRichTextString appendContent(XSSFRichTextString content, XSSFCellStyle style, String text,
+            JSONObject fieldTempletJson, int textIndex) {
+        // 判断当前字段是否需要自动添加列表标记
+        if (fieldTempletJson.getBooleanValue(TempletAutoAddListSign.KEY_AUTO_LIST_SIGN)) {
+            // 获取标记类型编码
+            int signCode = fieldTempletJson.getIntValue(TempletAutoAddListSign.KEY_SIGN_TYPE);
+            // 根据编码类型，判断添加无序或者有序标记
+            if (signCode == ExcelFileTemplet.UNORDERED_LIST_SIGN_TYPE_CODE) {
+                // 获取无序列表标记的内容
+                String unorderedListSignText = fieldTempletJson.getString(TempletAutoAddListSign.KEY_SIGN_CONTENT);
+                // 向文本中添加标记
+                text = String.format("%s %s", unorderedListSignText, text);
+            } else {
+                // 将标记编码转换为有序列表编码，若转换不成功，则默认为以阿拉伯数字标记
+                OrderedListSignType type = Optional.ofNullable(OrderedListSignType.valueOf(signCode))
+                        .orElse(OrderedListSignType.ARABIC_NUM);
+                // 添加有序列表标记
+                switch(type) {
+                case ENGLISH_LOWER:
+                    text = String.format("%s.%s", DisposeCodeUtils.arabicNum2EnglishLetters(textIndex + 1, true), text);
+                    break;
+                case ENGLISH_UPPER:
+                    text = String.format("%s.%s", DisposeCodeUtils.arabicNum2EnglishLetters(textIndex + 1, false), text);
+                    break;
+                case ROMAN_NUM_LOWER:
+                    text = String.format("%s.%s", DisposeCodeUtils.arabicNum2RomanNum(textIndex + 1, true), text);
+                    break;
+                case ROMAN_NUM_UPPER:
+                    text = String.format("%s.%s", DisposeCodeUtils.arabicNum2RomanNum(textIndex + 1, false), text);
+                    break;
+                case ARABIC_NUM:
+                default:
+                    text = String.format("%d.%s", (textIndex + 1), text);
+                    break;
+                }
+            }
         }
 
         // 判断当前文本前是否包含了文本，若存在文本，则添加换行
@@ -1161,31 +1216,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
             // 数据有效性对象
             sheet.addValidationData(new XSSFDataValidationHelper(sheet).createValidation(constraint, regions));
         }
-    }
-
-    /**
-     * 用于将列数字下标转换为英文下标，数字下标计数从0开始，即0为第一列
-     *
-     * @param numberIndex 列数字下标
-     * @return 列英文下标
-     * @deprecated 该方法已由{@link DisposeCodeUtils#arabicNum2EnglishLetters(int)}方法代替，将在4.1.0或之后版本删除
-     */
-    @Deprecated
-    protected String num2CharIndex(int numberIndex) {
-        return DisposeCodeUtils.arabicNum2RomanNum(numberIndex);
-    }
-
-    /**
-     * 用于将英文下标转换为数字下标，转换的数字下标从0开始，即0为第一列，英文下标允许传入小写、大写字母
-     *
-     * @param charIndex 列英文下标
-     * @return 列数字下标
-     * @throws IncorrectIndexException 当英文下标不正确时抛出的异常
-     * @deprecated 该方法已由{@link DisposeCodeUtils#englishLetters2ArabicNum(String)}方法代替，将在4.1.0或之后版本删除
-     */
-    @Deprecated
-    protected int char2NumIndex(String charIndex) {
-        return DisposeCodeUtils.englishLetters2ArabicNum(charIndex);
     }
 
     /**

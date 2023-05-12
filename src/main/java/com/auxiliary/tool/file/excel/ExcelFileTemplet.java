@@ -84,6 +84,13 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
     public static final String KEY_DATA = "data";
 
     /**
+     * 定义无序列表标记类型的默认编码
+     * 
+     * @since autest 4.2.0
+     */
+    public static final int UNORDERED_LIST_SIGN_TYPE_CODE = -1;
+
+    /**
      * 用于缓存当前模板中字段集合转换成的字段数组
      */
     protected String[] fields = null;
@@ -441,7 +448,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
             // 标记当前字段需要进行自动添加列表标记
             addFieldAttribute(field, KEY_AUTO_LIST_SIGN, true);
             // 记录当前需要使用的无序标记
-            addFieldAttribute(field, KEY_SIGN_TYPE, -1);
+            addFieldAttribute(field, KEY_SIGN_TYPE, UNORDERED_LIST_SIGN_TYPE_CODE);
             // 记录无序标记的样式
             addFieldAttribute(field, KEY_SIGN_CONTENT, signText);
         }

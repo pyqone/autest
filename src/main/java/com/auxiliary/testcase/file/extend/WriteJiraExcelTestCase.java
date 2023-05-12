@@ -8,6 +8,7 @@ import org.dom4j.Document;
 import com.auxiliary.testcase.file.WriteExcelTestCase;
 import com.auxiliary.testcase.templet.AbstractPresetCaseTemplet;
 import com.auxiliary.testcase.templet.LabelType;
+import com.auxiliary.tool.common.enums.OrderedListSignType;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.excel.ExcelFileTemplet;
 
@@ -297,7 +298,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
         jiraTemplet.setWide(30.88, JiraPresetFieldType.FIELD_TITLE);
 
         // 设置需要编号的字段
-        jiraTemplet.setAutoSerialNumber(true, JiraPresetFieldType.FIELD_OBJECTIVE,
+        jiraTemplet.setOrderedListSign(OrderedListSignType.ARABIC_NUM, JiraPresetFieldType.FIELD_OBJECTIVE,
                 JiraPresetFieldType.FIELD_PRECONDITION, JiraPresetFieldType.FIELD_STEP,
                 JiraPresetFieldType.FIELD_EXCEPT);
         // 设置需要换行的字段
