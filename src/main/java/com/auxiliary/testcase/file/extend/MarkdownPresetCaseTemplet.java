@@ -25,7 +25,7 @@ import com.auxiliary.tool.file.FileTemplet;
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
- * @since autest 
+ * @since autest 4.2.0
  */
 public abstract class MarkdownPresetCaseTemplet<T extends WriteMarkdownTestCase<T>> extends WriteMarkdownTestCase<T> {
     /**
