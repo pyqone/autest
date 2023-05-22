@@ -12,7 +12,6 @@ import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
 import com.auxiliary.tool.regex.ConstType;
-import com.auxiliary.tool.regex.RegexType;
 import com.google.common.base.Objects;
 
 /**
@@ -85,9 +84,11 @@ public class Placeholder {
      * @since autest 4.2.0
      */
     public Placeholder setPlaceholderSign(String startSign, String endSign) {
-        // 将占位符前后标志转换为不被正则转义的内容
-        this.startSign = DisposeCodeUtils.disposeRegexSpecialSymbol(startSign);
-        this.endSign = DisposeCodeUtils.disposeRegexSpecialSymbol(endSign);
+        if (startSign != null && !startSign.isEmpty() && endSign != null && !endSign.isEmpty()) {
+            // 将占位符前后标志转换为不被正则转义的内容
+            this.startSign = DisposeCodeUtils.disposeRegexSpecialSymbol(startSign);
+            this.endSign = DisposeCodeUtils.disposeRegexSpecialSymbol(endSign);
+        }
 
         return this;
     }
@@ -161,8 +162,6 @@ public class Placeholder {
      * </pre></code>
      * </p>
      * <p>
-     * <b>注意：</b>为加快若传入的内容不包含正则相关的内容，则仍按照词语进行存储，其规则可参考枚举类{@link RegexType#REGEX_REGEX}
-     * </p>
      *
      * @param functions 替换词语使用的函数
      * @return 类本身
@@ -173,12 +172,7 @@ public class Placeholder {
             return this;
         }
 
-        // 获取正则内容，判断传入的规则中是否包含正则字符，若不包含，则仍按照词语进行存储
-        if (regex.matches(RegexType.REGEX_REGEX.getRegex())) {
-            replaceFunctionMap.put(regex, function);
-        } else {
-            addReplaceWord(regex, function.apply(regex));
-        }
+        replaceFunctionMap.put(regex, function);
 
         return this;
     }
@@ -189,12 +183,19 @@ public class Placeholder {
      * 集合的键为占位符的词语，值为替换的方法，可参考{@link #addReplaceFunction(String, DataFunction)}的方法添加
      * </p>
      * 
-     * @param functionMap 替换方法集合
+     * @param functionMap  替换方法集合
+     * @param isRepeatSkip 是否跳过已存储的占位符正则
      * @return 类本身
      * @since autest 4.2.0
      */
-    public Placeholder addReplaceFunction(Map<String, DataFunction> functionMap) {
-        functionMap.forEach(this::addReplaceFunction);
+    public Placeholder addReplaceFunction(Map<String, DataFunction> functionMap, boolean isRepeatSkip) {
+        if (functionMap != null && !functionMap.isEmpty()) {
+            functionMap.forEach((regex, function) -> {
+                if (!replaceFunctionMap.containsKey(regex) || !isRepeatSkip) {
+                    addReplaceFunction(regex, function);
+                }
+            });
+        }
         return this;
     }
 
@@ -207,12 +208,18 @@ public class Placeholder {
      * @return 替换方法集合
      * @since autest 4.2.0
      */
-    public Map<String, DataFunction> getReplaceFunction() {
+    public Map<String, DataFunction> getReplaceFunctionMap() {
         return new HashMap<>(replaceFunctionMap);
     }
 
+    /**
+     * 该方法用于清空添加待替换的词语及相应的替换方法集合
+     * 
+     * @return 替换方法集合
+     * @since autest 4.2.0
+     */
     public Map<String, DataFunction> clearReplaceFunction() {
-        Map<String, DataFunction> replaceFunctionMap = getReplaceFunction();
+        Map<String, DataFunction> replaceFunctionMap = getReplaceFunctionMap();
         replaceFunctionMap.clear();
 
         return replaceFunctionMap;
@@ -237,12 +244,19 @@ public class Placeholder {
     /**
      * 该方法用于添加一组待替换的词语及相应的替换内容
      * 
-     * @param wordMap 占位符词语集合
+     * @param wordMap      占位符词语集合
+     * @param isRepeatSkip 是否跳过已存储的占位符词语
      * @return 类本身
      * @since autest 4.2.0
      */
-    public Placeholder addReplaceWord(Map<String, String> wordMap) {
-        wordMap.forEach(this::addReplaceWord);
+    public Placeholder addReplaceWord(Map<String, String> wordMap, boolean isRepeatSkip) {
+        if (wordMap != null && !wordMap.isEmpty()) {
+            wordMap.forEach((word, replaceWord) -> {
+                if (!replaceWordMap.containsKey(word) || !isRepeatSkip) {
+                    addReplaceWord(word, replaceWord);
+                }
+            });
+        }
         return this;
     }
 
@@ -271,6 +285,23 @@ public class Placeholder {
         replaceWordMap.clear();
 
         return replaceWordMap;
+    }
+
+    /**
+     * 该方法用于根据已有的占位符类对象，将其替换词语和替换公式复制到当前类对象中
+     * 
+     * @param placeholder  占位符类对象
+     * @param isRepeatSkip 是否跳过已存储的占位符词语
+     * @return 类本身
+     * @since autest 4.2.0
+     */
+    public Placeholder addPlaceholder(Placeholder placeholder, boolean isRepeatSkip) {
+        if (placeholder != null) {
+            addReplaceFunction(placeholder.getReplaceFunctionMap(), isRepeatSkip);
+            addReplaceWord(placeholder.getReplaceWordMap(), isRepeatSkip);
+        }
+
+        return this;
     }
 
     /**
@@ -336,7 +367,7 @@ public class Placeholder {
             while (m.find()) {
                 // 去除标记符号，获取关键词
                 String signKey = m.group();
-                String key = signKey.substring(startSign.length(), signKey.length() - signKey.indexOf(endSign));
+                String key = signKey.substring(startSign.length(), signKey.lastIndexOf(endSign));
                 // 调用替换词语的方法，对占位符进行替换
                 String replaceKey = replaceWord(key);
                 // 判断调用替换方法后，其返回的词语与替换词语是否一致，若不一致，则进行替换，否则，将不做处理
