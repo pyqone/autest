@@ -16,6 +16,7 @@ import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
+import com.auxiliary.tool.common.AddPlaceholder;
 import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.common.VoidSupplier;
 import com.google.common.base.Objects;
@@ -49,7 +50,7 @@ import com.google.common.base.Objects;
  * @since autest 2.0.0
  * @param <T> 子类
  */
-public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
+public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements AddPlaceholder {
     public static final String KEY_CONTENT = "content";
     public static final String KEY_TEXT = "text";
     public static final String KEY_DEFAULT = "default";
@@ -142,16 +143,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
         setReplactWord(new DataDriverFunction(word, text -> replaceWord));
     }
 
-    /**
-     * 该方法用于添加被替换的词语以及替换的内容
-     * <p>
-     * 在调用{@link #addContent(String, String...)}等方法编写内容时，用相应的占位符来表示待替换的词语，默认使用“#xx#”
-     * </p>
-     * 
-     * @param word        占位符词语
-     * @param replaceWord 被替换的内容
-     * @since autest 4.2.0
-     */
+    @Override
     public void addReplaceWord(String word, String replaceWord) {
         placeholder.addReplaceWord(word, replaceWord);
     }
@@ -194,39 +186,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
         addReplaceFunction(functions.getRegex(), functions.getFunction());
     }
 
-    /**
-     * 该方法用于添加匹配公式与处理方式
-     * <p>
-     * 该方法允许添加待替换词语的处理方式，在写入用例时，若指定的待替换内容符合此方法指定的正则时，则会使用存储的替换方式， 对词语进行替换。例如：
-     * <code><pre>
-     * {@literal @}Test
-     * public void setReplactWordTest_DataDriverFunction() {
-     *  // 定义词语匹配规则和处理方式，当匹配到正则后，将获取“随机：”后的字母
-     *  // 若字母为“N”，则随机生成两位数字字符串
-     *  // 若字母为“Y”，则随机生成两位中文字符串
-     *  test.setReplactWord(new DataDriverFunction("随机：[NC]", text -&gt; {
-     *      return "N".equals(text.split("：")[1]) ? RandomString.randomString(2, 2, StringMode.NUM)
-     *              : RandomString.randomString(2, 2, StringMode.CH);
-     *  }));
-     *
-     *  // 随机生成两位数字
-     *  test.addContent("title", "内容：#随机：N#").end();
-     *  // 随机生成两位中文
-     *  test.addContent("title", "内容：#随机：C#").end();
-     *
-     *  // 控制台输出生成的内容json串
-     *  System.out.println(test.toWriteFileJson());
-     * }
-     * </pre></code>
-     * </p>
-     * <p>
-     * 部分定义方法可调用工具类{@link Functions}类获取
-     * </p>
-     * 
-     * @param regex    匹配方法的规则
-     * @param function 替换的方法
-     * @since autest 4.2.0
-     */
+    @Override
     public void addReplaceFunction(String regex, DataFunction function) {
         placeholder.addReplaceFunction(regex, function);
     }

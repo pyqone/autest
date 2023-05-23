@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
+import com.auxiliary.tool.common.AddPlaceholder;
 import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.common.Placeholder;
@@ -50,15 +51,16 @@ import okhttp3.RequestBody;
  * @since JDK 1.8
  * @since autest 3.3.0
  */
-public class EasyHttp {
+public class EasyHttp  implements AddPlaceholder {
     /**
      * 占位符起始符号
      */
-    private final String FUNCTION_START_SIGN = "@\\{";
+    private final String FUNCTION_START_SIGN = "@{";
     /**
      * 占位符结束符号
      */
-    private final String FUNCTION_END_SIGN = "\\}";
+    private final String FUNCTION_END_SIGN = "}";
+
     /**
      * 占位符标记
      */
@@ -102,7 +104,7 @@ public class EasyHttp {
      * 
      * @since autest 4.2.0
      */
-    private Placeholder placeholder = new Placeholder("@{", "}");
+    private Placeholder placeholder = new Placeholder(FUNCTION_START_SIGN, FUNCTION_END_SIGN);
 
     /**
      * 断言失败是否抛出异常
@@ -136,23 +138,9 @@ public class EasyHttp {
         return this;
     }
 
-    /**
-     * 该方法用于添加数据处理函数
-     * <p>
-     * 可通过lambda添加公式对数据处理的方式，例如，将文本中的存在的"a()"全部替换为文本“test”，则可按如下写法： <code><pre>
-     * addFunction("a\\(\\)", text -> "test");
-     * </pre></code>
-     * </p>
-     * 
-     * @param regex    匹配替换词语的正则
-     * @param function 词语替换处理函数
-     * @return 类本身
-     * @since autest 4.2.0
-     */
-    public EasyHttp addFunction(String regex, DataFunction function) {
+    @Override
+    public void addReplaceFunction(String regex, DataFunction function) {
         placeholder.addReplaceFunction(regex, function);
-
-        return this;
     }
 
     /**
@@ -162,11 +150,18 @@ public class EasyHttp {
      * @param value 替换内容
      * @return 类本身
      * @since autest 3.3.0
+     * @deprecated 该方法由{@link #addReplaceWord(String, String)}代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     public EasyHttp addReplaceKey(String key, String value) {
         placeholder.addReplaceWord(key, value);
 
         return this;
+    }
+
+    @Override
+    public void addReplaceWord(String word, String replaceWord) {
+        placeholder.addReplaceWord(word, replaceWord);
     }
 
     /**
