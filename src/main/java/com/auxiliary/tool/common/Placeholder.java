@@ -41,11 +41,23 @@ public class Placeholder {
      */
     private String startSign = "";
     /**
+     * 占位符起始标志的正则表达式
+     * 
+     * @since autest 4.2.0
+     */
+    private String startSignRegex = "";
+    /**
      * 占位符结束标志
      * 
      * @since autest 4.2.0
      */
     private String endSign = "";
+    /**
+     * 占位符结束标志的正则表达式
+     * 
+     * @since autest 4.2.0
+     */
+    private String endSignRegex = "";
 
     /**
      * 循环替换的深度，默认10次
@@ -86,8 +98,10 @@ public class Placeholder {
     public Placeholder setPlaceholderSign(String startSign, String endSign) {
         if (startSign != null && !startSign.isEmpty() && endSign != null && !endSign.isEmpty()) {
             // 将占位符前后标志转换为不被正则转义的内容
-            this.startSign = DisposeCodeUtils.disposeRegexSpecialSymbol(startSign);
-            this.endSign = DisposeCodeUtils.disposeRegexSpecialSymbol(endSign);
+            this.startSignRegex = DisposeCodeUtils.disposeRegexSpecialSymbol(startSign);
+            this.endSignRegex = DisposeCodeUtils.disposeRegexSpecialSymbol(endSign);
+            this.startSign = startSign;
+            this.endSign = endSign;
         }
 
         return this;
@@ -351,7 +365,7 @@ public class Placeholder {
      */
     public String replaceText(String text) {
         // 判断需要才处理的内容是否为空或是否包含公式标志，若存在，则返回content
-        String functionSign = String.format("%s.+?%s", startSign, endSign);
+        String functionSign = String.format("%s.+?%s", startSignRegex, endSignRegex);
         if (text == null || text.isEmpty()) {
             return text;
         }
