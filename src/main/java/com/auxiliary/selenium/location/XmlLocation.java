@@ -13,6 +13,7 @@ import org.dom4j.io.SAXReader;
 
 import com.auxiliary.selenium.element.ElementType;
 import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElementType;
+import com.auxiliary.tool.common.Placeholder;
 
 /**
  * <p>
@@ -263,27 +264,20 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
      * @return 完整的定位内容
      */
     private String replaceValue(Element element, String value) {
+        Placeholder placeholder = new Placeholder(this.placeholder);
         // 判断元素是否存在需要替换的内容，若不存在，则不进行替换
-        if (!value.matches(String.format(".*%s.*%s.*", startRegex, endRegex))) {
+        if (!placeholder.isContainsPlaceholder(value)) {
             return value;
         }
 
-        String repalceText = "";
-
-        // 遍历元素的所有属性，并一一进行替换
+        // 添加已有的词语
         for (Attribute att : element.attributes()) {
-            // 定义属性替换符
-            repalceText = startRegex + att.getName() + endRegex;
-            // 替换value中所有与repalceText匹配的字符
-            value = value.replaceAll(repalceText, att.getValue());
+            placeholder.addReplaceWord(att.getName(), att.getValue());
         }
+        // 添加特殊的占位符
+        placeholder.addReplaceWord("name", element.getParent().attributeValue("name"));
 
-        // 替换父层节点的name属性
-        repalceText = startRegex + "name" + endRegex;
-        // 替换value中所有与repalceText匹配的字符
-        value = value.replaceAll(repalceText, element.getParent().attributeValue("name"));
-
-        return value;
+        return placeholder.replaceText(value);
     }
 
     /**

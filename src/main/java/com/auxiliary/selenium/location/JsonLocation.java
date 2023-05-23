@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.selenium.element.ElementType;
 import com.auxiliary.selenium.location.UndefinedElementException.ExceptionElementType;
+import com.auxiliary.tool.common.Placeholder;
 
 /**
  * <p>
@@ -210,23 +211,22 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 		// 读取模板内容
 		String tempValueText = templateJson.getString(tempText);
 
+		
+		Placeholder placeholder = new Placeholder(this.placeholder);
 		// 判断元素是否存在需要替换的内容，若不存在，则不进行替换
-		if (!tempValueText.matches(String.format(".*%s.*%s.*", startRegex, endRegex))) {
+        if (!placeholder.isContainsPlaceholder(tempValueText)) {
 			return tempValueText;
 		}
+		
+        // 添加已有的词语
+        for(String key : locationJson.keySet()) {
+            placeholder.addReplaceWord(key, locationJson.getString(key));
+        }
+        // 添加特殊的占位符
+        placeholder.addReplaceWord("name", name);
 
-		// 遍历所有键值对，将相应的内容进行存储
-		for (String key : locationJson.keySet()) {
-			String matchKey = startRegex + key + endRegex;
-			tempValueText = tempValueText.replaceAll(matchKey, locationJson.getString(key));
-		}
-
-        // 替换特殊的占位符
-        // 替换name占位符
-        String matchKey = startRegex + "name" + endRegex;
-        tempValueText = tempValueText.replaceAll(matchKey, name);
-
-		return tempValueText;
+        // 替换占位符的内容
+        return placeholder.replaceText(tempValueText);
 	}
 
 	@Override

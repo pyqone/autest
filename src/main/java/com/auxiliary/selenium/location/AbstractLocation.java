@@ -2,7 +2,10 @@ package com.auxiliary.selenium.location;
 
 import java.util.Optional;
 
+import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.selenium.element.ElementType;
+import com.auxiliary.tool.common.AddPlaceholder;
+import com.auxiliary.tool.common.Placeholder;
 
 /**
  * <p>
@@ -22,28 +25,37 @@ import com.auxiliary.selenium.element.ElementType;
  * @version Ver1.0
  *
  */
-public abstract class AbstractLocation implements ReadLocation {
+public abstract class AbstractLocation implements ReadLocation, AddPlaceholder {
     /**
      * 定义替换符开始标志
-     * @deprecated 该标识符已无意义，将在autest Ver2.8.0或之后的版本中删除
      */
-    @Deprecated
     public static final String START_SIGN = "${";
     /**
      * 定义替换符结束标志
-     * @deprecated 该标识符已无意义，将在autest Ver2.8.0或之后的版本中删除
      */
-    @Deprecated
     public static final String END_SIGN = "}";
 
     /**
      * 元素占位符起始标识，默认{@link ReadLocation#MATCH_START_SIGN}
+     * 
+     * @deprecated 该属性已无意义，占位符相关的内容由占位符类对象代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     protected String startRegex = ReadLocation.MATCH_START_SIGN;
     /**
      * 元素占位符结束标识，默认{@link ReadLocation#MATCH_END_SIGN}
+     * 
+     * @deprecated 该属性已无意义，占位符相关的内容由占位符类对象代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     protected String endRegex = ReadLocation.MATCH_END_SIGN;
+
+    /**
+     * 占位符类对象
+     * 
+     * @since autest 4.2.0
+     */
+    protected Placeholder placeholder = new Placeholder(START_SIGN, END_SIGN);
 
     /**
      * 元素名称
@@ -51,19 +63,28 @@ public abstract class AbstractLocation implements ReadLocation {
     protected String name = "";
 
     @Override
-    public void setElementPlaceholder(String startRegex, String endRegex) {
-        this.startRegex = startRegex;
-        this.endRegex = endRegex;
+    public void setElementPlaceholder(String startSign, String endSign) {
+        placeholder.setPlaceholderSign(startSign, endSign);
     }
 
     @Override
     public String getStartElementPlaceholder() {
-        return startRegex;
+        return placeholder.getPlaceholderSign()[0];
     }
 
     @Override
     public String getEndElementPlaceholder() {
-        return endRegex;
+        return placeholder.getPlaceholderSign()[1];
+    }
+
+    @Override
+    public void addReplaceWord(String word, String replaceWord) {
+        placeholder.addReplaceWord(word, replaceWord);
+    }
+
+    @Override
+    public void addReplaceFunction(String regex, DataFunction function) {
+        placeholder.addReplaceFunction(regex, function);
     }
 
     /**

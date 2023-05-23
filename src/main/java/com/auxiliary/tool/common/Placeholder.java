@@ -88,6 +88,20 @@ public class Placeholder {
     }
 
     /**
+     * 根据已有的占位符对象，构造新的占位符类对象
+     * 
+     * @param placeholder 已有的占位符类对象
+     */
+    public Placeholder(Placeholder placeholder) {
+        // 复制起止标志
+        String[] signs = placeholder.getPlaceholderSign();
+        setPlaceholderSign(signs[0], signs[1]);
+        
+        // 复制存储占位符内容
+        addPlaceholder(placeholder, true);
+    }
+
+    /**
      * 该方法用于设置占位符的起始与结束标志
      * 
      * @param startSign 占位符起始标志
@@ -407,5 +421,19 @@ public class Placeholder {
         }
 
         return text;
+    }
+
+    /**
+     * 该方法用于判断传入的文本中是否包含占位符
+     * <p>
+     * <b>注意：</b>该方法只判断传入文本中是否包含占位符起止标志，不判断占位符中的内容是否包含在已存储的替换内容中
+     * </p>
+     * 
+     * @param text 需要判断的文本
+     * @return 判断结果
+     * @since autest 4.2.0
+     */
+    public boolean isContainsPlaceholder(String text) {
+        return text.matches(String.format(".*%s.*%s.*", startSignRegex, endSignRegex));
     }
 }
