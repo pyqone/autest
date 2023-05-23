@@ -42,6 +42,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.common.enums.OrderedListSignType;
 import com.auxiliary.tool.common.enums.OrientationType;
 import com.auxiliary.tool.data.TableData;
@@ -480,6 +481,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
     }
 
     @Override
+    @Deprecated
     public T addContent(String field, int index, Map<String, DataFunction> replaceWordMap, String... contents) {
         String[] newContents = new String[contents.length];
         // 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
@@ -497,6 +499,26 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
         }
 
         return super.addContent(field, index, replaceWordMap, newContents);
+    }
+
+    @Override
+    public T addContent(String field, int index, Placeholder placeholder, String... contents) {
+        String[] newContents = new String[contents.length];
+        // 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
+        for (int i = 0; i < contents.length; i++) {
+            try {
+                // 尝试将传入的内容转换为数字，以获取数据有效性的内容
+                int optionIndex = Integer.valueOf(contents[i]);
+                // 获取模板中的数据有效性内容
+                newContents[i] = Optional.ofNullable(data.getTemplet().getTempletAttribute(ExcelFileTemplet.KEY_DATA))
+                        .map(o -> (JSONObject) o).map(json -> json.getJSONArray(field))
+                        .map(list -> list.getString(analysisIndex(list.size(), optionIndex, true))).orElse(contents[i]);
+            } catch (Exception e) {
+                newContents[i] = contents[i];
+            }
+        }
+
+        return super.addContent(field, index, placeholder, newContents);
     }
 
     @Override
