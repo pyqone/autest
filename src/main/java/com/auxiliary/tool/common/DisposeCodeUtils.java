@@ -456,8 +456,23 @@ public class DisposeCodeUtils {
      * @since autest 4.0.0
      */
     public static String arabicNum2RomanNum(int arabicNum) {
+        return arabicNum2RomanNum(arabicNum, false);
+    }
+
+    /**
+     * 该方法用于将3999以内的阿拉伯数字转换为罗马数字
+     * <p>
+     * <b>注意：</b>转换后的罗马数字为大写字母，若转换的数字超过3999，则无法进行表示，故不建议使用
+     * </p>
+     * 
+     * @param arabicNum   阿拉伯数字
+     * @param isLowerCase 是否输出小写字母
+     * @return 罗马数字
+     * @since autest 4.2.0
+     */
+    public static String arabicNum2RomanNum(int arabicNum, boolean isLowerCase) {
         StringBuilder content = new StringBuilder();
-        
+
         for (Integer num : romaNumLevelMap.keySet()) {
             // 对当前数字进行判断
             if (arabicNum >= num) {
@@ -477,8 +492,12 @@ public class DisposeCodeUtils {
                 break;
             }
         }
-        
-        return content.toString();
+
+        if (isLowerCase) {
+            return content.toString().toLowerCase();
+        } else {
+            return content.toString();
+        }
     }
 
     /**
@@ -492,8 +511,58 @@ public class DisposeCodeUtils {
      * 
      * @param numberIndex 列数字下标
      * @return 列英文下标
+     * @since autest 4.0.0
      */
     public static String arabicNum2EnglishLetters(int numberIndex) {
+        return arabicNum2EnglishLetters(numberIndex, false);
+    }
+
+    /**
+     * 用于将英文字母表示的数字序号转换为阿拉伯数字序号，英文下标忽略大小写
+     * <p>
+     * 转换方式可参考方法{@link #arabicNum2EnglishLetters(int)}
+     * </p>
+     *
+     * @param charIndex 列英文下标
+     * @return 列数字下标
+     * @throws IncorrectIndexException 当英文下标不正确时抛出的异常
+     * @since autest 4.0.0
+     */
+    public static int englishLetters2ArabicNum(String charIndex) {
+        // 判断传入的内容是否符合正则
+        if (charIndex != null && !charIndex.matches("[a-zA-Z]+")) {
+            throw new IncorrectIndexException("错误的英文下标：" + charIndex);
+        }
+
+        // 将所有的字母转换为大写
+        charIndex = charIndex.toUpperCase();
+
+        // 将字符串下标转换为字符数组
+        char[] indexs = charIndex.toCharArray();
+        // 初始化数字下标
+        int numberIndex = 0;
+        // 遍历所有字符，计算相应的值
+        for (int i = 0; i < indexs.length; i++) {
+            // 按照“(字母对应数字) * 26 ^ (字母位下标)”的公式对计算的数字进行累加，得到对应的数字下标
+            numberIndex += ((indexs[i] - 'A' + 1) * Math.pow(26, indexs.length - i - 1));
+        }
+
+        return numberIndex;
+    }
+
+    /**
+     * 用于将阿拉伯数字序号转换为以英文字母表示的数字序号
+     * <p>
+     * 数字转换的方法为，根据英文字母的顺序，0则转换为字母A，1转换为字母B，以此类推；当表示完26个字母后，则继续从A开始，在其后添加字母，
+     * 例如，27转换为AA，28转换为AB，类似于Excel表格的计数方式
+     * </p>
+     * 
+     * @param numberIndex 列数字下标
+     * @param isLowerCase 是否输出小写字母
+     * @return 列英文下标
+     * @since autest 4.2.0
+     */
+    public static String arabicNum2EnglishLetters(int numberIndex, boolean isLowerCase) {
         // 存储列文本信息
         String indexText = "";
         // 转换下标，使下标变为可计算的下标
@@ -516,38 +585,27 @@ public class DisposeCodeUtils {
         }
 
         // 返回下标的文本
-        return indexText;
+        if (isLowerCase) {
+            return indexText.toLowerCase();
+        } else {
+            return indexText;
+        }
     }
 
     /**
-     * 用于将英文字母表示的数字序号转换为阿拉伯数字序号，英文下标忽略大小写
-     * <p>
-     * 转换方式可参考方法{@link #arabicNum2EnglishLetters(int)}
-     * </p>
-     *
-     * @param charIndex 列英文下标
-     * @return 列数字下标
-     * @throws IncorrectIndexException 当英文下标不正确时抛出的异常
+     * 该方法用于重复拼接指定次数的字符串
+     * 
+     * @param str         待拼接的字符串
+     * @param repeatCount 需要重复拼接的次数
+     * @return 拼接后的字符串
+     * @since autest 4.2.0
      */
-    public static int englishLetters2ArabicNum(String charIndex) {
-        // 判断传入的内容是否符合正则
-        if (charIndex != null && !charIndex.matches("[a-zA-Z]+")) {
-            throw new IncorrectIndexException("错误的英文下标：" + charIndex);
+    public static String repeatString(String str, int repeatCount) {
+        StringBuilder newStr = new StringBuilder();
+        for (int i = 0; i < repeatCount; i++) {
+            newStr.append(str);
         }
-
-        // 将所有的字母转换为大写
-        charIndex = charIndex.toUpperCase();
-
-        // 将字符串下标转换为字符数组
-        char[] indexs = charIndex.toCharArray();
-        // 初始化数字下标
-        int numberIndex = 0;
-        // 遍历所有字符，计算相应的值
-        for (int i = 0; i < indexs.length; i++) {
-            // 按照“(字母对应数字) * 26 ^ (字母位下标)”的公式对计算的数字进行累加，得到对应的数字下标
-            numberIndex += ((indexs[i] - 'A' + 1) * Math.pow(26, indexs.length - i - 1));
-        }
-
-        return numberIndex;
+        
+        return newStr.toString();
     }
 }

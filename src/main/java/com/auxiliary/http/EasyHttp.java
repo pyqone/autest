@@ -16,8 +16,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
+import com.auxiliary.tool.common.AddPlaceholder;
 import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.date.TimeUnit;
 import com.auxiliary.tool.regex.ConstType;
 
@@ -40,24 +42,25 @@ import okhttp3.RequestBody;
  * <b>编码时间：2020年6月18日上午7:02:54
  * </p>
  * <p>
- * <b>修改时间：2022年8月5日 下午3:50:31
+ * <b>修改时间：2023年5月23日 上午11:28:54
  * </p>
  *
  *
  * @author 彭宇琦
- * @version Ver2.0
+ * @version Ver2.1
  * @since JDK 1.8
  * @since autest 3.3.0
  */
-public class EasyHttp {
+public class EasyHttp implements AddPlaceholder {
     /**
      * 占位符起始符号
      */
-    private final String FUNCTION_START_SIGN = "@\\{";
+    private final String FUNCTION_START_SIGN = "@{";
     /**
      * 占位符结束符号
      */
-    private final String FUNCTION_END_SIGN = "\\}";
+    private final String FUNCTION_END_SIGN = "}";
+
     /**
      * 占位符标记
      */
@@ -80,7 +83,10 @@ public class EasyHttp {
 
     /**
      * 存储提词内容
+     * 
+     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
      */
+    @Deprecated
     private HashMap<String, String> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储断言结果
@@ -88,8 +94,17 @@ public class EasyHttp {
     private Set<String> assertResultSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储公式内容
+     * 
+     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
      */
+    @Deprecated
     private HashMap<String, DataFunction> functionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
+     * 存储占位符类对象
+     * 
+     * @since autest 4.2.0
+     */
+    private Placeholder placeholder = new Placeholder(FUNCTION_START_SIGN, FUNCTION_END_SIGN);
 
     /**
      * 断言失败是否抛出异常
@@ -111,16 +126,21 @@ public class EasyHttp {
      * 可添加{@link Functions}类中预设的函数
      * </p>
      *
-     * @param function 数据处理函数
+     * @param functions 数据处理函数
      * @return 类本身
      * @since autest 3.3.0
      */
-    public EasyHttp addFunction(DataDriverFunction function) {
-        if (function != null) {
-            functionMap.put(function.getRegex(), function.getFunction());
+    public EasyHttp addFunction(DataDriverFunction functions) {
+        if (functions != null) {
+            placeholder.addReplaceFunction(functions.getRegex(), functions.getFunction());
         }
 
         return this;
+    }
+
+    @Override
+    public void addReplaceFunction(String regex, DataFunction function) {
+        placeholder.addReplaceFunction(regex, function);
     }
 
     /**
@@ -130,13 +150,18 @@ public class EasyHttp {
      * @param value 替换内容
      * @return 类本身
      * @since autest 3.3.0
+     * @deprecated 该方法由{@link #addReplaceWord(String, String)}代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     public EasyHttp addReplaceKey(String key, String value) {
-        Optional.ofNullable(key).filter(k -> !k.isEmpty()).ifPresent(k -> {
-            extractMap.put(k, Optional.ofNullable(value).orElse(""));
-        });
+        placeholder.addReplaceWord(key, value);
 
         return this;
+    }
+
+    @Override
+    public void addReplaceWord(String word, String replaceWord) {
+        placeholder.addReplaceWord(word, replaceWord);
     }
 
     /**
@@ -147,7 +172,7 @@ public class EasyHttp {
      * @since autest 3.3.0
      */
     public String getReplaceKey(String key) {
-        return extractMap.get(key);
+        return placeholder.replaceWord(key);
     }
 
     /**
@@ -208,12 +233,12 @@ public class EasyHttp {
         // 处理请求头信息
         Map<String, String> newHeadMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
         interInfo.getRequestHeaderMap()
-                .forEach((key, value) -> newHeadMap.put(disposeContent(key), disposeContent(value)));
+                .forEach((key, value) -> newHeadMap.put(placeholder.replaceText(key), placeholder.replaceText(value)));
 
         // 添加cookies信息
         String cookiesExpression = interInfo.getCookieExpression();
         if (!cookiesExpression.isEmpty()) {
-            newHeadMap.put("Cookie", disposeContent(cookiesExpression));
+            newHeadMap.put("Cookie", placeholder.replaceText(cookiesExpression));
         }
 
         // 对接口进行请求，获取响应类
@@ -221,20 +246,20 @@ public class EasyHttp {
         // 获取请求体内容，若请求体为字符串，则对请求体进行处理
         Object bodyContent = body.getValue();
         if (bodyContent instanceof String) {
-            bodyContent = disposeContent((String) bodyContent);
+            bodyContent = placeholder.replaceText((String) bodyContent);
         } else if (bodyContent instanceof List) {
             for (Entry<String, Object> data : (List<Entry<String, Object>>) bodyContent) {
                 Object dataValue = data.getValue();
                 if (!(dataValue instanceof File)) {
-                    data.setValue(disposeContent(dataValue.toString()));
+                    data.setValue(placeholder.replaceText(dataValue.toString()));
                 }
             }
         }
 
         // 获取接口的超时时间
         Entry<Long, TimeUnit> connectTime = interInfo.getConnectTime();
-        EasyResponse response = requst(interInfo.getRequestType(), disposeContent(interInfo.toUrlString()), newHeadMap,
-                body.getKey(), bodyContent, connectTime.getKey(), connectTime.getValue());
+        EasyResponse response = requst(interInfo.getRequestType(), placeholder.replaceText(interInfo.toUrlString()),
+                newHeadMap, body.getKey(), bodyContent, connectTime.getKey(), connectTime.getValue());
         // 设置响应体解析字符集
         response.setCharsetName(interInfo.getCharsetname());
         // 设置响应体内容格式
@@ -246,10 +271,10 @@ public class EasyHttp {
             // 获取传参
             String saveName = json.getString(ExtractResponse.JSON_EXTRACT_SAVE_NAME);
             SearchType searchType = SearchType.typeText2Type(json.getString(ExtractResponse.JSON_EXTRACT_SEARCH));
-            String paramName = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_PARAM_NAME));
-            String xpath = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_XPATH));
-            String lb = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_LB));
-            String rb = disposeContent(json.getString(ExtractResponse.JSON_EXTRACT_RB));
+            String paramName = placeholder.replaceText(json.getString(ExtractResponse.JSON_EXTRACT_PARAM_NAME));
+            String xpath = placeholder.replaceText(json.getString(ExtractResponse.JSON_EXTRACT_XPATH));
+            String lb = placeholder.replaceText(json.getString(ExtractResponse.JSON_EXTRACT_LB));
+            String rb = placeholder.replaceText(json.getString(ExtractResponse.JSON_EXTRACT_RB));
             int index = Integer.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_ORD));
 
             // 存储提词结果
@@ -260,12 +285,12 @@ public class EasyHttp {
         assertResultSet.clear();
         interInfo.getAssertRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
             // 获取传参
-            String assertRegex = disposeContent(json.getString(AssertResponse.JSON_ASSERT_ASSERT_REGEX));
+            String assertRegex = placeholder.replaceText(json.getString(AssertResponse.JSON_ASSERT_ASSERT_REGEX));
             SearchType searchType = SearchType.typeText2Type(json.getString(AssertResponse.JSON_ASSERT_SEARCH));
-            String paramName = disposeContent(json.getString(AssertResponse.JSON_ASSERT_PARAM_NAME));
-            String xpath = disposeContent(json.getString(AssertResponse.JSON_ASSERT_XPATH));
-            String lb = disposeContent(json.getString(AssertResponse.JSON_ASSERT_LB));
-            String rb = disposeContent(json.getString(AssertResponse.JSON_ASSERT_RB));
+            String paramName = placeholder.replaceText(json.getString(AssertResponse.JSON_ASSERT_PARAM_NAME));
+            String xpath = placeholder.replaceText(json.getString(AssertResponse.JSON_ASSERT_XPATH));
+            String lb = placeholder.replaceText(json.getString(AssertResponse.JSON_ASSERT_LB));
+            String rb = placeholder.replaceText(json.getString(AssertResponse.JSON_ASSERT_RB));
             int index = Integer.valueOf(json.getString(AssertResponse.JSON_ASSERT_ORD));
 
             // 断言
@@ -349,7 +374,10 @@ public class EasyHttp {
      * @param content 待替换文本
      * @return 处理后的文本
      * @since autest 3.3.0
+     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
      */
+    @SuppressWarnings("unused")
+    @Deprecated
     private String disposeContent(String content) {
         // 判断需要才处理的内容是否为空或是否包含公式标志，若存在，则返回content
         String matchPrefix = ".*";

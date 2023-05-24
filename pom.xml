@@ -5,7 +5,7 @@
 
 	<groupId>com.gitee.pyqone</groupId>
 	<artifactId>autest</artifactId>
-	<version>4.1.0</version>
+	<version>4.2.0</version>
 	<packaging>jar</packaging>
 
 	<url>https://gitee.com/pyqone/autest</url>
@@ -164,6 +164,13 @@
 			<artifactId>snakeyaml</artifactId>
 			<version>1.29</version>
 		</dependency>
+		
+		<!-- markdown转脑图工具 -->
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>1.2023.6</version>
+        </dependency>
 	</dependencies>
 
 	<!-- 许可证信息 -->

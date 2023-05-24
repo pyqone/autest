@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.selenium.location.ReadLocation;
 import com.auxiliary.sikuli.element.ElementLocationInfo;
+import com.auxiliary.tool.common.AddPlaceholder;
+import com.auxiliary.tool.common.Placeholder;
 
 /**
  * <p>
@@ -26,15 +29,15 @@ import com.auxiliary.sikuli.element.ElementLocationInfo;
  * @since JDK 1.8
  * @since autest 3.0.0
  */
-public abstract class AbstractSikuliLocation {
+public abstract class AbstractSikuliLocation implements AddPlaceholder {
     /**
      * 定义用于正则的默认替换符开始标记
      */
-    public static final String MATCH_START_SIGN = "\\$\\{";
+    public static final String MATCH_START_SIGN = "${";
     /**
      * 定义用于正则的默认替换符结束标记
      */
-    public static final String MATCH_END_SIGN = "\\}";
+    public static final String MATCH_END_SIGN = "}";
 
     /**
      * 定义元素路径信息拼接的格式
@@ -51,12 +54,25 @@ public abstract class AbstractSikuliLocation {
 
     /**
      * 元素占位符起始标识，默认{@link ReadLocation#MATCH_START_SIGN}
+     * 
+     * @deprecated 该属性已无意义，占位符相关的内容由占位符类对象代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     protected String startRegex = ReadLocation.MATCH_START_SIGN;
     /**
      * 元素占位符结束标识，默认{@link ReadLocation#MATCH_END_SIGN}
+     * 
+     * @deprecated 该属性已无意义，占位符相关的内容由占位符类对象代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     protected String endRegex = ReadLocation.MATCH_END_SIGN;
+
+    /**
+     * 占位符类对象
+     * 
+     * @since autest 4.2.0
+     */
+    protected Placeholder placeholder = new Placeholder(MATCH_START_SIGN, MATCH_END_SIGN);
 
     /**
      * 存储元素信息集合，建议将该数据进行缓存，以减少不必要的麻烦处理
@@ -88,13 +104,12 @@ public abstract class AbstractSikuliLocation {
      * <b>注意：</b>该方法接收的标识符是正则表达式，若传入的标识符为特殊符号（如：*），则需要使用双反斜杠来转义（如：\\*）
      * </p>
      *
-     * @param startRegex 占位符起始标识
-     * @param endRegex   占位符结束标识
+     * @param startSign 占位符起始标识
+     * @param endSign   占位符结束标识
      * @since autest 3.0.0
      */
-    public void setElementPlaceholder(String startRegex, String endRegex) {
-        this.startRegex = startRegex;
-        this.endRegex = endRegex;
+    public void setElementPlaceholder(String startSign, String endSign) {
+        placeholder.setPlaceholderSign(startSign, endSign);
     }
 
     /**
@@ -104,7 +119,7 @@ public abstract class AbstractSikuliLocation {
      * @since autest 3.0.0
      */
     public String getStartElementPlaceholder() {
-        return startRegex;
+        return placeholder.getPlaceholderSign()[0];
     }
 
     /**
@@ -114,7 +129,17 @@ public abstract class AbstractSikuliLocation {
      * @since autest 3.0.0
      */
     public String getEndElementPlaceholder() {
-        return endRegex;
+        return placeholder.getPlaceholderSign()[1];
+    }
+
+    @Override
+    public void addReplaceWord(String word, String replaceWord) {
+        placeholder.addReplaceWord(word, replaceWord);
+    }
+
+    @Override
+    public void addReplaceFunction(String regex, DataFunction function) {
+        placeholder.addReplaceFunction(regex, function);
     }
 
     /**

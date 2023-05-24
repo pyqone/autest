@@ -3,6 +3,7 @@ package com.auxiliary.selenium.location;
 import java.util.ArrayList;
 
 import com.auxiliary.selenium.element.ElementType;
+import com.auxiliary.tool.common.Placeholder;
 
 /**
  * <p>
@@ -24,11 +25,17 @@ import com.auxiliary.selenium.element.ElementType;
 public interface ReadLocation {
     /**
      * 定义用于正则的替换符开始标记
+     * 
+     * @deprecated 占位符相关的内容由元素模板读取基类的占位符类对象代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     public static final String MATCH_START_SIGN = "\\$\\{";
     /**
      * 定义用于正则的替换符结束标记
+     * 
+     * @deprecated 占位符相关的内容由元素模板读取基类的占位符类对象代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     public static final String MATCH_END_SIGN = "\\}";
 
     /**
@@ -89,10 +96,12 @@ public interface ReadLocation {
 
     /**
      * 该方法用于设置自定义的元素占位符标识
-     * <p><b>注意：</b>该方法接收的标识符是正则表达式，若传入的标识符为特殊符号（如：*），则需要使用双反斜杠来转义（如：\\*）</p>
+     * <p>
+     * <b>注意：</b>该方法接收的标识符是正则表达式，若传入的标识符为特殊符号（如：*），则需要使用双反斜杠来转义（如：\\*）
+     * </p>
      *
      * @param startRegex 占位符起始标识
-     * @param endRegex 占位符结束标识
+     * @param endRegex   占位符结束标识
      * @since autest 2.7.0
      */
     public abstract void setElementPlaceholder(String startRegex, String endRegex);
@@ -112,4 +121,12 @@ public interface ReadLocation {
      * @since autest 2.7.0
      */
     public abstract String getEndElementPlaceholder();
+
+    /**
+     * 该方法用于返回占位符类对象
+     * 
+     * @return 占位符类对象
+     * @since autest 4.2.0
+     */
+    public abstract Placeholder getPlaceholder();
 }

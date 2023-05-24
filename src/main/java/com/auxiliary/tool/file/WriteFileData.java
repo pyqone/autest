@@ -22,7 +22,7 @@ import com.auxiliary.tool.regex.ConstType;
  * <b>编码时间：</b>2021年8月19日下午6:49:44
  * </p>
  * <p>
- * <b>修改时间：</b>2022年2月8日上午8:40:27
+ * <b>修改时间：</b>2023年5月22日 下午5:30:44
  * </p>
  *
  * @author 彭宇琦
@@ -56,7 +56,10 @@ public class WriteFileData {
     private String tempName = "";
     /**
      * 存储待替换的词语以及被替换的词语
+     * 
+     * @deprecated 该属性已无意义，占位符替换及添加方法已写入到{@link WriteTempletFile}类中，相关属性与方法将在4.3.0或后续版本中删除
      */
+    @Deprecated
     private HashMap<String, DataFunction> replaceWordMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
@@ -127,7 +130,9 @@ public class WriteFileData {
      * 用于添加待替换的词语及相应的替换方法
      *
      * @param functions 替换词语使用的函数
+     * @deprecated 该属性已无意义，占位符替换及添加方法已写入到{@link WriteTempletFile}类中，相关属性与方法将在4.3.0或后续版本中删除
      */
+    @Deprecated
     public void addReplaceWord(DataDriverFunction functions) {
         if (functions == null) {
             return;
@@ -246,7 +251,9 @@ public class WriteFileData {
      * 用于返回当前模板中需要替换的词语集合
      *
      * @return 替换的词语集合
+     * @deprecated 该属性已无意义，占位符替换及添加方法已写入到{@link WriteTempletFile}类中，相关属性与方法将在4.3.0或后续版本中删除
      */
+    @Deprecated
     public Map<String, DataFunction> getReplaceWordMap() {
         return replaceWordMap;
     }
