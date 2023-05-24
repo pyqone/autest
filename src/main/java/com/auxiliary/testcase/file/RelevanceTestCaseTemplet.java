@@ -1,6 +1,7 @@
 package com.auxiliary.testcase.file;
 
 import com.auxiliary.testcase.templet.CaseData;
+import com.auxiliary.testcase.templet.LabelType;
 
 /**
  * <p>

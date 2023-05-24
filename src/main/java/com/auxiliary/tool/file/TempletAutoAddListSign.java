@@ -29,7 +29,7 @@ public interface TempletAutoAddListSign<T extends TempletAutoAddListSign<T>> {
      */
     public static final String KEY_AUTO_LIST_SIGN = "autoListSign";
     /**
-     * 标记模板json中的signType字段，表示列表标记的类型，有序标记则读取{@link OrderedSignType}中枚举的code值，无序枚举则用“-1”表示
+     * 标记模板json中的signType字段，表示列表标记的类型，有序标记则读取{@link OrderedListSignType}中枚举的code值，无序枚举则用“-1”表示
      * 
      * @since autest 4.2.0
      */

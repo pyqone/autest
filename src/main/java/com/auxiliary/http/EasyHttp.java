@@ -51,7 +51,7 @@ import okhttp3.RequestBody;
  * @since JDK 1.8
  * @since autest 3.3.0
  */
-public class EasyHttp  implements AddPlaceholder {
+public class EasyHttp implements AddPlaceholder {
     /**
      * 占位符起始符号
      */
@@ -259,8 +259,7 @@ public class EasyHttp  implements AddPlaceholder {
         // 获取接口的超时时间
         Entry<Long, TimeUnit> connectTime = interInfo.getConnectTime();
         EasyResponse response = requst(interInfo.getRequestType(), placeholder.replaceText(interInfo.toUrlString()),
-                newHeadMap,
-                body.getKey(), bodyContent, connectTime.getKey(), connectTime.getValue());
+                newHeadMap, body.getKey(), bodyContent, connectTime.getKey(), connectTime.getValue());
         // 设置响应体解析字符集
         response.setCharsetName(interInfo.getCharsetname());
         // 设置响应体内容格式

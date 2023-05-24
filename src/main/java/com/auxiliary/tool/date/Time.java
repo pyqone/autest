@@ -303,7 +303,7 @@ public class Time implements Comparable<Time> {
      * 该方法用于以临时指定的格式输出当前设置的日期时间，通过该方法设置的格式化时间不会影响通过{@link #setTimeFormat(String)}方法设置的时间格式，
      * 具体的设置方法可参考{@link #setTimeFormat(String)}
      * 
-     * @param timeRegex 格式化规则
+     * @param pattern 格式化规则
      * @return 格式化后的日期时间
      * @since autest 4.2.0
      */

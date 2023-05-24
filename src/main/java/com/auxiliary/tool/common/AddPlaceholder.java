@@ -60,7 +60,6 @@ public interface AddPlaceholder {
      * 
      * @param regex    需要替换的内容正则表达式
      * @param function 替换词语使用的函数
-     * @return 类本身
      * @since autest 4.2.0
      */
     public void addReplaceFunction(String regex, DataFunction function);

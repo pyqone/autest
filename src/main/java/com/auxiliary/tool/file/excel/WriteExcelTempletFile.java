@@ -846,7 +846,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
      * @param isAutoNumber 是否自动编号
      * @param textIndex    文本下标
      * @return 拼接后的富文本对象
-     * @deprecated 该方法已由{@link #appendContent(XSSFRichTextString, XSSFCellStyle, String, String, int)}方法代替，
+     * @deprecated 该方法已由{@link #appendContent(XSSFRichTextString, XSSFCellStyle, String, JSONObject, int)}方法代替，
      *             且不再进行引用，将在4.3.0或后续版本中删除
      */
     @Deprecated
@@ -867,11 +867,11 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
     /**
      * 用于对需要写入单元格的文本进行拼接
      *
-     * @param content     需要拼接的富文本内容
-     * @param style       样式
-     * @param text        文本内容
-     * @param templetJson 模板json
-     * @param textIndex   文本下标
+     * @param content          需要拼接的富文本内容
+     * @param style            样式
+     * @param text             文本内容
+     * @param fieldTempletJson 模板json
+     * @param textIndex        文本下标
      * @return 拼接后的富文本对象
      */
     protected XSSFRichTextString appendContent(XSSFRichTextString content, XSSFCellStyle style, String text,
