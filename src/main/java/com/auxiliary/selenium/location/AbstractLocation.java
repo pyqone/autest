@@ -87,6 +87,11 @@ public abstract class AbstractLocation implements ReadLocation, AddPlaceholder {
         placeholder.addReplaceFunction(regex, function);
     }
 
+    @Override
+    public Placeholder getPlaceholder() {
+        return placeholder;
+    }
+
     /**
      * 用于将读取到的元素类型的文本值转换为元素类型枚举类对象
      *

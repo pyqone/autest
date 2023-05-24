@@ -1,7 +1,9 @@
 package com.auxiliary.tool.common;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -58,6 +60,12 @@ public class Placeholder {
      * @since autest 4.2.0
      */
     private String endSignRegex = "";
+    /**
+     * 占位符正则表达式
+     * 
+     * @since autest 4.2.0
+     */
+    private String functionSign = "";
 
     /**
      * 循环替换的深度，默认10次
@@ -116,6 +124,8 @@ public class Placeholder {
             this.endSignRegex = DisposeCodeUtils.disposeRegexSpecialSymbol(endSign);
             this.startSign = startSign;
             this.endSign = endSign;
+
+            functionSign = String.format("%s.+?%s", startSignRegex, endSignRegex);
         }
 
         return this;
@@ -379,33 +389,28 @@ public class Placeholder {
      * @since autest 4.2.0
      */
     public String replaceText(String text) {
-        // 判断需要才处理的内容是否为空或是否包含公式标志，若存在，则返回content
-        String functionSign = String.format("%s.+?%s", startSignRegex, endSignRegex);
         if (text == null || text.isEmpty()) {
             return text;
         }
         
+        StringBuilder textBuilder = new StringBuilder(text);
         // 根据替换深度，循环对词语进行替换；若其内不包含需要替换的内容时，则结束循环
         // 存储上一次查找的占位符词语
         Set<String> doneReplaceWordSet = new HashSet<>();
         for (int i = 0; i < replaceDepth && text.matches(String.format(".*%s.*", functionSign)); i++) {
             // 存储当前查找的占位符词语
             Set<String> nowReplaceWordSet = new HashSet<>();
-            // 通过函数标志对文本中的函数或方法进行提取
-            Matcher m = Pattern.compile(functionSign).matcher(text);
-            while (m.find()) {
-                // 去除标记符号，获取关键词
-                String signKey = m.group();
-                String key = signKey.substring(startSign.length(), signKey.lastIndexOf(endSign));
+            processorText(textBuilder.toString(), (matcher, key) -> {
                 // 调用替换词语的方法，对占位符进行替换
                 String replaceKey = replaceWord(key);
                 // 判断调用替换方法后，其返回的词语与替换词语是否一致，若不一致，则进行替换，否则，将不做处理
                 if (!Objects.equal(key, replaceKey)) {
-                    text = text.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey), replaceKey);
+                    textBuilder.replace(0, textBuilder.length(),
+                            matcher.replaceAll(Matcher.quoteReplacement(replaceKey)));
                 }
                 // 添加当前查找到的占位符词语
                 nowReplaceWordSet.add(key);
-            }
+            });
 
             // 两层判断：
             // 1. 判断当前是否还存在替换词语
@@ -420,7 +425,29 @@ public class Placeholder {
             doneReplaceWordSet.addAll(nowReplaceWordSet);
         }
 
-        return text;
+        return textBuilder.toString();
+    }
+
+    /**
+     * 该方法用于提取文本内容中的所有占位符词语，提取的词语不包含占位符起止标志，其返回的Set集合为有序的集合
+     * 
+     * @param text 查找占位符的文本
+     * @return 文本中的占位符词语集合
+     * @since autest 4.2.0
+     */
+    public List<String> getPlaceholderWord(String text) {
+        List<String> wordList = new ArrayList<>();
+
+        if (text == null || text.isEmpty()) {
+            return wordList;
+        }
+        
+        // 通过函数标志对文本中的函数或方法进行提取
+        processorText(text, (matcher, key) -> {
+            wordList.add(key);
+        });
+
+        return wordList;
     }
 
     /**
@@ -434,6 +461,61 @@ public class Placeholder {
      * @since autest 4.2.0
      */
     public boolean isContainsPlaceholder(String text) {
-        return text.matches(String.format(".*%s.*%s.*", startSignRegex, endSignRegex));
+        return text.matches(String.format(".*%s.*", functionSign));
+    }
+
+    /**
+     * 该方法用于对文本内容进行处理，以统一管理相同类型不同处理的方法
+     * <p>
+     * <b>注意：</b>该方法不进行文本为空的判断，请在调用方法前确认text内容
+     * </p>
+     * 
+     * @param text          需要查找占位符的文本
+     * @param textProcessor 文本处理方法
+     * @since autest 4.2.0
+     */
+    private void processorText(String text, TextProcessor textProcessor) {
+        // 通过函数标志对文本中的函数或方法进行提取
+        Matcher matcher = Pattern.compile(functionSign).matcher(text);
+        while (matcher.find()) {
+            // 去除标记符号，获取关键词
+            String signKey = matcher.group();
+            String key = signKey.substring(startSign.length(), signKey.lastIndexOf(endSign));
+
+            // 调用个性化方法，对相应内容进行处理
+            textProcessor.process(Pattern.compile(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey)).matcher(text),
+                    key);
+        }
+    }
+
+    /**
+     * <p>
+     * <b>文件名：Placeholder.java</b>
+     * </p>
+     * <p>
+     * <b>用途：</b>定义处理文本词语的函数式接口，以便于提取其中的公共部分
+     * </p>
+     * <p>
+     * <b>编码时间：2023年5月24日 上午8:54:00
+     * </p>
+     * <p>
+     * <b>修改时间：2023年5月24日 上午8:54:00
+     * </p>
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     * @since autest 4.2.0
+     */
+    @FunctionalInterface
+    public interface TextProcessor {
+        /**
+         * 该方法用于对文本中提取到的词语进行个性化操作的方法
+         * 
+         * @param matcher 赋予规则的正则类对象
+         * @param key     提取到的关键词
+         * @since autest 4.2.0
+         */
+        void process(Matcher matcher, String key);
     }
 }

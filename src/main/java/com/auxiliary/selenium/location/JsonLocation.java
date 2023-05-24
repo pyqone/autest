@@ -218,12 +218,12 @@ public class JsonLocation extends AbstractLocation implements ReadElementLimit, 
 			return tempValueText;
 		}
 		
+        // 添加特殊的占位符
+        placeholder.addReplaceWord("name", name);
         // 添加已有的词语
         for(String key : locationJson.keySet()) {
             placeholder.addReplaceWord(key, locationJson.getString(key));
         }
-        // 添加特殊的占位符
-        placeholder.addReplaceWord("name", name);
 
         // 替换占位符的内容
         return placeholder.replaceText(tempValueText);

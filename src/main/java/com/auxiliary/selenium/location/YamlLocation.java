@@ -301,10 +301,10 @@ public class YamlLocation extends AbstractLocation implements ReadElementLimit, 
 			return tempValueText;
 		}
 
-        // 添加已有的词语
-        placeholder.addReplaceWord(locationInfoMap, false);
         // 添加特殊的占位符
         placeholder.addReplaceWord("name", name);
+        // 添加已有的词语
+        placeholder.addReplaceWord(locationInfoMap, false);
 
         return placeholder.replaceText(tempValueText);
 	}

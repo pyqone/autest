@@ -270,12 +270,12 @@ public class XmlLocation extends AbstractLocation implements ReadElementLimit, A
             return value;
         }
 
+        // 添加特殊的占位符
+        placeholder.addReplaceWord("name", element.getParent().attributeValue("name"));
         // 添加已有的词语
         for (Attribute att : element.attributes()) {
             placeholder.addReplaceWord(att.getName(), att.getValue());
         }
-        // 添加特殊的占位符
-        placeholder.addReplaceWord("name", element.getParent().attributeValue("name"));
 
         return placeholder.replaceText(value);
     }

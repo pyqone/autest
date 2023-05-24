@@ -3,6 +3,7 @@ package com.auxiliary.selenium.location;
 import java.util.ArrayList;
 
 import com.auxiliary.selenium.element.ElementType;
+import com.auxiliary.tool.common.Placeholder;
 
 /**
  * <p>
@@ -120,4 +121,12 @@ public interface ReadLocation {
      * @since autest 2.7.0
      */
     public abstract String getEndElementPlaceholder();
+
+    /**
+     * 该方法用于返回占位符类对象
+     * 
+     * @return 占位符类对象
+     * @since autest 4.2.0
+     */
+    public abstract Placeholder getPlaceholder();
 }
