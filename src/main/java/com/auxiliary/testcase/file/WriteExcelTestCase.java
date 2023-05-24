@@ -142,8 +142,7 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
             caseFieldMap.forEach((key, value) -> {
                 List<String> contentList = caseData.getContent(value);
                 if (!contentList.isEmpty()) {
-                    addContent(key, caseData.getCaseTemplet().getReplaceWordMap(),
-                            contentList.toArray(new String[] {}));
+                    addContent(key, caseData.getCaseTemplet().getPlaceholder(), contentList.toArray(new String[] {}));
                 }
             });
         });

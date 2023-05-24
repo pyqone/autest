@@ -115,7 +115,7 @@ public class TextLocation extends AbstractLocation {
         noFileLocation = new NoFileLocation();
 
         Arrays.asList(text.split(ELEMENT_SPLIT_SIGN)).stream().filter(elementText -> !elementText.isEmpty())
-        .forEach(this::analysisElement);
+                .forEach(this::analysisElement);
     }
 
     /**
@@ -228,7 +228,7 @@ public class TextLocation extends AbstractLocation {
             throw new UndefinedElementException("元素信息不足，缺少必要信息！元素分隔符号：" + infoSplitSign + "；元素内容：" + elementText);
         }
 
-        switch(length) {
+        switch (length) {
         case 6:
             noFileLocation.putBeforeTime(elementInfoTexts[0], toWaitTime(elementInfoTexts[5]));
         case 5:

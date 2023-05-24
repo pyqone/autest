@@ -83,10 +83,10 @@ public abstract class MarkdownPresetCaseTemplet<T extends WriteMarkdownTestCase<
         relevanceCase(LabelType.KEY.getName(), MarkdownPresetFieldType.FIELD_KEY);
 
         // 关联关键词替换字段
-        setReplactWord(AbstractPresetCaseTemplet.RANK_1, MarkdownPresetFieldType.RANK_1);
-        setReplactWord(AbstractPresetCaseTemplet.RANK_2, MarkdownPresetFieldType.RANK_2);
-        setReplactWord(AbstractPresetCaseTemplet.RANK_3, MarkdownPresetFieldType.RANK_3);
-        setReplactWord(AbstractPresetCaseTemplet.RANK_4, MarkdownPresetFieldType.RANK_4);
+        addReplaceWord(AbstractPresetCaseTemplet.RANK_1, MarkdownPresetFieldType.RANK_1);
+        addReplaceWord(AbstractPresetCaseTemplet.RANK_2, MarkdownPresetFieldType.RANK_2);
+        addReplaceWord(AbstractPresetCaseTemplet.RANK_3, MarkdownPresetFieldType.RANK_3);
+        addReplaceWord(AbstractPresetCaseTemplet.RANK_4, MarkdownPresetFieldType.RANK_4);
     }
 
     /**

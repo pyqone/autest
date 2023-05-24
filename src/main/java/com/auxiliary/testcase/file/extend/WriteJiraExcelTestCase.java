@@ -134,10 +134,10 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
         relevanceCase(LabelType.RANK.getName(), JiraPresetFieldType.FIELD_RANK);
 
         // 关联关键词替换字段
-        setReplactWord(AbstractPresetCaseTemplet.RANK_1, JiraPresetFieldType.RANK_HIGH);
-        setReplactWord(AbstractPresetCaseTemplet.RANK_2, JiraPresetFieldType.RANK_NORMAL);
-        setReplactWord(AbstractPresetCaseTemplet.RANK_3, JiraPresetFieldType.RANK_LOW);
-        setReplactWord(AbstractPresetCaseTemplet.RANK_4, JiraPresetFieldType.RANK_LOW);
+        addReplaceWord(AbstractPresetCaseTemplet.RANK_1, JiraPresetFieldType.RANK_HIGH);
+        addReplaceWord(AbstractPresetCaseTemplet.RANK_2, JiraPresetFieldType.RANK_NORMAL);
+        addReplaceWord(AbstractPresetCaseTemplet.RANK_3, JiraPresetFieldType.RANK_LOW);
+        addReplaceWord(AbstractPresetCaseTemplet.RANK_4, JiraPresetFieldType.RANK_LOW);
     }
 
     /**

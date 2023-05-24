@@ -16,6 +16,8 @@ import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
+import com.auxiliary.tool.common.AddPlaceholder;
+import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.common.VoidSupplier;
 import com.google.common.base.Objects;
 
@@ -39,15 +41,16 @@ import com.google.common.base.Objects;
  * <b>编码时间：</b>2021年5月15日上午11:13:26
  * </p>
  * <p>
- * <b>修改时间：</b>2021年5月15日上午11:13:26
+ * <b>修改时间：</b>2023年5月22日 下午5:22:17
  * </p>
  *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
+ * @since autest 2.0.0
  * @param <T> 子类
  */
-public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
+public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements AddPlaceholder {
     public static final String KEY_CONTENT = "content";
     public static final String KEY_TEXT = "text";
     public static final String KEY_DEFAULT = "default";
@@ -80,6 +83,13 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
     protected String endField = "";
 
     /**
+     * 占位符类对象
+     * 
+     * @since autest 4.2.0
+     */
+    protected Placeholder placeholder = new Placeholder(WORD_SIGN, WORD_SIGN);
+
+    /**
      * 构造对象，初始化创建文件的模板
      *
      * @param templet 模板类对象
@@ -95,17 +105,47 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
     }
 
     /**
+     * 该方法用于返回当前存储的占位符类对象，若修改了占位符类对象的内容，
+     * 需要通过{@link #setPlaceholder(Placeholder)}方法对重新生成的占位符类对象进行整体设置
+     * 
+     * @return 占位符类对象
+     * @since autest 4.2.0
+     */
+    public Placeholder getPlaceholder() {
+        return placeholder;
+    }
+
+    /**
+     * 该方法用于设置自定义的占位符类对象
+     * <p>
+     * <b>注意：</b>该方法是对整个占位符类对象进行整体设置，需要保证添加的占位符的前后标志与设置的占位符标志保持一致
+     * </p>
+     * 
+     * @param placeholder 占位符类对象
+     * @since autest 4.2.0
+     */
+    public void setPlaceholder(Placeholder placeholder) {
+        this.placeholder = placeholder;
+    }
+
+    /**
      * 设置需要被替换的词语以及替换的内容
      * <p>
      * 在调用{@link #addContent(String, String...)}等方法编写内容时，用“#xx#”来表示待替换的词语，
      * </p>
      *
      * @param word        需要替换的词语
-     * @param replactWord 被替换的词语
-     * @throws FunctionExceptional 未指定替换词语或替换内容时抛出的异常
+     * @param replaceWord 被替换的词语
+     * @deprecated 该方法将由{@link #addReplaceWord(String, String)}方法代替，将在4.3.0或后续版本中删除
      */
-    public void setReplactWord(String word, String replactWord) {
-        setReplactWord(new DataDriverFunction(word, text -> replactWord));
+    @Deprecated
+    public void setReplactWord(String word, String replaceWord) {
+        setReplactWord(new DataDriverFunction(word, text -> replaceWord));
+    }
+
+    @Override
+    public void addReplaceWord(String word, String replaceWord) {
+        placeholder.addReplaceWord(word, replaceWord);
     }
 
     /**
@@ -139,9 +179,16 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      *
      * @param functions 替换词语使用的函数
      * @throws FunctionExceptional 未指定替换词语或替换内容时抛出的异常
+     * @deprecated 该方法将由{@link #addReplaceFunction(String, DataFunction)}方法代替，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     public void setReplactWord(DataDriverFunction functions) {
-        data.addReplaceWord(functions);
+        addReplaceFunction(functions.getRegex(), functions.getFunction());
+    }
+
+    @Override
+    public void addReplaceFunction(String regex, DataFunction function) {
+        placeholder.addReplaceFunction(regex, function);
     }
 
     /**
@@ -171,7 +218,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
         JSONArray defaultListJson = new JSONArray();
 
         // 查找特殊词语，并对词语进行替换，并将内容写入到字段中
-        Arrays.stream(contents).map(text -> replaceWord(text, data.getReplaceWordMap())).map(text -> {
+        Arrays.stream(contents).map(placeholder::replaceText).map(text -> {
             JSONObject fieldJson = new JSONObject();
             fieldJson.put(KEY_TEXT, text);
 
@@ -259,7 +306,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
         this.data.setDefaultCaseJson(data.getDefaultCaseJsonText());
         this.data.setContentJson(data.getContentJsonText());
         this.data.setNowCaseNum(data.getNowCaseNum());
-        data.getReplaceWordMap().forEach((name, fun) -> this.data.addReplaceWord(new DataDriverFunction(name, fun)));
+//        data.getReplaceWordMap().forEach((name, fun) -> this.data.addReplaceWord(new DataDriverFunction(name, fun)));
     }
 
     /**
@@ -379,7 +426,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * @return 类本身
      */
     public T addContent(String field, int index, String... contents) {
-        return addContent(field, index, null, contents);
+        return addContent(field, index, this.placeholder, contents);
     }
 
     /**
@@ -402,9 +449,37 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * 
      * @return 类本身
      * @since autest 4.0.0
+     * @deprecated 该方法已无意义，已被{@link #addContent(String, int, Placeholder, String...)}方法代替，将在4.3.0或后续版本中删除
+     */
+    @Deprecated
+    public T addContent(String field, int index, Map<String, DataFunction> replaceWordMap, String... contents) {
+        return addContent(field, index, new Placeholder(WORD_SIGN, WORD_SIGN).addReplaceFunction(replaceWordMap, true),
+                contents);
+    }
+
+    /**
+     * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下，并且可传入临时的占位符类对象，对文本中的占位符进行替换，且不影响已添加的替换词语
+     * <p>
+     * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
+     * </p>
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>当设置了自动换行字段时，则在插入该字段内容后（内容非空时），则会在插入当前内容前自动进行换行，再插入该内容，可参考{@link #setEndField(String)}的设置方法</li>
+     * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
+     * </ol>
+     * </p>
+     * 
+     * @param field       字段id
+     * @param index       指定插入的位置
+     * @param placeholder 占位符类
+     * @param contents    相应字段的内容
+     * 
+     * @return 类本身
+     * @since autest 4.2.0
      */
     @SuppressWarnings("unchecked")
-    public T addContent(String field, int index, Map<String, DataFunction> replaceWordMap, String... contents) {
+    public T addContent(String field, int index, Placeholder placeholder, String... contents) {
         data.getCaseJson();
         // 判断字段是否存在，若不存在，则不进行操作
         if (!data.getTemplet().containsField(field)) {
@@ -430,13 +505,12 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
         // 查找特殊词语，并对词语进行替换，并将内容写入到字段中
         Arrays.stream(contents).map(text -> {
             // 判断replaceWordMap是否为null，若为null则将replaceWordMap设置为默认替换词；若不为null，则将默认替换词添加到replaceWordMap中
-            if (replaceWordMap == null) {
-                return replaceWord(text, data.getReplaceWordMap());
+            if (placeholder == null || placeholder.equals(this.placeholder)) {
+                return this.placeholder.replaceText(text);
             } else {
-                replaceWordMap.putAll(data.getReplaceWordMap());
-                return replaceWord(text, replaceWordMap);
+                placeholder.addPlaceholder(this.placeholder, true);
+                return placeholder.replaceText(text);
             }
-
         }).map(text -> {
             JSONObject fieldTextJson = new JSONObject();
             fieldTextJson.put(KEY_TEXT, text);
@@ -457,7 +531,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
     }
 
     /**
-     * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下，并且可传入临时的替换词语，对文本中的占位符进行替换，且不影响已添加的替换词语
+     * 根据传入的字段信息，将指定的内容插入到用例相应字段的末尾，并且可传入临时的替换词语，对文本中的占位符进行替换，且不影响已添加的替换词语
      * <p>
      * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
      * </p>
@@ -475,9 +549,36 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * 
      * @return 类本身
      * @since autest 4.0.0
+     * @deprecated 该方法已无意义，已由{@link #addContent(String, Placeholder, String...)}方法代替，将在4.3.0或后续版本中是删除
      */
+    @Deprecated
     public T addContent(String field, Map<String, DataFunction> replaceWordMap, String... contents) {
-        return addContent(field, -1, replaceWordMap, contents);
+        return addContent(field, new Placeholder(WORD_SIGN, WORD_SIGN).addReplaceFunction(replaceWordMap, true),
+                contents);
+    }
+
+    /**
+     * 根据传入的字段信息，将指定的内容插入到用例相应字段的末尾，并且可传入临时的占位符类对象，对文本中的占位符进行替换，且不影响已添加的替换词语
+     * <p>
+     * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
+     * </p>
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>当设置了自动换行字段时，则在插入该字段内容后（内容非空时），则会在插入当前内容前自动进行换行，再插入该内容，可参考{@link #setEndField(String)}的设置方法</li>
+     * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
+     * </ol>
+     * </p>
+     * 
+     * @param field       字段id
+     * @param placeholder 占位符类对象
+     * @param contents    相应字段的内容
+     * 
+     * @return 类本身
+     * @since autest 4.2.0
+     */
+    public T addContent(String field, Placeholder placeholder, String... contents) {
+        return addContent(field, -1, placeholder, contents);
     }
 
     /**
@@ -698,7 +799,9 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * @param content        文本内容
      * @param replaceWordMap 待替换词语集合
      * @return 替换词语后的文本内容
+     * @deprecated 该方法已无意义，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     protected String replaceWord(String content, Map<String, DataFunction> replaceWordMap) {
         // 用于存储需要被替换的词语，用于判断当前词语是否被替换完毕
         Set<String> doneReplaceWordSet = new HashSet<>();
@@ -760,7 +863,9 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> {
      * @param endSign   占位符结束标志
      * @return 替换的词语集合
      * @since autest 4.1.0
+     * @deprecated 该方法已无意义，将在4.3.0或后续版本中删除
      */
+    @Deprecated
     protected Set<String> getReplaceWord(String content, String startSign, String endSign) {
         // TODO 重构此处逻辑，目前DisposeCodeUtils类中包含转义正则的方法，即使自定义的内容中包含需要转义为正则内容，亦可按照正则切分，故此处考虑重构
         Set<String> wordSet = new HashSet<>();
