@@ -18,12 +18,12 @@ import com.auxiliary.tool.common.Placeholder;
  * <b>编码时间：</b>2020年9月28日上午7:37:00
  * </p>
  * <p>
- * <b>修改时间：</b>2021年3月8日上午8:08:45
+ * <b>修改时间：</b>2023年5月24日 下午5:46:55
  * </p>
  *
  * @author 彭宇琦
- * @version Ver1.0
- *
+ * @version Ver1.1
+ * @since autest 2.0.0
  */
 public abstract class AbstractLocation implements ReadLocation, AddPlaceholder {
     /**
@@ -139,7 +139,7 @@ public abstract class AbstractLocation implements ReadLocation, AddPlaceholder {
             return ByType.NAME;
         case "tagname":
             return ByType.TAGNAME;
-            // 定义需要忽略的标签
+        // 定义需要忽略的标签
         case "element":
         case "iframe":
         case "limits":
@@ -157,7 +157,7 @@ public abstract class AbstractLocation implements ReadLocation, AddPlaceholder {
      */
     protected long toWaitTime(String text) {
         // 若值为空值，则返回-1
-        if(!Optional.ofNullable(text).filter(t -> !t.isEmpty()).isPresent()) {
+        if (!Optional.ofNullable(text).filter(t -> !t.isEmpty()).isPresent()) {
             return -1L;
         }
 
