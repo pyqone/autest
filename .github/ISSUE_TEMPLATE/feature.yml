@@ -1,4 +1,5 @@
 name: 功能新增与优化
+description: 提交需要新增或优化的功能
 title: "[新增与优化]: "
 labels: ["新增与优化"]
 body:
@@ -15,12 +16,10 @@ body:
   - type: textarea
     attributes:
       label: 相关的类与方法
-      description: 清晰并简洁地描述你考虑过的任何替代解决方案或功能。
     validations:
       required: false
   - type: textarea
     attributes:
       label: 相关内容截图
-      description: 在此处添加有关功能请求的任何其他上下文或截图。
     validations:
       required: false

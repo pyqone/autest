@@ -1,4 +1,5 @@
 name: Bug 反馈
+description: 提交程序出现的问题
 title: "[Bug]: "
 labels: ["bug"]
 body:
