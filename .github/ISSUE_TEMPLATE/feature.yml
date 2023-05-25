@@ -3,26 +3,22 @@ title: "[新增与优化]: "
 labels: ["新增与优化"]
 body:
   - type: textarea
-    id: desired
     attributes:
       label: 描述
     validations:
       required: true
-  - type: markdown
-    id: achieve-effect
+  - type: textarea
     attributes:
       label: 实现效果
     validations:
       required: true
   - type: textarea
-    id: alternatives
     attributes:
       label: 相关的类与方法
       description: 清晰并简洁地描述你考虑过的任何替代解决方案或功能。
     validations:
       required: false
   - type: textarea
-    id: additional-context
     attributes:
       label: 相关内容截图
       description: 在此处添加有关功能请求的任何其他上下文或截图。
