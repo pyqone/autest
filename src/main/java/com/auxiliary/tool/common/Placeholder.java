@@ -76,10 +76,14 @@ public class Placeholder {
 
     /**
      * 存储需要替换的占位符以及占位符相关的替换公式
+     * 
+     * @since autest 4.2.0
      */
     private Map<String, DataFunction> replaceFunctionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储需要替换的占位符以及占位符相关的替换词语
+     * 
+     * @since autest 4.2.0
      */
     private Map<String, String> replaceWordMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
@@ -88,7 +92,6 @@ public class Placeholder {
      * 
      * @param startSign 占位符起始标志
      * @param endSign   占位符结束标志
-     * 
      * @since autest 4.2.0
      */
     public Placeholder(String startSign, String endSign) {
@@ -99,6 +102,7 @@ public class Placeholder {
      * 根据已有的占位符对象，构造新的占位符类对象
      * 
      * @param placeholder 已有的占位符类对象
+     * @since autest 4.2.0
      */
     public Placeholder(Placeholder placeholder) {
         // 复制起止标志
@@ -397,7 +401,7 @@ public class Placeholder {
         // 根据替换深度，循环对词语进行替换；若其内不包含需要替换的内容时，则结束循环
         // 存储上一次查找的占位符词语
         Set<String> doneReplaceWordSet = new HashSet<>();
-        for (int i = 0; i < replaceDepth && text.matches(String.format(".*%s.*", functionSign)); i++) {
+        for (int i = 0; i < replaceDepth && isContainsPlaceholder(textBuilder.toString()); i++) {
             // 存储当前查找的占位符词语
             Set<String> nowReplaceWordSet = new HashSet<>();
             processorText(textBuilder.toString(), (matcher, key) -> {
@@ -429,7 +433,50 @@ public class Placeholder {
     }
 
     /**
-     * 该方法用于提取文本内容中的所有占位符词语，提取的词语不包含占位符起止标志，其返回的Set集合为有序的集合
+     * 该方法用于按照文本中占位符的顺序，将替换内容集合逐个对文本中的占位符进行替换
+     * 
+     * @param text                   待替换文本
+     * @param isReplaceWordRecycling 是否循环替换词语，即当替换词语集合遍历完毕后，若当前仍有未被替换的占位符时，则重新开始遍历替换词语集合
+     * @param replaceWordList        替换词语集合
+     * @return 替换后的文本
+     * @since autest 4.3.0
+     */
+    public String sequentialReplaceText(String text, boolean isReplaceWordRecycling, List<String> replaceWordList) {
+        // 判断传入的替换词语集合是否为null
+        if (replaceWordList == null || replaceWordList.isEmpty()) {
+            return text;
+        }
+
+        StringBuilder textSb = new StringBuilder(text);
+        // 获取文本中的所有占位符词语
+        List<String> placeholderList = getPlaceholderWord(text);
+
+        // 根据占位符词语集合的个数，对文本进行循环替换
+        for (int placeholderIndex = 0, replaceIndex = 0; placeholderIndex < placeholderList
+                .size(); placeholderIndex++, replaceIndex++) {
+            // 判断替换词语集合是否已达到极限
+            if (replaceIndex == replaceWordList.size()) {
+                // 若达到极限，则判断是否需要重新使用替换词语，若需要，则将下标设为第一个元素，否则，则结束替换
+                if (isReplaceWordRecycling) {
+                    replaceIndex = 0;
+                } else {
+                    break;
+                }
+            }
+
+            // 获取当前待替换的词语，并将其转换为占位符
+            String placeholderWord = packagePlaceholder(placeholderList.get(placeholderIndex));
+            // 获取当前占位符在文本中首次出现的位置
+            int wordIndex = textSb.indexOf(placeholderWord);
+            // 对当前的占位符进行替换
+            textSb.replace(wordIndex, wordIndex + placeholderWord.length(), replaceWordList.get(replaceIndex));
+        }
+
+        return textSb.toString();
+    }
+
+    /**
+     * 该方法用于提取文本内容中的所有占位符词语，提取的词语不包含占位符起止标志
      * 
      * @param text 查找占位符的文本
      * @return 文本中的占位符词语集合
@@ -448,6 +495,17 @@ public class Placeholder {
         });
 
         return wordList;
+    }
+
+    /**
+     * 该方法用于将传入的词语，根据当前存储的占位符起止标志，组装成带起止标志的占位符字符串
+     * 
+     * @param placeholderWord 占位符词语
+     * @return 带起止标志的占位符
+     * @since autest 4.3.0
+     */
+    public String packagePlaceholder(String placeholderWord) {
+        return String.format("%s%s%s", startSign, placeholderWord, endSign);
     }
 
     /**
