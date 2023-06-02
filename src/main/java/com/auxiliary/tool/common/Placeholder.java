@@ -523,6 +523,16 @@ public class Placeholder {
     }
 
     /**
+     * 该方法用于判断当前是否存在需要替换的内容
+     * 
+     * @return 是否存在需要替换的内容
+     * @since autest 4.3.0
+     */
+    public boolean isExistReplaceContent() {
+        return !replaceFunctionMap.isEmpty() || !replaceWordMap.isEmpty();
+    }
+
+    /**
      * 该方法用于对文本内容进行处理，以统一管理相同类型不同处理的方法
      * <p>
      * <b>注意：</b>该方法不进行文本为空的判断，请在调用方法前确认text内容
