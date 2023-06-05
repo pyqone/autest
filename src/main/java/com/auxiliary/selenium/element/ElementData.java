@@ -1,14 +1,15 @@
 package com.auxiliary.selenium.element;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.UUID;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.auxiliary.selenium.location.AppElementLocation;
 import com.auxiliary.selenium.location.ElementLocationInfo;
 import com.auxiliary.selenium.location.ReadElementLimit;
 import com.auxiliary.selenium.location.ReadLocation;
+import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.common.Placeholder;
 
 /**
  * <p>
@@ -25,9 +26,12 @@ import com.auxiliary.selenium.location.ReadLocation;
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.2
+ * @version Ver1.3
  */
 public class ElementData {
+    private final String REPLACE_LINK_SIGN = "=";
+    private final String TRANSFERRED_EQUAL_SIGN = "\\=";
+
     /**
      * 存储元素的名称
      */
@@ -36,6 +40,12 @@ public class ElementData {
      * 存储元素读取的方式
      */
     private ReadLocation read;
+    /**
+     * 读取类的占位符类对象
+     * 
+     * @since autest 4.0.0
+     */
+    private Placeholder placeholder;
 
     /**
      * 存储外链的词语
@@ -52,6 +62,7 @@ public class ElementData {
         // 若查找成功，则存储元素名称与元素信息读取类对象
         this.name = name;
         this.read = read;
+        this.placeholder = new Placeholder(read.getStartElementPlaceholder(), read.getEndElementPlaceholder());
     }
 
     /**
@@ -76,31 +87,12 @@ public class ElementData {
         ArrayList<ElementLocationInfo> locationList = new ArrayList<>(read.getElementLocation());
 
         // 若存储的外链词语不为空，则对需要外链的定位内容进行处理
-        if (!linkWordList.isEmpty()) {
+        if (!linkWordList.isEmpty() || placeholder.isExistReplaceContent()) {
             for (int i = 0; i < locationList.size(); i++) {
-                // 定义正则表达式
-                String regex = String.format("%s.*?%s", read.getStartElementPlaceholder(),
-                        read.getEndElementPlaceholder());
-                // 获取元素定位内容
-                StringBuilder locationText = new StringBuilder(locationList.get(i).getLocationText());
+                // 将元素的定位内容先用指定的替换词语进行一次替换，再对其进行顺序替换
+                locationList.get(i).setLocationText(placeholder.sequentialReplaceText(
+                        placeholder.replaceText(locationList.get(i).getLocationText()), false, linkWordList));
 
-                // 定义正则表达式类对象
-                Pattern pattern = Pattern.compile(regex);
-                Matcher mather = pattern.matcher(locationText);
-
-                // 根据正则查找相应的数据，对该数据进行替换
-                for (int index = 0; index < linkWordList.size() && mather.find(); index++) {
-                    // 存储替换符的开始和结束位置
-                    int replaceStartIndex = mather.start();
-                    int replaceEndIndex = mather.end();
-
-                    // 对当前位置的词语进行替换
-                    locationText.replace(replaceStartIndex, replaceEndIndex, linkWordList.get(index));
-                    mather = pattern.matcher(locationText);
-                }
-
-                // 存储当前替换后的定位内容
-                locationList.get(i).setLocationText(locationText.toString());
             }
         }
 
@@ -206,27 +198,40 @@ public class ElementData {
     }
 
     /**
-     * 返回元素定位方式的个数
-     * <p>
-     * 若定位方式与定位内容不一致时，则返回两者中的最小长度
-     * </p>
-     * 
-     * @return 元素定位方式的个数
-     * @deprecated 通过{@link #getLocationList()}方法获取到集合后，调用{@link ArrayList#size()}可获得
-     */
-    @Deprecated
-    public int getLocationSize() {
-        return getLocationList().size();
-    }
-
-    /**
      * 用于添加元素定位外链词语
+     * <p>
+     * 外链词语允许指定替换相应占位符的内容，使用“=”符号连接，例如“text=abc”，表示将所有“text”占位符词语替换为“abc”；
+     * 若传入的内容不包含指定替换的内容，则将其加入到顺序替换集合中。特别的，若需要替换的内容包含“=”符号，则使用“\=”符号来代替“=”，
+     * 例如传入“text\=abc”（传入方法时，反斜杠符号需要转义，实际应传入“\\=”），此时，“text=abc”将作为一个整体词语加入到顺序替换集合中，
+     * 而不是作为指定替换的词语进行存储
+     * </p>
      * 
      * @param linkWords 外链词语
      */
     public void addLinkWord(String... linkWords) {
         if (linkWords != null && linkWords.length != 0) {
-            linkWordList.addAll(Arrays.asList(linkWords));
+            // 定义将转义的等于符号进行替换的内容，使用一个UUID进行代替，以便于替换
+            String tempUUID = UUID.randomUUID().toString();
+            // 遍历所有需要替换的词语
+            for (String word : linkWords) {
+                // 将需要转义的替换符号使用随机的uuid进行替换
+                word = word.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(TRANSFERRED_EQUAL_SIGN), tempUUID);
+                // 获取替换后的内容其替换符号的位置
+                int signIndex = word.indexOf(REPLACE_LINK_SIGN);
+                // 若等于符号存在且非在字符串开头时，则将字符串按照第一个等于符号进行裁剪；否则，则直接存储至顺序替换内容中
+                if (signIndex > 0) {
+                    // 按照替换符号的位置，对传入的内容进行分解，并将相应的uuid换成连接符号
+                    String key = word.substring(0, signIndex).replaceAll(tempUUID,
+                            Matcher.quoteReplacement(TRANSFERRED_EQUAL_SIGN));
+                    String value = word.substring(signIndex + REPLACE_LINK_SIGN.length()).replaceAll(tempUUID,
+                            REPLACE_LINK_SIGN);
+
+                    // 将分解的内容存储至占位符类对象中
+                    placeholder.addReplaceWord(key, value);
+                } else {
+                    linkWordList.add(word.replaceAll(tempUUID, REPLACE_LINK_SIGN));
+                }
+            }
         }
     }
 
