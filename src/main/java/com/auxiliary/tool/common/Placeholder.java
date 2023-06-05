@@ -566,22 +566,22 @@ public class Placeholder {
      * <b>编码时间：2023年5月24日 上午8:54:00
      * </p>
      * <p>
-     * <b>修改时间：2023年5月24日 上午8:54:00
+     * <b>修改时间：2023年6月5日 上午11:25:08
      * </p>
      *
      * @author 彭宇琦
-     * @version Ver1.0
+     * @version Ver2.0
      * @since JDK 1.8
-     * @since autest 4.2.0
+     * @since autest 4.3.0
      */
     @FunctionalInterface
     public interface TextProcessor {
         /**
          * 该方法用于对文本中提取到的词语进行个性化操作的方法
          * 
-         * @param matcher 赋予规则的正则类对象
+         * @param signKey 包含起止符号的占位符
          * @param key     提取到的关键词
-         * @since autest 4.2.0
+         * @since autest 4.3.0
          */
         void process(String signKey, String key);
     }
