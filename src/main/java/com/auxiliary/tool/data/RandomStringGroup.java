@@ -2,6 +2,7 @@ package com.auxiliary.tool.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +50,13 @@ public class RandomStringGroup {
     private Map<String, RandomString> randomStringMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
+     * 用于生成随机数字，避免每次调用方法时均要生成一个对象
+     * 
+     * @since autest 4.3.0
+     */
+    private Random randomNum = new Random();
+
+    /**
      * 该方法用于添加随机字符串组
      * 
      * @param groupName    随机字符串组名称
@@ -81,31 +89,36 @@ public class RandomStringGroup {
         return randomStringMap.get(groupName);
     }
 
-    public String toString(String... groupNames) {
-        return toString(-1, -1, "", groupNames);
-    }
-
     /**
-     * 该方法用于
+     * 该方法用于根据指定的模板，和随机字符串的最小、最大生成长度，以及参与随机的字符串组，生成相应的随机字符串
+     * <p>
+     * <b>注意：</b>
+     * <ol>
+     * <li>在传入最小与最大生成长度后，其会根据随机字符串类对象的默认长度再次进行判断，若随机字符串类对象的总默认最小生成长度大于传入的最小生成长度
+     * （或者传入最大生成长度大于随机字符串类对象的总默认最大长度），则最终会以默认的总长度取值区间随机生成一个长度，特别的，
+     * 若传入的长度最大值小于总默认最小值（或长度最小值大于总默认长度最大值），则抛出异常</li>
+     * <li>模板中替换随随机字符串的占位符为“%s”，其占位符号必须与传入的名称组数量对应，否则将会抛出异常（模板为空时则不进行判断）</li>
+     * <li>模板中已存在的字符（除占位符）不被计入生成的随机字符串的长度中，若直接判断最终生成的长度，则可能会超出传入的长度区间，需要在传入时自行扣除相应的内容长度</li>
+     * <li>当传入的最小或最大值小于1时，则表示该参数按照所有随机字符串的总默认值取</li>
+     * </ol>
+     * </p>
      * 
-     * @param minLength
-     * @param maxLength
-     * @param templet
-     * @param groupNames
-     * @return
+     * @param minLength  随机字符串最小生成长度
+     * @param maxLength  随机字符串最大生成长度
+     * @param templet    模板
+     * @param groupNames 名称组
+     * @return 替换模板后的随机字符串组合
      * @since autest 4.3.0
-     * @throws IllegalDataException 当传入的组名称未被添加时、
+     * @throws IllegalDataException 当名称组为空、名称未对应随机字符串类对象、名称组数量与模板占位符数量不符、传入的区间在随机字符串默认总区间外时抛出的异常
      */
     public String toString(int minLength, int maxLength, String templet, String... groupNames) {
-        // 用于生成随机数字
-        Random randomNum = new Random();
-        // 处理模板，避免存在传入null的问题
-        templet = Optional.ofNullable(templet).orElse("");
-        
         // 判断是否传入组名称
         if (groupNames == null || groupNames.length == 0) {
             throw new IllegalDataException("名称组为空，无法生成随机字符串");
         }
+
+        // 处理模板，避免存在传入null的问题
+        templet = Optional.ofNullable(templet).orElse("");
         // 若存在模板，则判断模板中的占位符个数
         if (!templet.isEmpty()) {
             // 统计模板中占位符的个数
@@ -114,7 +127,7 @@ public class RandomStringGroup {
             // 判断传入的组名称是否足够对其进行替换
             if (count != groupNames.length) {
                 throw new IllegalDataException(String.format("组名称个数与模板占位符个数不符。组名称个数：%d；占位符（%s）个数：%d",
-                        groupNames == null ? 0 : groupNames.length, TEMP_PLACEHOLDER, count));
+                        groupNames.length, TEMP_PLACEHOLDER, count));
             }
         }
 
@@ -214,9 +227,9 @@ public class RandomStringGroup {
 
         // 判断当前生成的总长度是否满足生成的长度，若不满足，则按照剩余个数继续补足
         while (totalRandomStringLength < length) {
-            // 在存在余量的随机字符串下标中随机抽取一个下标
-            int groupIndex = randomNum.nextInt(exsitZoneGroupList.size());
-            RandomStringGroupData group = exsitZoneGroupList.get(groupIndex);
+            // 打乱集合顺序，取乱序后的第一个元素（来自ChatGPT的改进建议）
+            Collections.shuffle(exsitZoneGroupList);
+            RandomStringGroupData group = exsitZoneGroupList.get(0);
 
             // 根据余量，生成随机字符串，并进行拼接
             String randomString = group.rs.toString(1, length - totalRandomStringLength);
@@ -227,17 +240,21 @@ public class RandomStringGroup {
             // 重新计算余量，若余量不足，则将其移除exsitZoneGroupList集合
             int diff = group.surplusLength - randomString.length();
             if (diff == 0) {
-                exsitZoneGroupList.remove(groupIndex);
+                exsitZoneGroupList.remove(0);
             } else {
                 group.surplusLength = diff;
             }
         }
         
+        // 判断模板是否为空
         if (templet.isEmpty()) {
-            return String.join("", randomStrings);
+            StringBuilder sb = new StringBuilder();
+            for (String str : randomStrings) {
+                sb.append(str);
+            }
+            return sb.toString();
         } else {
-            Object[] os = randomStrings;
-            return String.format(templet, os);
+            return String.format(templet, (Object[]) randomStrings);
         }
     }
 
