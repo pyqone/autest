@@ -123,6 +123,19 @@ public class RandomString {
 		addMode(stringModes);
 	}
 
+    /**
+     * 通过预设模型模型对字符串池进行初始化，并初始化默认输出的字符串长度
+     * 
+     * @param defaultMinLength 随机字符串默认最小范围
+     * @param defaultMaxLength 随机字符串默认最大范围
+     * @param stringModes      需要加入字符串池中的模型（为{@link StringMode}枚举对象）
+     * @since autest 4.3.0
+     */
+    public RandomString(int defaultMinLength, int defaultMaxLength, StringMode... stringModes) {
+        this(stringModes);
+        setRandomStringDefaultLength(defaultMinLength, defaultMaxLength);
+    }
+
 	/**
 	 * 通过自定义的字符串对字符串池进行初始化
 	 * 
@@ -134,6 +147,19 @@ public class RandomString {
 	}
 
     /**
+     * 通过自定义的字符串对字符串池进行初始化，并初始化默认输出的字符串长度
+     * 
+     * @param defaultMinLength 随机字符串默认最小范围
+     * @param defaultMaxLength 随机字符串默认最大范围
+     * @param mode             需要加入字符串池中的模型
+     * @since autest 4.3.0
+     */
+    public RandomString(int defaultMinLength, int defaultMaxLength, String mode) {
+        this(mode);
+        setRandomStringDefaultLength(defaultMinLength, defaultMaxLength);
+    }
+
+    /**
      * 该方法用于设置默认输出的随机字符串的长度范围，生成的随机字符串长度在长度范围中随机取值，若两值一致，则每次生成同样长度的随机字符串
      * 
      * @param defaultMinLength 随机字符串默认最小范围
@@ -143,6 +169,20 @@ public class RandomString {
      * @see #toString()
      */
     public RandomString setRandomStringDefaultLength(int defaultMinLength, int defaultMaxLength) {
+        // 若最大、最小值存在小于1的情况，则将其赋予1
+        if (defaultMinLength < 1) {
+            defaultMinLength = 1;
+        }
+        if (defaultMaxLength < 1) {
+            defaultMaxLength = 1;
+        }
+        // 若最大值小于最小值，则对其进行交换
+        if (defaultMaxLength < defaultMinLength) {
+            int temp = defaultMinLength;
+            defaultMinLength = defaultMaxLength;
+            defaultMaxLength = temp;
+        }
+
         this.defaultMinLength = defaultMinLength;
         this.defaultMaxLength = defaultMaxLength;
 
@@ -515,7 +555,7 @@ public class RandomString {
 			return toString(minLength);
 		} else {
 			// 返回生成的字符串
-			return toString(new Random().nextInt((maxLength - minLength + 1)) + minLength);
+            return toString(new Random().nextInt(maxLength - minLength + 1) + minLength);
 		}
 	}
 
@@ -672,10 +712,16 @@ public class RandomString {
      * @return 生成的随机字符串
      * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
      *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
+     * @throws IllegalDataException 当字符串池为空时抛出的异常
      */
 	private String createRandomString(int length, String stringSeed) {
+        // 若字符串池为空，则抛出异常
+	    if (stringSeed.isEmpty()) {
+            throw new IllegalDataException("当前字符串池为空，无法生成随机字符串");
+	    }
+	    
 		// 判断需要生成的字符串长度是否小于1位长度
-        if (length < 1 || stringSeed.isEmpty()) {
+        if (length < 1) {
 			return "";
 		}
 
