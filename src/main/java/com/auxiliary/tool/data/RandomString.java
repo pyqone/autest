@@ -52,9 +52,12 @@ public class RandomString {
 	private boolean repeat = true;
 
 	/**
-	 * 指定通过{@link #toString()}方法默认输出的字符串长度
-	 */
-	public static int defaultLength = 6;
+     * 指定通过{@link #toString()}方法默认输出的字符串长度
+     * 
+     * @deprecated 该属性以作废，默认属性将由
+     */
+	@Deprecated
+    public static int defaultLength = 6;
 
 	/**
 	 * 控制在需要生成的字符串大于字符串池时的处理方式
@@ -65,6 +68,15 @@ public class RandomString {
      * 用于存储扩展判定正则表达式
      */
     private ArrayList<DataDriverFunction> expandRegexList = new ArrayList<>();
+
+    /**
+     * 默认随机字符串最小长度
+     */
+    private int defaultMinLength = 6;
+    /**
+     * 默认随机字符串最大长度
+     */
+    private int defaultMaxLength = 6;
 
     /**
      * 初始化字符串池，使其不包含任何元素
@@ -111,6 +123,19 @@ public class RandomString {
 		addMode(stringModes);
 	}
 
+    /**
+     * 通过预设模型模型对字符串池进行初始化，并初始化默认输出的字符串长度
+     * 
+     * @param defaultMinLength 随机字符串默认最小范围
+     * @param defaultMaxLength 随机字符串默认最大范围
+     * @param stringModes      需要加入字符串池中的模型（为{@link StringMode}枚举对象）
+     * @since autest 4.3.0
+     */
+    public RandomString(int defaultMinLength, int defaultMaxLength, StringMode... stringModes) {
+        this(stringModes);
+        setRandomStringDefaultLength(defaultMinLength, defaultMaxLength);
+    }
+
 	/**
 	 * 通过自定义的字符串对字符串池进行初始化
 	 * 
@@ -120,6 +145,69 @@ public class RandomString {
         this();
 		addMode(mode);
 	}
+
+    /**
+     * 通过自定义的字符串对字符串池进行初始化，并初始化默认输出的字符串长度
+     * 
+     * @param defaultMinLength 随机字符串默认最小范围
+     * @param defaultMaxLength 随机字符串默认最大范围
+     * @param mode             需要加入字符串池中的模型
+     * @since autest 4.3.0
+     */
+    public RandomString(int defaultMinLength, int defaultMaxLength, String mode) {
+        this(mode);
+        setRandomStringDefaultLength(defaultMinLength, defaultMaxLength);
+    }
+
+    /**
+     * 该方法用于设置默认输出的随机字符串的长度范围，生成的随机字符串长度在长度范围中随机取值，若两值一致，则每次生成同样长度的随机字符串
+     * 
+     * @param defaultMinLength 随机字符串默认最小范围
+     * @param defaultMaxLength 随机字符串默认最大范围
+     * @return 类本身
+     * @since autest 4.3.0
+     * @see #toString()
+     */
+    public RandomString setRandomStringDefaultLength(int defaultMinLength, int defaultMaxLength) {
+        // 若最大、最小值存在小于1的情况，则将其赋予1
+        if (defaultMinLength < 1) {
+            defaultMinLength = 1;
+        }
+        if (defaultMaxLength < 1) {
+            defaultMaxLength = 1;
+        }
+        // 若最大值小于最小值，则对其进行交换
+        if (defaultMaxLength < defaultMinLength) {
+            int temp = defaultMinLength;
+            defaultMinLength = defaultMaxLength;
+            defaultMaxLength = temp;
+        }
+
+        this.defaultMinLength = defaultMinLength;
+        this.defaultMaxLength = defaultMaxLength;
+
+        return this;
+    }
+
+    /**
+     * 该方法用于返回默认生成随机字符串的最小长度
+     * 
+     * @return 默认生成随机字符串的最小长度
+     * @since autest 4.3.0
+     */
+    public int getDefaultMinLength() {
+        return defaultMinLength;
+    }
+
+    /**
+     * 该方法用于返回默认生成随机字符串的最大长度
+     * 
+     * @return 默认生成随机字符串的最大长度
+     * @since autest 4.3.0
+     */
+    public int getDefaultMaxLength() {
+        return defaultMaxLength;
+    }
 
     /**
      * 该方法用于添加自定义的扩展方法
@@ -398,18 +486,18 @@ public class RandomString {
 	}
 
 	/**
-	 * 以默认方式返回生成的随机字符串
-	 * <p>
-	 * 默认长度为6个字符，可通过{@link #defaultLength}属性进行修改
-	 * </p>
-	 * 
-	 * @return 默认长度的随机字符串
-	 * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
-	 *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
-	 */
+     * 以默认方式返回生成的随机字符串
+     * <p>
+     * 默认长度为6个字符，可通过{@link #setRandomStringDefaultLength(int, int)}方法进行修改
+     * </p>
+     * 
+     * @return 默认长度的随机字符串
+     * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
+     *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
+     */
 	@Override
 	public String toString() {
-		return toString(defaultLength);
+        return toString(defaultMinLength, defaultMaxLength);
 	}
 
 	/**
@@ -441,12 +529,33 @@ public class RandomString {
 			}
 		}
 		
+        // 若设置最小长度大于字符串池长度，且设置为不允许重复，则根据设置的处理方式进行处理
+        if (minLength > stringSeed.length() && !repeat) {
+            switch (dispose) {
+            case DISPOSE_IGNORE:
+                minLength = stringSeed.length();
+                maxLength = stringSeed.length();
+                break;
+            case DISPOSE_THROW_EXCEPTION:
+                throw new IllegalDataException(String.format("生成不重复的随机字符串最小范围超出字符串范围；最小范围：%d；最大范围：%d；字符串池模型长度：%d",
+                        minLength, maxLength, stringSeed.length()));
+            case DISPOSE_REPEAT:
+            default:
+                break;
+            }
+        }
+        
+        // 若字符串的最大长度大于字符串池长度，且设置为不允许重复，将字符串池的长度赋予为随机字符串的最大长度
+        if (maxLength > stringSeed.length() && !repeat) {
+            maxLength = stringSeed.length();
+        }
+
 		//判断两个数值是否一致
 		if (minLength == maxLength) {
 			return toString(minLength);
 		} else {
 			// 返回生成的字符串
-			return toString(new Random().nextInt((maxLength - minLength + 1)) + minLength);
+            return toString(new Random().nextInt(maxLength - minLength + 1) + minLength);
 		}
 	}
 
@@ -603,10 +712,16 @@ public class RandomString {
      * @return 生成的随机字符串
      * @throws IllegalDataException 当产生字符串不允许重复，且字符串产生范围长度小于默认长度，
      *                              处理方式为{@link RepeatDisposeType#DISPOSE_THROW_EXCEPTION}时抛出的异常
+     * @throws IllegalDataException 当字符串池为空时抛出的异常
      */
 	private String createRandomString(int length, String stringSeed) {
+        // 若字符串池为空，则抛出异常
+	    if (stringSeed.isEmpty()) {
+            throw new IllegalDataException("当前字符串池为空，无法生成随机字符串");
+	    }
+	    
 		// 判断需要生成的字符串长度是否小于1位长度
-		if (length < 1) {
+        if (length < 1) {
 			return "";
 		}
 
@@ -621,7 +736,8 @@ public class RandomString {
 				length = stringSeed.length();
 				break;
 			case DISPOSE_THROW_EXCEPTION:
-				throw new IllegalDataException("需要生成的随机字符串长度大于字符串产生范围的最大长度");
+                throw new IllegalDataException(
+                        String.format("生成不重复的随机字符串个数超出字符串范围；随机字符串长度：%d；字符串池模型长度：%d", length, stringSeed.length()));
 			case DISPOSE_REPEAT:
 			default:
 				isRepeat = true;
