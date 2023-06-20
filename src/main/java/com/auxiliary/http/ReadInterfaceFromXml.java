@@ -43,28 +43,40 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeOperation {
     /**
      * 存储xml元素文件类对象
+     * 
+     * @since autest 3.3.0
      */
     private File xmlFile;
     /**
      * xml文件根节点
+     * 
+     * @since autest 3.3.0
      */
     private Element rootElement;
 
     /**
      * 当前查找元素类对象
+     * 
+     * @since autest 3.3.0
      */
     private Element nowElement;
     /**
      * 当前查找元素名称
+     * 
+     * @since autest 3.3.0
      */
     private String nowElementName = "";
 
     /**
      * 环境集合
+     * 
+     * @since autest 3.3.0
      */
     private HashMap<String, String> environmentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 当前执行接口的环境
+     * 
+     * @since autest 3.3.0
      */
     private String actionEnvironment = "";
 
@@ -72,6 +84,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * 根据xml文件对象，解析接口信息xml文件，并设置接口执行环境及接口默认执行环境
      *
      * @param xmlFile xml文件类对象
+     * @since autest 3.3.0
      */
     public ReadInterfaceFromXml(File xmlFile) {
         try {

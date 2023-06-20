@@ -111,7 +111,14 @@ public class EasyHttp implements AddPlaceholder {
      */
     private boolean isAssertFailThrowException = false;
     /**
-     * 定义默认连接超时时间
+     * 定义调用接口前是否自动调用前置操作
+     * 
+     * @since autest 4.3.0
+     */
+    private boolean isAutoBeforeOperation = true;
+
+    /**
+     * 定义默认连接超时时间，仅对使用默认时间的静态方法生效
      */
     public static Entry<Long, TimeUnit> connectTime = new Entry<>(15L, TimeUnit.SECOND);
 
@@ -200,6 +207,18 @@ public class EasyHttp implements AddPlaceholder {
     }
 
     /**
+     * 该方法用于设置在请求接口时，是否自动调用接口的前置操作
+     * 
+     * @param isAutoBeforeOperation 是否自动调用接口的前置操作
+     * @return 类本身
+     * @since autest 4.3.0
+     */
+    public EasyHttp setAutoBeforeOperation(boolean isAutoBeforeOperation) {
+        this.isAutoBeforeOperation = isAutoBeforeOperation;
+        return this;
+    }
+
+    /**
      * 该方法用于返回请求接口后自动断言的结果集合
      * 
      * @return 断言结果集合
@@ -218,15 +237,17 @@ public class EasyHttp implements AddPlaceholder {
      */
     @SuppressWarnings("unchecked")
     public EasyResponse requst(InterfaceInfo interInfo) {
-        // 获取接口的前置操作，并根据操作枚举，执行相应的前置操作
-        List<BeforeInterfaceOperation> beforeOperation = interInfo.getBeforeOperationList();
-        for (BeforeInterfaceOperation before : beforeOperation) {
-            switch (before.getOperationType()) {
-            case INTERFACE:
-                before.actionInterface(this);
-                break;
-            default:
-                continue;
+        // 判断是否自动调用前置操作，若需要，则获取接口的前置操作，并根据操作枚举，执行相应的前置操作
+        if (isAutoBeforeOperation) {
+            List<BeforeInterfaceOperation> beforeOperation = interInfo.getBeforeOperationList();
+            for (BeforeInterfaceOperation before : beforeOperation) {
+                switch (before.getOperationType()) {
+                case INTERFACE:
+                    before.actionInterface(this);
+                    break;
+                default:
+                    continue;
+                }
             }
         }
 
@@ -278,7 +299,7 @@ public class EasyHttp implements AddPlaceholder {
             int index = Integer.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_ORD));
 
             // 存储提词结果
-            addReplaceKey(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
+            addReplaceWord(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
         });
 
         // 自动断言
