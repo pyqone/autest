@@ -241,12 +241,15 @@ public class EasyHttp implements AddPlaceholder {
         if (isAutoBeforeOperation) {
             List<BeforeInterfaceOperation> beforeOperation = interInfo.getBeforeOperationList();
             for (BeforeInterfaceOperation before : beforeOperation) {
-                switch (before.getOperationType()) {
-                case INTERFACE:
-                    before.actionInterface(this);
-                    break;
-                default:
-                    continue;
+                // 判断当前前置操作是否存在剩余执行次数
+                if (before.isExecutedOperation()) {
+                    switch (before.getOperationType()) {
+                    case INTERFACE:
+                        before.actionInterface(this);
+                        break;
+                    default:
+                        continue;
+                    }
                 }
             }
         }
