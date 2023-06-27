@@ -24,6 +24,7 @@ import com.auxiliary.AuxiliaryToolsException;
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.file.TextFileReadUtil;
 import com.auxiliary.tool.regex.ConstType;
+import com.auxiliary.tool.regex.RegexType;
 
 /**
  * <p>
@@ -617,15 +618,24 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
      * @since autest 3.7.0
      */
     private void readBeforeInterOpeateSheetContent(Row row, InterfaceInfo inter) {
+        Optional<Row> ro = Optional.ofNullable(row);
         // 获取单元格中存储的父层接口名称
-        String parentName = Optional.ofNullable(row)
-                .map(r -> r.getCell(ExcelField.BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME))
+        String parentName = ro.map(r -> r.getCell(ExcelField.BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME))
                 .map(format::formatCellValue).orElse("");
         // 若名称不为空，则进行获取接口的操作
         if (parentName.isEmpty()) {
             return;
         }
-        inter.addBeforeOperation(new BeforeInterfaceOperation(parentName, getInterface(parentName)));
+        BeforeInterfaceOperation beforeInterfaceOperation = new BeforeInterfaceOperation(parentName,
+                getInterface(parentName));
+
+        // 获取并设置前置接口的执行次数
+        int count = ro.map(r -> r.getCell(ExcelField.BEFORE_INTER_OPEARTE_ACTION_COUNT))
+                .map(format::formatCellValue).filter(num -> num.matches(RegexType.INTEGER.getRegex()))
+                .map(Integer::valueOf).orElse(0);
+        beforeInterfaceOperation.setActionCount(count);
+        
+        inter.addBeforeOperation(beforeInterfaceOperation);
     }
 
     /**
@@ -928,6 +938,12 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
          * 前置接口操作sheet中的前置接口名称
          */
         public static final int BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME = 1;
+        /**
+         * 前置接口操作sheet中的执行次数名称
+         * 
+         * @since 4.3.0
+         */
+        public static final int BEFORE_INTER_OPEARTE_ACTION_COUNT = 2;
 
         /**
          * 普通请求体sheet中的接口名称
