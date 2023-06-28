@@ -22,6 +22,7 @@ import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.date.TimeUnit;
 import com.auxiliary.tool.regex.ConstType;
+import com.auxiliary.tool.regex.RegexType;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -299,7 +300,8 @@ public class EasyHttp implements AddPlaceholder {
             String xpath = placeholder.replaceText(json.getString(ExtractResponse.JSON_EXTRACT_XPATH));
             String lb = placeholder.replaceText(json.getString(ExtractResponse.JSON_EXTRACT_LB));
             String rb = placeholder.replaceText(json.getString(ExtractResponse.JSON_EXTRACT_RB));
-            int index = Integer.valueOf(json.getString(ExtractResponse.JSON_EXTRACT_ORD));
+            int index = Optional.ofNullable(json.getString(ExtractResponse.JSON_EXTRACT_ORD))
+                    .filter(RegexType.INTEGER::judgeString).map(Integer::valueOf).orElse(1);
 
             // 存储提词结果
             addReplaceWord(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));

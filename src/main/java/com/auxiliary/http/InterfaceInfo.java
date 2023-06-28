@@ -382,6 +382,13 @@ public class InterfaceInfo implements Cloneable {
             urlText.delete(index, urlText.length());
         }
 
+        // 判断剩余部分是否符合IP + 端口的正则，若不符合，则全部将其设置为接口路径
+        // 由于部分接口路径存在编写时不带“/”的情况，为避免截取错误，故加上个判断进行弥补
+//        if (!urlText.toString().matches("(\\d{1,3}\\.){3}\\d{1,3}(:\\d{1,5})?")) {
+//            setPath(urlText.toString() + getPath());
+//            urlText.delete(0, urlText.length());
+//        }
+
         // 解析主机端口，若存在主机端口分隔符，则在urlText去除，并将端口转换后传入相应的内容中
         if ((index = urlText.indexOf(SYMBOL_SPLIT_PORT)) > -1) {
             try {

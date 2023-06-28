@@ -309,6 +309,8 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         // 设置请求体
         readBodySheetContent(interName, inter);
 
+        // 缓存读取的接口
+        interfaceCacheMap.put(interName, inter);
         return inter;
     }
     
