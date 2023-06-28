@@ -404,13 +404,13 @@ public class Placeholder {
         for (int i = 0; i < replaceDepth && isContainsPlaceholder(textBuilder.toString()); i++) {
             // 存储当前查找的占位符词语
             Set<String> nowReplaceWordSet = new HashSet<>();
-            processorText(textBuilder.toString(), (matcher, key) -> {
+            processorText(textBuilder.toString(), (signKey, key) -> {
                 // 调用替换词语的方法，对占位符进行替换
                 String replaceKey = replaceWord(key);
                 // 判断调用替换方法后，其返回的词语与替换词语是否一致，若不一致，则进行替换，否则，将不做处理
                 if (!Objects.equal(key, replaceKey)) {
                     textBuilder.replace(0, textBuilder.length(),
-                            matcher.replaceAll(Matcher.quoteReplacement(replaceKey)));
+                            textBuilder.toString().replaceAll(signKey, replaceKey));
                 }
                 // 添加当前查找到的占位符词语
                 nowReplaceWordSet.add(key);
@@ -490,7 +490,7 @@ public class Placeholder {
         }
         
         // 通过函数标志对文本中的函数或方法进行提取
-        processorText(text, (matcher, key) -> {
+        processorText(text, (signKey, key) -> {
             wordList.add(key);
         });
 
@@ -551,8 +551,7 @@ public class Placeholder {
             String key = signKey.substring(startSign.length(), signKey.lastIndexOf(endSign));
 
             // 调用个性化方法，对相应内容进行处理
-            textProcessor.process(Pattern.compile(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey)).matcher(text),
-                    key);
+            textProcessor.process(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey), key);
         }
     }
 
@@ -567,23 +566,23 @@ public class Placeholder {
      * <b>编码时间：2023年5月24日 上午8:54:00
      * </p>
      * <p>
-     * <b>修改时间：2023年5月24日 上午8:54:00
+     * <b>修改时间：2023年6月5日 上午11:25:08
      * </p>
      *
      * @author 彭宇琦
-     * @version Ver1.0
+     * @version Ver2.0
      * @since JDK 1.8
-     * @since autest 4.2.0
+     * @since autest 4.3.0
      */
     @FunctionalInterface
     public interface TextProcessor {
         /**
          * 该方法用于对文本中提取到的词语进行个性化操作的方法
          * 
-         * @param matcher 赋予规则的正则类对象
+         * @param signKey 包含起止符号的占位符
          * @param key     提取到的关键词
-         * @since autest 4.2.0
+         * @since autest 4.3.0
          */
-        void process(Matcher matcher, String key);
+        void process(String signKey, String key);
     }
 }
