@@ -18,6 +18,7 @@ import com.auxiliary.AuxiliaryToolsException;
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.file.TextFileReadUtil;
 import com.auxiliary.tool.regex.ConstType;
+import com.auxiliary.tool.regex.RegexType;
 
 /**
  * <p>
@@ -43,28 +44,40 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeOperation {
     /**
      * 存储xml元素文件类对象
+     * 
+     * @since autest 3.3.0
      */
     private File xmlFile;
     /**
      * xml文件根节点
+     * 
+     * @since autest 3.3.0
      */
     private Element rootElement;
 
     /**
      * 当前查找元素类对象
+     * 
+     * @since autest 3.3.0
      */
     private Element nowElement;
     /**
      * 当前查找元素名称
+     * 
+     * @since autest 3.3.0
      */
     private String nowElementName = "";
 
     /**
      * 环境集合
+     * 
+     * @since autest 3.3.0
      */
     private HashMap<String, String> environmentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 当前执行接口的环境
+     * 
+     * @since autest 3.3.0
      */
     private String actionEnvironment = "";
 
@@ -72,6 +85,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * 根据xml文件对象，解析接口信息xml文件，并设置接口执行环境及接口默认执行环境
      *
      * @param xmlFile xml文件类对象
+     * @since autest 3.3.0
      */
     public ReadInterfaceFromXml(File xmlFile) {
         try {
@@ -586,7 +600,14 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     private BeforeInterfaceOperation getBeforeInterface(String interName, Element beforeElement) {
         String name = beforeElement.attributeValue(XmlParamName.XML_ATTRI_NAME);
         try {
-            return new BeforeInterfaceOperation(getInterface(name));
+            BeforeInterfaceOperation beforeInterfaceOperation = new BeforeInterfaceOperation(getInterface(name));
+            // 判断前置接口是否存在执行次数属性，若存在，则设置相应的前置执行次数；若不存在，则设置为0
+            int count = Optional.ofNullable(beforeElement.attributeValue(XmlParamName.XML_ATTRI_ACTION_COUNT))
+                    .filter(num -> num.matches(RegexType.INTEGER.getRegex())).map(Integer::valueOf).orElse(0);
+
+            // 设置前置操作的属性，并进行返回
+            beforeInterfaceOperation.setActionCount(count);
+            return beforeInterfaceOperation;
         } catch (InterfaceReadToolsException e) {
             throw new InterfaceReadToolsException(
                     String.format("接口“%s”的父层接口“%s”存在错误，错误信息为：%s", interName, name, e.getMessage()), e);
@@ -810,5 +831,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义connect属性
          */
         public static final String XML_ATTRI_CONNECT = "connect";
+        /**
+         * 定义前置执行次数属性
+         * 
+         * @since autest 4.3.0
+         */
+        public static final String XML_ATTRI_ACTION_COUNT = "actionCount";
     }
 }

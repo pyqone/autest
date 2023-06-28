@@ -21,8 +21,9 @@
       url='http://192.168.3.3' path='a/b/c' type='post' connect='1min'>
       <!-- 前置执行操作，当执行该接口时，将按顺序先执行前置操作，待操作执行完毕后，再执行当前接口 -->
       <before>
+        <!-- actionCount：前置操作执行次数 -->
         <!-- name：前置接口名称 -->
-        <interface name='接口1' />
+        <interface actionCount='1' name='接口1' />
       </before>
       <!-- 接口请求头 -->
       <!-- name：请求头名称 -->
