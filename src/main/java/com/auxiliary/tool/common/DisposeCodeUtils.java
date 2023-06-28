@@ -608,4 +608,36 @@ public class DisposeCodeUtils {
         
         return newStr.toString();
     }
+
+    /**
+     * 该方法用于统计在一长串字符串中，指定的字符串出现的次数
+     * 
+     * @param text   长串字符串内容
+     * @param target 待查找的字符串
+     * @return 待查找字符串在长串字符串中出现的次数
+     * @since autest 4.3.0
+     */
+    public static int countOccurrences(String text, String target) {
+        // 对传入的两个字符串进行是否为空的判断
+        if (text == null || text.isEmpty()) {
+            return 0;
+        }
+        if (target == null || target.isEmpty()) {
+            return text.length();
+        }
+
+        int count = 0;
+        int lastIndex = 0;
+
+        while (lastIndex != -1) {
+            lastIndex = text.indexOf(target, lastIndex);
+
+            if (lastIndex != -1) {
+                count++;
+                lastIndex += target.length();
+            }
+        }
+
+        return count;
+    }
 }

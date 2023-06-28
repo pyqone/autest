@@ -8,18 +8,18 @@
 	</templet>
 	
 	<element name='控件1' wait='10'>
-		<file x=2.2 y=3.2 similar=0.77>元素1</file>
-		<file x=3.2 y=4.2 similar=0.66>${name}测试</file>
-		<file x=2.2 y=3.2 similar=0.77 suffix='jpg' path="截图/登录">测试元素</file>
+		<file x='2.2' y='3.2' similar='0.77'>元素1</file>
+		<file x='3.2' y='4.2' similar='0.66'>${name}测试</file>
+		<file x='2.2' y='3.2' similar='0.77' suffix='jpg' path="截图/登录">测试元素</file>
 	</element>
 	
 	<element name='控件2' wait='0'>
 		<file temp_id='1'/>
-		<file temp_id='2' y=1.2 suffix='jpg'/>
+		<file temp_id='2' y='1.2' suffix='jpg'/>
 	</element>
 	
 	<element name='控件3' wait='-1'>
-		<file x=3.2 y=4.2 similar=0.66></file>
+		<file x='3.2' y='4.2' similar='0.66'></file>
 	</element>
 	
 	<element name='控件4'>
@@ -27,7 +27,7 @@
 	</element>
 	
 	<element name='控件5'>
-		<file temp_id='1' x=0.8/>
-		<file temp_id='2' y=1.5 suffix='jpg' path="截图/登录"/>
+		<file temp_id='1' x='0.8'/>
+		<file temp_id='2' y='1.5' suffix='jpg' path="截图/登录"/>
 	</element>
 </project>

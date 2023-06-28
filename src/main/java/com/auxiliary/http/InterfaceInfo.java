@@ -45,68 +45,100 @@ import com.auxiliary.tool.regex.ConstType;
 public class InterfaceInfo implements Cloneable {
     /**
      * 定义默认接口协议
+     * 
+     * @since autest 3.3.0
      */
     public static final String DEFAULT_PROTOCOL = "http://";
     /**
      * 定义默认主机
+     * 
+     * @since autest 3.3.0
      */
     public static final String DEFAULT_HOST = "127.0.0.1";
     /**
      * 定义默认主机端口
+     * 
+     * @since autest 3.3.0
      */
     public static final int DEFAULT_PORT = 80;
     /**
      * 定义接口默认请求方式
+     * 
+     * @since autest 3.3.0
      */
     public static final RequestType DEFAULT_REQUESTTYPE = RequestType.GET;
     /**
      * 定义响应内容默认字符集
+     * 
+     * @since autest 3.3.0
      */
     public static final String DEFAULT_CHARSETNAME = "UTF-8";
 
     /**
      * 定义接口主机与协议间分隔的符号
+     * 
+     * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PROTOCOL = "://";
     /**
      * 定义接口主机与主机间的分隔符号
+     * 
+     * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PORT = ":";
     /**
      * 定义接口路径与接口主机间的分隔符号
+     * 
+     * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PATH = "/";
     /**
      * 定义接口起始参数与接口路径间的分隔符号
+     * 
+     * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_START_PARAM = "?";
     /**
      * 定义接口参数键值之间的分隔符号
+     * 
+     * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PARAM_VALUE = "=";
     /**
      * 定义cookies键值之间的分隔符号
+     * 
+     * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_COOKIES_VALUE = "=";
     /**
      * 定义接口参数与参数间的分隔符号
+     * 
+     * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PARAM = "&";
     /**
      * 定义cookies间的分隔符号
+     * 
+     * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_COOKIES = ";";
 
     /**
      * 接口协议
+     * 
+     * @since autest 3.3.0
      */
     private String protocol = "";
     /**
      * 主机
+     * 
+     * @since autest 3.3.0
      */
     private String host = "";
     /**
      * 主机端口号
+     * 
+     * @since autest 3.3.0
      */
     private int port = -1;
     /**
@@ -115,46 +147,68 @@ public class InterfaceInfo implements Cloneable {
     private String path = "";
     /**
      * 请求类型
+     * 
+     * @since autest 3.3.0
      */
     private RequestType requestType = null;
     /**
      * 接口请求参数
+     * 
+     * @since autest 3.3.0
      */
     private HashMap<String, String> paramMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口请求体
+     * 
+     * @since autest 3.3.0
      */
     private Entry<MessageType, Object> body;
     /**
      * 接口请求头
+     * 
+     * @since autest 3.3.0
      */
     private HashMap<String, String> requestHeaderMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口相应字符集
+     * 
+     * @since autest 3.3.0
      */
     private String charsetname = "";
     /**
      * 接口响应内容格式集合
+     * 
+     * @since autest 3.3.0
      */
     private HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文断言规则集合
+     * 
+     * @since autest 3.3.0
      */
     private HashSet<JSONObject> assertRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文提词规则
+     * 
+     * @since autest 3.3.0
      */
     private HashSet<JSONObject> extractRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储接口前置操作内容
+     * 
+     * @since autest 3.3.0
      */
     private ArrayList<BeforeInterfaceOperation> beforeOperationList = new ArrayList<>();
     /**
      * 存储cookie
+     * 
+     * @since autest 3.3.0
      */
     private HashMap<String, String> cookieMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储接口的请求时间
+     * 
+     * @since autest 3.3.0
      */
     private Entry<Long, TimeUnit> connectTime = EasyHttp.connectTime;
 
@@ -327,6 +381,13 @@ public class InterfaceInfo implements Cloneable {
             setPath(urlText.substring(index));
             urlText.delete(index, urlText.length());
         }
+
+        // 判断剩余部分是否符合IP + 端口的正则，若不符合，则全部将其设置为接口路径
+        // 由于部分接口路径存在编写时不带“/”的情况，为避免截取错误，故加上个判断进行弥补
+//        if (!urlText.toString().matches("(\\d{1,3}\\.){3}\\d{1,3}(:\\d{1,5})?")) {
+//            setPath(urlText.toString() + getPath());
+//            urlText.delete(0, urlText.length());
+//        }
 
         // 解析主机端口，若存在主机端口分隔符，则在urlText去除，并将端口转换后传入相应的内容中
         if ((index = urlText.indexOf(SYMBOL_SPLIT_PORT)) > -1) {
