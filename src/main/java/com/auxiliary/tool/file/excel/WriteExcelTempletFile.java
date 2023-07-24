@@ -565,7 +565,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
         fieldJson.keySet().stream().map(fieldJson::getJSONObject).forEach(json -> {
             // 若当前字段存在边框属性，则在样式json中添加相应的属性
             if (json.containsKey(ExcelCommonJsonField.KEY_BORDER)) {
-                System.out.println(json.toJSONString());
                 styleJson.put(ExcelCommonJsonField.KEY_BORDER, json.getJSONObject(ExcelCommonJsonField.KEY_BORDER));
             }
 
