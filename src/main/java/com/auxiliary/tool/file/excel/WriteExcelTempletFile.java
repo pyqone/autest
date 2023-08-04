@@ -609,7 +609,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
         Optional.ofNullable(tempJson.getBoolean(ExcelFileTemplet.KEY_FILTRATE)).filter(is -> is == true)
                 .ifPresent(is -> {
                     sheet.setAutoFilter(CellRangeAddress.valueOf(String.format("A1:%s1",
-                            DisposeCodeUtils.arabicNum2RomanNum(sheet.getRow(0).getLastCellNum() - 1))));
+                            DisposeCodeUtils.arabicNum2EnglishLetters(sheet.getRow(0).getLastCellNum() - 1))));
                 });
 
         // 若存在数据有效性sheet页，则设置该页展示在文档最后
