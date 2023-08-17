@@ -565,10 +565,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 存储环境组
         Map<String, String> envMap = environmentMap;
         // 判断当前传入的内容是否为空
-        if (envGroupName.isEmpty()) {
+        if (!environmentGroupMap.containsKey(envGroupName)) {
             // 获取当前是否切换了环境组，若已切换，则获取当前环境组；若未切换，则判断当前接口信息中是否存储接口组信息
             if (!actionEnvironmentGroup.isEmpty()) {
-                envMap = environmentGroupMap.get(envGroupName);
+                envMap = environmentGroupMap.get(actionEnvironmentGroup);
             } else {
                 // 获取当前标签存储的环境组名称
                 String groupName = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT_GROUP)).orElse("");
@@ -577,6 +577,8 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                     envMap = environmentGroupMap.get(groupName);
                 }
             }
+        } else {
+            envMap = environmentGroupMap.get(envGroupName);
         }
 
         // 判断环境名称是否为空
