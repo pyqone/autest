@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,45 +42,55 @@ import com.auxiliary.tool.regex.RegexType;
  * @since autest 3.3.0
  */
 public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
-        implements ActionEnvironment, AssertResponse, ExtractResponse, BeforeOperation {
+        implements ActionEnvironmentGroup, AssertResponse, ExtractResponse, BeforeOperation {
     /**
      * 存储xml元素文件类对象
-     * 
+     *
      * @since autest 3.3.0
      */
     private File xmlFile;
     /**
      * xml文件根节点
-     * 
+     *
      * @since autest 3.3.0
      */
     private Element rootElement;
 
     /**
      * 当前查找元素类对象
-     * 
+     *
      * @since autest 3.3.0
      */
     private Element nowElement;
     /**
      * 当前查找元素名称
-     * 
+     *
      * @since autest 3.3.0
      */
     private String nowElementName = "";
 
     /**
      * 环境集合
-     * 
+     *
      * @since autest 3.3.0
      */
     private HashMap<String, String> environmentMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
+     * 环境组集合
+     *
+     * @since autest 4.4.0
+     */
+    private HashMap<String, Map<String, String>> environmentGroupMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    /**
      * 当前执行接口的环境
-     * 
+     *
      * @since autest 3.3.0
      */
     private String actionEnvironment = "";
+    /**
+     * 当前执行接口的环境组
+     */
+    private String actionEnvironmentGroup = "";
 
     /**
      * 根据xml文件对象，解析接口信息xml文件，并设置接口执行环境及接口默认执行环境
@@ -89,47 +100,69 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      */
     public ReadInterfaceFromXml(File xmlFile) {
         try {
-            rootElement = new SAXReader().read(xmlFile).getRootElement();
+            rootElement = new SAXReader()
+                    .read(Optional.ofNullable(xmlFile).orElseThrow(() -> new InterfaceReadToolsException(
+                            String.format("文件路径“%s”不存在，请检查文件路径", xmlFile.getAbsolutePath()))))
+                    .getRootElement();
             this.xmlFile = xmlFile;
         } catch (DocumentException e) {
             throw new InterfaceReadToolsException(String.format("xml文件存在异常，无法解析。文件路径为：%s", xmlFile.getAbsolutePath()),
                     e);
         } catch (NullPointerException e) {
-            throw new InterfaceReadToolsException("文件类对象为null");
+            throw new InterfaceReadToolsException("文件路径不存在或指向的");
         }
 
-        // 读取环境集合
-        Element environmentsElement = rootElement.element(XmlParamName.XML_LABEL_ENVIRONMENTS);
-        List<Element> environmentElementList = Optional.ofNullable(environmentsElement).map(Element::elements)
-                .orElseGet(ArrayList::new);
-        // 判断集合是否为空，若为不为空，则存储所有的环境，并设置默认环境
-        if (!environmentElementList.isEmpty()) {
-            // 获取所有得到环境，并存储所有的环境
-            for (Element environmentElement : environmentElementList) {
-                String name = Optional.ofNullable(environmentElement.attributeValue(XmlParamName.XML_ATTRI_NAME))
-                        .orElseGet(() -> "");
-                // 判断当前环境名称是否为空，为空，则不存储
-                if (!name.isEmpty()) {
-                    // 若当前标签不存在文本节点，则存储默认内容
-                    environmentMap.put(name,
-                            Optional.ofNullable(environmentElement.getText()).orElseGet(() -> DEFAULT_HOST));
+        // 读取完整环境标签
+        Optional<Element> envsElement = Optional.ofNullable(rootElement.element(XmlParamName.XML_LABEL_ENVIRONMENTS));
+        // 读取其下所有的标签
+        for (Element envDataElement : envsElement.map(Element::elements).orElseGet(ArrayList::new)) {
+            String labelName = envDataElement.getName();
+            // 根据标签类型，进行相应的处理
+            if (XmlParamName.XML_LABEL_ENVIRONMENT_GROUP.equals(labelName)) { // 处理环境组标签
+                // 读取环境组下的内容
+                List<Element> envElementList = Optional
+                        .ofNullable(envDataElement.elements(XmlParamName.XML_LABEL_ENVIRONMENT))
+                        .orElseGet(ArrayList::new);
+                // 若当前环境组下无数据，则不进行处理
+                if (envElementList.isEmpty()) {
+                    continue;
                 }
+
+                // 读取环境组名称，并覆盖原有内容，并将当前的集合内容进行赋值
+                String groupName = envDataElement.attributeValue(XmlParamName.XML_ATTRI_NAME);
+                HashMap<String, String> envMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+                // 获取当前组下的所有内容
+                for (Element envElement : envElementList) {
+                    Optional.ofNullable(envElement.attributeValue(XmlParamName.XML_ATTRI_NAME))
+                            .filter(name -> !name.isEmpty()).ifPresent(name -> envMap.put(name,
+                                    Optional.ofNullable(envElement.getText()).orElseGet(() -> DEFAULT_HOST)));
+                }
+                // 存储或覆盖当前组名称的内容
+                environmentGroupMap.put(groupName, envMap);
+            } else if (XmlParamName.XML_LABEL_ENVIRONMENT.equals(labelName)) { // 处理无组环境标签
+                // 获取当前环境的名称
+                Optional<String> nameOpt = Optional.ofNullable(envDataElement.attributeValue(XmlParamName.XML_ATTRI_NAME))
+                        .filter(name -> !name.isEmpty());
+                // 判断名称属性是否存在或其内容是否为空
+                if (nameOpt.isPresent()) {
+                    String envName = nameOpt.get();
+                    // 判断当前是否存在默认环境
+                    if (actionEnvironment.isEmpty()) {
+                        setActionEnvironment(envName);
+                    }
+
+                    // 对当前环境内容进行存储
+                    environmentMap.put(envName,
+                            Optional.ofNullable(envDataElement.getText()).orElseGet(() -> DEFAULT_HOST));
+                }
+            } else { // 新增标签默认不处理，避免破坏结构完整
+                continue;
             }
-
-            // 判断环境集合标签中是否指定默认环境，若存在，则将执行环境指向为默认环境；若不存在，则取环境集合的第一个元素
-            String defaultenvironmentName = environmentsElement.attributeValue(XmlParamName.XML_ATTRI_DEFAULT);
-            setActionEnvironment(environmentMap.containsKey(defaultenvironmentName) ? defaultenvironmentName
-                    : environmentElementList.get(0).attributeValue(XmlParamName.XML_ATTRI_NAME));
         }
-    }
 
-    @Override
-    public InterfaceInfo getInterface(String interName) {
-        // 查找元素，并判断其是否指定环境属性
-        Element interElement = findElement(interName);
-        String environment = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT))
-                .filter(environmentMap::containsKey).map(environmentMap::get).orElse(actionEnvironment);
-        return raedInterInfo(interName, environment);
+        // 判断环境集合标签中是否指定默认环境，若存在，则将执行环境指向为默认环境
+        envsElement.map(e -> e.attributeValue(XmlParamName.XML_ATTRI_DEFAULT)).filter(name -> !name.isEmpty())
+                .ifPresent(this::setActionEnvironment);
     }
 
     /**
@@ -370,7 +403,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取接口标签中的conntect属性
-     * 
+     *
      * @param interElement 接口元素
      * @return 接口标签中的conntect属性
      * @since autest 3.6.0
@@ -465,7 +498,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     @Override
     public void setActionEnvironment(String environmentName) {
         if (environmentMap.containsKey(environmentName)) {
-            actionEnvironment = environmentMap.get(environmentName);
+            actionEnvironment = environmentName;
         }
     }
 
@@ -475,38 +508,100 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     }
 
     @Override
+    public String getEnvironmentGroupName(String envGroupName, String envName) {
+        return Optional.ofNullable(environmentGroupMap.get(envGroupName)).map(map -> map.get(envName)).orElse("");
+    }
+
+    @Override
+    public Map<String, String> getGroupAllEnvironmentName(String envGroupName) {
+        return Optional.ofNullable(environmentGroupMap.get(envGroupName)).orElseGet(HashMap::new);
+    }
+
+    @Override
+    public void switchGroup(String envGroupName) {
+        if (environmentGroupMap.containsKey(envGroupName)) {
+            actionEnvironmentGroup = envGroupName;
+        }
+    }
+
+    @Override
+    public void switchDefaultGroup() {
+        actionEnvironmentGroup = "";
+    }
+
+    @Override
+    public InterfaceInfo getInterface(String interName) {
+        return raedInterInfo(interName, "", "");
+    }
+
+    @Override
     public InterfaceInfo getInterface(String interName, String environmentName) {
-        return raedInterInfo(interName,
-                Optional.ofNullable(environmentMap.get(environmentName)).orElse(actionEnvironment));
+        return raedInterInfo(interName, "", Optional.ofNullable(environmentName).orElse(""));
+    }
+
+    @Override
+    public InterfaceInfo getInterface(String interName, String envGroupName, String environmentName) {
+        return raedInterInfo(interName, Optional.ofNullable(envGroupName).orElse(""),
+                Optional.ofNullable(environmentName).orElse(""));
     }
 
     /**
      * 该方法用于根据指定的接口名称与执行的环境，构造相应的接口信息读取类对象
-     * 
-     * @param interName   接口名称
-     * @param environment 接口执行环境
+     *
+     * @param interName    接口名称
+     * @param envGroupName 环境组名称
+     * @param environment  接口执行环境名称
      * @return 接口信息类对象
-     * @since autest 3.4.0
+     * @since autest 4.4.0
      */
-    private InterfaceInfo raedInterInfo(String interName, String environment) {
+    private InterfaceInfo raedInterInfo(String interName, String envGroupName, String environment) {
         if (interName == null || interName.isEmpty()) {
             throw new InterfaceReadToolsException("指定的接口名称为空或未指定接口名称：" + interName);
         }
 
+        // 查找元素
+        Element interElement = findElement(interName);
+
+        // 存储环境组
+        Map<String, String> envMap = environmentMap;
+        // 判断当前传入的内容是否为空
+        if (!environmentGroupMap.containsKey(envGroupName)) {
+            // 获取当前是否切换了环境组，若已切换，则获取当前环境组；若未切换，则判断当前接口信息中是否存储接口组信息
+            if (!actionEnvironmentGroup.isEmpty()) {
+                envMap = environmentGroupMap.get(actionEnvironmentGroup);
+            } else {
+                // 获取当前标签存储的环境组名称
+                String groupName = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT_GROUP)).orElse("");
+                // 判断当前环境组是否存在，若存在，则切换至编写的默认环境组
+                if (environmentGroupMap.containsKey(groupName)) {
+                    envMap = environmentGroupMap.get(groupName);
+                }
+            }
+        } else {
+            envMap = environmentGroupMap.get(envGroupName);
+        }
+
+        // 判断环境名称是否为空
+        if (environment.isEmpty()) {
+            // 判断当前标签中是否包含环境名称，若存在，则以当前环境作为需要查找的环境名称；若未存储，则为默认的环境名称
+            environment = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT))
+                    .orElse(actionEnvironment);
+        }
+        // 根据当前处理的环境名称，在环境组中，查找相应的环境内容，若内容不存在，则读取默认IP
+        String envContent = Optional.ofNullable(envMap.get(environment)).orElse(DEFAULT_HOST);
+
         // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
         if (interfaceCacheMap.containsKey(interName)) {
             InterfaceInfo inter = interfaceCacheMap.get(interName).clone();
-            inter.setHost(environment);
+            inter.setHost(envContent);
             return inter;
         }
 
         // 若未缓存信息，则构造接口信息对象，添加接口信息
         InterfaceInfo inter = new InterfaceInfo();
         // 解析环境，获取环境主机等信息
-        inter.setHost(environment);
+        inter.setHost(envContent);
 
-        // 查找元素
-        Element interElement = findElement(interName);
         // 获取接口的url
         inter.analysisUrl(readInterUrl(interElement));
         // 获取接口的路径
@@ -592,7 +687,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于返回包含接口信息的前置操作封装类
-     * 
+     *
      * @param interName 接口名称
      * @return 前置操作封装类
      * @since autest 3.6.0
@@ -635,18 +730,13 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 定义查找接口的xpath，并获取接口元素
         String elementXpath = String.format("//%s/%s[@%s='%s']", XmlParamName.XML_LABEL_INTERFACES,
                 XmlParamName.XML_LABEL_INTERFACE, XmlParamName.XML_ATTRI_NAME, interName);
-        Element interElement = (Element) rootElement.selectSingleNode(elementXpath);
-        // 若未查找接口元素，则抛出异常
-        if (interElement == null) {
-            throw new InterfaceReadToolsException(
-                    String.format("接口元素“%s”在文件中不存在：%s", interName, xmlFile.getAbsolutePath()));
-        }
-
         // 将缓存元素指向当前元素
+        nowElement = Optional.ofNullable((Element) rootElement.selectSingleNode(elementXpath))
+                .orElseThrow(() -> new InterfaceReadToolsException(
+                        String.format("接口元素“%s”在文件中不存在：%s", interName, xmlFile.getAbsolutePath())));
         nowElementName = interName;
-        nowElement = interElement;
 
-        return interElement;
+        return nowElement;
     }
 
     /**
@@ -674,6 +764,18 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 定义environments标签名称
          */
         public static final String XML_LABEL_ENVIRONMENTS = "environments";
+        /**
+         * 定义environment标签名称
+         *
+         * @since autest 4.4.0
+         */
+        public static final String XML_LABEL_ENVIRONMENT = "environment";
+        /**
+         * 定义environmentGroup标签名称
+         *
+         * @since autest 4.4.0
+         */
+        public static final String XML_LABEL_ENVIRONMENT_GROUP = "environmentGroup";
         /**
          * 定义default属性名称
          */
@@ -824,6 +926,12 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         public static final String XML_ATTRI_ENVIRONMENT = "environment";
         /**
+         * 定义environmentGroup属性名称
+         *
+         * @since autest 4.4.0
+         */
+        public static final String XML_ATTRI_ENVIRONMENT_GROUP = "environmentGroup";
+        /**
          * 定义file属性名称
          */
         public static final String XML_ATTRI_FILE = "file";
@@ -833,7 +941,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         public static final String XML_ATTRI_CONNECT = "connect";
         /**
          * 定义前置执行次数属性
-         * 
+         *
          * @since autest 4.3.0
          */
         public static final String XML_ATTRI_ACTION_COUNT = "actionCount";
