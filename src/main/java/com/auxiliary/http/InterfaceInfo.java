@@ -45,172 +45,172 @@ import com.auxiliary.tool.regex.ConstType;
 public class InterfaceInfo implements Cloneable {
     /**
      * 定义默认接口协议
-     * 
+     *
      * @since autest 3.3.0
      */
     public static final String DEFAULT_PROTOCOL = "http://";
     /**
      * 定义默认主机
-     * 
+     *
      * @since autest 3.3.0
      */
     public static final String DEFAULT_HOST = "127.0.0.1";
     /**
      * 定义默认主机端口
-     * 
+     *
      * @since autest 3.3.0
      */
     public static final int DEFAULT_PORT = 80;
     /**
      * 定义接口默认请求方式
-     * 
+     *
      * @since autest 3.3.0
      */
     public static final RequestType DEFAULT_REQUESTTYPE = RequestType.GET;
     /**
      * 定义响应内容默认字符集
-     * 
+     *
      * @since autest 3.3.0
      */
     public static final String DEFAULT_CHARSETNAME = "UTF-8";
 
     /**
      * 定义接口主机与协议间分隔的符号
-     * 
+     *
      * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PROTOCOL = "://";
     /**
      * 定义接口主机与主机间的分隔符号
-     * 
+     *
      * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PORT = ":";
     /**
      * 定义接口路径与接口主机间的分隔符号
-     * 
+     *
      * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PATH = "/";
     /**
      * 定义接口起始参数与接口路径间的分隔符号
-     * 
+     *
      * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_START_PARAM = "?";
     /**
      * 定义接口参数键值之间的分隔符号
-     * 
+     *
      * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PARAM_VALUE = "=";
     /**
      * 定义cookies键值之间的分隔符号
-     * 
+     *
      * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_COOKIES_VALUE = "=";
     /**
      * 定义接口参数与参数间的分隔符号
-     * 
+     *
      * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_PARAM = "&";
     /**
      * 定义cookies间的分隔符号
-     * 
+     *
      * @since autest 3.3.0
      */
     protected final String SYMBOL_SPLIT_COOKIES = ";";
 
     /**
      * 接口协议
-     * 
+     *
      * @since autest 3.3.0
      */
-    private String protocol = "";
+    protected String protocol = "";
     /**
      * 主机
-     * 
+     *
      * @since autest 3.3.0
      */
-    private String host = "";
+    protected String host = "";
     /**
      * 主机端口号
-     * 
+     *
      * @since autest 3.3.0
      */
-    private int port = -1;
+    protected int port = -1;
     /**
      * 接口地址
      */
-    private String path = "";
+    protected String path = "";
     /**
      * 请求类型
-     * 
+     *
      * @since autest 3.3.0
      */
-    private RequestType requestType = null;
+    protected RequestType requestType = null;
     /**
      * 接口请求参数
-     * 
+     *
      * @since autest 3.3.0
      */
-    private HashMap<String, String> paramMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, String> paramMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口请求体
-     * 
+     *
      * @since autest 3.3.0
      */
-    private Entry<MessageType, Object> body;
+    protected Entry<MessageType, Object> body;
     /**
      * 接口请求头
-     * 
+     *
      * @since autest 3.3.0
      */
-    private HashMap<String, String> requestHeaderMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, String> requestHeaderMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口相应字符集
-     * 
+     *
      * @since autest 3.3.0
      */
-    private String charsetname = "";
+    protected String charsetname = "";
     /**
      * 接口响应内容格式集合
-     * 
+     *
      * @since autest 3.3.0
      */
-    private HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<Integer, HashSet<MessageType>> responseContentTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文断言规则集合
-     * 
+     *
      * @since autest 3.3.0
      */
-    private HashSet<JSONObject> assertRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashSet<JSONObject> assertRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 接口响应报文提词规则
-     * 
+     *
      * @since autest 3.3.0
      */
-    private HashSet<JSONObject> extractRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashSet<JSONObject> extractRuleSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储接口前置操作内容
-     * 
+     *
      * @since autest 3.3.0
      */
-    private ArrayList<BeforeInterfaceOperation> beforeOperationList = new ArrayList<>();
+    protected ArrayList<BeforeInterfaceOperation> beforeOperationList = new ArrayList<>();
     /**
      * 存储cookie
-     * 
+     *
      * @since autest 3.3.0
      */
-    private HashMap<String, String> cookieMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
+    protected HashMap<String, String> cookieMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储接口的请求时间
-     * 
+     *
      * @since autest 3.3.0
      */
-    private Entry<Long, TimeUnit> connectTime = EasyHttp.connectTime;
+    protected Entry<Long, TimeUnit> connectTime = EasyHttp.connectTime;
 
     /**
      * 该方法用于返回接口的url协议
@@ -440,7 +440,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于返回是否存在参数数据
-     * 
+     *
      * @return 是否存在参数数据
      * @since autest 3.6.0
      */
@@ -501,7 +501,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于清空存储的所有参数内容
-     * 
+     *
      * @return 原有的参数内容
      * @since autest 3.4.0
      */
@@ -562,7 +562,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于设置请求体以及请求体的类型
-     * 
+     *
      * @param messageType 请求体类型枚举
      * @param bodyObject  请求体内容
      * @since autest 3.4.0
@@ -587,7 +587,7 @@ public class InterfaceInfo implements Cloneable {
      * <p>
      * <b>注意：</b>表单每一个元素为一个键值对类型
      * </p>
-     * 
+     *
      * @param messageType 请求体类型枚举
      * @param dataList    请求体内容
      * @since autest 3.6.0
@@ -616,7 +616,7 @@ public class InterfaceInfo implements Cloneable {
                 throw new InterfaceReadToolsException(String.format("错误的表单值类型“%s”，“%s”类型的表单值只支持字符串或数字类型，错误的接口信息为：%s",
                         value.getClass().getSimpleName(), MessageType.X_WWW_FORM_URLENCODED.getMediaValue(),
                         toUrlString()));
-            } 
+            }
             if (messageType == MessageType.FORM_DATA
                     && !(value instanceof String || value instanceof Number || value instanceof File)) {
                 throw new InterfaceReadToolsException(String.format(
@@ -644,7 +644,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于返回是否存在请求头数据
-     * 
+     *
      * @return 是否存在请求头
      * @since autest 3.6.0
      */
@@ -680,7 +680,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于清空存储的所有请求头内容
-     * 
+     *
      * @return 原有的请求头内容
      * @since autest 3.4.0
      */
@@ -761,7 +761,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于移除指定状态码的响应体内容
-     * 
+     *
      * @param status 状态码
      * @return 状态码对应的原内容
      * @since autest 3.4.0
@@ -851,7 +851,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于清空并返回存储的断言规则集合
-     * 
+     *
      * @return 断言规则集合
      * @since autest 3.4.0
      */
@@ -944,7 +944,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于清空并返回存储的提词规则集合
-     * 
+     *
      * @return 提词规则集合
      * @since autest 3.4.0
      */
@@ -956,7 +956,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于添加前置操作方法
-     * 
+     *
      * @param operation 前置操作封装类对象
      * @since autest 3.6.0
      */
@@ -966,7 +966,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于添加一组前置操作方法
-     * 
+     *
      * @param operations 前置操作封装类集合
      * @since autest 3.6.0
      */
@@ -976,7 +976,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于返回添加的所有前置执行操作
-     * 
+     *
      * @return 前置操作封装类集合
      * @since autest 3.6.0
      */
@@ -988,7 +988,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于清除添加的前置操作
-     * 
+     *
      * @return 前置操作封装类集合
      * @since autest 3.6.0
      */
@@ -1011,7 +1011,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于返回已存储的Cookie的表达式，即以“xxx=xxx;xxx=xxx”的格式返回Cookie字符串
-     * 
+     *
      * @return Cookie的表达式
      * @since autest 3.6.0
      */
@@ -1026,7 +1026,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于返回是否存在cookie数据
-     * 
+     *
      * @return 是否存在cookie数据
      * @since autest 3.6.0
      */
@@ -1088,7 +1088,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于清空存储的所有cookie内容
-     * 
+     *
      * @return 原有的cookie内容
      * @since autest 3.6.0
      */
@@ -1100,7 +1100,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于设置接口的连接超时时间
-     * 
+     *
      * @param connectTime 接口超时时间
      * @param timeUnit    时间单位枚举
      * @since autest 3.6.0
@@ -1122,7 +1122,7 @@ public class InterfaceInfo implements Cloneable {
      * <p>
      * <b>注意：</b>建议不要使用月和年为单位，其单位为取近似值，在计算时可能不准确；时间块表达式不允许传入负号，传入的每个时间块只做加法处理
      * </p>
-     * 
+     *
      * @param timeExpression 时间块表达式
      * @since autest 3.6.0
      */
@@ -1180,7 +1180,7 @@ public class InterfaceInfo implements Cloneable {
 
     /**
      * 该方法用于返回当前接口设置的请求超时时间
-     * 
+     *
      * @return 接口请求超时时间
      * @since autest 3.6.0
      */
@@ -1345,7 +1345,7 @@ public class InterfaceInfo implements Cloneable {
             }
             interInfoJson.put("body", bodyText);
         }
-        
+
         interInfoJson.put("requestHeader", headerJson);
 
         return interInfoJson.toJSONString();

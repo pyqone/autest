@@ -42,7 +42,7 @@ import com.auxiliary.tool.regex.RegexType;
  * @since autest 3.3.0
  */
 public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
-        implements ActionEnvironmentGroup, AssertResponse, ExtractResponse, BeforeOperation {
+        implements ActionEnvironmentGroup, AssertResponse, ExtractResponse, BeforeOperation, InterfaceGroup {
     /**
      * 存储xml元素文件类对象
      *
@@ -91,6 +91,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * 当前执行接口的环境组
      */
     private String actionEnvironmentGroup = "";
+
+    /**
+     * 存储当前接口组的信息
+     */
+    private Map<String, InterfaceGroupInfo> interfaceGroupMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 根据xml文件对象，解析接口信息xml文件，并设置接口执行环境及接口默认执行环境
@@ -415,7 +420,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     @Override
     public Set<String> getExtractContent(String interName) {
         // 查找元素
-        Element element = findElement(interName);
+        Element element = findInterfaceElement(interName);
         // 获取断言标签集合
         List<Element> extractElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_RESPONSE))
                 .map(ele -> ele.element(XmlParamName.XML_LABEL_EXTRACTS))
@@ -457,7 +462,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     @Override
     public Set<String> getAssertContent(String interName) {
         // 查找元素
-        Element element = findElement(interName);
+        Element element = findInterfaceElement(interName);
         // 获取断言标签集合
         List<Element> assertElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_RESPONSE))
                 .map(ele -> ele.element(XmlParamName.XML_LABEL_ASSERTS))
@@ -545,6 +550,12 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                 Optional.ofNullable(environmentName).orElse(""));
     }
 
+    @Override
+    public Map<String, InterfaceInfo> getInterfaceGroup(String groupName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     /**
      * 该方法用于根据指定的接口名称与执行的环境，构造相应的接口信息读取类对象
      *
@@ -560,7 +571,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         }
 
         // 查找元素
-        Element interElement = findElement(interName);
+        Element interElement = findInterfaceElement(interName);
 
         // 存储环境组
         Map<String, String> envMap = environmentMap;
@@ -645,7 +656,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
     @Override
     public List<String> getParentInterfaceName(String interName) {
         // 查找元素
-        Element element = findElement(interName);
+        Element element = findInterfaceElement(interName);
         // 获取所有的前置接口名称
         List<Element> beforeElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_BEFORE))
                 .map(ele -> ele.elements(XmlParamName.XML_LABEL_INTERFACE)).orElseGet(() -> new ArrayList<>());
@@ -667,7 +678,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         List<BeforeInterfaceOperation> operationList = new ArrayList<>();
 
         // 查找元素
-        Element element = findElement(interName);
+        Element element = findInterfaceElement(interName);
         // 获取所有前置操作标签并进行遍历
         List<Element> beforeElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_BEFORE))
                 .map(Element::elements).orElseGet(ArrayList::new);
@@ -716,7 +727,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @return 元素名称对应的接口元素
      * @since autest 3.3.0
      */
-    private Element findElement(String interName) {
+    private Element findInterfaceElement(String interName) {
         // 若指定的接口名称为空，则抛出异常
         if (interName == null || interName.isEmpty()) {
             throw new InterfaceReadToolsException("未指定元素名称，无法查找元素");
@@ -737,6 +748,15 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         nowElementName = interName;
 
         return nowElement;
+    }
+
+    private Element findInterfaceGroupElment(String groupName) {
+        // 若指定的接口名称为空，则抛出异常
+        if (groupName == null || groupName.isEmpty()) {
+            throw new InterfaceReadToolsException("未指定接口组名称名称，无法查找接口组");
+        }
+
+        return null;
     }
 
     /**
@@ -776,6 +796,12 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * @since autest 4.4.0
          */
         public static final String XML_LABEL_ENVIRONMENT_GROUP = "environmentGroup";
+        /**
+         * 定义interfaceGroup标签名称
+         *
+         * @since autest 4.4.0
+         */
+        public static final String XML_LABEL_INTERFACE_GROUP = "interfaceGroup";
         /**
          * 定义default属性名称
          */
@@ -945,5 +971,67 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * @since autest 4.3.0
          */
         public static final String XML_ATTRI_ACTION_COUNT = "actionCount";
+    }
+
+    /**
+     * <p>
+     * <b>文件名：ReadInterfaceFromXml.java</b>
+     * </p>
+     * <p>
+     * <b>用途：</b>用于存储接口组的信息，并最终用于将接口组信息附加至接口上
+     * </p>
+     * <p>
+     * <b>编码时间：2023年8月21日 下午5:24:48
+     * </p>
+     * <p>
+     * <b>修改时间：2023年8月21日 下午5:24:48
+     * </p>
+     *
+     *
+     * @author 彭宇琦
+     * @version Ver1.0
+     * @since JDK 1.8
+     * @since autest 4.4.0
+     */
+    private class InterfaceGroupInfo extends InterfaceInfo {
+        /**
+         * 该方法用于判断是否添加接口协议
+         *
+         * @return 是否添加接口协议
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteProtocol() {
+            return !protocol.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加主机
+         *
+         * @return 是否添加主机
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteHost() {
+            return !host.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加主机端口号
+         *
+         * @return 是否添加主机端口号
+         * @since autest 4.4.0
+         */
+        protected boolean isWritePort() {
+            return port != -1;
+        }
+
+        /**
+         * 该方法用于判断是否添加接口地址
+         *
+         * @return 是否添加接口地址
+         * @since autest 4.4.0
+         */
+        protected boolean isWritePath() {
+            return !path.isEmpty();
+        }
     }
 }
