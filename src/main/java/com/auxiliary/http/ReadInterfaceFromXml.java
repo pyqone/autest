@@ -419,10 +419,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     @Override
     public Set<String> getExtractContent(String interName) {
-        // 查找元素
-        Element element = findInterfaceElement(interName);
+        return readExtractContent(findInterfaceElement(interName));
+    }
+
+    /**
+     * 该方法用于读取接口的提词信息，并返回接口提词集合
+     *
+     * @param interElement 接口xml元素
+     * @return 接口提词集合
+     * @since autest 4.4.0
+     */
+    private Set<String> readExtractContent(Element interElement) {
         // 获取断言标签集合
-        List<Element> extractElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_RESPONSE))
+        List<Element> extractElementList = Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_RESPONSE))
                 .map(ele -> ele.element(XmlParamName.XML_LABEL_EXTRACTS))
                 .map(ele -> ele.elements(XmlParamName.XML_LABEL_EXTRACT)).orElseGet(() -> new ArrayList<>());
 
@@ -461,10 +470,19 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     @Override
     public Set<String> getAssertContent(String interName) {
-        // 查找元素
-        Element element = findInterfaceElement(interName);
+        return readAssertContent(findInterfaceElement(interName));
+    }
+
+    /**
+     * 该方法用于读取接口的断言信息，并返回接口断言集合
+     *
+     * @param interElement 接口xml元素
+     * @return 接口断言集合
+     * @since autest 4.4.0
+     */
+    private Set<String> readAssertContent(Element interElement) {
         // 获取断言标签集合
-        List<Element> assertElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_RESPONSE))
+        List<Element> assertElementList = Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_RESPONSE))
                 .map(ele -> ele.element(XmlParamName.XML_LABEL_ASSERTS))
                 .map(ele -> ele.elements(XmlParamName.XML_LABEL_ASSERT)).orElseGet(() -> new ArrayList<>());
 
@@ -675,18 +693,27 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
     @Override
     public List<BeforeInterfaceOperation> getBeforeOperation(String interName) {
-        List<BeforeInterfaceOperation> operationList = new ArrayList<>();
+        return readBeforeOperation(findInterfaceElement(interName));
+    }
 
-        // 查找元素
-        Element element = findInterfaceElement(interName);
+    /**
+     * 该方法用于读取接口的前置操作信息，并返回接口前置操作集合
+     *
+     * @param interElement 接口xml元素
+     * @return 接口前置操作集合
+     * @since autest 4.4.0
+     */
+    private List<BeforeInterfaceOperation> readBeforeOperation(Element interElement) {
+        List<BeforeInterfaceOperation> operationList = new ArrayList<>();
         // 获取所有前置操作标签并进行遍历
-        List<Element> beforeElementList = Optional.ofNullable(element.element(XmlParamName.XML_LABEL_BEFORE))
+        List<Element> beforeElementList = Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_BEFORE))
                 .map(Element::elements).orElseGet(ArrayList::new);
         for (Element beforeElement : beforeElementList) {
             // 根据标签名称，定义相应的前置操作封装类
             switch (beforeElement.getName()) {
             case XmlParamName.XML_LABEL_INTERFACE:
-                operationList.add(getBeforeInterface(interName, beforeElement));
+                operationList.add(
+                        getBeforeInterface(interElement.attributeValue(XmlParamName.XML_ATTRI_NAME), beforeElement));
                 break;
             default:
                 continue; // 若非指定的封装类，则不进行解析
@@ -750,13 +777,76 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         return nowElement;
     }
 
-    private Element findInterfaceGroupElment(String groupName) {
+    private InterfaceGroupInfo findInterfaceGroup(String interGroupName) {
         // 若指定的接口名称为空，则抛出异常
-        if (groupName == null || groupName.isEmpty()) {
+        if (interGroupName == null || interGroupName.isEmpty()) {
             throw new InterfaceReadToolsException("未指定接口组名称名称，无法查找接口组");
         }
+        // 判断当前接口组是否存在，若存在，则直接读取并返回
+        if (interfaceGroupMap.containsKey(interGroupName)) {
+            return interfaceGroupMap.get(interGroupName);
+        }
 
-        return null;
+        // 定义接口组类对象，并记录接口组相关的内容
+        InterfaceGroupInfo group = new InterfaceGroupInfo();
+        // 定义查找接口组的xpath，并获取接口元素
+        String elementXpath = String.format("//%s/%s[@%s='%s']", XmlParamName.XML_LABEL_INTERFACES,
+                XmlParamName.XML_LABEL_INTERFACE_GROUP, XmlParamName.XML_ATTRI_NAME, interGroupName);
+        Element groupElement = Optional.ofNullable((Element) rootElement.selectSingleNode(elementXpath))
+                .orElseThrow(() -> new InterfaceReadToolsException(
+                        String.format("接口组“%s”在文件中不存在：%s", interGroupName, xmlFile.getAbsolutePath())));
+
+        // 获取当前标签存储的环境组名称
+        String envGroupName = Optional.ofNullable(groupElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT_GROUP))
+                .orElse("");
+        // 判断当前环境组是否存在，若存在，则切换至编写的默认环境组
+        Map<String, String> envMap = environmentMap;
+        if (environmentGroupMap.containsKey(envGroupName)) {
+            envMap = environmentGroupMap.get(envGroupName);
+        }
+        // 判断环境名称是否为空
+        Optional.ofNullable(groupElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT)).map(envMap::get)
+                .ifPresent(group::setHost);
+
+        // 获取接口的url
+        group.analysisUrl(readInterUrl(groupElement));
+        // 获取接口的路径
+        String path = readInterPath(groupElement);
+        if (!path.isEmpty()) {
+            group.setPath(path);
+        }
+        // 获取接口请求时间，若不存在则不进行设置
+        try {
+            Optional.ofNullable(readConnectTime(groupElement)).filter(expression -> !expression.isEmpty())
+                    .ifPresent(group::setConnectTime);
+        } catch (Exception e) {
+            throw new InterfaceReadToolsException(String.format("接口组元素“%s”设置接口超时时间表达式错误", interGroupName), e);
+        }
+        // 获取接口的请求方式
+        group.setRequestType(readInterRequestType(groupElement));
+        // 获取接口参数信息
+        readParams(group, groupElement);
+        // 设置请求头信息
+        readHeader(group, groupElement);
+        // 设置cookie信息
+        readCookies(group, groupElement);
+        // 读取请求体信息
+        readInterBody(group, groupElement);
+        // 读取响应体字符集
+        group.setCharsetname(readCharsetname(groupElement));
+        // 读取接口不同状态的响应报文格式
+        readResponseTypes(group, groupElement);
+        // 读取接口断言规则信息
+        group.addAllAssertRule(readAssertContent(groupElement));
+        // 读取接口提词规则信息
+        group.addAllExtractRule(readExtractContent(groupElement));
+        // 添加前置操作集合
+        group.addAllBeforeOperation(readBeforeOperation(groupElement));
+
+        // 缓存读取的接口
+        interfaceGroupMap.put(interGroupName, group);
+
+        return group;
     }
 
     /**
@@ -1032,6 +1122,116 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         protected boolean isWritePath() {
             return !path.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加请求类型
+         *
+         * @return 是否添加请求类型
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteRequestType() {
+            return requestType != null;
+        }
+
+        /**
+         * 该方法用于判断是否添加接口参数
+         *
+         * @return 是否添加接口参数
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteParam() {
+            return !paramMap.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加接口请求体
+         *
+         * @return 是否添加接口请求体
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteBody() {
+            return body != null;
+        }
+
+        /**
+         * 该方法用于判断是否添加接口请求头
+         *
+         * @return 是否添加接口请求头
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteRequestHeader() {
+            return !requestHeaderMap.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加接口响应字符集
+         *
+         * @return 是否添加接口响应字符集
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteCharsetname() {
+            return !charsetname.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加接口响应内容格式集合
+         *
+         * @return 是否添加接口响应内容格式集合
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteResponseContentType() {
+            return !responseContentTypeMap.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加接口响应报文断言规则
+         *
+         * @return 是否添加接口响应报文断言规则
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteAssertRule() {
+            return !assertRuleSet.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加接口响应报文提词规则
+         *
+         * @return 是否添加接口响应报文提词规则
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteExtractRule() {
+            return !extractRuleSet.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加接口前置操作内容
+         *
+         * @return 是否添加接口前置操作内容
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteBeforeOperation() {
+            return !beforeOperationList.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加cookie
+         *
+         * @return 是否添加cookie
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteCookie() {
+            return !cookieMap.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加接口的请求时间
+         *
+         * @return 是否添加接口的请求时间
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteConnectTime() {
+            return connectTime != null;
         }
     }
 }

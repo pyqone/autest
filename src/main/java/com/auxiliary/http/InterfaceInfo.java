@@ -216,7 +216,7 @@ public class InterfaceInfo implements Cloneable {
      *
      * @since autest 3.3.0
      */
-    protected Entry<Long, TimeUnit> connectTime = DEFAULT_CONNECT_TIME;
+    protected Entry<Long, TimeUnit> connectTime = null;
 
     /**
      * 该方法用于返回接口的url协议
