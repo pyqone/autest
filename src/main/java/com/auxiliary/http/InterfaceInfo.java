@@ -73,6 +73,12 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.3.0
      */
     public static final String DEFAULT_CHARSETNAME = "UTF-8";
+    /**
+     * 定义默认接口请求超时时间
+     *
+     * @since autest 4.4.0
+     */
+    public static final Entry<Long, TimeUnit> DEFAULT_CONNECT_TIME = new Entry<>(15L, TimeUnit.SECOND);
 
     /**
      * 定义接口主机与协议间分隔的符号
@@ -162,7 +168,7 @@ public class InterfaceInfo implements Cloneable {
      *
      * @since autest 3.3.0
      */
-    protected Entry<MessageType, Object> body;
+    protected Entry<MessageType, Object> body = null;
     /**
      * 接口请求头
      *
@@ -210,7 +216,7 @@ public class InterfaceInfo implements Cloneable {
      *
      * @since autest 3.3.0
      */
-    protected Entry<Long, TimeUnit> connectTime = EasyHttp.connectTime;
+    protected Entry<Long, TimeUnit> connectTime = DEFAULT_CONNECT_TIME;
 
     /**
      * 该方法用于返回接口的url协议
@@ -1106,7 +1112,8 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.6.0
      */
     public void setConnectTime(long connectTime, TimeUnit timeUnit) {
-        this.connectTime = new Entry<>(connectTime, timeUnit);
+        this.connectTime = new Entry<>((connectTime <= 0L ? 0L : connectTime),
+                Optional.ofNullable(timeUnit).orElse(TimeUnit.SECOND));
     }
 
     /**
@@ -1185,6 +1192,9 @@ public class InterfaceInfo implements Cloneable {
      * @since autest 3.6.0
      */
     public Entry<Long, TimeUnit> getConnectTime() {
+        if (connectTime == null) {
+            return DEFAULT_CONNECT_TIME;
+        }
         return new Entry<>(connectTime.getKey(), connectTime.getValue());
     }
 
