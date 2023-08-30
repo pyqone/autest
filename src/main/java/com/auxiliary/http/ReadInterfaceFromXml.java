@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -417,6 +418,46 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         return interElement.attributeValue(XmlParamName.XML_ATTRI_CONNECT);
     }
 
+    /**
+     * 该方法用于读取接口的环境信息，并对环境名称进行转换
+     *
+     * @param interElement 接口元素类对象
+     * @param envGroupName 环境组名称
+     * @param environment  环境名称
+     * @return 执行环境信息
+     * @since autest 4.4.0
+     */
+    private String readEnvironmentContent(Element interElement, String envGroupName, String environment) {
+        // 存储环境组
+        Map<String, String> envMap = environmentMap;
+        // 判断当前传入的内容是否为空
+        if (!environmentGroupMap.containsKey(envGroupName)) {
+            // 获取当前是否切换了环境组，若已切换，则获取当前环境组；若未切换，则判断当前接口信息中是否存储接口组信息
+            if (!actionEnvironmentGroup.isEmpty()) {
+                envMap = environmentGroupMap.get(actionEnvironmentGroup);
+            } else {
+                // 获取当前标签存储的环境组名称
+                String groupName = Optional
+                        .ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT_GROUP)).orElse("");
+                // 判断当前环境组是否存在，若存在，则切换至编写的默认环境组
+                if (environmentGroupMap.containsKey(groupName)) {
+                    envMap = environmentGroupMap.get(groupName);
+                }
+            }
+        } else {
+            envMap = environmentGroupMap.get(envGroupName);
+        }
+
+        // 判断环境名称是否为空
+        if (environment.isEmpty()) {
+            // 判断当前标签中是否包含环境名称，若存在，则以当前环境作为需要查找的环境名称；若未存储，则为默认的环境名称
+            environment = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT))
+                    .orElse(actionEnvironment);
+        }
+        // 根据当前处理的环境名称，在环境组中，查找相应的环境内容，若内容不存在，则返回空
+        return Optional.ofNullable(envMap.get(environment)).orElse("");
+    }
+
     @Override
     public Set<String> getExtractContent(String interName) {
         return readExtractContent(findInterfaceElement(interName));
@@ -568,10 +609,100 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                 Optional.ofNullable(environmentName).orElse(""));
     }
 
+    /**
+     * 该方法用于按照接口文件中编写的接口顺序，返回接口组中的所有接口集合
+     *
+     * @param groupName 接口组名称
+     * @return 接口组中的接口集合
+     * @since autest 4.4.0
+     * @throws InterfaceReadToolsException 当接口组信息读取错误时，抛出的异常
+     */
     @Override
     public Map<String, InterfaceInfo> getInterfaceGroup(String groupName) {
-        // TODO Auto-generated method stub
-        return null;
+        return getInterfaceGroup(groupName, "", "", true);
+    }
+
+    /**
+     * 该方法用于按照指定的存储方式，返回接口组中的所有接口集合
+     *
+     * @param groupName        接口组名称
+     * @param envGroupName     环境组名称
+     * @param environmentName  环境名称
+     * @param isOrderlyStorage 是否有序存储，传入{@code true}则表示按照有序的方式进行存储；反之，则以无序的方式进行存储
+     * @return 接口组中的接口集合
+     * @since autest 4.4.0
+     * @see #getInterfaceGroup(String)
+     * @throws InterfaceReadToolsException 当接口组信息读取错误时，抛出的异常
+     */
+    public Map<String, InterfaceInfo> getInterfaceGroup(String groupName, String envGroupName, String environmentName,
+            boolean isOrderlyStorage) {
+        // 根据传入的内容，定义存储接口的集合
+        Map<String, InterfaceInfo> interMap = (isOrderlyStorage ? new LinkedHashMap<>(ConstType.DEFAULT_MAP_SIZE)
+                : new HashMap<>(ConstType.DEFAULT_MAP_SIZE));
+        // 读取接口组信息
+        InterfaceGroupInfo interGroup = findInterfaceGroup(groupName, envGroupName, environmentName);
+        // 读取接口组下的所有接口信息
+        for (String interName : interGroup.interNameList) {
+            // 查找当前接口
+            InterfaceInfo inter = null;
+            try {
+                inter = getInterface(interName, envGroupName, environmentName);
+            } catch (Exception e) {
+                throw new InterfaceReadToolsException(
+                        String.format("接口组“%s”中“%s”接口读取失败，异常信息为：%s", groupName, interName, e.getMessage()), e);
+            }
+
+            // 对接口组内容进行判断，若当前接口组存储了该内容，则将接口组存储的内容覆盖至接口上
+            if (interGroup.isWriteProtocol()) {
+                inter.setProtocol(interGroup.getProtocol());
+            }
+            if (interGroup.isWriteHost()) {
+                inter.setHost(interGroup.getHost());
+            }
+            if (interGroup.isWritePort()) {
+                inter.setPort(interGroup.getPort());
+            }
+            if (interGroup.isWritePath()) {
+                inter.setPath(interGroup.getPath());
+            }
+            if (interGroup.isWriteRequestType()) {
+                inter.setRequestType(interGroup.getRequestType());
+            }
+            if (interGroup.isWriteParam()) {
+                inter.addParams(interGroup.getParamMap());
+            }
+            if (interGroup.isWriteBody()) {
+                inter.setBodyContent(interGroup.getBodyContent().getKey(), interGroup.getBodyContent().getValue());
+            }
+            if (interGroup.isWriteRequestHeader()) {
+                inter.addRequestHeaderMap(interGroup.getRequestHeaderMap());
+            }
+            if (interGroup.isWriteCharsetname()) {
+                inter.setCharsetname(interGroup.getCharsetname());
+            }
+            if (interGroup.isWriteResponseContentType()) {
+                for (int state : interGroup.getAllSaveState()) {
+                    inter.addResponseContentType(state, interGroup.getResponseContentType(state));
+                }
+            }
+            if (interGroup.isWriteAssertRule()) {
+                inter.addAllAssertRule(interGroup.getAssertRuleJson());
+            }
+            if (interGroup.isWriteExtractRule()) {
+                inter.addAllExtractRule(interGroup.getExtractRuleJson());
+            }
+            if (interGroup.isWriteBeforeOperation()) {
+                inter.addAllBeforeOperation(interGroup.getBeforeOperationList());
+            }
+            if (interGroup.isWriteCookie()) {
+                inter.addCookies(interGroup.getCookieMap());
+            }
+            if (interGroup.isWriteConnectTime()) {
+                inter.setConnectTime(interGroup.getConnectTime().getKey(), interGroup.getConnectTime().getValue());
+            }
+        }
+
+        return interMap;
     }
 
     /**
@@ -590,34 +721,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
 
         // 查找元素
         Element interElement = findInterfaceElement(interName);
-
-        // 存储环境组
-        Map<String, String> envMap = environmentMap;
-        // 判断当前传入的内容是否为空
-        if (!environmentGroupMap.containsKey(envGroupName)) {
-            // 获取当前是否切换了环境组，若已切换，则获取当前环境组；若未切换，则判断当前接口信息中是否存储接口组信息
-            if (!actionEnvironmentGroup.isEmpty()) {
-                envMap = environmentGroupMap.get(actionEnvironmentGroup);
-            } else {
-                // 获取当前标签存储的环境组名称
-                String groupName = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT_GROUP)).orElse("");
-                // 判断当前环境组是否存在，若存在，则切换至编写的默认环境组
-                if (environmentGroupMap.containsKey(groupName)) {
-                    envMap = environmentGroupMap.get(groupName);
-                }
-            }
-        } else {
-            envMap = environmentGroupMap.get(envGroupName);
-        }
-
-        // 判断环境名称是否为空
-        if (environment.isEmpty()) {
-            // 判断当前标签中是否包含环境名称，若存在，则以当前环境作为需要查找的环境名称；若未存储，则为默认的环境名称
-            environment = Optional.ofNullable(interElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT))
-                    .orElse(actionEnvironment);
-        }
         // 根据当前处理的环境名称，在环境组中，查找相应的环境内容，若内容不存在，则读取默认IP
-        String envContent = Optional.ofNullable(envMap.get(environment)).orElse(DEFAULT_HOST);
+        String envContent = readEnvironmentContent(interElement, envGroupName, environment);
+        if (envContent.isEmpty()) {
+            envContent = DEFAULT_HOST;
+        }
 
         // 判断该接口是否已缓存，若存在缓存，则直接返回缓存信息
         if (interfaceCacheMap.containsKey(interName)) {
@@ -702,6 +810,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @param interElement 接口xml元素
      * @return 接口前置操作集合
      * @since autest 4.4.0
+     * @throws InterfaceReadToolsException 前置操作读取错误时抛出的异常
      */
     private List<BeforeInterfaceOperation> readBeforeOperation(Element interElement) {
         List<BeforeInterfaceOperation> operationList = new ArrayList<>();
@@ -712,8 +821,12 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             // 根据标签名称，定义相应的前置操作封装类
             switch (beforeElement.getName()) {
             case XmlParamName.XML_LABEL_INTERFACE:
-                operationList.add(
-                        getBeforeInterface(interElement.attributeValue(XmlParamName.XML_ATTRI_NAME), beforeElement));
+                try {
+                    operationList.add(getBeforeInterface(beforeElement));
+                } catch (Exception e) {
+                    throw new InterfaceReadToolsException(String.format("“%s”接口（组）读取前置接口异常，错误信息为：%s",
+                            interElement.attributeValue(XmlParamName.XML_ATTRI_NAME), e.getMessage()), e);
+                }
                 break;
             default:
                 continue; // 若非指定的封装类，则不进行解析
@@ -729,8 +842,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @param interName 接口名称
      * @return 前置操作封装类
      * @since autest 3.6.0
+     * @throws InterfaceReadToolsException 前置接口读取错误时抛出的异常
      */
-    private BeforeInterfaceOperation getBeforeInterface(String interName, Element beforeElement) {
+    private BeforeInterfaceOperation getBeforeInterface(Element beforeElement) {
         String name = beforeElement.attributeValue(XmlParamName.XML_ATTRI_NAME);
         try {
             BeforeInterfaceOperation beforeInterfaceOperation = new BeforeInterfaceOperation(getInterface(name));
@@ -743,7 +857,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             return beforeInterfaceOperation;
         } catch (InterfaceReadToolsException e) {
             throw new InterfaceReadToolsException(
-                    String.format("接口“%s”的父层接口“%s”存在错误，错误信息为：%s", interName, name, e.getMessage()), e);
+                    String.format("前置接口“%s”读取异常：%s", name, e.getMessage()), e);
         }
     }
 
@@ -777,7 +891,17 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         return nowElement;
     }
 
-    private InterfaceGroupInfo findInterfaceGroup(String interGroupName) {
+    /**
+     * 该方法用于读取并返回指定的接口组信息
+     *
+     * @param interGroupName 接口组名称
+     * @param envGroupName   环境组名称
+     * @param environment    接口执行环境名称
+     * @return 名称对应的接口组信息类对象
+     * @since autest 4.4.0
+     * @throws InterfaceReadToolsException 接口组名称不存在或前置接口不存在时，抛出的异常
+     */
+    private InterfaceGroupInfo findInterfaceGroup(String interGroupName, String envGroupName, String environment) {
         // 若指定的接口名称为空，则抛出异常
         if (interGroupName == null || interGroupName.isEmpty()) {
             throw new InterfaceReadToolsException("未指定接口组名称名称，无法查找接口组");
@@ -787,8 +911,6 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             return interfaceGroupMap.get(interGroupName);
         }
 
-        // 定义接口组类对象，并记录接口组相关的内容
-        InterfaceGroupInfo group = new InterfaceGroupInfo();
         // 定义查找接口组的xpath，并获取接口元素
         String elementXpath = String.format("//%s/%s[@%s='%s']", XmlParamName.XML_LABEL_INTERFACES,
                 XmlParamName.XML_LABEL_INTERFACE_GROUP, XmlParamName.XML_ATTRI_NAME, interGroupName);
@@ -796,55 +918,60 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                 .orElseThrow(() -> new InterfaceReadToolsException(
                         String.format("接口组“%s”在文件中不存在：%s", interGroupName, xmlFile.getAbsolutePath())));
 
-        // 获取当前标签存储的环境组名称
-        String envGroupName = Optional.ofNullable(groupElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT_GROUP))
-                .orElse("");
-        // 判断当前环境组是否存在，若存在，则切换至编写的默认环境组
-        Map<String, String> envMap = environmentMap;
-        if (environmentGroupMap.containsKey(envGroupName)) {
-            envMap = environmentGroupMap.get(envGroupName);
-        }
-        // 判断环境名称是否为空
-        Optional.ofNullable(groupElement.attributeValue(XmlParamName.XML_ATTRI_ENVIRONMENT)).map(envMap::get)
-                .ifPresent(group::setHost);
+        // 查找接口组下的接口名称
+        List<Element> interNameList = Optional.ofNullable(groupElement.elements(XmlParamName.XML_LABEL_INTERFACE))
+                .orElseGet(ArrayList::new);
 
-        // 获取接口的url
-        group.analysisUrl(readInterUrl(groupElement));
-        // 获取接口的路径
-        String path = readInterPath(groupElement);
-        if (!path.isEmpty()) {
-            group.setPath(path);
-        }
-        // 获取接口请求时间，若不存在则不进行设置
-        try {
-            Optional.ofNullable(readConnectTime(groupElement)).filter(expression -> !expression.isEmpty())
-                    .ifPresent(group::setConnectTime);
-        } catch (Exception e) {
-            throw new InterfaceReadToolsException(String.format("接口组元素“%s”设置接口超时时间表达式错误", interGroupName), e);
-        }
-        // 获取接口的请求方式
-        group.setRequestType(readInterRequestType(groupElement));
-        // 获取接口参数信息
-        readParams(group, groupElement);
-        // 设置请求头信息
-        readHeader(group, groupElement);
-        // 设置cookie信息
-        readCookies(group, groupElement);
-        // 读取请求体信息
-        readInterBody(group, groupElement);
-        // 读取响应体字符集
-        group.setCharsetname(readCharsetname(groupElement));
-        // 读取接口不同状态的响应报文格式
-        readResponseTypes(group, groupElement);
-        // 读取接口断言规则信息
-        group.addAllAssertRule(readAssertContent(groupElement));
-        // 读取接口提词规则信息
-        group.addAllExtractRule(readExtractContent(groupElement));
-        // 添加前置操作集合
-        group.addAllBeforeOperation(readBeforeOperation(groupElement));
+        // 定义接口组类对象，并记录接口组相关的内容
+        InterfaceGroupInfo group = new InterfaceGroupInfo();
+        // 判断接口组是否包含接口，若包含，则对接口组信息进行处理
+        if (!interNameList.isEmpty()) {
+            // 将接口组下的接口元素，转换为接口名称进行存储
+            interNameList.stream().map(e -> e.attributeValue(XmlParamName.XML_ATTRI_NAME))
+                    .forEach(group.interNameList::add);
 
-        // 缓存读取的接口
-        interfaceGroupMap.put(interGroupName, group);
+            // 判断环境名称是否为空
+            Optional.ofNullable(readEnvironmentContent(groupElement, envGroupName, environment))
+                    .filter(env -> !env.isEmpty()).ifPresent(group::setHost);
+
+            // 获取接口的url
+            group.analysisUrl(readInterUrl(groupElement));
+            // 获取接口的路径
+            String path = readInterPath(groupElement);
+            if (!path.isEmpty()) {
+                group.setPath(path);
+            }
+            // 获取接口请求时间，若不存在则不进行设置
+            try {
+                Optional.ofNullable(readConnectTime(groupElement)).filter(expression -> !expression.isEmpty())
+                        .ifPresent(group::setConnectTime);
+            } catch (Exception e) {
+                throw new InterfaceReadToolsException(String.format("接口组元素“%s”设置接口超时时间表达式错误", interGroupName), e);
+            }
+            // 获取接口的请求方式
+            group.setRequestType(readInterRequestType(groupElement));
+            // 获取接口参数信息
+            readParams(group, groupElement);
+            // 设置请求头信息
+            readHeader(group, groupElement);
+            // 设置cookie信息
+            readCookies(group, groupElement);
+            // 读取请求体信息
+            readInterBody(group, groupElement);
+            // 读取响应体字符集
+            group.setCharsetname(readCharsetname(groupElement));
+            // 读取接口不同状态的响应报文格式
+            readResponseTypes(group, groupElement);
+            // 读取接口断言规则信息
+            group.addAllAssertRule(readAssertContent(groupElement));
+            // 读取接口提词规则信息
+            group.addAllExtractRule(readExtractContent(groupElement));
+            // 添加前置操作集合
+            group.addAllBeforeOperation(readBeforeOperation(groupElement));
+
+            // 缓存读取的接口
+            interfaceGroupMap.put(interGroupName, group);
+        }
 
         return group;
     }
@@ -1056,7 +1183,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          */
         public static final String XML_ATTRI_CONNECT = "connect";
         /**
-         * 定义前置执行次数属性
+         * 定义actionCount属性名称，表示前置执行次数属性
          *
          * @since autest 4.3.0
          */
@@ -1084,6 +1211,13 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @since autest 4.4.0
      */
     private class InterfaceGroupInfo extends InterfaceInfo {
+        /**
+         * 存储当前接口组中的所有接口名称
+         *
+         * @since autest 4.4.0
+         */
+        protected List<String> interNameList = new ArrayList<>();
+
         /**
          * 该方法用于判断是否添加接口协议
          *

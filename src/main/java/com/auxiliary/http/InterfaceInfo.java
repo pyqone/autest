@@ -747,12 +747,27 @@ public class InterfaceInfo implements Cloneable {
      * 格式允许添加多个，以应对在不同参数或不同响应状态下的情况
      * </p>
      *
+     * @param state        响应状态码
      * @param messageTypes 响应内容格式数组
      * @since autest 3.3.0
      */
     public void addResponseContentTypeSet(int state, MessageType... messageTypes) {
+        addResponseContentType(state, Arrays.asList(messageTypes));
+    }
+
+    /**
+     * 该方法用于添加接口响应体内容的格式
+     * <p>
+     * 格式允许添加多个，以应对在不同参数或不同响应状态下的情况
+     * </p>
+     *
+     * @param state        响应状态码
+     * @param messageTypes 响应内容格式集合
+     * @since autest 4.4.0
+     */
+    public void addResponseContentType(int state, Collection<MessageType> messageTypes) {
         // 过滤掉数组为null或为空的情况
-        Optional.ofNullable(messageTypes).filter(types -> types.length != 0).ifPresent(types -> {
+        Optional.ofNullable(messageTypes).ifPresent(types -> {
             // 判断当前状态码是否存在，若不存在，则添加空集合
             if (!responseContentTypeMap.containsKey(state)) {
                 responseContentTypeMap.put(state, new HashSet<>());
@@ -761,7 +776,7 @@ public class InterfaceInfo implements Cloneable {
             // 获取当前状态码中存储的状态
             HashSet<MessageType> responseContentTypeSet = responseContentTypeMap.get(state);
             // 遍历传入的内容，将其逐个添加至内容格式集合中
-            Arrays.stream(types).filter(type -> type != null).forEach(responseContentTypeSet::add);
+            types.stream().filter(type -> type != null).forEach(responseContentTypeSet::add);
         });
     }
 
