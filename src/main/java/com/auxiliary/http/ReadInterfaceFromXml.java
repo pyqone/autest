@@ -700,6 +700,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             if (interGroup.isWriteConnectTime()) {
                 inter.setConnectTime(interGroup.getConnectTime().getKey(), interGroup.getConnectTime().getValue());
             }
+
+            // 存储接口信息
+            interMap.put(interName, inter);
         }
 
         return interMap;
