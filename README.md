@@ -305,6 +305,97 @@ autest包含如下工具：
     ===========================
     ```
 
+## 4 OKHttp二次封装工具
+
+除自动化测试外，接口测试也是测试工作中比较重要的一环，在性能测试的接口调试环节也比较重要。OKHttp是Java中对接口请求封装比较好的第三方工具之一，但对于测试而言，要请求一个接口，还是需要编写比较多的代码，为简化代码以及数据进行分离，故对其进行了二次封装。二次封装的工具大体分为三个部分：接口模板读取、接口信息封装和接口请求与响应，详细可参考Wiki中的[《接口请求工具介绍》](https://gitee.com/pyqone/autest/wikis/%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D/autest%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D/%E6%8E%A5%E5%8F%A3%E8%AF%B7%E6%B1%82%E5%B7%A5%E5%85%B7/%E6%8E%A5%E5%8F%A3%E8%AF%B7%E6%B1%82%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D)。
+
+### 4.1 脚本编写需求
+
+假设有如下两个接口：
+
+|接口名称|接口地址|请求方式|返回格式|业务描述|
+|-|-|-|-|-|
+|人员查询|/find/findpreson|POST|JSON|查询工程下的人员姓名|
+|人员入场|/project/entrance|POST|JSON|将人员加入到工程下的工作组中|
+
+
+接口请求体示例如下：
+  - 人员查询：`{"presonId":"100001"}`
+  - 人员入场：`{"projectId":"000001", "presonName":"张三"}`
+
+接口响应体示例如下：
+  - 人员查询：`{"presonName":"张三", "msg":"success"}`
+  - 人员入场：`{"msg":"success"}`
+
+在调用接口时，需要先调用“人员查询”接口，在接口的响应体中，提取到“`presonName`”字段中的内容后，传入到“人员入场”接口中。
+
+### 4.2 接口信息录制
+
+根据需求中提及接口说明，整理到xml模板后，有如下内容：
+
+```XML
+<?xml version="1.0" encoding="UTF-8"?>
+<interfaceInfo>
+  <environments default='测试环境'>
+    <environment name='测试环境'>http://192.168.1.1</environment>
+  </environments>
+
+  <interfaces>
+    <interface name='人员查询' path='/find/findpreson' type='post' connect='1min'>
+        <body type="json">{"presonId":"100001"}</body>
+        <response charset='UTF-8'>
+            <responseTypes>
+              <responseType status='200' type='json' />
+            </responseTypes>
+            <extracts>
+              <extract search='body' saveName='presonName' paramName='presonName' />
+            </extracts>
+       </response>
+    </interface>
+    
+    <interface name='人员入场' path='/project/entrance' type='post' connect='1min'>
+        <body type='json'>{"projectId":"000001", "presonName":"@{presonName}"}</body>
+        <before>
+          <interface name='人员查询' />
+        </before>
+        <response charset='UTF-8'>
+            <responseTypes>
+              <responseType status='200' type='json' />
+            </responseTypes>
+            <asserts>
+              <assert search='body' assertRegex='success' paramName='msg' />
+            </asserts>
+       </response>
+    </interface>
+  </interfaces>
+</interfaceInfo>
+```
+
+### 4.3 脚本编写
+
+1. 初始化模板读取类以及接口请求类
+
+    ```Java
+    // 初始化模板读取类
+    ReadInterfaceFromXml rifx = new ReadInterfaceFromXml(new File("测试模板.xml"));
+    // 初始化接口请求工具
+    EasyHttp eh = new EasyHttp();
+    
+    ```
+2. 读取接口信息
+    
+    ```Java
+    InterfaceInfo inter = rifx.getInterface("人员入场")
+    ```
+3. 通过接口信息类对象，使用接口请求类进行请求，并输出接口响应报文
+
+    ```Java
+    // 对接口进行请求，并获取响应内容
+    EasyResponse er = eh.requst(inter);
+    // 输出响应体
+    System.out.println(er.getResponseBodyText());
+    ```
+
 # 后记
 
 作为一个没有系统学习过开发的我而言，能力实在有限，代码质量也不高，对于设计模式也是一知半解的，工具中很多的地方都是只追求实现。但有件事情希望在使用的您能明白：作为测试工程师，我们的代码不用上服务器运行、不用考虑多线程（大多数情况下）、不用考虑那0.01秒的响应。对于软件测试而言，最重要的是得到一个结果，即便代码的效率再不堪，也比我们人工测试来得快。我们追求代码应该是使用简单，快速得到数据，能简化测试工作就好，而不是一味地追求与开发工程师一样，使用各式各样的框架、设计模式，这样的代码首先使用就不方便，其次就是大多数人都看不懂，这就失去意义了。
