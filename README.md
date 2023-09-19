@@ -396,20 +396,6 @@ autest包含如下工具：
     System.out.println(er.getResponseBodyText());
     ```
 
-1. 读取接口信息
-
-```Java
-InterfaceInfo inter = rifx.getInterface("人员入场")
-```
-2. 通过接口信息类对象，使用接口请求类进行请求，并输出接口响应报文
-
-```Java
-// 对接口进行请求，并获取响应内容
-EasyResponse er = eh.requst(inter);
-// 输出响应体
-System.out.println(er.getResponseBodyText());
-```
-
 ## 5 测试用例生成工具
 
 在多数情况下，我们编写测试用例基本是复制、粘贴及修改关键词的一个过程，这个过程中很容易出现漏改或改错关键词的情况，并且需要修改的地方比较多，其效率也比较低。为避免因人为导致关键词的漏改或修改错误，故可以使用程序来生成这些容易出错的位置，达到快速生成测试用例的目的。
