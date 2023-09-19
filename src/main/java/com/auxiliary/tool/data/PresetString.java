@@ -1,5 +1,6 @@
 package com.auxiliary.tool.data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -141,7 +142,7 @@ public class PresetString {
 		// 区县
 		String[] county = { "01", "02", "03", "04", "05" };
 		// 生日年份前两位
-		int[] year = { 19 };
+        int[] year = { 19 };
 
 		// 加权数
 		int[] factors = { 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 };
@@ -173,6 +174,61 @@ public class PresetString {
 
 		return sb.toString();
 	}
+
+    /**
+     * 该方法用于根据年龄范围，随机生成一个身份证号
+     *
+     * @param startAge 起始年龄
+     * @param endAge   结束年龄
+     * @return 生成的身份证号码
+     * @since autest 4.4.0
+     */
+    public static String identityCard(int startAge, int endAge) {
+        StringBuilder sb = new StringBuilder();
+        int age = new Random().nextInt(endAge - startAge) + startAge;
+        String year = String.valueOf(LocalDateTime.now().getYear() - age);
+
+        rs.clear();
+        rs.addMode(StringMode.NUM);
+
+        // 省份
+        int[] province = { 13, 14, 15, 21, 22, 23, 31, 32, 33, 34, 35, 36, 37, 41, 42, 43, 44, 45, 46, 50, 51, 52, 53,
+                54, 61, 62, 63, 64, 65, 71, 81, 82, 91 };
+        // 城市
+        String[] city = { "01", "02", "03" };
+        // 区县
+        String[] county = { "01", "02", "03", "04", "05" };
+
+        // 加权数
+        int[] factors = { 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 };
+        // 校验位
+        String[] parity = { "1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2" };
+
+        // 随机添加一个省份
+        sb.append(province[new Random().nextInt(province.length)]);
+        // 随机添加一个城市
+        sb.append(city[new Random().nextInt(city.length)]);
+        // 随机添加一个区县
+        sb.append(county[new Random().nextInt(county.length)]);
+        // 随机生日年份
+        sb.append(year);
+        // 随机生日月份及日子
+        sb.append("0" + rs.toString(1)).append("0" + rs.toString(1));
+        // 随机三位数
+        sb.append(rs.toString(3));
+
+        // 计算加权数
+        int sum = 0;
+        for (int i = 0; i < 17; i++) {
+            int code = Integer.valueOf(sb.substring(i, i + 1));
+            int factor = Integer.valueOf(factors[i]);
+            sum += (code * factor);
+        }
+        // 根据加权数添加校验位
+        sb.append(parity[(sum % 11)]);
+
+        return sb.toString();
+    }
 
 	/**
 	 * 生成姓名
@@ -348,7 +404,7 @@ public class PresetString {
      * <p>
      * 步长表示在截取到的字符串中，再取相应间隔的字符再次组成字符串，例如，传入{@code createOrderlyText("1", "9", 2)}，则返回“13579”
      * </p>
-     * 
+     *
      * @param startChar 起始字符
      * @param endChar   结束字符
      * @param step      步长
@@ -394,7 +450,7 @@ public class PresetString {
                 modeText += endMode.getSeed().substring(0, endModeIndex + 1);
             }
         }
-        
+
         // 若组合的模型文本长度小于2或者步长小于2，则直接返回模型文本
         if (modeText.length() < 2 || step < 2) {
             return modeText;
@@ -411,7 +467,7 @@ public class PresetString {
 
     /**
      * 文本模板中，需要替换的占位符内容
-     * 
+     *
      * @since autest 4.3.0
      */
     private final static String TEMP_PLACEHOLDER = "%s";
@@ -429,7 +485,7 @@ public class PresetString {
      * <li>当传入的最小或最大值小于1时，则表示该参数按照所有随机字符串的总默认值取</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param minLength        随机字符串最小生成长度
      * @param maxLength        随机字符串最大生成长度
      * @param templet          模板
@@ -610,26 +666,26 @@ public class PresetString {
     private static class RandomStringGroupData {
         /**
          * 存储组名称
-         * 
+         *
          * @since autest 4.3.0
          */
         public RandomString rs;
         /**
          * 存储当前随机字符串剩余长度
-         * 
+         *
          * @since autest 4.3.0
          */
         public int surplusLength = 0;
         /**
          * 存储当前组在集合中的下标，以便于快速定位
-         * 
+         *
          * @since autest 4.3.0
          */
         public int index = -1;
 
         /**
          * 构造对象，初始化可随机的组数据
-         * 
+         *
          * @param groupName     组名称
          * @param surplusLength 随机字符串剩余长度
          * @param index         集合中的下标
