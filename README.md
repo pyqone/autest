@@ -455,6 +455,103 @@ autest包含如下工具：
 
 ![](https://foruda.gitee.com/images/1695082978074148959/7eb3520a_1776234.png)
 
+## 6 模板文件写入工具
+
+模板文件，即预先设置好的字段顺序的文件，类似于前面的jira测试用例模板，根据程序的设定，生成一个包含测试用例基本字段文件（只包含标题，不包含测试用例内容）。由于模板文件属于个性化的内容，故工具中除单标题的excel文件被封装外，其他自定义的模板需要继承工具中提供的抽象类，再自行编写相应写入方式后才可使用，即工具只提供写入文件的一些方法，具体的写入方式还需要自行编写。
+
+需要注意的是，模板写入工具一般是在有数据源，且需要将数据源写入到文件中时。为说明工具的用途，故下面将使用已封装的excel写入工具进行说明。
+
+### 6.1  文件写入需求
+
+现存在一个文本文件，里面包含部分学生的信息，其内容如下：
+
+```text
+小明，今年6岁，数学成绩90分，语文成绩88分，评价：B
+小红，今年6岁，数学成绩91分，语文成绩88分，评价：B+
+小刚，今年7岁，数学成绩92分，语文成绩90分，评价：A
+
+```
+
+现需要将每个学生的信息读取，将文件写入到以下excel模板中，标题要求冻结首行，添加筛选按钮，设置成绩和评价的内容居中，并将成绩小于等于90分的背景用红色标识：
+
+|姓名|年龄|数学成绩|语文成绩|评价|
+|-|-|-|-|-|
+||||||
+
+
+### 6.2 脚本编写
+
+1. 初始化excel模板
+
+    ```Java
+    // 初始化excel模板
+    ExcelFileTemplet eft = new ExcelFileTemplet(new File("学生信息.xlsx"));
+    // 添加模板字段
+    eft.addField("姓名");
+    eft.addField("年龄");
+    eft.addTitle("s", "数学成绩");
+    eft.addTitle("y", "语文成绩");
+    eft.addField("评价");
+    
+    // 设置字段内容居中
+    eft.setAlignment(AlignmentType.HORIZONTAL_MIDDLE, "s", "y", "评价");
+    ```
+2. 初始化excel文件写入工具
+
+    ```Java
+    // 初始化excel写入工具
+    WriteBasicExcelTempletFile wbet = new WriteBasicExcelTempletFile("学生成绩", eft);
+    ```
+3. 读取文件，并写入excel模板文件中，标记小于等于90分的成绩背景为红色
+
+    ```Java
+    // 读取文本文件中的内容
+    try (BufferedReader br = new BufferedReader(new FileReader(new File("学生信息.txt")))) {
+        // 循环，读取文本每一行的内容
+        String text = "";
+        while ((text = br.readLine()) != null) {
+            // 对每一行的内容进行切分，获得对应的内容
+            int index = 0;
+            // 读取姓名
+            String name = text.substring(index, text.indexOf("，"));
+            // 读取年龄
+            String age = text.substring((index = (text.indexOf("今年") + "今年".length())), text.indexOf("，", index));
+            // 读取数学成绩
+            String math = text.substring((index = (text.indexOf("数学成绩") + "数学成绩".length())), text.indexOf("分", index));
+            // 读取语文成绩
+            String language = text.substring((index = (text.indexOf("语文成绩") + "语文成绩".length())), text.indexOf("分", index));
+            // 读取评价
+            String eval = text.substring((index = (text.indexOf("评价：") + "评价：".length())));
+    
+            // 将内容写入到excel模板文件中
+            wbet.addContent("姓名", name).addContent("年龄", age).addContent("s", math).addContent("y", language).addContent("评价", eval);
+            // 对特殊的内容进行标记
+            // 判断数学成绩是否小于等于90分
+            if (Integer.valueOf(math) <= 90) {
+                wbet.changeFieldBackground("s", IndexedColors.RED);
+            }
+            // 判断语文成绩是否小于等于90分
+            if (Integer.valueOf(language) <= 90) {
+                wbet.changeFieldBackground("y", IndexedColors.RED);
+            }
+    
+            // 结束当前行读取
+            wbet.end();
+        }
+    } catch (Exception e) {
+    }
+    ```
+4. 写入文件，并关闭文件
+
+    ```Java
+    // 写入并关闭文件
+    wbet.write();
+    ```
+
+运行程序后，将得到如下文件内容：
+
+![](https://foruda.gitee.com/images/1695350080382727301/5a406b25_1776234.png)
+
 # 后记
 
 作为一个没有系统学习过开发的我而言，能力实在有限，代码质量也不高，对于设计模式也是一知半解的，工具中很多的地方都是只追求实现。但有件事情希望在使用的您能明白：作为测试工程师，我们的代码不用上服务器运行、不用考虑多线程（大多数情况下）、不用考虑那0.01秒的响应。对于软件测试而言，最重要的是得到一个结果，即便代码的效率再不堪，也比我们人工测试来得快。我们追求代码应该是使用简单，快速得到数据，能简化测试工作就好，而不是一味地追求与开发工程师一样，使用各式各样的框架、设计模式，这样的代码首先使用就不方便，其次就是大多数人都看不懂，这就失去意义了。
