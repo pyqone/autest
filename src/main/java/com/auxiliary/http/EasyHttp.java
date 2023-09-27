@@ -127,7 +127,7 @@ public class EasyHttp implements AddPlaceholder {
      * 该方法用于添加数据处理函数
      * <p>
      * 可通过lambda添加公式对数据处理的方式，例如，将文本中的存在的"a()"全部替换为文本“test”，则可按如下写法： <code><pre>
-     * addFunction(new DataDriverFunction("a\\(\\)", text -> "test"));
+     * addFunction(new DataDriverFunction("a\\(\\)", text -&gt; "test"));
      * </pre></code>
      * </p>
      * <p>

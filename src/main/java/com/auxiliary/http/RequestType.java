@@ -107,7 +107,7 @@ public enum RequestType {
      * 该方法本质上与{@link #valueOf(String)}方法的作用一致，但其中加上了对文本的内容的判空、对文本内容大写转换、
      * 对特殊文本进行处理以及对异常文本进行汉化的操作。
      * </p>
-     * 
+     *
      * @param type 枚举文本内容
      * @return 转换后的枚举
      * @since autest 3.7.0
@@ -122,16 +122,16 @@ public enum RequestType {
      * <p>
      * 该方法与{@link #typeText2Type(String)}方法类似，其可对传入的文本进行自定义的转换，例如欲将传入的"po"转换为"post"，则可写为
      * <code><pre>
-     * RequestType.typeText2MessageType("po", type -> {
+     * RequestType.typeText2MessageType("po", type -&gt; {
      *      if ("po".equals(text)) {
      *          text = "post";
      *      }
-     *      
+     *
      *      return text;
      * });
      * </pre></code>
      * </p>
-     * 
+     *
      * @param type   枚举文本内容
      * @param mapper 枚举文本的处理方法
      * @return 转换后的枚举

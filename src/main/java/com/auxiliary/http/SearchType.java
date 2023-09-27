@@ -48,7 +48,7 @@ public enum SearchType {
      * 该方法本质上与{@link #valueOf(String)}方法的作用一致，但其中加上了对文本的内容的判空、对文本内容大写转换、
      * 对特殊文本进行处理以及对异常文本进行汉化的操作。
      * </p>
-     * 
+     *
      * @param type 枚举文本内容
      * @return 转换后的枚举
      * @since autest 3.7.0
@@ -63,16 +63,16 @@ public enum SearchType {
      * <p>
      * 该方法与{@link #typeText2Type(String)}方法类似，其可对传入的文本进行自定义的转换，例如欲将传入的"bo"转换为"body"，则可写为
      * <code><pre>
-     * SearchType.typeText2MessageType("bo", type -> {
+     * SearchType.typeText2MessageType("bo", type -&gt; {
      *      if ("bo".equals(text)) {
      *          text = "body";
      *      }
-     *      
+     *
      *      return text;
      * });
      * </pre></code>
      * </p>
-     * 
+     *
      * @param type   枚举文本内容
      * @param mapper 枚举文本的处理方法
      * @return 转换后的枚举
