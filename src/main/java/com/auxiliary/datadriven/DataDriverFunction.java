@@ -10,18 +10,18 @@ import java.util.Optional;
  * <b>用途：</b> 用于存储数据驱动中处理数据的公式
  * <p>
  * 可使用lambda表达式来简化添加公式的写法，例如，在集合中添加一个重复生成指定个数字符的方法，则可写作如下的形式：
- * 
+ *
  * <pre>
  * <code>
- * ArrayList<DataDriverFunction> funList = new ArrayList<>();
- * funList.add(new DataDriverFunction(".*\\d", text -> {
+ * ArrayList<DataDriverFunction> funList = new ArrayList&lt;&gt;();
+ * funList.add(new DataDriverFunction(".*\\d", text -&gt; {
  *      String[] dataTexts = text.split("\\*");
  *      StringBuilder newText = new StringBuilder();
- *      
- *      for (int i = 0; i < Integer.valueOf(dataTexts[1]); i++) {
+ *
+ *      for (int i = 0; i &lt; Integer.valueOf(dataTexts[1]); i++) {
  *          newText.append(dataTexts[0]);
  *      }
- *      
+ *
  *      return newText.toString();
  *  }));
  * </code>
@@ -34,7 +34,7 @@ import java.util.Optional;
  * <p>
  * <b>修改时间：</b>2020年6月12日上午8:27:04
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -45,12 +45,12 @@ public class DataDriverFunction {
 	 * 用于存储正则表达式
 	 */
 	private String regex;
-	
+
 	/**
 	 * 用于存储处理数据的
 	 */
 	private DataFunction function;
-	
+
 	/**
 	 * 初始化数据
 	 * @param regex 正则表达式
@@ -77,7 +77,7 @@ public class DataDriverFunction {
 	public DataFunction getFunction() {
 		return function;
 	}
-	
+
 	/**
 	 * 用于将公式关键词与存储的正则表达式进行匹配，返回匹配的结果
 	 * @param key 公式关键词
@@ -86,7 +86,7 @@ public class DataDriverFunction {
 	public boolean matchRegex(String key) {
 		return key.matches(regex);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -121,7 +121,7 @@ public class DataDriverFunction {
 	public String toString() {
 		return getRegex();
 	}
-	
+
 	/**
 	 * <p><b>文件名：</b>DataDriverFunction.java</p>
 	 * <p><b>用途：</b>

@@ -7,6 +7,16 @@
     <!-- text：环境域名或IP（包括协议） -->
     <environment name='环境1'>https://192.168.1.1</environment>
     <environment name='环境2'>100.200.168.120</environment>
+    
+    <!-- name：环境组名称 -->
+    <environmentGroup name='压测环境'>
+      <environment name='系统1'>100.200.162.120</environment>
+      <environment name='系统2'>100.200.162.121</environment>
+    </environmentGroup>
+    <environmentGroup name='本地环境'>
+      <environment name='系统1'>100.200.163.120</environment>
+      <environment name='系统2'>100.200.163.121</environment>
+    </environmentGroup>
   </environments>
 
   <!-- 接口信息，可存放多个接口信息 -->
@@ -98,12 +108,16 @@
           <!-- lb：搜索文本的左边界，可以与paramName与attribute参数共存 -->
           <!-- rb：搜索文本的右边界，可以与paramName与attribute参数共存 -->
           <!-- ord：该参数仅在搜索出多个值时生效，表示获取到多条数据的下标 -->
-          <extract search='header' saveName='aapk' paramName='apn'  xpath='//*[@a="test"]'
-            lb='alb' rb='arb' ord='1' />
-          <extract search='body' saveName='bbpk' paramName='bpn'
-            lb='blb' rb='brb' />
+          <extract search='header' saveName='aapk' paramName='apn'  xpath='//*[@a="test"]' lb='alb' rb='arb' ord='1' />
+          <extract search='body' saveName='bbpk' paramName='bpn' lb='blb' rb='brb' />
         </extracts>
       </response>
     </interface>
+    
+    <!-- name：接口组名称 -->
+    <!-- 其他在接口中出现的标签及属性，在接口组中均可进行定义 -->
+    <interfaceGroup name='接口组1'>
+      <interface name='接口2' />
+    </interfaceGroup>
   </interfaces>
 </interfaceInfo>

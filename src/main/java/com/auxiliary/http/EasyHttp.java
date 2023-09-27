@@ -84,7 +84,7 @@ public class EasyHttp implements AddPlaceholder {
 
     /**
      * 存储提词内容
-     * 
+     *
      * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
      */
     @Deprecated
@@ -95,14 +95,14 @@ public class EasyHttp implements AddPlaceholder {
     private Set<String> assertResultSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储公式内容
-     * 
+     *
      * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
      */
     @Deprecated
     private HashMap<String, DataFunction> functionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储占位符类对象
-     * 
+     *
      * @since autest 4.2.0
      */
     private Placeholder placeholder = new Placeholder(FUNCTION_START_SIGN, FUNCTION_END_SIGN);
@@ -113,7 +113,7 @@ public class EasyHttp implements AddPlaceholder {
     private boolean isAssertFailThrowException = false;
     /**
      * 定义调用接口前是否自动调用前置操作
-     * 
+     *
      * @since autest 4.3.0
      */
     private boolean isAutoBeforeOperation = true;
@@ -121,13 +121,13 @@ public class EasyHttp implements AddPlaceholder {
     /**
      * 定义默认连接超时时间，仅对使用默认时间的静态方法生效
      */
-    public static Entry<Long, TimeUnit> connectTime = new Entry<>(15L, TimeUnit.SECOND);
+    public static Entry<Long, TimeUnit> connectTime = InterfaceInfo.DEFAULT_CONNECT_TIME;
 
     /**
      * 该方法用于添加数据处理函数
      * <p>
      * 可通过lambda添加公式对数据处理的方式，例如，将文本中的存在的"a()"全部替换为文本“test”，则可按如下写法： <code><pre>
-     * addFunction(new DataDriverFunction("a\\(\\)", text -> "test"));
+     * addFunction(new DataDriverFunction("a\\(\\)", text -&gt; "test"));
      * </pre></code>
      * </p>
      * <p>
@@ -185,7 +185,7 @@ public class EasyHttp implements AddPlaceholder {
 
     /**
      * 该方法用于设置自动断言失败时，是否需要抛出异常
-     * 
+     *
      * @param isAssertFailThrowException 断言失败是否抛出异常
      * @since autest 3.3.0
      * @deprecated 命名不规范，已由{@link #setAssertFailThrowException(boolean)}方法代替，将在3.8.0或以上版本中删除
@@ -197,7 +197,7 @@ public class EasyHttp implements AddPlaceholder {
 
     /**
      * 该方法用于设置自动断言失败时，是否需要抛出异常
-     * 
+     *
      * @param isAssertFailThrowException 断言失败是否抛出异常
      * @return 类本身
      * @since autest 3.6.0
@@ -209,7 +209,7 @@ public class EasyHttp implements AddPlaceholder {
 
     /**
      * 该方法用于设置在请求接口时，是否自动调用接口的前置操作
-     * 
+     *
      * @param isAutoBeforeOperation 是否自动调用接口的前置操作
      * @return 类本身
      * @since autest 4.3.0
@@ -221,7 +221,7 @@ public class EasyHttp implements AddPlaceholder {
 
     /**
      * 该方法用于返回请求接口后自动断言的结果集合
-     * 
+     *
      * @return 断言结果集合
      * @since autest 3.3.0
      */
@@ -354,6 +354,8 @@ public class EasyHttp implements AddPlaceholder {
      */
     public static EasyResponse requst(RequestType requestType, String url, Map<String, String> requestHead,
             MessageType messageType, Object body) {
+        // 若类中存储的超时时间为Null，则将其处理为默认的超时时间
+        connectTime = Optional.ofNullable(connectTime).orElse(InterfaceInfo.DEFAULT_CONNECT_TIME);
         return requst(requestType, url, requestHead, messageType, body, connectTime.getKey(), connectTime.getValue());
     }
 
@@ -440,7 +442,7 @@ public class EasyHttp implements AddPlaceholder {
 
     /**
      * 该方法用于判断指定的请求类型是否需要请求体参数
-     * 
+     *
      * @param requestType 请求类型枚举
      * @return 对应的请求类型是否需要请求体
      * @since autest 3.4.0
@@ -456,7 +458,7 @@ public class EasyHttp implements AddPlaceholder {
      * <b>注意：</b> 当请求体为表单类型时，其body必须是“List&lt;Entry&lt;String,
      * Object&gt;&gt;”类型；当请求体为文件类型时，则body必须是“File”类型
      * </p>
-     * 
+     *
      * @param requestType 请求类型
      * @param url         接口url地址
      * @param requestHead 请求头集合
@@ -470,8 +472,9 @@ public class EasyHttp implements AddPlaceholder {
     @SuppressWarnings("unchecked")
     private static EasyResponse requst(RequestType requestType, String url, Map<String, String> requestHead,
             MessageType messageType, Object body, long connectTime, TimeUnit timeUnit) {
-        // 将传入的超时时间转换为毫秒值
-        connectTime *= timeUnit.getToMillisNum();
+        // 处理传入的时间，并将传入的超时时间转换为毫秒值
+        timeUnit = Optional.ofNullable(timeUnit).orElse(TimeUnit.SECOND);
+        connectTime = (connectTime <= 0L ? 0L : (connectTime * timeUnit.getToMillisNum()));
 
         // 定义请求客户端
         OkHttpClient client = new OkHttpClient().newBuilder()

@@ -47,7 +47,7 @@ public enum MessageType {
     FORM_DATA("multipart/form-data"),
     /**
      * 表单类型，与{@link #FORM_DATA}一致
-     * 
+     *
      * @deprecated 该枚举已无效，将在3.8.0或更高版本中删除
      */
     FD(FORM_DATA.mediaName),
@@ -57,7 +57,7 @@ public enum MessageType {
     X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded"),
     /**
      * 表单上传编码类型，与{@link #X_WWW_FORM_URLENCODED}一致
-     * 
+     *
      * @deprecated 该枚举已无效，将在3.8.0或更高版本中删除
      */
     FU(X_WWW_FORM_URLENCODED.mediaName),
@@ -104,7 +104,7 @@ public enum MessageType {
 
     /**
      * 该方法用于比对消息类型名称，返回对应的消息类型枚举
-     * 
+     *
      * @param typeName 消息类型名称
      * @return 消息类型枚举
      * @since autest 3.3.0
@@ -140,7 +140,7 @@ public enum MessageType {
 
     /**
      * 该方法用于设置报文类型的编码格式
-     * 
+     *
      * @param charset 编码格式名称字符串
      * @return 枚举本身
      * @since autest 3.6.0
@@ -152,7 +152,7 @@ public enum MessageType {
 
     /**
      * 该方法用于返回报文类型的详细文本内容（包含编码）
-     * 
+     *
      * @return 报文类型的详细文本内容
      * @since autest 3.6.0
      */
@@ -176,7 +176,7 @@ public enum MessageType {
      * <li>若文本为“fd”，则转换为“form-data”输出</li>
      * <li>若文本为“fu”，则转换为“X-WWW-FORM-URLENCODED”输出</li>
      * </ul>
-     * 
+     *
      * @param type 枚举文本内容
      * @return 转换后的枚举
      * @since autest 3.7.0
@@ -209,16 +209,16 @@ public enum MessageType {
      * <p>
      * 该方法与{@link #typeText2Type(String)}方法类似，其可对传入的文本进行自定义的转换，例如欲将传入的"text"转换为"raw"，则可写为
      * <code><pre>
-     * MessageType.typeText2MessageType("text", type -> {
+     * MessageType.typeText2MessageType("text", type -&gt; {
      *      if ("text".equals(text)) {
      *          text = "raw";
      *      }
-     *      
+     *
      *      return text;
      * });
      * </pre></code>
      * </p>
-     * 
+     *
      * @param type   枚举文本内容
      * @param mapper 枚举文本的处理方法
      * @return 转换后的枚举
