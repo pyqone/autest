@@ -994,13 +994,14 @@
       <zone id="81" name="仪征市"/>
       <zone id="84" name="高邮市"/>
     </city>
-    <zone id="1101" name="镇江市"/>
-    <zone id="1102" name="京口区"/>
-    <zone id="1111" name="润州区"/>
-    <zone id="1112" name="丹徒区"/>
-    <zone id="1181" name="丹阳市"/>
-    <zone id="1182" name="扬中市"/>
-    <zone id="1183" name="句容市"/>
+    <city id="11" name="镇江市">
+	    <zone id="02" name="京口区"/>
+	    <zone id="11" name="润州区"/>
+	    <zone id="12" name="丹徒区"/>
+	    <zone id="81" name="丹阳市"/>
+	    <zone id="82" name="扬中市"/>
+	    <zone id="83" name="句容市"/>
+    </city>
     <city id="12" name="泰州市">
       <zone id="02" name="海陵区"/>
       <zone id="03" name="医药高新区（高港区）"/>
@@ -2463,7 +2464,12 @@
       <zone id="07" name="琼山区"/>
       <zone id="08" name="美兰区"/>
     </city>
-    <city id="02" name="三亚市"/>
+    <city id="02" name="三亚市">
+      <zone id="02" name="海棠区"/>
+      <zone id="03" name="吉阳区"/>
+      <zone id="04" name="天涯区"/>
+      <zone id="05" name="崖州区"/>
+    </city>
     <city id="03" name="三沙市"/>
     <city id="04" name="儋州市（洋浦经济开发区）"/>
     <zone id="9001" name="五指山市"/>
@@ -3368,13 +3374,14 @@
       <zone id="21" name="大通县"/>
       <zone id="23" name="湟源县"/>
     </city>
-    <zone id="0202" name="乐都区"/>
-    <city id="21" name="海东市">
-      <zone id="21" name="平安区"/>
+    
+    <city id="02" name="海东市">
+      <zone id="02" name="乐都区"/>
+      <zone id="03" name="平安区"/>
       <zone id="22" name="民和县"/>
-      <zone id="26" name="互助县"/>
-      <zone id="27" name="化隆回族自治县"/>
-      <zone id="28" name="循化撒拉族自治县"/>
+      <zone id="23" name="互助县"/>
+      <zone id="24" name="化隆回族自治县"/>
+      <zone id="25" name="循化撒拉族自治县"/>
     </city>
     <city id="22" name="海北州">
       <zone id="21" name="门源县"/>
