@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <element>
   <province id="11" name="北京市">
     <zone id="0101" name="东城区"/>
@@ -532,7 +531,7 @@
       <zone id="81" name="瓦房店市"/>
       <zone id="83" name="庄河市"/>
     </city>
-    <city id="02" name="中山区"/>
+    <zone id="0200" name="中山区"/>
     <city id="03" name="鞍山市">
       <zone id="02" name="铁东区"/>
       <zone id="03" name="铁西区"/>
@@ -1613,7 +1612,7 @@
       <zone id="21" name="五莲县"/>
       <zone id="22" name="莒县"/>
     </city>
-    <city id="12" name="莱芜"/>
+    <zone id="1200" name="莱芜"/>
     <city id="13" name="临沂市">
       <zone id="02" name="兰山区"/>
       <zone id="11" name="罗庄区"/>
@@ -2294,8 +2293,8 @@
       <zone id="81" name="英德市"/>
       <zone id="82" name="连州市"/>
     </city>
-    <city id="19" name="东莞市"/>
-    <city id="20" name="中山市"/>
+    <zone id="1900" name="东莞市"/>
+    <zone id="2000" name="中山市"/>
     <city id="51" name="潮州市">
       <zone id="02" name="湘桥区"/>
       <zone id="03" name="潮安区"/>
@@ -2470,8 +2469,8 @@
       <zone id="04" name="天涯区"/>
       <zone id="05" name="崖州区"/>
     </city>
-    <city id="03" name="三沙市"/>
-    <city id="04" name="儋州市（洋浦经济开发区）"/>
+    <zone id="0300" name="三沙市"/>
+    <zone id="0400" name="儋州市（洋浦经济开发区）"/>
     <zone id="9001" name="五指山市"/>
     <zone id="9002" name="琼海市"/>
     <zone id="9005" name="文昌市"/>
@@ -3260,7 +3259,7 @@
       <zone id="23" name="榆中县"/>
       <zone id="71" name="兰州新区"/>
     </city>
-    <city id="02" name="嘉峪关市"/>
+    <zone id="0200" name="嘉峪关市"/>
     <city id="03" name="金昌市">
       <zone id="02" name="金川区"/>
       <zone id="21" name="永昌县"/>
@@ -3464,7 +3463,7 @@
       <zone id="21" name="中宁县"/>
       <zone id="22" name="海原县"/>
     </city>
-    <city id="06" name="宁东区"/>
+    <zone id="0600" name="宁东区"/>
   </province>
   <province id="65" name="新疆">
     <city id="01" name="乌鲁木齐市">
@@ -3489,15 +3488,15 @@
     <zone id="0502" name="伊州区"/>
     <zone id="0521" name="巴里坤县"/>
     <zone id="0522" name="伊吾县"/>
-    <city id="21" name="吐鲁番市"/>
-    <city id="22" name="哈密市"/>
-    <city id="23" name="昌吉州"/>
+    <zone id="2100" name="吐鲁番市"/>
+    <zone id="2200" name="哈密市"/>
+    <zone id="2300" name="昌吉州"/>
     <city id="27" name="博尔塔拉州">
       <zone id="02" name="阿拉山口市"/>
     </city>
-    <city id="28" name="巴音郭楞州"/>
-    <city id="29" name="阿克苏地区"/>
-    <city id="30" name="克孜勒苏州"/>
+    <zone id="2800" name="巴音郭楞州"/>
+    <zone id="2900" name="阿克苏地区"/>
+    <zone id="3000" name="克孜勒苏州"/>
     <city id="31" name="喀什地区">
       <zone id="01" name="喀什市"/>
       <zone id="21" name="疏附县"/>
