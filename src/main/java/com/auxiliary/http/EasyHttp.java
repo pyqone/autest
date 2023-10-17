@@ -4,22 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.alibaba.fastjson.JSONObject;
-import com.auxiliary.datadriven.DataDriverFunction;
-import com.auxiliary.datadriven.DataFunction;
-import com.auxiliary.datadriven.Functions;
-import com.auxiliary.tool.common.AddPlaceholder;
-import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.Entry;
-import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.date.TimeUnit;
 import com.auxiliary.tool.regex.ConstType;
 import com.auxiliary.tool.regex.RegexType;
@@ -48,194 +38,40 @@ import okhttp3.RequestBody;
  *
  *
  * @author 彭宇琦
- * @version Ver2.1
+ * @version Ver2.2
  * @since JDK 1.8
  * @since autest 3.3.0
  */
-public class EasyHttp implements AddPlaceholder {
-    /**
-     * 占位符起始符号
-     */
-    private final String FUNCTION_START_SIGN = "@{";
-    /**
-     * 占位符结束符号
-     */
-    private final String FUNCTION_END_SIGN = "}";
-
-    /**
-     * 占位符标记
-     */
-    private final String FUNCTION_SIGN = FUNCTION_START_SIGN + ".+?" + FUNCTION_END_SIGN;
-
+public class EasyHttp extends EasyRequest {
     /**
      * 定义消息类型为NONE的请求体
+     *
+     * @since autest 3.3.0
      */
     private static final RequestBody NONE_REQUEST_BODY = RequestBody
             .create(MediaType.parse(MessageType.NONE.getMediaValue()), "");
 
     /**
      * 定义断言结果json的接口信息字段名
+     *
+     * @since autest 3.3.0
      */
     public static final String ASSERT_RESULT_JSON_INTER_INFO = "interInfo";
     /**
      * 定义断言结果json的结果字段名
+     *
+     * @since autest 3.3.0
      */
     public static final String ASSERT_RESULT_JSON_RESULT = "result";
 
     /**
-     * 存储提词内容
-     *
-     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    private HashMap<String, String> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
-     * 存储断言结果
-     */
-    private Set<String> assertResultSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
-     * 存储公式内容
-     *
-     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    private HashMap<String, DataFunction> functionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
-     * 存储占位符类对象
-     *
-     * @since autest 4.2.0
-     */
-    private Placeholder placeholder = new Placeholder(FUNCTION_START_SIGN, FUNCTION_END_SIGN);
-
-    /**
-     * 断言失败是否抛出异常
-     */
-    private boolean isAssertFailThrowException = false;
-    /**
-     * 定义调用接口前是否自动调用前置操作
-     *
-     * @since autest 4.3.0
-     */
-    private boolean isAutoBeforeOperation = true;
-
-    /**
      * 定义默认连接超时时间，仅对使用默认时间的静态方法生效
+     *
+     * @since autest 3.3.0
      */
     public static Entry<Long, TimeUnit> connectTime = InterfaceInfo.DEFAULT_CONNECT_TIME;
 
-    /**
-     * 该方法用于添加数据处理函数
-     * <p>
-     * 可通过lambda添加公式对数据处理的方式，例如，将文本中的存在的"a()"全部替换为文本“test”，则可按如下写法： <code><pre>
-     * addFunction(new DataDriverFunction("a\\(\\)", text -&gt; "test"));
-     * </pre></code>
-     * </p>
-     * <p>
-     * 可添加{@link Functions}类中预设的函数
-     * </p>
-     *
-     * @param functions 数据处理函数
-     * @return 类本身
-     * @since autest 3.3.0
-     */
-    public EasyHttp addFunction(DataDriverFunction functions) {
-        if (functions != null) {
-            placeholder.addReplaceFunction(functions.getRegex(), functions.getFunction());
-        }
-
-        return this;
-    }
-
     @Override
-    public void addReplaceFunction(String regex, DataFunction function) {
-        placeholder.addReplaceFunction(regex, function);
-    }
-
-    /**
-     * 该方法用于添加待替换的关键词及相应的替换内容
-     *
-     * @param key   待替换关键词
-     * @param value 替换内容
-     * @return 类本身
-     * @since autest 3.3.0
-     * @deprecated 该方法由{@link #addReplaceWord(String, String)}代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public EasyHttp addReplaceKey(String key, String value) {
-        placeholder.addReplaceWord(key, value);
-
-        return this;
-    }
-
-    @Override
-    public void addReplaceWord(String word, String replaceWord) {
-        placeholder.addReplaceWord(word, replaceWord);
-    }
-
-    /**
-     * 该方法用于返回指定待替换关键词的内容
-     *
-     * @param key 待替换关键词
-     * @return 替换内容
-     * @since autest 3.3.0
-     */
-    public String getReplaceKey(String key) {
-        return placeholder.replaceWord(key);
-    }
-
-    /**
-     * 该方法用于设置自动断言失败时，是否需要抛出异常
-     *
-     * @param isAssertFailThrowException 断言失败是否抛出异常
-     * @since autest 3.3.0
-     * @deprecated 命名不规范，已由{@link #setAssertFailThrowException(boolean)}方法代替，将在3.8.0或以上版本中删除
-     */
-    @Deprecated
-    public void isAssertFailThrowException(boolean isAssertFailThrowException) {
-        this.isAssertFailThrowException = isAssertFailThrowException;
-    }
-
-    /**
-     * 该方法用于设置自动断言失败时，是否需要抛出异常
-     *
-     * @param isAssertFailThrowException 断言失败是否抛出异常
-     * @return 类本身
-     * @since autest 3.6.0
-     */
-    public EasyHttp setAssertFailThrowException(boolean isAssertFailThrowException) {
-        this.isAssertFailThrowException = isAssertFailThrowException;
-        return this;
-    }
-
-    /**
-     * 该方法用于设置在请求接口时，是否自动调用接口的前置操作
-     *
-     * @param isAutoBeforeOperation 是否自动调用接口的前置操作
-     * @return 类本身
-     * @since autest 4.3.0
-     */
-    public EasyHttp setAutoBeforeOperation(boolean isAutoBeforeOperation) {
-        this.isAutoBeforeOperation = isAutoBeforeOperation;
-        return this;
-    }
-
-    /**
-     * 该方法用于返回请求接口后自动断言的结果集合
-     *
-     * @return 断言结果集合
-     * @since autest 3.3.0
-     */
-    public Set<String> getAssertResult() {
-        return assertResultSet;
-    }
-
-    /**
-     * 该方法用于根据接口信息，对接口进行请求，并返回响应内容
-     *
-     * @param interInfo 接口信息类对象
-     * @return 接口响应类
-     * @since autest 3.3.0
-     */
     @SuppressWarnings("unchecked")
     public EasyResponse requst(InterfaceInfo interInfo) {
         // 判断是否自动调用前置操作，若需要，则获取接口的前置操作，并根据操作枚举，执行相应的前置操作
@@ -394,50 +230,6 @@ public class EasyHttp implements AddPlaceholder {
      */
     public static EasyResponse requst(String url) {
         return requst(RequestType.GET, url, null, null, null);
-    }
-
-    /**
-     * 该方法用于对所有可以使用公式的文本进行处理，返回处理后的文本
-     *
-     * @param content 待替换文本
-     * @return 处理后的文本
-     * @since autest 3.3.0
-     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
-     */
-    @SuppressWarnings("unused")
-    @Deprecated
-    private String disposeContent(String content) {
-        // 判断需要才处理的内容是否为空或是否包含公式标志，若存在，则返回content
-        String matchPrefix = ".*";
-        if (content == null || content.isEmpty() || !content.matches(matchPrefix + FUNCTION_SIGN + matchPrefix)) {
-            return content;
-        }
-
-        // 通过函数标志对文本中的函数或方法进行提取
-        Matcher m = Pattern.compile(FUNCTION_SIGN).matcher(content);
-        while (m.find()) {
-            // 去除标记符号，获取关键词
-            String signKey = m.group();
-            String key = signKey.replaceAll(FUNCTION_START_SIGN, "").replaceAll(FUNCTION_END_SIGN, "");
-
-            // 判断关键词是否为已存储的词语
-            if (extractMap.containsKey(key)) {
-                content = content.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey), extractMap.get(key));
-                continue;
-            }
-
-            // 若不是存储的词语，则判断关键词是否符合公式集合中的内容，符合公式，则使用公式对内容进行替换
-            for (String funKey : functionMap.keySet()) {
-                if (key.matches(funKey)) {
-                    content = content.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey),
-                            functionMap.get(funKey).apply(key));
-                    break;
-                }
-            }
-
-        }
-
-        return content;
     }
 
     /**
