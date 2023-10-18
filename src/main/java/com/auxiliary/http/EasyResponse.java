@@ -185,35 +185,6 @@ public class EasyResponse {
     }
 
     /**
-     * 该方法用于返回接口请求成功后记录的时间戳
-     * 
-     * @return 接口请求成功后记录的时间戳
-     * @since autest 3.4.0
-     * @deprecated 该方法与{@link #getReceivedResponseAtMillis()}方法效果一致，将在4.1.0或后续版本中删除
-     */
-    @Deprecated
-    public long getTimeAfterRequestAtMillis() {
-        return info.timeAfterRequestAtMillis;
-    }
-
-    /**
-     * 该方法用于根据指定的接口开始请求时间与接口成功请求时间做差，返回其差值，单位为毫秒
-     * <p>
-     * 参数指定根据何种类型的时间计算，传入true表示以{@link #getSentRequestAtMillis()}方法返回的时间进行计算；传入false表示以
-     * {@link #getReceivedResponseAtMillis()}方法返回的时间进行计算
-     * </p>
-     * 
-     * @param isSentRequestTime 是否以从客户端发出请求时记录的时间戳进行计算
-     * @return 接口开始请求与结束请求之间的时间差
-     * @since autest 3.4.0
-     * @deprecated 该方法已由{@link #getResponseTimeDifferenceAtMillis()}方法代替，且传参不再生效，将在4.1.0或后续版本中删除
-     */
-    @Deprecated
-    public long getResponseTimeDifferenceAtMillis(boolean isSentRequestTime) {
-        return getResponseTimeDifferenceAtMillis();
-    }
-
-    /**
      * 该方法用于对客户端发送请求的时间戳与客户端接收到返回的时间戳做差，返回其差值，即接口从请求到响应的时间，单位为毫秒
      * 
      * @return 客户端发送请求到客户端收到请求的时间
@@ -689,28 +660,26 @@ public class EasyResponse {
             } else {
                 throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
             }
-        } else {
-            // 判断元素类型，根据不同的类型，对应不同的获取方式
-            if (elementType == 0) {
-                if (isEndElement) {
-                    return Optional.ofNullable(((JSONObject) parentElement).getString(name)).orElse("");
-                } else {
-                    return ((JSONObject) parentElement).getJSONObject(name);
-                }
-            } else if (elementType == 1) {
-                if (isEndElement) {
-                    // 判断最后一位元素是否为属性，若能获取到属性，则返回属性值内容，若不为属性，则获取返回标签中存储的文本
-                    Attribute att = ((Element) parentElement).attribute(name);
-                    if (att != null) {
-                        return att.getText();
-                    }
-                    return ((Element) parentElement).elementText(name);
-                } else {
-                    return ((Element) parentElement).element(name);
-                }
+        } else // 判断元素类型，根据不同的类型，对应不同的获取方式
+        if (elementType == 0) {
+            if (isEndElement) {
+                return Optional.ofNullable(((JSONObject) parentElement).getString(name)).orElse("");
             } else {
-                throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
+                return ((JSONObject) parentElement).getJSONObject(name);
             }
+        } else if (elementType == 1) {
+            if (isEndElement) {
+                // 判断最后一位元素是否为属性，若能获取到属性，则返回属性值内容，若不为属性，则获取返回标签中存储的文本
+                Attribute att = ((Element) parentElement).attribute(name);
+                if (att != null) {
+                    return att.getText();
+                }
+                return ((Element) parentElement).elementText(name);
+            } else {
+                return ((Element) parentElement).element(name);
+            }
+        } else {
+            throw new HttpResponseException("暂不支持的响应体解析类型：" + elementType);
         }
     }
 
@@ -868,13 +837,6 @@ public class EasyResponse {
          * 记录客户端收到请求头时的时间戳
          */
         public long receivedResponseAtMillis = 0L;
-        /**
-         * 记录请求成功后的时间戳
-         * 
-         * @deprecated 该属性已无意义，与{@link #receivedResponseAtMillis}属性用处一致，将在4.1.0或之后版本中删除
-         */
-        @Deprecated
-        public long timeAfterRequestAtMillis = 0L;
 
         /**
          * 记录接口的实际请求
