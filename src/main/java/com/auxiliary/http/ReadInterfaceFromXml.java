@@ -300,12 +300,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             if (!dataList.isEmpty()) {
                 // 添加表单数据
                 inter.setFormBody(type, dataList);
+                // 设置请求体字符集编码
+                inter.setRequestCharsetname(
+                        Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_CHARSET)).orElse(""));
                 return;
             }
-
-            // 设置请求体字符集编码
-            inter.setRequestCharsetname(
-                    Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_CHARSET)).orElse(""));
         }
 
         // 若不存在表单body，则读取文本body类型
@@ -685,8 +684,11 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             if (interGroup.isWriteRequestHeader()) {
                 inter.addRequestHeaderMap(interGroup.getRequestHeaderMap());
             }
-            if (interGroup.isWriteCharsetname()) {
+            if (interGroup.isWriteResponseCharsetname()) {
                 inter.setResponseCharsetname(interGroup.getResponseCharsetname());
+            }
+            if (interGroup.isWriteRequestCharsetname()) {
+                inter.setRequestCharsetname(interGroup.getRequestCharsetname());
             }
             if (interGroup.isWriteResponseContentType()) {
                 for (int state : interGroup.getAllSaveState()) {
@@ -1314,7 +1316,9 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          *
          * @return 是否添加接口响应字符集
          * @since autest 4.4.0
+         * @deprecated 该方法已废弃，请使用isWriteResponseCharsetname()方法代替，将在4.7.0版本后删除
          */
+        @Deprecated
         protected boolean isWriteCharsetname() {
             return !responseCharsetname.isEmpty();
         }
@@ -1323,17 +1327,27 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * 该方法用于判断是否添加接口请求字符集
          *
          * @return 是否添加接口请求字符集
-         * @since autest 4.4.0
+         * @since autest 4.5.0
          */
         protected boolean isWriteRequestCharsetname() {
             return !requestCharsetname.isEmpty();
         }
 
         /**
+         * 该方法用于判断是否添加接口响应字符集
+         *
+         * @return 是否添加接口响应字符集
+         * @since autest 4.5.0
+         */
+        protected boolean isWriteResponseCharsetname() {
+            return !responseCharsetname.isEmpty();
+        }
+
+        /**
          * 该方法用于判断是否添加接口响应内容格式集合
          *
          * @return 是否添加接口响应内容格式集合
-         * @since autest 4.4.0
+         * @since autest 4.5.0
          */
         protected boolean isWriteResponseContentType() {
             return !responseContentTypeMap.isEmpty();

@@ -351,12 +351,12 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                     } catch (Exception e) {
                         inter.setBody(contentCellText);
                     }
+                    // 设置请求体字符集编码
+                    inter.setRequestCharsetname(Optional.ofNullable(row.getCell(ExcelField.NORMAL_BODY_CHARSET))
+                            .map(format::formatCellValue).orElse(""));
+
                     return;
                 }
-
-                // 设置请求体字符集编码
-                inter.setRequestCharsetname(Optional.ofNullable(row.getCell(ExcelField.NORMAL_BODY_CHARSET))
-                        .map(format::formatCellValue).orElse(""));
             }
         }
 
@@ -425,12 +425,11 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                 // 读取所有行后，若集合不为空，则对接口进行设置
                 if (!dataList.isEmpty()) {
                     inter.setFormBody(type, dataList);
+                    // 设置请求体字符集编码
+                    inter.setRequestCharsetname(startRow.map(row -> row.getCell(ExcelField.NORMAL_BODY_CHARSET))
+                            .map(format::formatCellValue).orElse(""));
                     return;
                 }
-
-                // 设置请求体字符集编码
-                inter.setRequestCharsetname(startRow.map(row -> row.getCell(ExcelField.NORMAL_BODY_CHARSET))
-                        .map(format::formatCellValue).orElse(""));
             }
         }
 
