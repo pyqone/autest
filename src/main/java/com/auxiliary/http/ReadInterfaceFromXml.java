@@ -209,7 +209,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
      * @return 响应报文的字符集格式
      * @since autest 3.3.0
      */
-    private String readCharsetname(Element interElement) {
+    private String readResponseCharsetname(Element interElement) {
         return Optional.ofNullable(interElement.element(XmlParamName.XML_LABEL_RESPONSE))
                 .map(ele -> ele.attributeValue(XmlParamName.XML_ATTRI_CHARSET)).orElseGet(() -> "");
     }
@@ -264,6 +264,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                 inter.setBody(bodyText);
             }
 
+            // 设置请求体字符集编码
+            inter.setRequestCharsetname(
+                    Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_CHARSET)).orElse(""));
+
             return;
         }
 
@@ -298,6 +302,10 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                 inter.setFormBody(type, dataList);
                 return;
             }
+
+            // 设置请求体字符集编码
+            inter.setRequestCharsetname(
+                    Optional.ofNullable(bodyElement.attributeValue(XmlParamName.XML_ATTRI_CHARSET)).orElse(""));
         }
 
         // 若不存在表单body，则读取文本body类型
@@ -678,7 +686,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                 inter.addRequestHeaderMap(interGroup.getRequestHeaderMap());
             }
             if (interGroup.isWriteCharsetname()) {
-                inter.setCharsetname(interGroup.getCharsetname());
+                inter.setResponseCharsetname(interGroup.getResponseCharsetname());
             }
             if (interGroup.isWriteResponseContentType()) {
                 for (int state : interGroup.getAllSaveState()) {
@@ -767,7 +775,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 读取请求体信息
         readInterBody(inter, interElement);
         // 读取响应体字符集
-        inter.setCharsetname(readCharsetname(interElement));
+        inter.setResponseCharsetname(readResponseCharsetname(interElement));
         // 读取接口不同状态的响应报文格式
         readResponseTypes(inter, interElement);
         // 读取接口断言规则信息
@@ -962,7 +970,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             // 读取请求体信息
             readInterBody(group, groupElement);
             // 读取响应体字符集
-            group.setCharsetname(readCharsetname(groupElement));
+            group.setResponseCharsetname(readResponseCharsetname(groupElement));
             // 读取接口不同状态的响应报文格式
             readResponseTypes(group, groupElement);
             // 读取接口断言规则信息
@@ -1308,7 +1316,17 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * @since autest 4.4.0
          */
         protected boolean isWriteCharsetname() {
-            return !charsetname.isEmpty();
+            return !responseCharsetname.isEmpty();
+        }
+
+        /**
+         * 该方法用于判断是否添加接口请求字符集
+         *
+         * @return 是否添加接口请求字符集
+         * @since autest 4.4.0
+         */
+        protected boolean isWriteRequestCharsetname() {
+            return !requestCharsetname.isEmpty();
         }
 
         /**

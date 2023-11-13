@@ -60,8 +60,9 @@
       <!-- 接口普通请求体标签 -->
       <!-- type：指定请求体的文本内容格式类型 -->
       <!-- file：表示请求体内容在文件中 -->
-      <body type='json'>{'ak':'av', 'bk':'bv'}</body>
-      <body file='resource/test.txt' type='json' />
+      <!-- charset：请求内容字符集编码 -->
+      <body type='json' charset='GBK'>{'ak':'av', 'bk':'bv'}</body>
+      <body file='resource/test.txt' type='json' charset='GBK' />
 
       <!-- 接口文件型请求体标签 -->
       <!-- file：表示需要请求的文件 -->
@@ -69,10 +70,11 @@
       
       <!-- 表单类型请求体标签 -->
       <!-- type：表示表单请求的类型，可选值为“fd（或form_data）” 和“fu（或x_www_form_urlencoded）”，忽略大小写 -->
-      <!-- name：表单键名 -->
-      <!-- value：表单普通类型的值 -->
-      <!-- file：表单文件类型的值 -->
-      <form_body type='fd'>
+      <!-- charset：请求内容字符集编码 -->
+      <form_body type='fd' charset='GBK'>
+        <!-- name：表单键名 -->
+        <!-- value：表单普通类型的值 -->
+        <!-- file：表单文件类型的值 -->
         <data name='adk' value='adv' />
         <data name='bdk' file='resource/test.txt' />
       </form_body>

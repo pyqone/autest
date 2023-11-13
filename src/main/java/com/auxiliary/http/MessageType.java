@@ -1,5 +1,7 @@
 package com.auxiliary.http;
 
+import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.auxiliary.tool.common.DisposeCodeUtils;
@@ -134,7 +136,10 @@ public enum MessageType {
      * @since autest 3.6.0
      */
     public MessageType setCharset(String charset) {
-        this.charset = charset;
+        // 判断传入的字符集名称是否符合字符集
+        if (Optional.ofNullable(charset).filter(name -> !name.isEmpty()).filter(Charset::isSupported).isPresent()) {
+            this.charset = charset;
+        }
         return this;
     }
 
@@ -146,11 +151,21 @@ public enum MessageType {
      */
     public String toMessageTypeString() {
         String text = mediaName;
-        if (!charset.isEmpty()) {
+        if (isSetCharset()) {
             text += (";charset=" + charset);
         }
 
         return text;
+    }
+
+    /**
+     * 该方法用于返回当前是否设置请求体字符集编码
+     *
+     * @return 是否设置请求体字符集编码
+     * @since autest 4.5.0
+     */
+    public boolean isSetCharset() {
+        return !charset.isEmpty();
     }
 
     /**

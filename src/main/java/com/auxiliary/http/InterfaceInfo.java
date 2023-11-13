@@ -176,11 +176,25 @@ public class InterfaceInfo implements Cloneable {
      */
     protected HashMap<String, String> requestHeaderMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
-     * 接口相应字符集
+     * 接口响应字符集
      *
      * @since autest 3.3.0
+     * @deprecated 由{@link #responseCharsetname}属性代替，将在4.7.0或后续版本删除
      */
+    @Deprecated
     protected String charsetname = "";
+    /**
+     * 接口请求体字符集
+     *
+     * @since autest 4.5.0
+     */
+    protected String requestCharsetname = "";
+    /**
+     * 接口响应体字符集
+     *
+     * @since autest 4.5.0
+     */
+    protected String responseCharsetname = "";
     /**
      * 接口响应内容格式集合
      *
@@ -701,7 +715,9 @@ public class InterfaceInfo implements Cloneable {
      *
      * @return 接口响应内容的字符集编码名称
      * @since autest 3.3.0
+     * @deprecated 由{@link #getResponseCharsetname()}属性代替，将在4.7.0或后续版本删除
      */
+    @Deprecated
     public String getCharsetname() {
         if (charsetname.isEmpty()) {
             return DEFAULT_CHARSETNAME;
@@ -714,9 +730,54 @@ public class InterfaceInfo implements Cloneable {
      *
      * @param charsetname 接口响应内容的字符集编码名称
      * @since autest 3.3.0
+     * @deprecated 由{@link #setResponseCharsetname()}属性代替，将在4.7.0或后续版本删除
      */
+    @Deprecated
     public void setCharsetname(String charsetname) {
         this.charsetname = Optional.ofNullable(charsetname).orElseGet(() -> "");
+    }
+
+    /**
+     * 该方法用于返回接口请求响应内容的字符集编码名称
+     *
+     * @return 接口请求内容的字符集编码名称
+     * @since autest 4.5.0
+     */
+    public String getRequestCharsetname() {
+        return requestCharsetname;
+    }
+
+    /**
+     * 该方法用于设置接口请求内容的字符集编码名称
+     *
+     * @param requestCharsetname 接口请求内容的字符集编码名称
+     * @since autest 4.5.0
+     */
+    public void setRequestCharsetname(String requestCharsetname) {
+        this.requestCharsetname = Optional.ofNullable(requestCharsetname).orElseGet(() -> "");
+    }
+
+    /**
+     * 该方法用于返回接口响应内容的字符集编码名称，若未设置响应体字符集编码，则默认为“UTF-8”编码
+     *
+     * @return 接口响应内容的字符集编码名称
+     * @since autest 4.5.0
+     */
+    public String getResponseCharsetname() {
+        if (responseCharsetname.isEmpty()) {
+            return DEFAULT_CHARSETNAME;
+        }
+        return responseCharsetname;
+    }
+
+    /**
+     * 该方法用于设置接口响应内容的字符集编码名称
+     *
+     * @param responseCharsetname 接口响应内容的字符集编码名称
+     * @since autest 4.5.0
+     */
+    public void setResponseCharsetname(String responseCharsetname) {
+        this.responseCharsetname = Optional.ofNullable(responseCharsetname).orElseGet(() -> "");
     }
 
     /**
