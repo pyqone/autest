@@ -116,13 +116,15 @@ public class EasyHttp extends EasyRequest {
                 }
             }
         }
+        body.getKey().setCharset(interInfo.getRequestCharsetname());
 
         // 获取接口的超时时间
         Entry<Long, TimeUnit> connectTime = interInfo.getConnectTime();
         EasyResponse response = requst(interInfo.getRequestType(), placeholder.replaceText(interInfo.toUrlString()),
-                newHeadMap, body.getKey(), bodyContent, connectTime.getKey(), connectTime.getValue());
+                newHeadMap, body.getKey(), bodyContent, connectTime.getKey(),
+                connectTime.getValue());
         // 设置响应体解析字符集
-        response.setCharsetName(interInfo.getCharsetname());
+        response.setCharsetName(interInfo.getResponseCharsetname());
         // 设置响应体内容格式
         interInfo.getAllSaveState()
                 .forEach(status -> response.setMessageType(status, interInfo.getResponseContentType(status)));
@@ -192,7 +194,8 @@ public class EasyHttp extends EasyRequest {
             MessageType messageType, Object body) {
         // 若类中存储的超时时间为Null，则将其处理为默认的超时时间
         connectTime = Optional.ofNullable(connectTime).orElse(InterfaceInfo.DEFAULT_CONNECT_TIME);
-        return requst(requestType, url, requestHead, messageType, body, connectTime.getKey(), connectTime.getValue());
+        return requst(requestType, url, requestHead, messageType, body, connectTime.getKey(),
+                connectTime.getValue());
     }
 
     /**
@@ -251,13 +254,13 @@ public class EasyHttp extends EasyRequest {
      * Object&gt;&gt;”类型；当请求体为文件类型时，则body必须是“File”类型
      * </p>
      *
-     * @param requestType 请求类型
-     * @param url         接口url地址
-     * @param requestHead 请求头集合
-     * @param messageType 请求体内容格式类型
-     * @param body        请求体内容
-     * @param connectTime 接口连接时间
-     * @param timeUnit    时间单位枚举
+     * @param requestType        请求类型
+     * @param url                接口url地址
+     * @param requestHead        请求头集合
+     * @param messageType        请求体内容格式类型
+     * @param body               请求体内容
+     * @param connectTime        接口连接时间
+     * @param timeUnit           时间单位枚举
      * @return 接口响应类
      * @since autest 3.6.0
      */
@@ -341,7 +344,7 @@ public class EasyHttp extends EasyRequest {
             info.setRequestType(requestType);
             info.setBodyContent(messageType, body);
             info.addRequestHeaderMap(requestHead);
-            return new EasyResponse(client.newCall(request).execute(), info);
+            return new EasyHttpResponse(client.newCall(request).execute(), info);
         } catch (SocketTimeoutException e) {
             throw new HttpRequestException(String.format("接口请求超时，请求设置超时时间为%d毫秒，接口信息为：%s", connectTime, url), e);
         } catch (IOException e) {

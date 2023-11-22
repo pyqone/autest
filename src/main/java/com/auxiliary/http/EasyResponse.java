@@ -1,6 +1,5 @@
 package com.auxiliary.http;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,11 +21,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.Entry;
-import com.auxiliary.tool.regex.ConstType;
-
-import okhttp3.Headers;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * <p>
@@ -46,50 +40,7 @@ import okhttp3.ResponseBody;
  * @version Ver1.0
  * @since autest 3.3.0
  */
-public class EasyResponse {
-    /**
-     * 存储接口响应信息
-     */
-    ResponseInfo info = new ResponseInfo();
-
-    /**
-     * 构造对象，指定OKHttp响应类
-     *
-     * @param response  OKHttp响应类
-     * @param interInfo
-     */
-    protected EasyResponse(Response response, InterfaceInfo interInfo) {
-        // 记录接口实际请求信息
-        info.requestInterInfo = interInfo;
-        // 记录请求结果
-        info.response = response;
-        // 存储响应内容
-        ResponseBody body = response.body();
-        try {
-            info.responseBody = body.bytes();
-        } catch (IOException e) {
-        }
-
-        // 存储响应头
-        Headers heads = response.headers();
-        for (String head : heads.names()) {
-            List<String> valueList = heads.values(head);
-            if (valueList.size() < 2) {
-                info.responseHeaderMap.put(head, valueList.get(0));
-            } else {
-                info.responseHeaderMap.put(head, valueList.toString());
-            }
-        }
-
-        // 存储响应状态及消息
-        info.status = response.code();
-        info.message = response.message();
-        
-        // 存储请求时间
-        info.sentRequestAtMillis = response.sentRequestAtMillis();
-        info.receivedResponseAtMillis = response.receivedResponseAtMillis();
-    }
-
+public abstract class EasyResponse {
     /**
      * 该方法用于设置字符集名称
      *
@@ -102,7 +53,7 @@ public class EasyResponse {
 
     /**
      * 该方法用于添加响应体的内容格式
-     * 
+     *
      * @param status     状态
      * @param messageSet 内容格式集合
      * @since autest 3.3.0
@@ -166,7 +117,7 @@ public class EasyResponse {
 
     /**
      * 该方法用于返回服务端收到客户端发出请求时的时间戳
-     * 
+     *
      * @return 从客户端发出请求的时刻记录的时间戳
      * @since autest 3.4.0
      */
@@ -176,7 +127,7 @@ public class EasyResponse {
 
     /**
      * 该方法用于返回客户端接收到服务端返回的请求头时的时间戳
-     * 
+     *
      * @return 从服务器接收到请求头时记录的时间戳
      * @since autest 3.4.0
      */
@@ -186,7 +137,7 @@ public class EasyResponse {
 
     /**
      * 该方法用于对客户端发送请求的时间戳与客户端接收到返回的时间戳做差，返回其差值，即接口从请求到响应的时间，单位为毫秒
-     * 
+     *
      * @return 客户端发送请求到客户端收到请求的时间
      * @since autest 4.0.0
      */
@@ -200,7 +151,7 @@ public class EasyResponse {
      * <b>注意：</b>返回的信息类仅存储请求接口的地址、请求类型、请求头和请求体信息，若通过{@link EasyHttp#requst(InterfaceInfo)}请求接口时，其除前面提到的信息外，
      * 其他在{@link InterfaceInfo}参数中的信息将不会被存储
      * </p>
-     * 
+     *
      * @return 接口实际请求信息
      * @since autest 3.5.0
      */
@@ -321,7 +272,7 @@ public class EasyResponse {
      * <li>左右边界允许为正则表达式</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param searchType    提词搜索范围枚举
      * @param paramName     提取内容参数名
      * @param xpath         提取内容xpath
@@ -393,7 +344,7 @@ public class EasyResponse {
      * <li>左右边界允许为正则表达式</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param searchType    提词搜索范围枚举
      * @param leftBoundary  提取内容左边界
      * @param rightBoundary 提取内容右边界
@@ -422,7 +373,7 @@ public class EasyResponse {
      * </li>
      * </ol>
      * </p>
-     * 
+     *
      * @param searchType 提词搜索范围枚举
      * @param paramName  提取内容参数名
      * @param xpath      提取内容xpath
@@ -449,7 +400,7 @@ public class EasyResponse {
      * </li>
      * </ol>
      * </p>
-     * 
+     *
      * @param searchType 提词搜索范围枚举
      * @param paramName  提取内容参数名
      * @return 对响应体提取到的内容
@@ -468,7 +419,7 @@ public class EasyResponse {
      * <li>当响应体为其他类型时，则paramName参数均不生效</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param paramName 提取内容参数名
      * @return 对响应体提取到的内容
      * @since autest 3.3.0
@@ -615,7 +566,7 @@ public class EasyResponse {
 
     /**
      * 该方法用于对元素内容进行解析，返回相应的下级元素或文本
-     * 
+     *
      * @param paramArrayName 当前获取的元素名称
      * @param replaceSymbol  替换符号
      * @param parentElement  上级元素类对象
@@ -685,7 +636,7 @@ public class EasyResponse {
 
     /**
      * 该方法用于对变量名中的数组下标进行分离，并返回变量名与转换为整形的下标
-     * 
+     *
      * @param name 待分离的表达式
      * @return 变量名与下标键值对
      * @since autest 3.3.0
@@ -745,7 +696,7 @@ public class EasyResponse {
 
     /**
      * 该方法用于在仅存在单个边界的情况下，对文本的处理方法
-     * 
+     *
      * @param value         待提取内容
      * @param leftBoundary  提取左边界
      * @param rightBoundary 提取右边界
@@ -778,69 +729,5 @@ public class EasyResponse {
         }
 
         return keys[index];
-    }
-
-    /**
-     * <p>
-     * <b>文件名：EasyResponse.java</b>
-     * </p>
-     * <p>
-     * <b>用途：</b> 定义接口响应的信息类，用于对接口响应工具的数据返回
-     * </p>
-     * <p>
-     * <b>编码时间：2022年7月15日 上午8:16:23
-     * </p>
-     * <p>
-     * <b>修改时间：2022年7月15日 上午8:16:23
-     * </p>
-     *
-     * @author 彭宇琦
-     * @version Ver1.0
-     * @since JDK 1.8
-     * @since autest 3.5.0
-     */
-    private class ResponseInfo {
-        /**
-         * 请求报文类对象
-         */
-        public Response response;
-
-        /**
-         * 接口响应体内容
-         */
-        public byte[] responseBody;
-        /**
-         * 响应头集合
-         */
-        public HashMap<String, String> responseHeaderMap = new HashMap<>();
-        /**
-         * 响应状态码
-         */
-        public int status = 200;
-        /**
-         * 响应消息
-         */
-        public String message = "";
-        /**
-         * 响应体转义字符集
-         */
-        public String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
-        /**
-         * 存储响应体的格式
-         */
-        public HashMap<Integer, Set<MessageType>> bodyTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-        /**
-         * 记录客户端发送请求时的时间戳
-         */
-        public long sentRequestAtMillis = 0L;
-        /**
-         * 记录客户端收到请求头时的时间戳
-         */
-        public long receivedResponseAtMillis = 0L;
-
-        /**
-         * 记录接口的实际请求
-         */
-        public InterfaceInfo requestInterInfo = new InterfaceInfo();
     }
 }
