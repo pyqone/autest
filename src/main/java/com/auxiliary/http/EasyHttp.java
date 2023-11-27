@@ -6,7 +6,7 @@ import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.common.Entry;
@@ -122,7 +122,7 @@ public class EasyHttp extends EasyRequest {
         Entry<Long, TimeUnit> connectTime = interInfo.getConnectTime();
         EasyResponse response = requst(interInfo.getRequestType(), placeholder.replaceText(interInfo.toUrlString()),
                 newHeadMap, body.getKey(), bodyContent, connectTime.getKey(),
-                connectTime.getValue());
+                connectTime.getValue(), interInfo);
         // 设置响应体解析字符集
         response.setCharsetName(interInfo.getResponseCharsetname());
         // 设置响应体内容格式
@@ -195,7 +195,7 @@ public class EasyHttp extends EasyRequest {
         // 若类中存储的超时时间为Null，则将其处理为默认的超时时间
         connectTime = Optional.ofNullable(connectTime).orElse(InterfaceInfo.DEFAULT_CONNECT_TIME);
         return requst(requestType, url, requestHead, messageType, body, connectTime.getKey(),
-                connectTime.getValue());
+                connectTime.getValue(), null);
     }
 
     /**
@@ -261,12 +261,13 @@ public class EasyHttp extends EasyRequest {
      * @param body               请求体内容
      * @param connectTime        接口连接时间
      * @param timeUnit           时间单位枚举
+     * @param interInfo          接口信息类对象
      * @return 接口响应类
      * @since autest 3.6.0
      */
     @SuppressWarnings("unchecked")
     private static EasyResponse requst(RequestType requestType, String url, Map<String, String> requestHead,
-            MessageType messageType, Object body, long connectTime, TimeUnit timeUnit) {
+            MessageType messageType, Object body, long connectTime, TimeUnit timeUnit, InterfaceInfo interInfo) {
         // 处理传入的时间，并将传入的超时时间转换为毫秒值
         timeUnit = Optional.ofNullable(timeUnit).orElse(TimeUnit.SECOND);
         connectTime = (connectTime <= 0L ? 0L : (connectTime * timeUnit.getToMillisNum()));
@@ -339,11 +340,16 @@ public class EasyHttp extends EasyRequest {
         // 对接口进行请求
         Request request = requestBuilder.build();
         try {
-            InterfaceInfo info = new InterfaceInfo();
-            info.analysisUrl(url);
-            info.setRequestType(requestType);
-            info.setBodyContent(messageType, body);
-            info.addRequestHeaderMap(requestHead);
+            InterfaceInfo info = null;
+            if (interInfo != null) {
+                info = interInfo.clone();
+            } else {
+                info = new InterfaceInfo();
+                info.analysisUrl(url);
+                info.setRequestType(requestType);
+                info.setBodyContent(messageType, body);
+                info.addRequestHeaderMap(requestHead);  
+            }
             return new EasyHttpResponse(client.newCall(request).execute(), info);
         } catch (SocketTimeoutException e) {
             throw new HttpRequestException(String.format("接口请求超时，请求设置超时时间为%d毫秒，接口信息为：%s", connectTime, url), e);

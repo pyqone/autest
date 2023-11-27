@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -42,13 +43,33 @@ import com.auxiliary.tool.common.Entry;
  */
 public abstract class EasyResponse {
     /**
+     * 接口响应体内容
+     * 
+     * @since autest 3.5.0
+     */
+    protected byte[] responseBody;
+    /**
+     * 响应体转义字符集
+     * 
+     * @since autest 3.5.0
+     */
+    protected String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
+    /**
+     * 记录接口的实际请求
+     * 
+     * @since autest 3.5.0
+     */
+    protected InterfaceInfo requestInterInfo = new InterfaceInfo();
+    
+
+    /**
      * 该方法用于设置字符集名称
      *
      * @param charsetName 字符集名称
      * @since autest 3.3.0
      */
     public void setCharsetName(String charsetName) {
-        info.charsetName = charsetName;
+        this.charsetName = charsetName;
     }
 
     /**
