@@ -6,7 +6,7 @@ import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.tool.common.Entry;
@@ -345,11 +345,15 @@ public class EasyHttp extends EasyRequest {
                 info = interInfo.clone();
             } else {
                 info = new InterfaceInfo();
-                info.analysisUrl(url);
-                info.setRequestType(requestType);
-                info.setBodyContent(messageType, body);
-                info.addRequestHeaderMap(requestHead);  
             }
+            info.analysisUrl(url);
+            info.setRequestType(requestType);
+            info.setBodyContent(messageType, body);
+            info.addRequestHeaderMap(requestHead);
+            info.clearRequestHeaderMap();
+            info.addRequestHeaderMap(requestHead);
+            info.setConnectTime(connectTime, TimeUnit.MILLISECOND);
+
             return new EasyHttpResponse(client.newCall(request).execute(), info);
         } catch (SocketTimeoutException e) {
             throw new HttpRequestException(String.format("接口请求超时，请求设置超时时间为%d毫秒，接口信息为：%s", connectTime, url), e);
