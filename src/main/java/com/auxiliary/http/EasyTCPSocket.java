@@ -21,8 +21,8 @@ import com.google.common.primitives.Bytes;
  * <p>
  * <b>修改时间：2023年11月22日 09:07:46
  * </p>
- * 
- * 
+ *
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -52,7 +52,7 @@ public class EasyTCPSocket extends EasyRequest {
 
     /**
      * 该方法用于对接口进行Socket请求
-     * 
+     *
      * @param ip                      服务器IP地址
      * @param port                    服务器端口号
      * @param connectTime             连接超时时间（单位：毫秒）
@@ -64,15 +64,18 @@ public class EasyTCPSocket extends EasyRequest {
      */
     public static EasyResponse requst(String ip, int port, int connectTime, byte[] requstBody,
             String responseBodyCharset, int responseStartBodyLength, String responseEndSingle) {
-        // 定义byte集合，用于存储每次循环读取到的byte数据
-        List<Byte> responseBodyByteList = new ArrayList<>();
-        // 将响应报文结束标志转换为byte数组，若响应报文结束标志为null或为空或响应体字符集无法被转换为byte数组，则将其置为空数组
-        List<Byte> responseEndSingleList = new ArrayList<>();
+        // 用于存储读取到的报文集合
+        List<byte[]> responseBodyByteArrList = new ArrayList<>();
+        // 若定义了报文结束标识符，则将标识符按照响应报文的字符集编码，对标识符进行转译
+        byte[] responseEndSingleBytes = null;
         if (responseEndSingle != null && !responseEndSingle.isEmpty()) {
             try {
-                responseEndSingleList.addAll(Bytes.asList(responseEndSingle.getBytes(responseBodyCharset)));
+                responseEndSingleBytes = responseEndSingle.getBytes(responseBodyCharset);
             } catch (UnsupportedEncodingException e) {
+                responseEndSingleBytes = new byte[] {};
             }
+        } else {
+            responseEndSingleBytes = new byte[] {};
         }
 
         // 定义socket连接
@@ -94,35 +97,56 @@ public class EasyTCPSocket extends EasyRequest {
                 responseLengthBytes = new byte[responseStartBodyLength];
                 // 在流中读取响应报文长度
                 inputStream.read(responseLengthBytes);
-                // 对长度文本进行转译
-                String lengthText = new String(responseLengthBytes);
-                // 转译并存储响应报文长度，若无法进行转换，则将转译的报文内容存储只responseText中
+                // 转译并存储响应报文长度，若无法进行转换，则将读取到的内容存储至报文集合中
                 try {
-                    responseBodyByteTotalLenth = Integer.parseInt(lengthText);
+                    responseBodyByteTotalLenth = Integer.parseInt(new String(responseLengthBytes));
                 } catch (Exception e) {
-                    // 将responseLengthBytes数组中的内容存储至responseBodyByteList中
-                    // Bytes为guava jar包下的工具类，其下还提供其他基础数据类型数组转集合的方法
-                    responseBodyByteList.addAll(Bytes.asList(responseLengthBytes));
+                    responseBodyByteArrList.add(responseLengthBytes);
                 }
             }
 
-            // 定义响应报文byte数组
-            byte[] responseBodyBytes = new byte[RESPONSE_BODY_BYTE_LENGTH];
             // 定义当前已接收到的报文总长度
             int receiveTotalLength = 0;
             // 定义当前已接收到的报文长度
             int receiveLength = 0;
             // 循环，接收流中的响应内容
-            while ((receiveLength = inputStream.read(responseBodyBytes)) > 0) {
+            while (true) {
+                // 定义响应报文byte数组，并从流中读取字节数据，并记录当前指定的长度
+                byte[] responseBodyBytes = new byte[RESPONSE_BODY_BYTE_LENGTH];
+                receiveLength = inputStream.read(responseBodyBytes);
+                // 若当前读取到的字节个数小于0，则结束循环（该判断可能无意义）
+                if (receiveLength <= 0) {
+                    break;
+                }
+
                 // 计算当前已接收到的报文总长度
                 receiveTotalLength += receiveLength;
-                // 将当前已接收到的报文存储至responseBodyByteList中
-                responseBodyByteList.addAll(Bytes.asList(responseBodyBytes).subList(0, receiveLength));
+                // 将当前已接收到的报文存储至responseBodyByteArrList中
+                responseBodyByteArrList.add(responseBodyBytes);
 
                 // 判断当前报文的长度是否与指定的长度相等，或当前报文是否包含响应报文结束标志，若是，则跳出循环
-                if (receiveTotalLength == responseBodyByteTotalLenth || (!responseEndSingleList.isEmpty()
-                        && responseBodyByteList.containsAll(responseEndSingleList))) {
+                if (receiveTotalLength == responseBodyByteTotalLenth) {
                     break;
+                }
+
+                // 若报文长度未达到指定长度，则再判断是否接收到报文结束标识符
+                if (responseEndSingleBytes.length > 0) {
+                    // 计算响应数组中，需要进行标识符判断的起始位置
+                    int bodyStartIndex = receiveLength - responseEndSingleBytes.length;
+                    // 循环，判断当前接收的报文结尾的字节是否与标识符的字节一致
+                    boolean isEqual = true;
+                    for (int index = 0; index < responseEndSingleBytes.length; index++) {
+                        // 若当前位置的字符与标识符数组中相应位置的字节不对应，则设置判定标识为false，并结束循环
+                        if (responseEndSingleBytes[index] != responseBodyBytes[bodyStartIndex + index]) {
+                            isEqual = false;
+                            break;
+                        }
+                    }
+
+                    // 若判定标识为true，则结束外层循环
+                    if (isEqual) {
+                        break;
+                    }
                 }
             }
 
@@ -132,7 +156,7 @@ public class EasyTCPSocket extends EasyRequest {
             info.setBodyContent(MessageType.NONE, Bytes.asList(requstBody));
 
             // 返回响应类对象
-            return new EasySockecResponse(responseLengthBytes, responseBodyByteList, info);
+            return new EasySockecResponse(responseLengthBytes, responseBodyByteArrList, receiveTotalLength, info);
         } catch (UnknownHostException unknownHostException) {
             throw new HttpRequestException(String.format("socket连接地址错误：%s:%s", ip, port), unknownHostException);
         } catch (IOException iOException) {

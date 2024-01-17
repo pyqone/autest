@@ -188,7 +188,15 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         for (Element responeTypeElement : responeTypeElementList) {
             // 解析状态码，若状态码无法解析，则不进行存储
             try {
-                int state = Integer.valueOf(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_STATUS));
+                // 获取当前状态码，若状态码为空或不能转换为数字，则返回-1
+                int state = Optional.ofNullable(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_STATUS))
+                        .map(num -> {
+                    try {
+                        return Integer.valueOf(num);
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                }).orElse(-1);
                 String responeType = Optional.ofNullable(responeTypeElement.attributeValue(XmlParamName.XML_ATTRI_TYPE))
                         .filter(type -> !type.isEmpty()).orElse("");
                 if (responeType.isEmpty()) {
@@ -1316,7 +1324,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          *
          * @return 是否添加接口响应字符集
          * @since autest 4.4.0
-         * @deprecated 该方法已废弃，请使用isWriteResponseCharsetname()方法代替，将在4.7.0版本后删除
+         * @deprecated 该方法已废弃，请使用{@link #isWriteResponseCharsetname()}方法代替，将在4.7.0版本后删除
          */
         @Deprecated
         protected boolean isWriteCharsetname() {

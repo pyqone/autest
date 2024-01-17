@@ -1,6 +1,7 @@
 package com.auxiliary.http;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +13,6 @@ import com.auxiliary.tool.regex.ConstType;
 
 import okhttp3.Headers;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * <p>
@@ -24,7 +24,7 @@ import okhttp3.ResponseBody;
  * <p>
  * <b>修改时间：2023年12月08日 08:44:05
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -33,46 +33,53 @@ import okhttp3.ResponseBody;
 public class EasyHttpResponse extends EasyResponse {
     /**
      * 请求报文类对象
-     * 
+     *
      * @since autest 3.5.0
      */
     protected Response response;
-
+    /**
+     * 接口响应体内容
+     *
+     * @since autest 3.5.0
+     * @deprecated 该属性以无意义，类中不再存储响应体对象返回的字节数组，该属性将在5.0.0或后续版本中删除
+     */
+    @Deprecated
+    protected byte[] responseBodyBytes;
     /**
      * 响应头集合
-     * 
+     *
      * @since autest 3.5.0
      */
     protected Map<String, String> responseHeaderMap = new HashMap<>();
     /**
      * 响应状态码
-     * 
+     *
      * @since autest 3.5.0
      */
     protected int status = 200;
     /**
      * 响应消息
-     * 
+     *
      * @since autest 3.5.0
      */
     protected String message = "";
 
     /**
      * 存储响应体的格式
-     * 
+     *
      * @since autest 3.5.0
      */
     protected Map<Integer, Set<MessageType>> bodyTypeMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 记录客户端发送请求时的时间戳
-     * 
+     *
      * @since autest 3.5.0
      */
     protected long sentRequestAtMillis = 0L;
     /**
      * 记录客户端收到请求头时的时间戳
-     * 
+     *
      * @since autest 3.5.0
      */
     protected long receivedResponseAtMillis = 0L;
@@ -83,16 +90,11 @@ public class EasyHttpResponse extends EasyResponse {
      * @param response  OKHttp响应类
      * @param interInfo 接口信息类对象
      */
-    protected EasyHttpResponse(Response response, InterfaceInfo interInfo) {       
+    protected EasyHttpResponse(Response response, InterfaceInfo interInfo) {
         // 记录接口实际请求信息
         requestInterInfo = interInfo;
         // 存储响应内容
         this.response = Optional.ofNullable(response).orElseThrow(() -> new HttpResponseException("接口响应结果为空"));
-        ResponseBody body = response.body();
-        try {
-            responseBody = body.bytes();
-        } catch (IOException e) {
-        }
 
         // 存储响应头
         Headers heads = response.headers();
@@ -112,6 +114,9 @@ public class EasyHttpResponse extends EasyResponse {
         // 存储请求时间
         sentRequestAtMillis = response.sentRequestAtMillis();
         receivedResponseAtMillis = response.receivedResponseAtMillis();
+
+        // 设置默认的响应字符集编码
+        charsetName = interInfo.getResponseCharsetname();
     }
 
     /**
@@ -183,6 +188,31 @@ public class EasyHttpResponse extends EasyResponse {
      */
     public long getResponseTimeDifferenceAtMillis() {
         return getReceivedResponseAtMillis() - getSentRequestAtMillis();
+    }
+
+    /**
+     * 该方法用于返回响应体字符数组
+     *
+     * @return 响应体字符数组
+     * @since autest 3.3.0
+     */
+    public byte[] getResponseBody() {
+        return Optional.ofNullable(response.body()).map(t -> {
+            try {
+                return t.bytes();
+            } catch (IOException e) {
+                throw new HttpResponseException("响应体类对象异常，无法返回响应体字节数组", e);
+            }
+        }).orElseThrow(() -> new HttpResponseException("响应体为空，无法生成响应体字节数组"));
+    }
+
+    @Override
+    public String getResponseBodyText() {
+        try {
+            return new String(getResponseBody(), charsetName);
+        } catch (UnsupportedEncodingException e) {
+            throw new HttpResponseException("报文无法转义为字符串", e);
+        }
     }
 
     /**
@@ -291,8 +321,9 @@ public class EasyHttpResponse extends EasyResponse {
      * <li>当响应体为{@link MessageType#XML}或{@link MessageType#HTML}类型时，则优先判断xpath参数，若其为空时，则再判断paramName参数，其判断方式与{@link SearchType#HEADER}类似</li>
      * <li>当响应体为其他类型时，则xpath与paramName参数均不生效</li>
      * </ol>
-     * </li>
-     * <li>通过paramName或xpath提取后，仍会对内容进行指定边界的提取，其两种提取方式不独立</li>
+     * </ol>
+     * 通过以上方式提取后，若传入了左右边界内容，则继续按照左右边界的方式，再次对已提取的内容进行提取：
+     * <ol>
      * <li>若同时未指定左右边界，则不进行边界内容提取</li>
      * <li>当边界提取到多条数据时，则根据指定的index进行提取，其下标从1开始计算（1为第一条元素），若值小于1，则获取第一条数据；若值大于提取到的数据集合数量，则返回最后一条数据</li>
      * <li>左右边界允许为正则表达式</li>
@@ -352,7 +383,6 @@ public class EasyHttpResponse extends EasyResponse {
      * <p>
      * 提取规则如下：
      * <ol>
-     * <li>通过paramName或xpath提取后，仍会对内容进行指定边界的提取，其两种提取方式不独立</li>
      * <li>若同时未指定左右边界，则不进行边界内容提取</li>
      * <li>当边界提取到多条数据时，则根据指定的index进行提取，其下标从1开始计算（1为第一条元素），若值小于1，则获取第一条数据；若值大于提取到的数据集合数量，则返回最后一条数据</li>
      * <li>左右边界允许为正则表达式</li>

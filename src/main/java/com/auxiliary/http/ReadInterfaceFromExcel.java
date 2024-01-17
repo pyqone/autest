@@ -610,10 +610,6 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                         return -1;
                     }
                 }).orElse(-1);
-        // 若状态码为-1，则不进行存储操作
-        if (state == -1) {
-            return;
-        }
 
         // 存储接口响应数据
         inter.addResponseContentTypeSet(state,

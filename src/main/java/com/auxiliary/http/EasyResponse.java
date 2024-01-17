@@ -1,7 +1,7 @@
 package com.auxiliary.http;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -40,20 +40,14 @@ import com.auxiliary.tool.common.Entry;
  */
 public abstract class EasyResponse {
     /**
-     * 接口响应体内容
-     * 
-     * @since autest 3.5.0
-     */
-    protected byte[] responseBody;
-    /**
      * 响应体转义字符集
-     * 
+     *
      * @since autest 3.5.0
      */
     protected String charsetName = InterfaceInfo.DEFAULT_CHARSETNAME;
     /**
      * 记录接口的实际请求
-     * 
+     *
      * @since autest 3.5.0
      */
     protected InterfaceInfo requestInterInfo = new InterfaceInfo();
@@ -73,23 +67,7 @@ public abstract class EasyResponse {
      *
      * @since autest 3.3.0
      */
-    public String getResponseBodyText() {
-        try {
-            return new String(responseBody, charsetName);
-        } catch (UnsupportedEncodingException e) {
-            throw new HttpResponseException("报文无法转义为字符串", e);
-        }
-    }
-
-    /**
-     * 该方法用于返回响应体字符数组
-     *
-     * @return 响应体字符数组
-     * @since autest 3.3.0
-     */
-    public byte[] getResponseBody() {
-        return responseBody;
-    }
+    public abstract String getResponseBodyText();
 
     /**
      * 该方法用于返回接口的实际请求信息
@@ -126,7 +104,7 @@ public abstract class EasyResponse {
      * <li>左右边界允许为正则表达式</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param text          内容
      * @param bodyTypeSet   内容格式集合
      * @param paramName     json格式属性名
@@ -162,7 +140,7 @@ public abstract class EasyResponse {
 
     /**
      * 该方法用于根据指定的响应体内容格式，转义响应体，并根据查找参数或xpath对响应元素内容进行查找，返回找到的元素内容
-     * 
+     *
      * @param bodyText    响应体文本
      * @param paramName   查找元素名称
      * @param xpath       查找xml的xpath
