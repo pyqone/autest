@@ -5,7 +5,7 @@
 
 	<groupId>com.gitee.pyqone</groupId>
 	<artifactId>autest</artifactId>
-	<version>4.5.0</version>
+	<version>5.0.0</version>
 	<packaging>jar</packaging>
 
 	<url>https://gitee.com/pyqone/autest</url>

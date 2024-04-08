@@ -504,7 +504,7 @@ public class EasyHttp implements AddPlaceholder {
                 break;
             case FORM_DATA:
                 // 定义表单请求体构造类
-                MultipartBody.Builder builder = new MultipartBody.Builder();
+                MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                 // 获取表单数据
                 List<Entry<String, Object>> fromDataList = (List<Entry<String, Object>>) body;
 
