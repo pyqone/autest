@@ -738,12 +738,15 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于返回接口请求响应内容的字符集编码名称
+     * 该方法用于返回接口请求响应内容的字符集编码名称，若未设置响应体字符集编码，则默认为“UTF-8”编码
      *
      * @return 接口请求内容的字符集编码名称
      * @since autest 4.5.0
      */
     public String getRequestCharsetname() {
+        if (requestCharsetname.isEmpty()) {
+            return DEFAULT_CHARSETNAME;
+        }
         return requestCharsetname;
     }
 

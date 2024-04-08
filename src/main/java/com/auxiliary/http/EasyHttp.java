@@ -127,7 +127,8 @@ public class EasyHttp extends EasyRequest {
         response.setCharsetName(interInfo.getResponseCharsetname());
         // 设置响应体内容格式
         interInfo.getAllSaveState()
-                .forEach(status -> response.setMessageType(status, interInfo.getResponseContentType(status)));
+                .forEach(status -> ((EasyHttpResponse) response).setMessageType(status,
+                        interInfo.getResponseContentType(status)));
 
         // 对响应报文提词
         interInfo.getExtractRuleJson().stream().map(JSONObject::parseObject).forEach(json -> {
@@ -142,7 +143,8 @@ public class EasyHttp extends EasyRequest {
                     .filter(RegexType.INTEGER::judgeString).map(Integer::valueOf).orElse(1);
 
             // 存储提词结果
-            addReplaceWord(saveName, response.extractKey(searchType, paramName, xpath, lb, rb, index));
+            addReplaceWord(saveName,
+                    ((EasyHttpResponse) response).extractKey(searchType, paramName, xpath, lb, rb, index));
         });
 
         // 自动断言
@@ -158,10 +160,12 @@ public class EasyHttp extends EasyRequest {
             int index = Integer.valueOf(json.getString(AssertResponse.JSON_ASSERT_ORD));
 
             // 断言
-            boolean result = response.assertResponse(assertRegex, searchType, paramName, xpath, lb, rb, index);
+            boolean result = ((EasyHttpResponse) response).assertResponse(assertRegex, searchType, paramName, xpath, lb,
+                    rb, index);
             // 判断是否需要抛出异常
             if (!result && isAssertFailThrowException) {
-                String responseText = response.extractKey(searchType, paramName, xpath, lb, rb, index);
+                String responseText = ((EasyHttpResponse) response).extractKey(searchType, paramName, xpath, lb, rb,
+                        index);
                 throw new HttpResponseException(String.format("接口响应报文断言失败，断言规则为“%s”，接口响应报文实际检索内容为“%s”，接口信息：“%s”",
                         assertRegex, responseText, interInfo.toString()));
             }

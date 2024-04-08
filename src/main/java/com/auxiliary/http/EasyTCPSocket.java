@@ -6,9 +6,13 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import com.auxiliary.tool.common.Entry;
+import com.auxiliary.tool.date.TimeUnit;
 import com.google.common.primitives.Bytes;
 
 /**
@@ -37,15 +41,15 @@ public class EasyTCPSocket extends EasyRequest {
     @Override
     public EasyResponse requst(InterfaceInfo interInfo) {
         // 读取接口信息中的接口超时时间
-        // Entry<Long, TimeUnit> timeData = interInfo.getConnectTime();
-        // long connectTime = (timeData.getKey() <= 0L ? 0L
-        // : (timeData.getKey()
-        // *
-        // Optional.ofNullable(timeData.getValue()).orElse(TimeUnit.SECOND).getToMillisNum()));
-        // if (Optional.ofNullable(requestBodyCharsetname).filter(name ->
-        // !name.isEmpty()).filter(Charset::isSupported)
-        // .isPresent()) {
-        // }
+        Entry<Long, TimeUnit> timeData = interInfo.getConnectTime();
+        long connectTime = (timeData.getKey() <= 0L ? 0L
+                : (timeData.getKey()
+                        * Optional.ofNullable(timeData.getValue()).orElse(TimeUnit.SECOND).getToMillisNum()));
+        // 读取接口的响应报文字符集编码，用于将响应报文字节转换为字符串
+        if (Optional.ofNullable(interInfo.getRequestCharsetname()).filter(name -> !name.isEmpty())
+                .filter(Charset::isSupported).isPresent()) {
+        }
+
 
         return null;
     }
