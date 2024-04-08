@@ -25,7 +25,7 @@ public class RandomObject<T> {
 	 * 定义默认对象池的名称
 	 */
 	public static final String DEFAULT_NAME = "defaultColumn";
-	
+
 	/**
 	 * 存储随机返回的对象
 	 */
@@ -34,7 +34,7 @@ public class RandomObject<T> {
 	 * 控制是否允许随机出重复的数据
 	 */
 	private boolean isRepeat = true;
-	
+
 	/**
 	 * 构造对象
 	 */
@@ -42,7 +42,7 @@ public class RandomObject<T> {
 		//设置表数据返回时不做严格检查
 		wordTable.setExamine(false);
 	}
-	
+
 	/**
 	 * 是否允许在随机返回的对象中出现重复的对象
 	 * <p>
@@ -55,16 +55,16 @@ public class RandomObject<T> {
 	public void setRepeat(boolean isRepeat) {
 		this.isRepeat = isRepeat;
 	}
-	
+
 	/**
 	 * 用于返回指定名称对象池中元素的个数
 	 * @param name 对象池名称
 	 * @return 对象池中对象个数
 	 */
 	public int size(String name) {
-		return wordTable.getListSize(DEFAULT_NAME);
+        return wordTable.getListSize(name);
 	}
-	
+
 	/**
 	 * 用于向默认对象池中添加对象数据
 	 * @param objs 对象组
@@ -73,7 +73,7 @@ public class RandomObject<T> {
 	public void addObject(T...objs) {
 		addObject(Arrays.asList(objs));
 	}
-	
+
 	/**
 	 * 用于向默认对象池中添加对象数据
 	 * @param objList 对象集合
@@ -82,24 +82,27 @@ public class RandomObject<T> {
 		//以默认的名称
 		wordTable.addColumn(DEFAULT_NAME, Optional.of(objList).orElse(new ArrayList<T> ()));
 	}
-	
+
 	/**
 	 * 用于清除指定对象池的对象
 	 * @param name 对象池名称
 	 */
 	public void clear(String name) {
-		wordTable.clearColumn(name);
+        try {
+            wordTable.clearColumn(name);
+        } catch (Exception e) {
+        }
 	}
-	
+
 	/**
 	 * 用于返回指定的对象池数据
-	 * @param name 对象池名称 
+	 * @param name 对象池名称
 	 * @return 对应的对象池数据
 	 */
 	public List<T> getObjectSeed(String name) {
 		return wordTable.getColumnList(name).stream().map(result -> result.get()).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * 用于返回默认对象池中的一个对象的封装类对象。若默认对象池中无数据，则返回{@link Optional#empty()}
 	 * @return  默认池中对象的封装类对象
@@ -112,7 +115,7 @@ public class RandomObject<T> {
 			return Optional.empty();
 		}
 	}
-	
+
 	/**
 	 * 用于随机返回默认对象池中的指定个数的对象的封装类对象。
 	 * 若默认对象池中无数据，则返回{@link Optional#empty()}
@@ -134,7 +137,7 @@ public class RandomObject<T> {
 	public List<Optional<T>> toObject(int length) {
 		return generateRandomObject(DEFAULT_NAME, length);
 	}
-	
+
 	/**
 	 * 用于在限定的个数范围内，随机返回默认对象池中的随机个对象的封装类对象。
 	 * 若默认对象池中无数据，则返回{@link Optional#empty()}，具体规则可参考{@link #toObject(int)}方法
@@ -161,23 +164,23 @@ public class RandomObject<T> {
 				return new ArrayList<>();
 			}
 		}
-		
+
 		//判断最少个数是否大于最大个数
 		if (minLength > maxLength) {
 			maxLength = minLength;
 		}
-		
+
 		//随机生成一个长度
 		return toObject(new Random().nextInt(maxLength - minLength + 1) + minLength);
 	}
-	
+
 	/**
 	 * 用于根据对象组名称，从对象组中抽取指定数量的对象
 	 * @return 对象集合
 	 */
 	private List<Optional<T>> generateRandomObject(String name, int length) {
 		List<Optional<T>> objList = new ArrayList<>();
-		
+
 		//判断当前传入的对象返回个数是否大于0
 		if (length < 1) {
 			return objList;
@@ -191,7 +194,7 @@ public class RandomObject<T> {
 		if (columnObj.size() == 0) {
 			return objList;
 		}
-		
+
 		//循环添加数据，直到生成的随机对象集合的个数与传入的个数一致为止
 		Random random = new Random();
 		while(objList.size() != length) {
@@ -202,18 +205,18 @@ public class RandomObject<T> {
 				objList.add(Optional.empty());
 				continue;
 			}
-			
+
 			//将为随机数的范围
 			int randomNum = random.nextInt(size);
 			//存储随机数指向的元素
 			objList.add(columnObj.get(randomNum));
-			
+
 			//判断当前生成的对象是否允许重复，若不允许，则移除当前指向的元素
 			if (!isRepeat) {
 				columnObj.remove(randomNum);
 			}
 		}
-		
+
 		return objList;
 	}
 }

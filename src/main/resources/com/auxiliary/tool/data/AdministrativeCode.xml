@@ -1,0 +1,3540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<element>
+  <province id="11" name="北京市">
+    <zone id="0101" name="东城区"/>
+    <zone id="0102" name="西城区"/>
+    <zone id="0105" name="朝阳区"/>
+    <zone id="0106" name="丰台区"/>
+    <zone id="0107" name="石景山区"/>
+    <zone id="0108" name="海淀区"/>
+    <zone id="0109" name="门头沟区"/>
+    <zone id="0111" name="房山区"/>
+    <zone id="0112" name="通州区"/>
+    <zone id="0113" name="顺义区"/>
+    <zone id="0114" name="昌平区"/>
+    <zone id="0115" name="大兴区"/>
+    <zone id="0116" name="怀柔区"/>
+    <zone id="0117" name="平谷区"/>
+    <zone id="0228" name="密云区"/>
+    <zone id="0229" name="延庆区"/>
+  </province>
+  <province id="12" name="天津市">
+    <zone id="0101" name="和平区"/>
+    <zone id="0102" name="河东区"/>
+    <zone id="0103" name="河西区"/>
+    <zone id="0104" name="南开区"/>
+    <zone id="0105" name="河北区"/>
+    <zone id="0106" name="红桥区"/>
+    <zone id="0110" name="东丽区"/>
+    <zone id="0111" name="西青区"/>
+    <zone id="0112" name="津南区"/>
+    <zone id="0113" name="北辰区"/>
+    <zone id="0114" name="武清区"/>
+    <zone id="0115" name="宝坻区"/>
+    <zone id="0116" name="滨海新区"/>
+    <zone id="0117" name="宁河区"/>
+    <zone id="0118" name="静海区"/>
+    <zone id="0119" name="蓟州区"/>
+  </province>
+  <province id="13" name="河北省">
+    <city id="01" name="石家庄市">
+      <zone id="02" name="长安区"/>
+      <zone id="03" name="桥东区"/>
+      <zone id="04" name="桥西区"/>
+      <zone id="05" name="新华区"/>
+      <zone id="07" name="井陉矿区"/>
+      <zone id="08" name="裕华区"/>
+      <zone id="09" name="藁城区"/>
+      <zone id="10" name="鹿泉区"/>
+      <zone id="11" name="栾城区"/>
+      <zone id="21" name="井陉县"/>
+      <zone id="23" name="正定县"/>
+      <zone id="25" name="行唐县"/>
+      <zone id="26" name="灵寿县"/>
+      <zone id="27" name="高邑县"/>
+      <zone id="28" name="深泽县"/>
+      <zone id="29" name="赞皇县"/>
+      <zone id="30" name="无极县"/>
+      <zone id="31" name="平山县"/>
+      <zone id="32" name="元氏县"/>
+      <zone id="33" name="赵县"/>
+      <zone id="81" name="辛集市"/>
+      <zone id="83" name="晋州市"/>
+      <zone id="84" name="新乐市"/>
+    </city>
+    <city id="02" name="唐山市">
+      <zone id="02" name="路南区"/>
+      <zone id="03" name="路北区"/>
+      <zone id="04" name="古冶区"/>
+      <zone id="05" name="开平区"/>
+      <zone id="07" name="丰南区"/>
+      <zone id="08" name="丰润区"/>
+      <zone id="09" name="曹妃甸区"/>
+      <zone id="24" name="滦南县"/>
+      <zone id="25" name="乐亭县"/>
+      <zone id="27" name="迁西县"/>
+      <zone id="29" name="玉田县"/>
+      <zone id="81" name="遵化市"/>
+      <zone id="83" name="迁安市"/>
+      <zone id="84" name="滦州市"/>
+    </city>
+    <city id="03" name="秦皇岛市">
+      <zone id="02" name="海港区"/>
+      <zone id="03" name="山海关区"/>
+      <zone id="04" name="北戴河区"/>
+      <zone id="06" name="抚宁区"/>
+      <zone id="21" name="青龙县"/>
+      <zone id="22" name="昌黎县"/>
+      <zone id="24" name="卢龙县"/>
+    </city>
+    <city id="04" name="邯郸市">
+      <zone id="02" name="邯山区"/>
+      <zone id="03" name="丛台区"/>
+      <zone id="04" name="复兴区"/>
+      <zone id="06" name="峰峰矿区"/>
+      <zone id="07" name="肥乡区"/>
+      <zone id="08" name="永年区"/>
+      <zone id="23" name="临漳县"/>
+      <zone id="24" name="成安县"/>
+      <zone id="25" name="大名县"/>
+      <zone id="26" name="涉县"/>
+      <zone id="27" name="磁县"/>
+      <zone id="30" name="邱县"/>
+      <zone id="31" name="鸡泽县"/>
+      <zone id="32" name="广平县"/>
+      <zone id="33" name="馆陶县"/>
+      <zone id="34" name="魏县"/>
+      <zone id="35" name="曲周县"/>
+      <zone id="81" name="武安市"/>
+    </city>
+    <city id="05" name="邢台市">
+      <zone id="02" name="襄都区"/>
+      <zone id="03" name="信都区"/>
+      <zone id="04" name="任泽区"/>
+      <zone id="05" name="南和区"/>
+      <zone id="21" name="邢台县"/>
+      <zone id="22" name="临城县"/>
+      <zone id="23" name="内丘县"/>
+      <zone id="24" name="柏乡县"/>
+      <zone id="25" name="隆尧县"/>
+      <zone id="28" name="宁晋县"/>
+      <zone id="29" name="巨鹿县"/>
+      <zone id="30" name="新河县"/>
+      <zone id="31" name="广宗县"/>
+      <zone id="32" name="平乡县"/>
+      <zone id="33" name="威县"/>
+      <zone id="34" name="清河县"/>
+      <zone id="35" name="临西县"/>
+      <zone id="81" name="南宫市"/>
+      <zone id="82" name="沙河市"/>
+    </city>
+    <city id="06" name="保定市">
+      <zone id="02" name="竞秀区"/>
+      <zone id="04" name="南市区"/>
+      <zone id="06" name="莲池区"/>
+      <zone id="07" name="满城区"/>
+      <zone id="08" name="清苑区"/>
+      <zone id="09" name="徐水区"/>
+      <zone id="23" name="涞水县"/>
+      <zone id="24" name="阜平县"/>
+      <zone id="26" name="定兴县"/>
+      <zone id="27" name="唐县"/>
+      <zone id="28" name="高阳县"/>
+      <zone id="29" name="容城县"/>
+      <zone id="30" name="涞源县"/>
+      <zone id="31" name="望都县"/>
+      <zone id="32" name="安新县"/>
+      <zone id="33" name="易县"/>
+      <zone id="34" name="曲阳县"/>
+      <zone id="35" name="蠡县"/>
+      <zone id="36" name="顺平县"/>
+      <zone id="37" name="博野县"/>
+      <zone id="38" name="雄县"/>
+      <zone id="81" name="涿州市"/>
+      <zone id="82" name="定州市"/>
+      <zone id="83" name="安国市"/>
+      <zone id="84" name="高碑店市"/>
+    </city>
+    <city id="07" name="张家口市">
+      <zone id="02" name="桥东区"/>
+      <zone id="03" name="桥西区"/>
+      <zone id="05" name="宣化区"/>
+      <zone id="06" name="下花园区"/>
+      <zone id="08" name="万全区"/>
+      <zone id="09" name="崇礼区"/>
+      <zone id="21" name="宣化县"/>
+      <zone id="22" name="张北县"/>
+      <zone id="23" name="康保县"/>
+      <zone id="24" name="沽源县"/>
+      <zone id="25" name="尚义县"/>
+      <zone id="26" name="蔚县"/>
+      <zone id="27" name="阳原县"/>
+      <zone id="28" name="怀安县"/>
+      <zone id="30" name="怀来县"/>
+      <zone id="31" name="涿鹿县"/>
+      <zone id="32" name="赤城县"/>
+    </city>
+    <city id="08" name="承德市">
+      <zone id="02" name="双桥区"/>
+      <zone id="03" name="双滦区"/>
+      <zone id="04" name="鹰手营子矿区"/>
+      <zone id="21" name="承德县"/>
+      <zone id="22" name="兴隆县"/>
+      <zone id="24" name="滦平县"/>
+      <zone id="25" name="隆化县"/>
+      <zone id="26" name="丰宁满族自治县"/>
+      <zone id="27" name="宽城县"/>
+      <zone id="28" name="围场县"/>
+      <zone id="81" name="平泉市"/>
+    </city>
+    <city id="09" name="沧州市">
+      <zone id="02" name="新华区"/>
+      <zone id="03" name="运河区"/>
+      <zone id="21" name="沧县"/>
+      <zone id="22" name="青县"/>
+      <zone id="23" name="东光县"/>
+      <zone id="24" name="海兴县"/>
+      <zone id="25" name="盐山县"/>
+      <zone id="26" name="肃宁县"/>
+      <zone id="27" name="南皮县"/>
+      <zone id="28" name="吴桥县"/>
+      <zone id="29" name="献县"/>
+      <zone id="30" name="孟村回族自治县"/>
+      <zone id="81" name="泊头市"/>
+      <zone id="82" name="任丘市"/>
+      <zone id="83" name="黄骅市"/>
+      <zone id="84" name="河间市"/>
+    </city>
+    <city id="10" name="廊坊市">
+      <zone id="02" name="安次区"/>
+      <zone id="03" name="广阳区"/>
+      <zone id="22" name="固安县"/>
+      <zone id="23" name="永清县"/>
+      <zone id="24" name="香河县"/>
+      <zone id="25" name="大城县"/>
+      <zone id="26" name="文安县"/>
+      <zone id="28" name="大厂回族自治县"/>
+      <zone id="81" name="霸州市"/>
+      <zone id="82" name="三河市"/>
+    </city>
+    <city id="11" name="衡水市">
+      <zone id="02" name="桃城区"/>
+      <zone id="03" name="冀州区"/>
+      <zone id="21" name="枣强县"/>
+      <zone id="22" name="武邑县"/>
+      <zone id="23" name="武强县"/>
+      <zone id="24" name="饶阳县"/>
+      <zone id="25" name="安平县"/>
+      <zone id="26" name="故城县"/>
+      <zone id="27" name="景县"/>
+      <zone id="28" name="阜城县"/>
+      <zone id="82" name="深州市"/>
+    </city>
+  </province>
+  <province id="14" name="山西省">
+    <city id="01" name="太原市">
+      <zone id="05" name="小店区"/>
+      <zone id="06" name="迎泽区"/>
+      <zone id="07" name="杏花岭区"/>
+      <zone id="08" name="尖草坪区"/>
+      <zone id="09" name="万柏林区"/>
+      <zone id="10" name="晋源区"/>
+      <zone id="21" name="清徐县"/>
+      <zone id="22" name="阳曲县"/>
+      <zone id="23" name="娄烦县"/>
+      <zone id="81" name="古交市"/>
+    </city>
+    <city id="02" name="大同市">
+      <zone id="03" name="矿区"/>
+      <zone id="12" name="新荣区"/>
+      <zone id="13" name="平城区"/>
+      <zone id="14" name="云冈区"/>
+      <zone id="15" name="云州区"/>
+      <zone id="21" name="阳高县"/>
+      <zone id="22" name="天镇县"/>
+      <zone id="23" name="广灵县"/>
+      <zone id="24" name="灵丘县"/>
+      <zone id="25" name="浑源县"/>
+      <zone id="26" name="左云县"/>
+    </city>
+    <city id="03" name="阳泉市">
+      <zone id="02" name="城区"/>
+      <zone id="03" name="矿区"/>
+      <zone id="11" name="郊区"/>
+      <zone id="21" name="平定县"/>
+      <zone id="22" name="盂县"/>
+    </city>
+    <city id="04" name="长治市">
+      <zone id="03" name="潞州区"/>
+      <zone id="04" name="上党区"/>
+      <zone id="05" name="屯留区"/>
+      <zone id="06" name="潞城区"/>
+      <zone id="11" name="郊区"/>
+      <zone id="23" name="襄垣县"/>
+      <zone id="25" name="平顺县"/>
+      <zone id="26" name="黎城县"/>
+      <zone id="27" name="壶关县"/>
+      <zone id="28" name="长子县"/>
+      <zone id="29" name="武乡县"/>
+      <zone id="30" name="沁县"/>
+      <zone id="31" name="沁源县"/>
+    </city>
+    <city id="05" name="晋城市">
+      <zone id="02" name="城区"/>
+      <zone id="21" name="沁水县"/>
+      <zone id="22" name="阳城县"/>
+      <zone id="24" name="陵川县"/>
+      <zone id="25" name="泽州县"/>
+      <zone id="81" name="高平市"/>
+    </city>
+    <city id="06" name="朔州市">
+      <zone id="02" name="朔城区"/>
+      <zone id="03" name="平鲁区"/>
+      <zone id="21" name="山阴县"/>
+      <zone id="22" name="应县"/>
+      <zone id="23" name="右玉县"/>
+      <zone id="24" name="怀仁市"/>
+    </city>
+    <city id="07" name="晋中市">
+      <zone id="02" name="榆次区"/>
+      <zone id="03" name="太谷区"/>
+      <zone id="21" name="榆社县"/>
+      <zone id="22" name="左权县"/>
+      <zone id="23" name="和顺县"/>
+      <zone id="24" name="昔阳县"/>
+      <zone id="25" name="寿阳县"/>
+      <zone id="27" name="祁县"/>
+      <zone id="28" name="平遥县"/>
+      <zone id="29" name="灵石县"/>
+      <zone id="81" name="介休市"/>
+    </city>
+    <city id="08" name="运城市">
+      <zone id="02" name="盐湖区"/>
+      <zone id="21" name="临猗县"/>
+      <zone id="22" name="万荣县"/>
+      <zone id="23" name="闻喜县"/>
+      <zone id="24" name="稷山县"/>
+      <zone id="25" name="新绛县"/>
+      <zone id="26" name="绛县"/>
+      <zone id="27" name="垣曲县"/>
+      <zone id="28" name="夏县"/>
+      <zone id="29" name="平陆县"/>
+      <zone id="30" name="芮城县"/>
+      <zone id="81" name="永济市"/>
+      <zone id="82" name="河津市"/>
+    </city>
+    <city id="09" name="忻州市">
+      <zone id="02" name="忻府区"/>
+      <zone id="21" name="定襄县"/>
+      <zone id="22" name="五台县"/>
+      <zone id="23" name="代县"/>
+      <zone id="24" name="繁峙县"/>
+      <zone id="25" name="宁武县"/>
+      <zone id="26" name="静乐县"/>
+      <zone id="27" name="神池县"/>
+      <zone id="28" name="五寨县"/>
+      <zone id="29" name="岢岚县"/>
+      <zone id="30" name="河曲县"/>
+      <zone id="31" name="保德县"/>
+      <zone id="32" name="偏关县"/>
+      <zone id="81" name="原平市"/>
+    </city>
+    <city id="10" name="临汾市">
+      <zone id="02" name="尧都区"/>
+      <zone id="21" name="曲沃县"/>
+      <zone id="22" name="翼城县"/>
+      <zone id="23" name="襄汾县"/>
+      <zone id="24" name="洪洞县"/>
+      <zone id="25" name="古县"/>
+      <zone id="26" name="安泽县"/>
+      <zone id="27" name="浮山县"/>
+      <zone id="28" name="吉县"/>
+      <zone id="29" name="乡宁县"/>
+      <zone id="30" name="大宁县"/>
+      <zone id="31" name="隰县"/>
+      <zone id="32" name="永和县"/>
+      <zone id="33" name="蒲县"/>
+      <zone id="34" name="汾西县"/>
+      <zone id="81" name="侯马市"/>
+      <zone id="82" name="霍州市"/>
+    </city>
+    <city id="11" name="吕梁市">
+      <zone id="02" name="离石区"/>
+      <zone id="21" name="文水县"/>
+      <zone id="22" name="交城县"/>
+      <zone id="23" name="兴县"/>
+      <zone id="24" name="临县"/>
+      <zone id="25" name="柳林县"/>
+      <zone id="26" name="石楼县"/>
+      <zone id="27" name="岚县"/>
+      <zone id="28" name="方山县"/>
+      <zone id="29" name="中阳县"/>
+      <zone id="30" name="交口县"/>
+      <zone id="81" name="孝义市"/>
+      <zone id="82" name="汾阳市"/>
+    </city>
+  </province>
+  <province id="15" name="内蒙古">
+    <city id="01" name="呼和浩特市">
+      <zone id="02" name="新城区"/>
+      <zone id="03" name="回民区"/>
+      <zone id="04" name="玉泉区"/>
+      <zone id="05" name="赛罕区"/>
+      <zone id="21" name="土默特左旗"/>
+      <zone id="22" name="托克托县"/>
+      <zone id="23" name="和林格尔县"/>
+      <zone id="24" name="清水河县"/>
+      <zone id="25" name="武川县"/>
+    </city>
+    <city id="02" name="包头市">
+      <zone id="02" name="东河区"/>
+      <zone id="03" name="昆都仑区"/>
+      <zone id="04" name="青山区"/>
+      <zone id="05" name="石拐区"/>
+      <zone id="06" name="白云鄂博矿区"/>
+      <zone id="07" name="九原区"/>
+      <zone id="21" name="土默特右旗"/>
+      <zone id="22" name="固阳县"/>
+      <zone id="23" name="达茂旗"/>
+    </city>
+    <city id="03" name="乌海市">
+      <zone id="02" name="海勃湾区"/>
+      <zone id="03" name="海南区"/>
+      <zone id="04" name="乌达区"/>
+    </city>
+    <city id="04" name="赤峰市">
+      <zone id="02" name="红山区"/>
+      <zone id="03" name="元宝山区"/>
+      <zone id="04" name="松山区"/>
+      <zone id="21" name="阿鲁旗"/>
+      <zone id="22" name="巴林左旗"/>
+      <zone id="23" name="巴林右旗"/>
+      <zone id="24" name="林西县"/>
+      <zone id="25" name="克什克腾旗"/>
+      <zone id="26" name="翁牛特旗"/>
+      <zone id="28" name="喀喇沁旗"/>
+      <zone id="29" name="宁城县"/>
+      <zone id="30" name="敖汉旗"/>
+    </city>
+    <city id="05" name="通辽市">
+      <zone id="02" name="科尔沁区"/>
+      <zone id="21" name="科尔沁左翼中旗"/>
+      <zone id="22" name="科尔沁左翼后旗"/>
+      <zone id="23" name="开鲁县"/>
+      <zone id="24" name="库伦旗"/>
+      <zone id="25" name="奈曼旗"/>
+      <zone id="26" name="扎鲁特旗"/>
+      <zone id="81" name="霍林郭勒市"/>
+    </city>
+    <city id="06" name="鄂尔多斯市">
+      <zone id="02" name="东胜区"/>
+      <zone id="03" name="康巴什区"/>
+      <zone id="21" name="达拉特旗"/>
+      <zone id="22" name="准格尔旗"/>
+      <zone id="23" name="鄂托克前旗"/>
+      <zone id="24" name="鄂托克旗"/>
+      <zone id="25" name="杭锦旗"/>
+      <zone id="26" name="乌审旗"/>
+      <zone id="27" name="伊金霍洛旗"/>
+    </city>
+    <city id="07" name="呼伦贝尔市">
+      <zone id="02" name="海拉尔区"/>
+      <zone id="03" name="扎赉诺尔区"/>
+      <zone id="21" name="阿荣旗"/>
+      <zone id="22" name="莫力达瓦旗"/>
+      <zone id="23" name="鄂伦春自治旗"/>
+      <zone id="24" name="鄂温克族自治旗"/>
+      <zone id="25" name="陈巴尔虎旗"/>
+      <zone id="26" name="新巴尔虎左旗"/>
+      <zone id="27" name="新巴尔虎右旗"/>
+      <zone id="81" name="满洲里市"/>
+      <zone id="82" name="牙克石市"/>
+      <zone id="83" name="扎兰屯市"/>
+      <zone id="84" name="额尔古纳市"/>
+      <zone id="85" name="根河市"/>
+    </city>
+    <city id="08" name="巴彦淖尔市">
+      <zone id="02" name="临河区"/>
+      <zone id="21" name="五原县"/>
+      <zone id="22" name="磴口县"/>
+      <zone id="23" name="乌拉特前旗"/>
+      <zone id="24" name="乌拉特中旗"/>
+      <zone id="25" name="乌拉特后旗"/>
+      <zone id="26" name="杭锦后旗"/>
+    </city>
+    <city id="09" name="乌兰察布市">
+      <zone id="02" name="集宁区"/>
+      <zone id="21" name="卓资县"/>
+      <zone id="22" name="化德县"/>
+      <zone id="23" name="商都县"/>
+      <zone id="24" name="兴和县"/>
+      <zone id="25" name="凉城县"/>
+      <zone id="26" name="察哈尔右翼前旗"/>
+      <zone id="27" name="察哈尔右翼中旗"/>
+      <zone id="28" name="察哈尔右翼后旗"/>
+      <zone id="29" name="四子王旗"/>
+      <zone id="81" name="丰镇市"/>
+    </city>
+    <city id="22" name="兴安盟">
+      <zone id="01" name="乌兰浩特市"/>
+      <zone id="02" name="阿尔山市"/>
+      <zone id="21" name="科尔沁右翼前旗"/>
+      <zone id="22" name="科尔沁右翼中旗"/>
+      <zone id="23" name="扎赉特旗"/>
+      <zone id="24" name="突泉县"/>
+    </city>
+    <city id="25" name="锡林郭勒盟">
+      <zone id="01" name="二连浩特市"/>
+      <zone id="02" name="锡林浩特市"/>
+      <zone id="22" name="阿巴嘎旗"/>
+      <zone id="23" name="苏尼特左旗"/>
+      <zone id="24" name="苏尼特右旗"/>
+      <zone id="25" name="东乌珠穆沁旗"/>
+      <zone id="26" name="西乌珠穆沁旗"/>
+      <zone id="27" name="太仆寺旗"/>
+      <zone id="28" name="镶黄旗"/>
+      <zone id="29" name="正镶白旗"/>
+      <zone id="30" name="正蓝旗"/>
+      <zone id="31" name="多伦县"/>
+      <zone id="71" name="乌拉盖管委会"/>
+    </city>
+    <city id="29" name="阿拉善盟">
+      <zone id="21" name="阿拉善左旗"/>
+      <zone id="22" name="阿拉善右旗"/>
+      <zone id="23" name="额济纳旗"/>
+    </city>
+  </province>
+  <province id="21" name="辽宁省">
+    <city id="01" name="沈阳市">
+      <zone id="02" name="和平区"/>
+      <zone id="03" name="沈河区"/>
+      <zone id="04" name="大东区"/>
+      <zone id="05" name="皇姑区"/>
+      <zone id="06" name="铁西区"/>
+      <zone id="11" name="苏家屯区"/>
+      <zone id="12" name="浑南区"/>
+      <zone id="13" name="沈北新区"/>
+      <zone id="14" name="于洪区"/>
+      <zone id="15" name="辽中区"/>
+      <zone id="23" name="康平县"/>
+      <zone id="24" name="法库县"/>
+      <zone id="81" name="新民市"/>
+    </city>
+    <city id="02" name="大连市">
+      <zone id="03" name="西岗区"/>
+      <zone id="04" name="沙河口区"/>
+      <zone id="11" name="甘井子区"/>
+      <zone id="12" name="旅顺口区"/>
+      <zone id="13" name="金普新区（金州区）"/>
+      <zone id="14" name="普兰店区"/>
+      <zone id="24" name="长海县"/>
+      <zone id="81" name="瓦房店市"/>
+      <zone id="83" name="庄河市"/>
+    </city>
+    <zone id="0200" name="中山区"/>
+    <city id="03" name="鞍山市">
+      <zone id="02" name="铁东区"/>
+      <zone id="03" name="铁西区"/>
+      <zone id="04" name="立山区"/>
+      <zone id="11" name="千山区"/>
+      <zone id="21" name="台安县"/>
+      <zone id="23" name="岫岩满族自治县"/>
+      <zone id="81" name="海城市"/>
+    </city>
+    <city id="04" name="抚顺市">
+      <zone id="02" name="新抚区"/>
+      <zone id="03" name="东洲区"/>
+      <zone id="04" name="望花区"/>
+      <zone id="11" name="顺城区"/>
+      <zone id="21" name="抚顺县"/>
+      <zone id="22" name="新宾县"/>
+      <zone id="23" name="清原满族自治县"/>
+    </city>
+    <city id="05" name="本溪市">
+      <zone id="02" name="平山区"/>
+      <zone id="03" name="溪湖区"/>
+      <zone id="04" name="明山区"/>
+      <zone id="05" name="南芬区"/>
+      <zone id="21" name="本溪满族自治县"/>
+      <zone id="22" name="桓仁满族自治县"/>
+    </city>
+    <city id="06" name="丹东市">
+      <zone id="02" name="元宝区"/>
+      <zone id="03" name="振兴区"/>
+      <zone id="04" name="振安区"/>
+      <zone id="24" name="宽甸满族自治县"/>
+      <zone id="81" name="东港市"/>
+      <zone id="82" name="凤城市"/>
+    </city>
+    <city id="07" name="锦州市">
+      <zone id="02" name="古塔区"/>
+      <zone id="03" name="凌河区"/>
+      <zone id="11" name="太和区"/>
+      <zone id="26" name="黑山县"/>
+      <zone id="27" name="义县"/>
+      <zone id="81" name="凌海市"/>
+      <zone id="82" name="北镇市"/>
+    </city>
+    <city id="08" name="营口市">
+      <zone id="02" name="站前区"/>
+      <zone id="03" name="西市区"/>
+      <zone id="04" name="鲅鱼圈区"/>
+      <zone id="11" name="老边区"/>
+      <zone id="81" name="盖州市"/>
+      <zone id="82" name="大石桥市"/>
+    </city>
+    <city id="09" name="阜新市">
+      <zone id="02" name="海州区"/>
+      <zone id="03" name="新邱区"/>
+      <zone id="04" name="太平区"/>
+      <zone id="05" name="清河门区"/>
+      <zone id="11" name="细河区"/>
+      <zone id="21" name="阜新蒙古族自治县"/>
+      <zone id="22" name="彰武县"/>
+    </city>
+    <city id="10" name="辽阳市">
+      <zone id="02" name="白塔区"/>
+      <zone id="03" name="文圣区"/>
+      <zone id="04" name="宏伟区"/>
+      <zone id="05" name="弓长岭区"/>
+      <zone id="11" name="太子河区"/>
+      <zone id="21" name="辽阳县"/>
+      <zone id="81" name="灯塔市"/>
+    </city>
+    <city id="11" name="盘锦市">
+      <zone id="02" name="双台子区"/>
+      <zone id="03" name="兴隆台区"/>
+      <zone id="04" name="大洼区"/>
+      <zone id="22" name="盘山县"/>
+    </city>
+    <city id="12" name="铁岭市">
+      <zone id="02" name="银州区"/>
+      <zone id="04" name="清河区"/>
+      <zone id="21" name="铁岭县"/>
+      <zone id="23" name="西丰县"/>
+      <zone id="24" name="昌图县"/>
+      <zone id="81" name="调兵山市"/>
+      <zone id="82" name="开原市"/>
+    </city>
+    <city id="13" name="朝阳市">
+      <zone id="02" name="双塔区"/>
+      <zone id="03" name="龙城区"/>
+      <zone id="21" name="朝阳县"/>
+      <zone id="22" name="建平县"/>
+      <zone id="24" name="喀左县"/>
+      <zone id="81" name="北票市"/>
+      <zone id="82" name="凌源市"/>
+    </city>
+    <city id="14" name="葫芦岛市">
+      <zone id="02" name="连山区"/>
+      <zone id="03" name="龙港区"/>
+      <zone id="04" name="南票区"/>
+      <zone id="21" name="绥中县"/>
+      <zone id="22" name="建昌县"/>
+      <zone id="81" name="兴城市"/>
+    </city>
+  </province>
+  <province id="22" name="吉林省">
+    <city id="01" name="长春市">
+      <zone id="02" name="南关区"/>
+      <zone id="03" name="宽城区"/>
+      <zone id="04" name="朝阳区"/>
+      <zone id="05" name="二道区"/>
+      <zone id="06" name="绿园区"/>
+      <zone id="12" name="双阳区"/>
+      <zone id="13" name="九台区"/>
+      <zone id="22" name="农安县"/>
+      <zone id="82" name="榆树市"/>
+      <zone id="83" name="德惠市"/>
+      <zone id="84" name="公主岭市"/>
+    </city>
+    <city id="02" name="吉林市">
+      <zone id="02" name="昌邑区"/>
+      <zone id="03" name="龙潭区"/>
+      <zone id="04" name="船营区"/>
+      <zone id="11" name="丰满区"/>
+      <zone id="21" name="永吉县"/>
+      <zone id="81" name="蛟河市"/>
+      <zone id="82" name="桦甸市"/>
+      <zone id="83" name="舒兰市"/>
+      <zone id="84" name="磐石市"/>
+    </city>
+    <city id="03" name="四平市">
+      <zone id="02" name="铁西区"/>
+      <zone id="03" name="铁东区"/>
+      <zone id="22" name="梨树县"/>
+      <zone id="23" name="伊通县"/>
+      <zone id="82" name="双辽市"/>
+    </city>
+    <city id="04" name="辽源市">
+      <zone id="02" name="龙山区"/>
+      <zone id="03" name="西安区"/>
+      <zone id="21" name="东丰县"/>
+      <zone id="22" name="东辽县"/>
+    </city>
+    <city id="05" name="通化市">
+      <zone id="02" name="东昌区"/>
+      <zone id="03" name="二道江区"/>
+      <zone id="21" name="通化县"/>
+      <zone id="23" name="辉南县"/>
+      <zone id="24" name="柳河县"/>
+      <zone id="81" name="梅河口市"/>
+      <zone id="82" name="集安市"/>
+    </city>
+    <city id="06" name="白山市">
+      <zone id="02" name="浑江区"/>
+      <zone id="05" name="江源区"/>
+      <zone id="21" name="抚松县"/>
+      <zone id="22" name="靖宇县"/>
+      <zone id="23" name="长白县"/>
+      <zone id="81" name="临江市"/>
+    </city>
+    <city id="07" name="松原市">
+      <zone id="02" name="宁江区"/>
+      <zone id="21" name="前郭县"/>
+      <zone id="22" name="长岭县"/>
+      <zone id="23" name="乾安县"/>
+      <zone id="81" name="扶余市"/>
+    </city>
+    <city id="08" name="白城市">
+      <zone id="02" name="洮北区"/>
+      <zone id="21" name="镇赉县"/>
+      <zone id="22" name="通榆县"/>
+      <zone id="81" name="洮南市"/>
+      <zone id="82" name="大安市"/>
+    </city>
+    <city id="24" name="延边州">
+      <zone id="01" name="延吉市"/>
+      <zone id="02" name="图们市"/>
+      <zone id="03" name="敦化市"/>
+      <zone id="04" name="珲春市"/>
+      <zone id="05" name="龙井市"/>
+      <zone id="06" name="和龙市"/>
+      <zone id="24" name="汪清县"/>
+      <zone id="26" name="安图县"/>
+    </city>
+  </province>
+  <province id="23" name="黑龙江">
+    <city id="01" name="哈尔滨市">
+      <zone id="02" name="道里区"/>
+      <zone id="03" name="南岗区"/>
+      <zone id="04" name="道外区"/>
+      <zone id="08" name="平房区"/>
+      <zone id="09" name="松北区"/>
+      <zone id="10" name="香坊区"/>
+      <zone id="11" name="呼兰区"/>
+      <zone id="12" name="阿城区"/>
+      <zone id="13" name="双城区"/>
+      <zone id="23" name="依兰县"/>
+      <zone id="24" name="方正县"/>
+      <zone id="25" name="宾县"/>
+      <zone id="26" name="巴彦县"/>
+      <zone id="27" name="木兰县"/>
+      <zone id="28" name="通河县"/>
+      <zone id="29" name="延寿县"/>
+      <zone id="83" name="尚志市"/>
+      <zone id="84" name="五常市"/>
+    </city>
+    <city id="02" name="齐齐哈尔市">
+      <zone id="02" name="龙沙区"/>
+      <zone id="03" name="建华区"/>
+      <zone id="04" name="铁锋区"/>
+      <zone id="05" name="昂昂溪区"/>
+      <zone id="06" name="富拉尔基区"/>
+      <zone id="07" name="碾子山区"/>
+      <zone id="08" name="梅里斯达斡尔族区"/>
+      <zone id="21" name="龙江县"/>
+      <zone id="23" name="依安县"/>
+      <zone id="24" name="泰来县"/>
+      <zone id="25" name="甘南县"/>
+      <zone id="27" name="富裕县"/>
+      <zone id="29" name="克山县"/>
+      <zone id="30" name="克东县"/>
+      <zone id="31" name="拜泉县"/>
+      <zone id="81" name="讷河市"/>
+    </city>
+    <city id="03" name="鸡西市">
+      <zone id="02" name="鸡冠区"/>
+      <zone id="03" name="恒山区"/>
+      <zone id="04" name="滴道区"/>
+      <zone id="05" name="梨树区"/>
+      <zone id="06" name="城子河区"/>
+      <zone id="07" name="麻山区"/>
+      <zone id="21" name="鸡东县"/>
+      <zone id="81" name="虎林市"/>
+      <zone id="82" name="密山市"/>
+    </city>
+    <city id="04" name="鹤岗市">
+      <zone id="02" name="向阳区"/>
+      <zone id="03" name="工农区"/>
+      <zone id="04" name="南山区"/>
+      <zone id="05" name="兴安区"/>
+      <zone id="06" name="东山区"/>
+      <zone id="07" name="兴山区"/>
+      <zone id="21" name="萝北县"/>
+      <zone id="22" name="绥滨县"/>
+    </city>
+    <city id="05" name="双鸭山市">
+      <zone id="02" name="尖山区"/>
+      <zone id="03" name="岭东区"/>
+      <zone id="05" name="四方台区"/>
+      <zone id="06" name="宝山区"/>
+      <zone id="21" name="集贤县"/>
+      <zone id="22" name="友谊县"/>
+      <zone id="23" name="宝清县"/>
+      <zone id="24" name="饶河县"/>
+    </city>
+    <city id="06" name="大庆市">
+      <zone id="02" name="萨尔图区"/>
+      <zone id="03" name="龙凤区"/>
+      <zone id="04" name="让胡路区"/>
+      <zone id="05" name="红岗区"/>
+      <zone id="06" name="大同区"/>
+      <zone id="21" name="肇州县"/>
+      <zone id="22" name="肇源县"/>
+      <zone id="23" name="林甸县"/>
+      <zone id="24" name="杜蒙县"/>
+    </city>
+    <city id="07" name="伊春市">
+      <zone id="03" name="南岔县del"/>
+      <zone id="07" name="丰林县"/>
+      <zone id="08" name="美溪区"/>
+      <zone id="09" name="金林区DEL"/>
+      <zone id="10" name="五营区"/>
+      <zone id="14" name="乌伊岭区"/>
+      <zone id="15" name="红星区"/>
+      <zone id="17" name="伊美区"/>
+      <zone id="18" name="乌翠区"/>
+      <zone id="19" name="友好区"/>
+      <zone id="22" name="嘉荫县"/>
+      <zone id="23" name="汤旺县"/>
+      <zone id="24" name="丰林县"/>
+      <zone id="25" name="大箐山县"/>
+      <zone id="26" name="南岔县"/>
+      <zone id="51" name="金林区"/>
+      <zone id="81" name="铁力市"/>
+    </city>
+    <city id="08" name="佳木斯市">
+      <zone id="03" name="向阳区"/>
+      <zone id="04" name="前进区"/>
+      <zone id="05" name="东风区"/>
+      <zone id="11" name="郊区"/>
+      <zone id="22" name="桦南县"/>
+      <zone id="26" name="桦川县"/>
+      <zone id="28" name="汤原县"/>
+      <zone id="81" name="同江市"/>
+      <zone id="82" name="富锦市"/>
+      <zone id="83" name="抚远市"/>
+    </city>
+    <city id="09" name="七台河市">
+      <zone id="02" name="新兴区"/>
+      <zone id="03" name="桃山区"/>
+      <zone id="04" name="茄子河区"/>
+      <zone id="21" name="勃利县"/>
+    </city>
+    <city id="10" name="牡丹江市">
+      <zone id="02" name="东安区"/>
+      <zone id="03" name="阳明区"/>
+      <zone id="04" name="爱民区"/>
+      <zone id="05" name="西安区"/>
+      <zone id="25" name="林口县"/>
+      <zone id="81" name="绥芬河市"/>
+      <zone id="83" name="海林市"/>
+      <zone id="84" name="宁安市"/>
+      <zone id="85" name="穆棱市"/>
+      <zone id="86" name="东宁市"/>
+    </city>
+    <city id="11" name="黑河市">
+      <zone id="02" name="爱辉区"/>
+      <zone id="21" name="嫩江市"/>
+      <zone id="23" name="逊克县"/>
+      <zone id="24" name="孙吴县"/>
+      <zone id="81" name="北安市"/>
+      <zone id="82" name="五大连池市"/>
+    </city>
+    <city id="12" name="绥化市">
+      <zone id="02" name="北林区"/>
+      <zone id="21" name="望奎县"/>
+      <zone id="22" name="兰西县"/>
+      <zone id="23" name="青冈县"/>
+      <zone id="24" name="庆安县"/>
+      <zone id="25" name="明水县"/>
+      <zone id="26" name="绥棱县"/>
+      <zone id="81" name="安达市"/>
+      <zone id="82" name="肇东市"/>
+      <zone id="83" name="海伦市"/>
+    </city>
+    <city id="27" name="大兴安岭地区">
+      <zone id="01" name="漠河市"/>
+      <zone id="21" name="呼玛县"/>
+      <zone id="22" name="塔河县"/>
+      <zone id="61" name="加格达奇区"/>
+      <zone id="62" name="松岭区"/>
+      <zone id="63" name="新林区"/>
+      <zone id="64" name="呼中区"/>
+    </city>
+  </province>
+  <province id="31" name="上海市">
+    <zone id="0101" name="黄浦区"/>
+    <zone id="0104" name="徐汇区"/>
+    <zone id="0105" name="长宁区"/>
+    <zone id="0106" name="静安区"/>
+    <zone id="0107" name="普陀区"/>
+    <zone id="0109" name="虹口区"/>
+    <zone id="0110" name="杨浦区"/>
+    <zone id="0112" name="闵行区"/>
+    <zone id="0113" name="宝山区"/>
+    <zone id="0114" name="嘉定区"/>
+    <zone id="0115" name="浦东新区"/>
+    <zone id="0116" name="金山区"/>
+    <zone id="0117" name="松江区"/>
+    <zone id="0118" name="青浦区"/>
+    <zone id="0120" name="奉贤区"/>
+    <zone id="0230" name="崇明区"/>
+  </province>
+  <province id="32" name="江苏省">
+    <city id="01" name="南京市">
+      <zone id="02" name="玄武区"/>
+      <zone id="04" name="秦淮区"/>
+      <zone id="05" name="建邺区"/>
+      <zone id="06" name="鼓楼区"/>
+      <zone id="11" name="浦口区"/>
+      <zone id="13" name="栖霞区"/>
+      <zone id="14" name="雨花台区"/>
+      <zone id="15" name="江宁区"/>
+      <zone id="16" name="六合区"/>
+      <zone id="17" name="溧水区"/>
+      <zone id="18" name="高淳区"/>
+    </city>
+    <city id="02" name="无锡市">
+      <zone id="05" name="锡山区"/>
+      <zone id="06" name="惠山区"/>
+      <zone id="11" name="滨湖区"/>
+      <zone id="13" name="梁溪区"/>
+      <zone id="14" name="新吴区"/>
+      <zone id="81" name="江阴市"/>
+      <zone id="82" name="宜兴市"/>
+    </city>
+    <city id="03" name="徐州市">
+      <zone id="02" name="鼓楼区"/>
+      <zone id="03" name="云龙区"/>
+      <zone id="05" name="贾汪区"/>
+      <zone id="11" name="泉山区"/>
+      <zone id="12" name="铜山区"/>
+      <zone id="21" name="丰县"/>
+      <zone id="22" name="沛县"/>
+      <zone id="24" name="睢宁县"/>
+      <zone id="81" name="新沂市"/>
+      <zone id="82" name="邳州市"/>
+    </city>
+    <city id="04" name="常州市">
+      <zone id="02" name="天宁区"/>
+      <zone id="04" name="钟楼区"/>
+      <zone id="11" name="新北区"/>
+      <zone id="12" name="武进区"/>
+      <zone id="13" name="金坛区"/>
+      <zone id="81" name="溧阳市"/>
+    </city>
+    <city id="05" name="苏州市">
+      <zone id="05" name="苏州高新区（虎丘区）"/>
+      <zone id="06" name="吴中区"/>
+      <zone id="07" name="相城区"/>
+      <zone id="08" name="姑苏区"/>
+      <zone id="09" name="吴江区"/>
+      <zone id="71" name="苏州工业园区"/>
+      <zone id="81" name="常熟市"/>
+      <zone id="82" name="张家港市"/>
+      <zone id="83" name="昆山市"/>
+      <zone id="85" name="太仓市"/>
+    </city>
+    <city id="06" name="南通市">
+      <zone id="02" name="崇川区"/>
+      <zone id="11" name="港闸区"/>
+      <zone id="12" name="通州区"/>
+      <zone id="13" name="海门区"/>
+      <zone id="21" name="海安市"/>
+      <zone id="23" name="如东市"/>
+      <zone id="81" name="启东市"/>
+      <zone id="82" name="如皋市"/>
+    </city>
+    <city id="07" name="连云港市">
+      <zone id="03" name="连云区"/>
+      <zone id="06" name="海州区"/>
+      <zone id="21" name="赣榆区"/>
+      <zone id="22" name="东海县"/>
+      <zone id="23" name="灌云县"/>
+      <zone id="24" name="灌南县"/>
+    </city>
+    <city id="08" name="淮安市">
+      <zone id="03" name="淮安区"/>
+      <zone id="04" name="淮阴区"/>
+      <zone id="12" name="清江浦区"/>
+      <zone id="26" name="涟水县"/>
+      <zone id="29" name="洪泽区"/>
+      <zone id="30" name="盱眙县"/>
+      <zone id="31" name="金湖县"/>
+    </city>
+    <city id="09" name="盐城市">
+      <zone id="02" name="亭湖区"/>
+      <zone id="03" name="盐都区"/>
+      <zone id="04" name="大丰区"/>
+      <zone id="21" name="响水县"/>
+      <zone id="22" name="滨海县"/>
+      <zone id="23" name="阜宁县"/>
+      <zone id="24" name="射阳县"/>
+      <zone id="25" name="建湖县"/>
+      <zone id="81" name="东台市"/>
+    </city>
+    <city id="10" name="扬州市">
+      <zone id="02" name="广陵区"/>
+      <zone id="03" name="邗江区"/>
+      <zone id="12" name="江都区"/>
+      <zone id="23" name="宝应县"/>
+      <zone id="81" name="仪征市"/>
+      <zone id="84" name="高邮市"/>
+    </city>
+    <city id="11" name="镇江市">
+	    <zone id="02" name="京口区"/>
+	    <zone id="11" name="润州区"/>
+	    <zone id="12" name="丹徒区"/>
+	    <zone id="81" name="丹阳市"/>
+	    <zone id="82" name="扬中市"/>
+	    <zone id="83" name="句容市"/>
+    </city>
+    <city id="12" name="泰州市">
+      <zone id="02" name="海陵区"/>
+      <zone id="03" name="医药高新区（高港区）"/>
+      <zone id="04" name="姜堰区"/>
+      <zone id="81" name="兴化市"/>
+      <zone id="82" name="靖江市"/>
+      <zone id="83" name="泰兴市"/>
+    </city>
+    <city id="13" name="宿迁市">
+      <zone id="02" name="宿城区"/>
+      <zone id="11" name="宿豫区"/>
+      <zone id="22" name="沭阳县"/>
+      <zone id="23" name="泗阳县"/>
+      <zone id="24" name="泗洪县"/>
+    </city>
+  </province>
+  <province id="33" name="浙江省">
+    <city id="01" name="杭州市">
+      <zone id="02" name="上城区"/>
+      <zone id="05" name="拱墅区"/>
+      <zone id="06" name="西湖区"/>
+      <zone id="08" name="高新区（滨江区）"/>
+      <zone id="09" name="萧山区"/>
+      <zone id="10" name="余杭区"/>
+      <zone id="11" name="富阳区"/>
+      <zone id="12" name="临安区"/>
+      <zone id="13" name="临平区"/>
+      <zone id="14" name="钱塘区"/>
+      <zone id="22" name="桐庐县"/>
+      <zone id="27" name="淳安县"/>
+      <zone id="82" name="建德市"/>
+    </city>
+    <city id="02" name="宁波市">
+      <zone id="03" name="海曙区"/>
+      <zone id="05" name="江北区"/>
+      <zone id="06" name="北仑区"/>
+      <zone id="11" name="镇海区"/>
+      <zone id="12" name="鄞州区"/>
+      <zone id="13" name="奉化区"/>
+      <zone id="25" name="象山县"/>
+      <zone id="26" name="宁海县"/>
+      <zone id="81" name="余姚市"/>
+      <zone id="82" name="慈溪市"/>
+    </city>
+    <city id="03" name="温州市">
+      <zone id="02" name="鹿城区"/>
+      <zone id="03" name="龙湾区"/>
+      <zone id="04" name="瓯海区"/>
+      <zone id="22" name="洞头区"/>
+      <zone id="24" name="永嘉县"/>
+      <zone id="26" name="平阳县"/>
+      <zone id="27" name="苍南县"/>
+      <zone id="28" name="文成县"/>
+      <zone id="29" name="泰顺县"/>
+      <zone id="81" name="瑞安市"/>
+      <zone id="82" name="乐清市"/>
+      <zone id="83" name="龙港市"/>
+    </city>
+    <city id="04" name="嘉兴市">
+      <zone id="02" name="南湖区"/>
+      <zone id="11" name="秀洲区"/>
+      <zone id="21" name="嘉善县"/>
+      <zone id="24" name="海盐县"/>
+      <zone id="81" name="海宁市"/>
+      <zone id="82" name="平湖市"/>
+      <zone id="83" name="桐乡市"/>
+    </city>
+    <city id="05" name="湖州市">
+      <zone id="02" name="吴兴区"/>
+      <zone id="03" name="南浔区"/>
+      <zone id="21" name="德清县"/>
+      <zone id="22" name="长兴县"/>
+      <zone id="23" name="安吉县"/>
+    </city>
+    <city id="06" name="绍兴市">
+      <zone id="02" name="越城区"/>
+      <zone id="03" name="柯桥区"/>
+      <zone id="04" name="上虞区"/>
+      <zone id="24" name="新昌县"/>
+      <zone id="81" name="诸暨市"/>
+      <zone id="83" name="嵊州市"/>
+    </city>
+    <city id="07" name="金华市">
+      <zone id="02" name="婺城区"/>
+      <zone id="03" name="金东区"/>
+      <zone id="23" name="武义县"/>
+      <zone id="26" name="浦江县"/>
+      <zone id="27" name="磐安县"/>
+      <zone id="81" name="兰溪市"/>
+      <zone id="82" name="义乌市"/>
+      <zone id="83" name="东阳市"/>
+      <zone id="84" name="永康市"/>
+    </city>
+    <city id="08" name="衢州市">
+      <zone id="02" name="柯城区"/>
+      <zone id="03" name="衢江区"/>
+      <zone id="22" name="常山县"/>
+      <zone id="24" name="开化县"/>
+      <zone id="25" name="龙游县"/>
+      <zone id="81" name="江山市"/>
+    </city>
+    <city id="09" name="舟山市">
+      <zone id="02" name="定海区"/>
+      <zone id="03" name="普陀区"/>
+      <zone id="21" name="岱山县"/>
+      <zone id="22" name="嵊泗县"/>
+    </city>
+    <city id="10" name="台州市">
+      <zone id="02" name="椒江区"/>
+      <zone id="03" name="黄岩区"/>
+      <zone id="04" name="路桥区"/>
+      <zone id="21" name="玉环市"/>
+      <zone id="22" name="三门县"/>
+      <zone id="23" name="天台县"/>
+      <zone id="24" name="仙居县"/>
+      <zone id="81" name="温岭市"/>
+      <zone id="82" name="临海市"/>
+    </city>
+    <city id="11" name="丽水市">
+      <zone id="02" name="莲都区"/>
+      <zone id="21" name="青田县"/>
+      <zone id="22" name="缙云县"/>
+      <zone id="23" name="遂昌县"/>
+      <zone id="24" name="松阳县"/>
+      <zone id="25" name="云和县"/>
+      <zone id="26" name="庆元县"/>
+      <zone id="27" name="景宁县"/>
+      <zone id="81" name="龙泉市"/>
+    </city>
+  </province>
+  <province id="34" name="安徽省">
+    <city id="01" name="合肥市">
+      <zone id="02" name="瑶海区"/>
+      <zone id="03" name="庐阳区"/>
+      <zone id="04" name="蜀山区"/>
+      <zone id="11" name="包河区"/>
+      <zone id="21" name="长丰县"/>
+      <zone id="22" name="肥东县"/>
+      <zone id="23" name="肥西县"/>
+      <zone id="24" name="庐江县"/>
+      <zone id="73" name="新站区"/>
+      <zone id="81" name="巢湖市"/>
+    </city>
+    <city id="02" name="芜湖市">
+      <zone id="02" name="镜湖区"/>
+      <zone id="03" name="弋江区"/>
+      <zone id="07" name="鸠江区"/>
+      <zone id="21" name="湾沚区"/>
+      <zone id="22" name="繁昌区"/>
+      <zone id="23" name="南陵县"/>
+      <zone id="25" name="无为市"/>
+    </city>
+    <city id="03" name="蚌埠市">
+      <zone id="02" name="龙子湖区"/>
+      <zone id="03" name="蚌山区"/>
+      <zone id="04" name="禹会区"/>
+      <zone id="11" name="淮上区"/>
+      <zone id="21" name="怀远县"/>
+      <zone id="22" name="五河县"/>
+      <zone id="23" name="固镇县"/>
+    </city>
+    <city id="04" name="淮南市">
+      <zone id="02" name="大通区"/>
+      <zone id="03" name="田家庵区"/>
+      <zone id="04" name="谢家集区"/>
+      <zone id="05" name="八公山区"/>
+      <zone id="06" name="潘集区"/>
+      <zone id="21" name="凤台县"/>
+      <zone id="22" name="寿县"/>
+    </city>
+    <city id="05" name="马鞍山市">
+      <zone id="03" name="花山区"/>
+      <zone id="04" name="雨山区"/>
+      <zone id="06" name="博望区"/>
+      <zone id="21" name="当涂县"/>
+      <zone id="22" name="含山县"/>
+      <zone id="23" name="和县"/>
+    </city>
+    <city id="06" name="淮北市">
+      <zone id="02" name="杜集区"/>
+      <zone id="03" name="相山区"/>
+      <zone id="04" name="烈山区"/>
+      <zone id="21" name="濉溪县"/>
+    </city>
+    <city id="07" name="铜陵市">
+      <zone id="05" name="铜官区"/>
+      <zone id="06" name="义安区"/>
+      <zone id="11" name="郊区"/>
+      <zone id="22" name="枞阳县"/>
+    </city>
+    <city id="08" name="安庆市">
+      <zone id="02" name="迎江区"/>
+      <zone id="03" name="大观区"/>
+      <zone id="11" name="宜秀区"/>
+      <zone id="22" name="怀宁县"/>
+      <zone id="24" name="潜山市"/>
+      <zone id="25" name="太湖县"/>
+      <zone id="26" name="宿松县"/>
+      <zone id="27" name="望江县"/>
+      <zone id="28" name="岳西县"/>
+      <zone id="81" name="桐城市"/>
+    </city>
+    <city id="10" name="黄山市">
+      <zone id="02" name="屯溪区"/>
+      <zone id="03" name="黄山区"/>
+      <zone id="04" name="徽州区"/>
+      <zone id="21" name="歙县"/>
+      <zone id="22" name="休宁县"/>
+      <zone id="23" name="黟县"/>
+      <zone id="24" name="祁门县"/>
+    </city>
+    <city id="11" name="滁州市">
+      <zone id="02" name="琅琊区"/>
+      <zone id="03" name="南谯区"/>
+      <zone id="22" name="来安县"/>
+      <zone id="24" name="全椒县"/>
+      <zone id="25" name="定远县"/>
+      <zone id="26" name="凤阳县"/>
+      <zone id="81" name="天长市"/>
+      <zone id="82" name="明光市"/>
+    </city>
+    <city id="12" name="阜阳市">
+      <zone id="02" name="颍州区"/>
+      <zone id="03" name="颍东区"/>
+      <zone id="04" name="颍泉区"/>
+      <zone id="21" name="临泉县"/>
+      <zone id="22" name="太和县"/>
+      <zone id="25" name="阜南县"/>
+      <zone id="26" name="颍上县"/>
+      <zone id="82" name="界首市"/>
+    </city>
+    <city id="13" name="宿州市">
+      <zone id="02" name="埇桥区"/>
+      <zone id="21" name="砀山县"/>
+      <zone id="22" name="萧县"/>
+      <zone id="23" name="灵璧县"/>
+      <zone id="24" name="泗县"/>
+    </city>
+    <city id="15" name="六安市">
+      <zone id="02" name="金安区"/>
+      <zone id="03" name="裕安区"/>
+      <zone id="04" name="叶集区"/>
+      <zone id="22" name="霍邱县"/>
+      <zone id="23" name="舒城县"/>
+      <zone id="24" name="金寨县"/>
+      <zone id="25" name="霍山县"/>
+    </city>
+    <city id="16" name="亳州市">
+      <zone id="02" name="谯城区"/>
+      <zone id="21" name="涡阳县"/>
+      <zone id="22" name="蒙城县"/>
+      <zone id="23" name="利辛县"/>
+    </city>
+    <city id="17" name="池州市">
+      <zone id="02" name="贵池区"/>
+      <zone id="21" name="东至县"/>
+      <zone id="22" name="石台县"/>
+      <zone id="23" name="青阳县"/>
+    </city>
+    <city id="18" name="宣城市">
+      <zone id="02" name="宣州区"/>
+      <zone id="21" name="郎溪县"/>
+      <zone id="23" name="泾县"/>
+      <zone id="24" name="绩溪县"/>
+      <zone id="25" name="旌德县"/>
+      <zone id="81" name="宁国市"/>
+      <zone id="82" name="广德市"/>
+    </city>
+  </province>
+  <province id="35" name="福建省">
+    <city id="01" name="福州市">
+      <zone id="02" name="鼓楼区"/>
+      <zone id="03" name="台江区"/>
+      <zone id="04" name="仓山区"/>
+      <zone id="05" name="马尾区"/>
+      <zone id="11" name="晋安区"/>
+      <zone id="12" name="长乐区"/>
+      <zone id="21" name="闽侯县"/>
+      <zone id="22" name="连江县"/>
+      <zone id="23" name="罗源县"/>
+      <zone id="24" name="闽清县"/>
+      <zone id="25" name="永泰县"/>
+      <zone id="28" name="平潭县"/>
+      <zone id="81" name="福清市"/>
+    </city>
+    <city id="02" name="厦门市">
+      <zone id="03" name="思明区"/>
+      <zone id="05" name="海沧区"/>
+      <zone id="06" name="湖里区"/>
+      <zone id="11" name="集美区"/>
+      <zone id="12" name="同安区"/>
+      <zone id="13" name="翔安区"/>
+    </city>
+    <city id="03" name="莆田市">
+      <zone id="02" name="城厢区"/>
+      <zone id="03" name="涵江区"/>
+      <zone id="04" name="荔城区"/>
+      <zone id="05" name="秀屿区"/>
+      <zone id="22" name="仙游县"/>
+    </city>
+    <city id="04" name="三明市">
+      <zone id="04" name="三元区"/>
+      <zone id="05" name="沙县区"/>
+      <zone id="21" name="明溪县"/>
+      <zone id="23" name="清流县"/>
+      <zone id="24" name="宁化县"/>
+      <zone id="25" name="大田县"/>
+      <zone id="26" name="尤溪县"/>
+      <zone id="28" name="将乐县"/>
+      <zone id="29" name="泰宁县"/>
+      <zone id="30" name="建宁县"/>
+      <zone id="81" name="永安市"/>
+    </city>
+    <city id="05" name="泉州市">
+      <zone id="02" name="鲤城区"/>
+      <zone id="03" name="丰泽区"/>
+      <zone id="04" name="洛江区"/>
+      <zone id="05" name="泉港区"/>
+      <zone id="21" name="惠安县"/>
+      <zone id="24" name="安溪县"/>
+      <zone id="25" name="永春县"/>
+      <zone id="26" name="德化县"/>
+      <zone id="27" name="金门县"/>
+      <zone id="81" name="石狮市"/>
+      <zone id="82" name="晋江市"/>
+      <zone id="83" name="南安市"/>
+    </city>
+    <city id="06" name="漳州市">
+      <zone id="02" name="芗城区"/>
+      <zone id="03" name="龙文区"/>
+      <zone id="04" name="龙海区"/>
+      <zone id="05" name="长泰区"/>
+      <zone id="22" name="云霄县"/>
+      <zone id="23" name="漳浦县"/>
+      <zone id="24" name="诏安县"/>
+      <zone id="26" name="东山县"/>
+      <zone id="27" name="南靖县"/>
+      <zone id="28" name="平和县"/>
+      <zone id="29" name="华安县"/>
+    </city>
+    <city id="07" name="南平市">
+      <zone id="02" name="延平区"/>
+      <zone id="03" name="建阳区"/>
+      <zone id="21" name="顺昌县"/>
+      <zone id="22" name="浦城县"/>
+      <zone id="23" name="光泽县"/>
+      <zone id="24" name="松溪县"/>
+      <zone id="25" name="政和县"/>
+      <zone id="81" name="邵武市"/>
+      <zone id="82" name="武夷山市"/>
+      <zone id="83" name="建瓯市"/>
+    </city>
+    <city id="08" name="龙岩市">
+      <zone id="02" name="新罗区"/>
+      <zone id="03" name="永定区"/>
+      <zone id="21" name="长汀县"/>
+      <zone id="23" name="上杭县"/>
+      <zone id="24" name="武平县"/>
+      <zone id="25" name="连城县"/>
+      <zone id="81" name="漳平市"/>
+    </city>
+    <city id="09" name="宁德市">
+      <zone id="02" name="蕉城区"/>
+      <zone id="21" name="霞浦县"/>
+      <zone id="22" name="古田县"/>
+      <zone id="23" name="屏南县"/>
+      <zone id="24" name="寿宁县"/>
+      <zone id="25" name="周宁县"/>
+      <zone id="26" name="柘荣县"/>
+      <zone id="81" name="福安市"/>
+      <zone id="82" name="福鼎市"/>
+    </city>
+  </province>
+  <province id="36" name="江西省">
+    <city id="01" name="南昌市">
+      <zone id="02" name="东湖区"/>
+      <zone id="03" name="西湖区"/>
+      <zone id="04" name="青云谱区"/>
+      <zone id="11" name="青山湖区"/>
+      <zone id="12" name="新建区"/>
+      <zone id="13" name="红谷滩区"/>
+      <zone id="21" name="南昌县"/>
+      <zone id="23" name="安义县"/>
+      <zone id="24" name="进贤县"/>
+    </city>
+    <city id="02" name="景德镇市">
+      <zone id="02" name="昌江区"/>
+      <zone id="03" name="珠山区"/>
+      <zone id="22" name="浮梁县"/>
+      <zone id="81" name="乐平市"/>
+    </city>
+    <city id="03" name="萍乡市">
+      <zone id="02" name="安源区"/>
+      <zone id="13" name="湘东区"/>
+      <zone id="21" name="莲花县"/>
+      <zone id="22" name="上栗县"/>
+      <zone id="23" name="芦溪县"/>
+    </city>
+    <city id="04" name="九江市">
+      <zone id="02" name="濂溪区"/>
+      <zone id="03" name="浔阳区"/>
+      <zone id="04" name="柴桑区"/>
+      <zone id="23" name="武宁县"/>
+      <zone id="24" name="修水县"/>
+      <zone id="25" name="永修县"/>
+      <zone id="26" name="德安县"/>
+      <zone id="28" name="都昌县"/>
+      <zone id="29" name="湖口县"/>
+      <zone id="30" name="彭泽县"/>
+      <zone id="81" name="瑞昌市"/>
+      <zone id="82" name="共青城市"/>
+      <zone id="83" name="庐山市"/>
+    </city>
+    <city id="05" name="新余市">
+      <zone id="02" name="渝水区"/>
+      <zone id="21" name="分宜县"/>
+    </city>
+    <city id="06" name="鹰潭市">
+      <zone id="02" name="月湖区"/>
+      <zone id="03" name="余江区"/>
+      <zone id="81" name="贵溪市"/>
+    </city>
+    <city id="07" name="赣州市">
+      <zone id="02" name="章贡区"/>
+      <zone id="02" name="南康区"/>
+      <zone id="04" name="赣县区"/>
+      <zone id="22" name="信丰县"/>
+      <zone id="23" name="大余县"/>
+      <zone id="24" name="上犹县"/>
+      <zone id="25" name="崇义县"/>
+      <zone id="26" name="安远县"/>
+      <zone id="28" name="定南县"/>
+      <zone id="29" name="全南县"/>
+      <zone id="30" name="宁都县"/>
+      <zone id="31" name="于都县"/>
+      <zone id="32" name="兴国县"/>
+      <zone id="33" name="会昌县"/>
+      <zone id="34" name="寻乌县"/>
+      <zone id="35" name="石城县"/>
+      <zone id="81" name="瑞金市"/>
+      <zone id="82" name="龙南市"/>
+    </city>
+    <city id="08" name="吉安市">
+      <zone id="02" name="吉州区"/>
+      <zone id="03" name="青原区"/>
+      <zone id="21" name="吉安县"/>
+      <zone id="22" name="吉水县"/>
+      <zone id="23" name="峡江县"/>
+      <zone id="24" name="新干县"/>
+      <zone id="25" name="永丰县"/>
+      <zone id="26" name="泰和县"/>
+      <zone id="27" name="遂川县"/>
+      <zone id="28" name="万安县"/>
+      <zone id="29" name="安福县"/>
+      <zone id="30" name="永新县"/>
+      <zone id="81" name="井冈山市"/>
+    </city>
+    <city id="09" name="宜春市">
+      <zone id="02" name="袁州区"/>
+      <zone id="21" name="奉新县"/>
+      <zone id="22" name="万载县"/>
+      <zone id="23" name="上高县"/>
+      <zone id="24" name="宜丰县"/>
+      <zone id="25" name="靖安县"/>
+      <zone id="26" name="铜鼓县"/>
+      <zone id="81" name="丰城市"/>
+      <zone id="82" name="樟树市"/>
+      <zone id="83" name="高安市"/>
+    </city>
+    <city id="10" name="抚州市">
+      <zone id="02" name="临川区"/>
+      <zone id="03" name="东乡区"/>
+      <zone id="21" name="南城县"/>
+      <zone id="22" name="黎川县"/>
+      <zone id="23" name="南丰县"/>
+      <zone id="24" name="崇仁县"/>
+      <zone id="25" name="乐安县"/>
+      <zone id="26" name="宜黄县"/>
+      <zone id="27" name="金溪县"/>
+      <zone id="28" name="资溪县"/>
+      <zone id="30" name="广昌县"/>
+    </city>
+    <city id="11" name="上饶市">
+      <zone id="02" name="信州区"/>
+      <zone id="03" name="广丰区"/>
+      <zone id="04" name="广信区"/>
+      <zone id="23" name="玉山县"/>
+      <zone id="24" name="铅山县"/>
+      <zone id="25" name="横峰县"/>
+      <zone id="26" name="弋阳县"/>
+      <zone id="27" name="余干县"/>
+      <zone id="28" name="鄱阳县"/>
+      <zone id="29" name="万年县"/>
+      <zone id="30" name="婺源县"/>
+      <zone id="81" name="德兴市"/>
+    </city>
+  </province>
+  <province id="37" name="山东省">
+    <city id="01" name="济南市">
+      <zone id="02" name="历下区"/>
+      <zone id="03" name="市中区"/>
+      <zone id="04" name="槐荫区"/>
+      <zone id="05" name="天桥区"/>
+      <zone id="12" name="历城区"/>
+      <zone id="13" name="长清区"/>
+      <zone id="14" name="章丘区"/>
+      <zone id="16" name="莱芜区"/>
+      <zone id="17" name="钢城区"/>
+      <zone id="24" name="平阴县"/>
+      <zone id="25" name="济阳区"/>
+      <zone id="26" name="商河县"/>
+    </city>
+    <city id="02" name="青岛市">
+      <zone id="02" name="市南区"/>
+      <zone id="03" name="市北区"/>
+      <zone id="11" name="西海岸新区（黄岛区）"/>
+      <zone id="12" name="崂山区"/>
+      <zone id="13" name="李沧区"/>
+      <zone id="14" name="城阳区"/>
+      <zone id="15" name="即墨区"/>
+      <zone id="81" name="胶州市"/>
+      <zone id="83" name="平度市"/>
+      <zone id="85" name="莱西市"/>
+    </city>
+    <city id="03" name="淄博市">
+      <zone id="02" name="淄川区"/>
+      <zone id="03" name="张店区"/>
+      <zone id="04" name="博山区"/>
+      <zone id="05" name="临淄区"/>
+      <zone id="06" name="周村区"/>
+      <zone id="21" name="桓台县"/>
+      <zone id="22" name="高青县"/>
+      <zone id="23" name="沂源县"/>
+    </city>
+    <city id="04" name="枣庄市">
+      <zone id="02" name="市中区"/>
+      <zone id="03" name="薛城区"/>
+      <zone id="04" name="峄城区"/>
+      <zone id="05" name="台儿庄区"/>
+      <zone id="06" name="山亭区"/>
+      <zone id="81" name="滕州市"/>
+    </city>
+    <city id="05" name="东营市">
+      <zone id="02" name="东营区"/>
+      <zone id="03" name="河口区"/>
+      <zone id="05" name="垦利区"/>
+      <zone id="22" name="利津县"/>
+      <zone id="23" name="广饶县"/>
+    </city>
+    <city id="06" name="烟台市">
+      <zone id="02" name="芝罘区"/>
+      <zone id="11" name="福山区"/>
+      <zone id="12" name="牟平区"/>
+      <zone id="13" name="莱山区"/>
+      <zone id="14" name="蓬莱区"/>
+      <zone id="73" name="长岛试验区"/>
+      <zone id="81" name="龙口市"/>
+      <zone id="82" name="莱阳市"/>
+      <zone id="83" name="莱州市"/>
+      <zone id="85" name="招远市"/>
+      <zone id="86" name="栖霞市"/>
+      <zone id="87" name="海阳市"/>
+    </city>
+    <city id="07" name="潍坊市">
+      <zone id="02" name="潍城区"/>
+      <zone id="03" name="寒亭区"/>
+      <zone id="04" name="坊子区"/>
+      <zone id="05" name="奎文区"/>
+      <zone id="24" name="临朐县"/>
+      <zone id="25" name="昌乐县"/>
+      <zone id="81" name="青州市"/>
+      <zone id="82" name="诸城市"/>
+      <zone id="83" name="寿光市"/>
+      <zone id="84" name="安丘市"/>
+      <zone id="85" name="高密市"/>
+      <zone id="86" name="昌邑市"/>
+    </city>
+    <city id="08" name="济宁市">
+      <zone id="02" name="市中区"/>
+      <zone id="11" name="任城区"/>
+      <zone id="12" name="兖州区"/>
+      <zone id="26" name="微山县"/>
+      <zone id="27" name="鱼台县"/>
+      <zone id="28" name="金乡县"/>
+      <zone id="29" name="嘉祥县"/>
+      <zone id="30" name="汶上县"/>
+      <zone id="31" name="泗水县"/>
+      <zone id="32" name="梁山县"/>
+      <zone id="81" name="曲阜市"/>
+      <zone id="83" name="邹城市"/>
+    </city>
+    <city id="09" name="泰安市">
+      <zone id="02" name="泰山区"/>
+      <zone id="11" name="岱岳区"/>
+      <zone id="21" name="宁阳县"/>
+      <zone id="23" name="东平县"/>
+      <zone id="82" name="新泰市"/>
+      <zone id="83" name="肥城市"/>
+    </city>
+    <city id="10" name="威海市">
+      <zone id="02" name="环翠区"/>
+      <zone id="03" name="文登区"/>
+      <zone id="82" name="荣成市"/>
+      <zone id="83" name="乳山市"/>
+    </city>
+    <city id="11" name="日照市">
+      <zone id="02" name="东港区"/>
+      <zone id="03" name="岚山区"/>
+      <zone id="21" name="五莲县"/>
+      <zone id="22" name="莒县"/>
+    </city>
+    <zone id="1200" name="莱芜"/>
+    <city id="13" name="临沂市">
+      <zone id="02" name="兰山区"/>
+      <zone id="11" name="罗庄区"/>
+      <zone id="12" name="河东区"/>
+      <zone id="21" name="沂南县"/>
+      <zone id="22" name="郯城县"/>
+      <zone id="23" name="沂水县"/>
+      <zone id="24" name="兰陵县"/>
+      <zone id="25" name="费县"/>
+      <zone id="26" name="平邑县"/>
+      <zone id="27" name="莒南县"/>
+      <zone id="28" name="蒙阴县"/>
+      <zone id="29" name="临沭县"/>
+    </city>
+    <city id="14" name="德州市">
+      <zone id="02" name="德城区"/>
+      <zone id="03" name="陵城区"/>
+      <zone id="22" name="宁津县"/>
+      <zone id="23" name="庆云县"/>
+      <zone id="24" name="临邑县"/>
+      <zone id="25" name="齐河县"/>
+      <zone id="26" name="平原县"/>
+      <zone id="27" name="夏津县"/>
+      <zone id="28" name="武城县"/>
+      <zone id="81" name="乐陵市"/>
+      <zone id="82" name="禹城市"/>
+    </city>
+    <city id="15" name="聊城市">
+      <zone id="02" name="东昌府区"/>
+      <zone id="03" name="茌平区"/>
+      <zone id="21" name="阳谷县"/>
+      <zone id="22" name="莘县"/>
+      <zone id="24" name="东阿县"/>
+      <zone id="25" name="冠县"/>
+      <zone id="26" name="高唐县"/>
+      <zone id="81" name="临清市"/>
+    </city>
+    <city id="16" name="滨州市">
+      <zone id="02" name="滨城区"/>
+      <zone id="03" name="沾化区"/>
+      <zone id="21" name="惠民县"/>
+      <zone id="22" name="阳信县"/>
+      <zone id="23" name="无棣县"/>
+      <zone id="25" name="博兴县"/>
+      <zone id="26" name="邹平市"/>
+    </city>
+    <city id="17" name="菏泽市">
+      <zone id="02" name="牡丹区"/>
+      <zone id="03" name="定陶区"/>
+      <zone id="21" name="曹县"/>
+      <zone id="22" name="单县"/>
+      <zone id="23" name="成武县"/>
+      <zone id="24" name="巨野县"/>
+      <zone id="25" name="郓城县"/>
+      <zone id="26" name="鄄城县"/>
+      <zone id="28" name="东明县"/>
+    </city>
+  </province>
+  <province id="41" name="河南省">
+    <city id="01" name="郑州市">
+      <zone id="02" name="中原区"/>
+      <zone id="03" name="二七区"/>
+      <zone id="04" name="管城回族区"/>
+      <zone id="05" name="金水区"/>
+      <zone id="06" name="上街区"/>
+      <zone id="08" name="惠济区"/>
+      <zone id="22" name="中牟县"/>
+      <zone id="81" name="巩义市"/>
+      <zone id="82" name="荥阳市"/>
+      <zone id="83" name="新密市"/>
+      <zone id="84" name="新郑市"/>
+      <zone id="85" name="登封市"/>
+    </city>
+    <city id="02" name="开封市">
+      <zone id="02" name="龙亭区"/>
+      <zone id="03" name="顺河回族区"/>
+      <zone id="04" name="鼓楼区"/>
+      <zone id="05" name="禹王台区"/>
+      <zone id="11" name="金明区"/>
+      <zone id="12" name="祥符区"/>
+      <zone id="21" name="杞县"/>
+      <zone id="22" name="通许县"/>
+      <zone id="23" name="尉氏县"/>
+      <zone id="25" name="兰考县"/>
+    </city>
+    <city id="03" name="洛阳市">
+      <zone id="02" name="老城区"/>
+      <zone id="03" name="西工区"/>
+      <zone id="04" name="瀍河区"/>
+      <zone id="05" name="涧西区"/>
+      <zone id="11" name="洛龙区"/>
+      <zone id="12" name="偃师区"/>
+      <zone id="13" name="孟津区"/>
+      <zone id="23" name="新安县"/>
+      <zone id="24" name="栾川县"/>
+      <zone id="25" name="嵩县"/>
+      <zone id="26" name="汝阳县"/>
+      <zone id="27" name="宜阳县"/>
+      <zone id="28" name="洛宁县"/>
+      <zone id="29" name="伊川县"/>
+      <zone id="72" name="经开区（伊滨区）"/>
+    </city>
+    <city id="04" name="平顶山市">
+      <zone id="02" name="新华区"/>
+      <zone id="03" name="卫东区"/>
+      <zone id="04" name="石龙区"/>
+      <zone id="11" name="湛河区"/>
+      <zone id="21" name="宝丰县"/>
+      <zone id="22" name="叶县"/>
+      <zone id="23" name="鲁山县"/>
+      <zone id="25" name="郏县"/>
+      <zone id="81" name="舞钢市"/>
+      <zone id="82" name="汝州市"/>
+    </city>
+    <city id="05" name="安阳市">
+      <zone id="02" name="文峰区"/>
+      <zone id="03" name="北关区"/>
+      <zone id="05" name="殷都区"/>
+      <zone id="06" name="龙安区"/>
+      <zone id="22" name="安阳县"/>
+      <zone id="23" name="汤阴县"/>
+      <zone id="26" name="滑县"/>
+      <zone id="27" name="内黄县"/>
+      <zone id="81" name="林州市"/>
+    </city>
+    <city id="06" name="鹤壁市">
+      <zone id="02" name="鹤山区"/>
+      <zone id="03" name="山城区"/>
+      <zone id="11" name="淇滨区"/>
+      <zone id="21" name="浚县"/>
+      <zone id="22" name="淇县"/>
+    </city>
+    <city id="07" name="新乡市">
+      <zone id="02" name="红旗区"/>
+      <zone id="03" name="卫滨区"/>
+      <zone id="04" name="凤泉区"/>
+      <zone id="11" name="牧野区"/>
+      <zone id="21" name="新乡县"/>
+      <zone id="24" name="获嘉县"/>
+      <zone id="25" name="原阳县"/>
+      <zone id="26" name="延津县"/>
+      <zone id="27" name="封丘县"/>
+      <zone id="81" name="卫辉市"/>
+      <zone id="82" name="辉县市"/>
+      <zone id="83" name="长垣市"/>
+    </city>
+    <city id="08" name="焦作市">
+      <zone id="02" name="解放区"/>
+      <zone id="03" name="中站区"/>
+      <zone id="04" name="马村区"/>
+      <zone id="11" name="山阳区"/>
+      <zone id="21" name="修武县"/>
+      <zone id="22" name="博爱县"/>
+      <zone id="23" name="武陟县"/>
+      <zone id="25" name="温县"/>
+      <zone id="82" name="沁阳市"/>
+      <zone id="83" name="孟州市"/>
+    </city>
+    <city id="09" name="濮阳市">
+      <zone id="02" name="华龙区"/>
+      <zone id="22" name="清丰县"/>
+      <zone id="23" name="南乐县"/>
+      <zone id="26" name="范县"/>
+      <zone id="27" name="台前县"/>
+      <zone id="28" name="濮阳县"/>
+    </city>
+    <city id="10" name="许昌市">
+      <zone id="02" name="魏都区"/>
+      <zone id="03" name="建安区"/>
+      <zone id="24" name="鄢陵县"/>
+      <zone id="25" name="襄城县"/>
+      <zone id="81" name="禹州市"/>
+      <zone id="82" name="长葛市"/>
+    </city>
+    <city id="11" name="漯河市">
+      <zone id="02" name="源汇区"/>
+      <zone id="03" name="郾城区"/>
+      <zone id="04" name="召陵区"/>
+      <zone id="21" name="舞阳县"/>
+      <zone id="22" name="临颍县"/>
+    </city>
+    <city id="12" name="三门峡市">
+      <zone id="02" name="湖滨区"/>
+      <zone id="03" name="陕州区"/>
+      <zone id="21" name="渑池县"/>
+      <zone id="24" name="卢氏县"/>
+      <zone id="81" name="义马市"/>
+      <zone id="82" name="灵宝市"/>
+    </city>
+    <city id="13" name="南阳市">
+      <zone id="02" name="宛城区"/>
+      <zone id="03" name="卧龙区"/>
+      <zone id="10" name="南召县"/>
+      <zone id="22" name="方城县"/>
+      <zone id="23" name="西峡县"/>
+      <zone id="24" name="镇平县"/>
+      <zone id="25" name="内乡县"/>
+      <zone id="26" name="淅川县"/>
+      <zone id="27" name="社旗县"/>
+      <zone id="28" name="唐河县"/>
+      <zone id="29" name="新野县"/>
+      <zone id="30" name="桐柏县"/>
+      <zone id="81" name="邓州市"/>
+    </city>
+    <city id="14" name="商丘市">
+      <zone id="02" name="梁园区"/>
+      <zone id="03" name="睢阳区"/>
+      <zone id="21" name="民权县"/>
+      <zone id="22" name="睢县"/>
+      <zone id="23" name="宁陵县"/>
+      <zone id="24" name="柘城县"/>
+      <zone id="25" name="虞城县"/>
+      <zone id="26" name="夏邑县"/>
+      <zone id="81" name="永城市"/>
+    </city>
+    <city id="15" name="信阳市">
+      <zone id="02" name="浉河区"/>
+      <zone id="03" name="平桥区"/>
+      <zone id="21" name="罗山县"/>
+      <zone id="22" name="光山县"/>
+      <zone id="23" name="新县"/>
+      <zone id="24" name="商城县"/>
+      <zone id="25" name="固始县"/>
+      <zone id="26" name="潢川县"/>
+      <zone id="27" name="淮滨县"/>
+      <zone id="28" name="息县"/>
+    </city>
+    <city id="16" name="周口市">
+      <zone id="02" name="川汇区"/>
+      <zone id="03" name="淮阳区"/>
+      <zone id="21" name="扶沟县"/>
+      <zone id="22" name="西华县"/>
+      <zone id="23" name="商水县"/>
+      <zone id="24" name="沈丘县"/>
+      <zone id="25" name="郸城县"/>
+      <zone id="27" name="太康县"/>
+      <zone id="28" name="鹿邑县"/>
+      <zone id="81" name="项城市"/>
+    </city>
+    <city id="17" name="驻马店市">
+      <zone id="02" name="驿城区"/>
+      <zone id="21" name="西平县"/>
+      <zone id="22" name="上蔡县"/>
+      <zone id="23" name="平舆县"/>
+      <zone id="24" name="正阳县"/>
+      <zone id="25" name="确山县"/>
+      <zone id="26" name="泌阳县"/>
+      <zone id="27" name="汝南县"/>
+      <zone id="28" name="遂平县"/>
+      <zone id="29" name="新蔡县"/>
+    </city>
+    <zone id="9001" name="济源市"/>
+  </province>
+  <province id="42" name="湖北省">
+    <city id="01" name="武汉市">
+      <zone id="02" name="江岸区"/>
+      <zone id="03" name="江汉区"/>
+      <zone id="04" name="硚口区"/>
+      <zone id="05" name="汉阳区"/>
+      <zone id="06" name="武昌区"/>
+      <zone id="07" name="青山区（化工区）"/>
+      <zone id="11" name="洪山区"/>
+      <zone id="12" name="东西湖区"/>
+      <zone id="13" name="经开区（汉南区）"/>
+      <zone id="14" name="蔡甸区"/>
+      <zone id="15" name="江夏区"/>
+      <zone id="16" name="黄陂区"/>
+      <zone id="17" name="新洲区"/>
+    </city>
+    <city id="02" name="黄石市">
+      <zone id="02" name="黄石港区"/>
+      <zone id="03" name="西塞山区"/>
+      <zone id="04" name="下陆区"/>
+      <zone id="05" name="黄石经济开发区（铁山区）"/>
+      <zone id="22" name="阳新县"/>
+      <zone id="81" name="大冶市"/>
+    </city>
+    <city id="03" name="十堰市">
+      <zone id="02" name="茅箭区"/>
+      <zone id="03" name="张湾区"/>
+      <zone id="04" name="郧阳区"/>
+      <zone id="22" name="郧西县"/>
+      <zone id="23" name="竹山县"/>
+      <zone id="24" name="竹溪县"/>
+      <zone id="25" name="房县"/>
+      <zone id="81" name="丹江口市"/>
+    </city>
+    <city id="05" name="宜昌市">
+      <zone id="02" name="西陵区"/>
+      <zone id="03" name="伍家岗区"/>
+      <zone id="04" name="点军区"/>
+      <zone id="05" name="猇亭区"/>
+      <zone id="06" name="夷陵区"/>
+      <zone id="25" name="远安县"/>
+      <zone id="26" name="兴山县"/>
+      <zone id="27" name="秭归县"/>
+      <zone id="28" name="长阳县"/>
+      <zone id="29" name="五峰县"/>
+      <zone id="81" name="宜都市"/>
+      <zone id="82" name="当阳市"/>
+      <zone id="83" name="枝江市"/>
+    </city>
+    <city id="06" name="襄阳市">
+      <zone id="02" name="襄城区"/>
+      <zone id="06" name="樊城区"/>
+      <zone id="07" name="襄州区"/>
+      <zone id="24" name="南漳县"/>
+      <zone id="25" name="谷城县"/>
+      <zone id="26" name="保康县"/>
+      <zone id="82" name="老河口市"/>
+      <zone id="83" name="枣阳市"/>
+      <zone id="84" name="宜城市"/>
+    </city>
+    <city id="07" name="鄂州市">
+      <zone id="02" name="梁子湖区"/>
+      <zone id="03" name="华容区"/>
+      <zone id="04" name="鄂城区"/>
+    </city>
+    <city id="08" name="荆门市">
+      <zone id="02" name="东宝区"/>
+      <zone id="04" name="掇刀区"/>
+      <zone id="22" name="沙洋县"/>
+      <zone id="81" name="钟祥市"/>
+      <zone id="82" name="京山市"/>
+    </city>
+    <city id="09" name="孝感市">
+      <zone id="02" name="孝南区"/>
+      <zone id="21" name="孝昌县"/>
+      <zone id="22" name="大悟县"/>
+      <zone id="23" name="云梦县"/>
+      <zone id="81" name="应城市"/>
+      <zone id="82" name="安陆市"/>
+      <zone id="84" name="汉川市"/>
+    </city>
+    <city id="10" name="荆州市">
+      <zone id="02" name="沙市区"/>
+      <zone id="03" name="荆州区"/>
+      <zone id="22" name="公安县"/>
+      <zone id="23" name="监利市"/>
+      <zone id="24" name="江陵县"/>
+      <zone id="81" name="石首市"/>
+      <zone id="83" name="洪湖市"/>
+      <zone id="87" name="松滋市"/>
+    </city>
+    <city id="11" name="黄冈市">
+      <zone id="02" name="黄州区"/>
+      <zone id="21" name="团风县"/>
+      <zone id="22" name="红安县"/>
+      <zone id="23" name="罗田县"/>
+      <zone id="24" name="英山县"/>
+      <zone id="25" name="浠水县"/>
+      <zone id="26" name="蕲春县"/>
+      <zone id="27" name="黄梅县"/>
+      <zone id="81" name="麻城市"/>
+      <zone id="82" name="武穴市"/>
+    </city>
+    <city id="12" name="咸宁市">
+      <zone id="02" name="咸安区"/>
+      <zone id="21" name="嘉鱼县"/>
+      <zone id="22" name="通城县"/>
+      <zone id="23" name="崇阳县"/>
+      <zone id="24" name="通山县"/>
+      <zone id="81" name="赤壁市"/>
+    </city>
+    <city id="13" name="随州市">
+      <zone id="03" name="曾都区"/>
+      <zone id="21" name="随县"/>
+      <zone id="81" name="广水市"/>
+    </city>
+    <city id="28" name="恩施州">
+      <zone id="01" name="恩施市"/>
+      <zone id="02" name="利川市"/>
+      <zone id="22" name="建始县"/>
+      <zone id="23" name="巴东县"/>
+      <zone id="25" name="宣恩县"/>
+      <zone id="26" name="咸丰县"/>
+      <zone id="27" name="来凤县"/>
+      <zone id="28" name="鹤峰县"/>
+    </city>
+    <zone id="9004" name="仙桃市"/>
+    <zone id="9005" name="潜江市"/>
+    <zone id="9006" name="天门市"/>
+    <zone id="9021" name="神农架林区"/>
+  </province>
+  <province id="43" name="湖南省">
+    <city id="01" name="长沙市">
+      <zone id="02" name="芙蓉区"/>
+      <zone id="03" name="天心区"/>
+      <zone id="04" name="岳麓区"/>
+      <zone id="05" name="开福区"/>
+      <zone id="11" name="雨花区"/>
+      <zone id="12" name="望城区"/>
+      <zone id="21" name="长沙县"/>
+      <zone id="81" name="浏阳市"/>
+      <zone id="82" name="宁乡市"/>
+    </city>
+    <city id="02" name="株洲市">
+      <zone id="02" name="荷塘区"/>
+      <zone id="03" name="芦淞区"/>
+      <zone id="04" name="石峰区"/>
+      <zone id="11" name="天元区"/>
+      <zone id="12" name="渌口区"/>
+      <zone id="23" name="攸县"/>
+      <zone id="24" name="茶陵县"/>
+      <zone id="25" name="炎陵县"/>
+      <zone id="81" name="醴陵市"/>
+    </city>
+    <city id="03" name="湘潭市">
+      <zone id="02" name="雨湖区"/>
+      <zone id="04" name="岳塘区"/>
+      <zone id="21" name="湘潭县"/>
+      <zone id="81" name="湘乡市"/>
+      <zone id="82" name="韶山市"/>
+    </city>
+    <city id="04" name="衡阳市">
+      <zone id="05" name="珠晖区"/>
+      <zone id="06" name="雁峰区"/>
+      <zone id="07" name="石鼓区"/>
+      <zone id="08" name="蒸湘区"/>
+      <zone id="12" name="南岳区"/>
+      <zone id="21" name="衡阳县"/>
+      <zone id="22" name="衡南县"/>
+      <zone id="23" name="衡山县"/>
+      <zone id="24" name="衡东县"/>
+      <zone id="26" name="祁东县"/>
+      <zone id="81" name="耒阳市"/>
+      <zone id="82" name="常宁市"/>
+    </city>
+    <city id="05" name="邵阳市">
+      <zone id="02" name="双清区"/>
+      <zone id="03" name="大祥区"/>
+      <zone id="11" name="北塔区"/>
+      <zone id="22" name="新邵县"/>
+      <zone id="23" name="邵阳县"/>
+      <zone id="24" name="隆回县"/>
+      <zone id="25" name="洞口县"/>
+      <zone id="27" name="绥宁县"/>
+      <zone id="28" name="新宁县"/>
+      <zone id="29" name="城步县"/>
+      <zone id="81" name="武冈市"/>
+      <zone id="82" name="邵东市"/>
+    </city>
+    <city id="06" name="岳阳市">
+      <zone id="02" name="岳阳楼区"/>
+      <zone id="03" name="云溪区"/>
+      <zone id="11" name="君山区"/>
+      <zone id="21" name="岳阳县"/>
+      <zone id="23" name="华容县"/>
+      <zone id="24" name="湘阴县"/>
+      <zone id="26" name="平江县"/>
+      <zone id="81" name="汨罗市"/>
+      <zone id="82" name="临湘市"/>
+    </city>
+    <city id="07" name="常德市">
+      <zone id="02" name="武陵区"/>
+      <zone id="03" name="鼎城区"/>
+      <zone id="21" name="安乡县"/>
+      <zone id="22" name="汉寿县"/>
+      <zone id="23" name="澧县"/>
+      <zone id="24" name="临澧县"/>
+      <zone id="25" name="桃源县"/>
+      <zone id="26" name="石门县"/>
+      <zone id="81" name="津市市"/>
+    </city>
+    <city id="08" name="张家界市">
+      <zone id="02" name="永定区"/>
+      <zone id="11" name="武陵源区"/>
+      <zone id="21" name="慈利县"/>
+      <zone id="22" name="桑植县"/>
+    </city>
+    <city id="09" name="益阳市">
+      <zone id="02" name="资阳区"/>
+      <zone id="03" name="赫山区"/>
+      <zone id="21" name="南县"/>
+      <zone id="22" name="桃江县"/>
+      <zone id="23" name="安化县"/>
+      <zone id="81" name="沅江市"/>
+    </city>
+    <city id="10" name="郴州市">
+      <zone id="02" name="北湖区"/>
+      <zone id="03" name="苏仙区"/>
+      <zone id="21" name="桂阳县"/>
+      <zone id="22" name="宜章县"/>
+      <zone id="23" name="永兴县"/>
+      <zone id="24" name="嘉禾县"/>
+      <zone id="25" name="临武县"/>
+      <zone id="26" name="汝城县"/>
+      <zone id="27" name="桂东县"/>
+      <zone id="28" name="安仁县"/>
+      <zone id="81" name="资兴市"/>
+    </city>
+    <city id="11" name="永州市">
+      <zone id="02" name="零陵区"/>
+      <zone id="03" name="冷水滩区"/>
+      <zone id="22" name="东安县"/>
+      <zone id="23" name="双牌县"/>
+      <zone id="24" name="道县"/>
+      <zone id="25" name="江永县"/>
+      <zone id="26" name="宁远县"/>
+      <zone id="27" name="蓝山县"/>
+      <zone id="28" name="新田县"/>
+      <zone id="29" name="江华县"/>
+      <zone id="81" name="祁阳市"/>
+    </city>
+    <city id="12" name="怀化市">
+      <zone id="02" name="鹤城区"/>
+      <zone id="21" name="中方县"/>
+      <zone id="22" name="沅陵县"/>
+      <zone id="23" name="辰溪县"/>
+      <zone id="24" name="溆浦县"/>
+      <zone id="25" name="会同县"/>
+      <zone id="26" name="麻阳县"/>
+      <zone id="27" name="新晃县"/>
+      <zone id="28" name="芷江县"/>
+      <zone id="29" name="靖州县"/>
+      <zone id="30" name="通道县"/>
+      <zone id="81" name="洪江市"/>
+    </city>
+    <city id="13" name="娄底市">
+      <zone id="02" name="娄星区"/>
+      <zone id="21" name="双峰县"/>
+      <zone id="22" name="新化县"/>
+      <zone id="81" name="冷水江市"/>
+      <zone id="82" name="涟源市"/>
+    </city>
+    <city id="31" name="湘西州">
+      <zone id="01" name="吉首市"/>
+      <zone id="22" name="泸溪县"/>
+      <zone id="23" name="凤凰县"/>
+      <zone id="24" name="花垣县"/>
+      <zone id="25" name="保靖县"/>
+      <zone id="26" name="古丈县"/>
+      <zone id="27" name="永顺县"/>
+      <zone id="30" name="龙山县"/>
+    </city>
+  </province>
+  <province id="44" name="广东省">
+    <city id="01" name="广州市">
+      <zone id="03" name="荔湾区"/>
+      <zone id="04" name="越秀区"/>
+      <zone id="05" name="海珠区"/>
+      <zone id="06" name="天河区"/>
+      <zone id="11" name="白云区"/>
+      <zone id="12" name="经济开发区（黄埔区）"/>
+      <zone id="13" name="番禺区"/>
+      <zone id="14" name="花都区"/>
+      <zone id="15" name="南沙区"/>
+      <zone id="16" name="萝岗区"/>
+      <zone id="17" name="从化区"/>
+      <zone id="18" name="增城区"/>
+    </city>
+    <city id="02" name="韶关市">
+      <zone id="03" name="武江区"/>
+      <zone id="04" name="浈江区"/>
+      <zone id="05" name="曲江区"/>
+      <zone id="22" name="始兴县"/>
+      <zone id="24" name="仁化县"/>
+      <zone id="29" name="翁源县"/>
+      <zone id="32" name="乳源县"/>
+      <zone id="33" name="新丰县"/>
+      <zone id="81" name="乐昌市"/>
+      <zone id="82" name="南雄市"/>
+    </city>
+    <city id="03" name="深圳市">
+      <zone id="03" name="罗湖区"/>
+      <zone id="04" name="福田区"/>
+      <zone id="05" name="南山区"/>
+      <zone id="06" name="宝安区"/>
+      <zone id="07" name="龙岗区"/>
+      <zone id="08" name="盐田区"/>
+      <zone id="09" name="龙华区"/>
+      <zone id="10" name="坪山区"/>
+      <zone id="11" name="光明区"/>
+    </city>
+    <city id="04" name="珠海市">
+      <zone id="02" name="香洲区"/>
+      <zone id="03" name="斗门区"/>
+      <zone id="04" name="金湾区"/>
+    </city>
+    <city id="05" name="汕头市">
+      <zone id="07" name="龙湖区"/>
+      <zone id="11" name="金平区"/>
+      <zone id="12" name="濠江区"/>
+      <zone id="13" name="潮阳区"/>
+      <zone id="14" name="潮南区"/>
+      <zone id="15" name="澄海区"/>
+      <zone id="23" name="南澳县"/>
+    </city>
+    <city id="06" name="佛山市">
+      <zone id="04" name="禅城区"/>
+      <zone id="05" name="南海区"/>
+      <zone id="06" name="顺德区"/>
+      <zone id="07" name="三水区"/>
+      <zone id="08" name="高明区"/>
+    </city>
+    <city id="07" name="江门市">
+      <zone id="03" name="蓬江区"/>
+      <zone id="04" name="江海区"/>
+      <zone id="05" name="新会区"/>
+      <zone id="81" name="台山市"/>
+      <zone id="83" name="开平市"/>
+      <zone id="84" name="鹤山市"/>
+      <zone id="85" name="恩平市"/>
+    </city>
+    <city id="08" name="湛江市">
+      <zone id="02" name="赤坎区"/>
+      <zone id="03" name="霞山区"/>
+      <zone id="04" name="坡头区"/>
+      <zone id="11" name="麻章区"/>
+      <zone id="23" name="遂溪县"/>
+      <zone id="25" name="徐闻县"/>
+      <zone id="81" name="廉江市"/>
+      <zone id="82" name="雷州市"/>
+      <zone id="83" name="吴川市"/>
+    </city>
+    <city id="09" name="茂名市">
+      <zone id="02" name="茂南区"/>
+      <zone id="03" name="茂港区"/>
+      <zone id="04" name="电白区"/>
+      <zone id="81" name="高州市"/>
+      <zone id="82" name="化州市"/>
+      <zone id="83" name="信宜市"/>
+    </city>
+    <city id="12" name="肇庆市">
+      <zone id="02" name="端州区"/>
+      <zone id="03" name="鼎湖区"/>
+      <zone id="04" name="高要区"/>
+      <zone id="23" name="广宁县"/>
+      <zone id="24" name="怀集县"/>
+      <zone id="25" name="封开县"/>
+      <zone id="26" name="德庆县"/>
+      <zone id="84" name="四会市"/>
+    </city>
+    <city id="13" name="惠州市">
+      <zone id="02" name="惠城区"/>
+      <zone id="03" name="惠阳区"/>
+      <zone id="22" name="博罗县"/>
+      <zone id="23" name="惠东县"/>
+      <zone id="24" name="龙门县"/>
+    </city>
+    <city id="14" name="梅州市">
+      <zone id="02" name="梅江区"/>
+      <zone id="21" name="梅县区"/>
+      <zone id="22" name="大埔县"/>
+      <zone id="23" name="丰顺县"/>
+      <zone id="24" name="五华县"/>
+      <zone id="26" name="平远县"/>
+      <zone id="27" name="蕉岭县"/>
+      <zone id="81" name="兴宁市"/>
+    </city>
+    <city id="15" name="汕尾市">
+      <zone id="02" name="城区"/>
+      <zone id="21" name="海丰县"/>
+      <zone id="23" name="陆河县"/>
+      <zone id="81" name="陆丰市"/>
+    </city>
+    <city id="16" name="河源市">
+      <zone id="02" name="源城区"/>
+      <zone id="21" name="紫金县"/>
+      <zone id="22" name="龙川县"/>
+      <zone id="23" name="连平县"/>
+      <zone id="24" name="和平县"/>
+      <zone id="25" name="东源县"/>
+    </city>
+    <city id="17" name="阳江市">
+      <zone id="02" name="江城区"/>
+      <zone id="04" name="阳东区"/>
+      <zone id="21" name="阳西县"/>
+      <zone id="81" name="阳春市"/>
+    </city>
+    <city id="18" name="清远市">
+      <zone id="02" name="清城区"/>
+      <zone id="03" name="清新区"/>
+      <zone id="21" name="佛冈县"/>
+      <zone id="23" name="阳山县"/>
+      <zone id="25" name="连山县"/>
+      <zone id="26" name="连南县"/>
+      <zone id="81" name="英德市"/>
+      <zone id="82" name="连州市"/>
+    </city>
+    <zone id="1900" name="东莞市"/>
+    <zone id="2000" name="中山市"/>
+    <city id="51" name="潮州市">
+      <zone id="02" name="湘桥区"/>
+      <zone id="03" name="潮安区"/>
+      <zone id="22" name="饶平县"/>
+    </city>
+    <city id="52" name="揭阳市">
+      <zone id="02" name="榕城区"/>
+      <zone id="03" name="揭东区"/>
+      <zone id="22" name="揭西县"/>
+      <zone id="24" name="惠来县"/>
+      <zone id="81" name="普宁市"/>
+    </city>
+    <city id="53" name="云浮市">
+      <zone id="02" name="云城区"/>
+      <zone id="03" name="云安区"/>
+      <zone id="21" name="新兴县"/>
+      <zone id="22" name="郁南县"/>
+      <zone id="81" name="罗定市"/>
+    </city>
+  </province>
+  <province id="45" name="广西">
+    <city id="01" name="南宁市">
+      <zone id="02" name="兴宁区"/>
+      <zone id="03" name="青秀区"/>
+      <zone id="05" name="江南区"/>
+      <zone id="07" name="西乡塘区"/>
+      <zone id="08" name="良庆区"/>
+      <zone id="09" name="邕宁区"/>
+      <zone id="10" name="武鸣区"/>
+      <zone id="23" name="隆安县"/>
+      <zone id="24" name="马山县"/>
+      <zone id="25" name="上林县"/>
+      <zone id="26" name="宾阳县"/>
+      <zone id="27" name="横州市"/>
+    </city>
+    <city id="02" name="柳州市">
+      <zone id="02" name="城中区"/>
+      <zone id="03" name="鱼峰区"/>
+      <zone id="04" name="柳南区"/>
+      <zone id="05" name="柳北区"/>
+      <zone id="06" name="柳江区"/>
+      <zone id="22" name="柳城县"/>
+      <zone id="23" name="鹿寨县"/>
+      <zone id="24" name="融安县"/>
+      <zone id="25" name="融水县"/>
+      <zone id="26" name="三江县"/>
+    </city>
+    <city id="03" name="桂林市">
+      <zone id="02" name="秀峰区"/>
+      <zone id="03" name="叠彩区"/>
+      <zone id="04" name="象山区"/>
+      <zone id="05" name="七星区"/>
+      <zone id="11" name="雁山区"/>
+      <zone id="12" name="临桂区"/>
+      <zone id="21" name="阳朔县"/>
+      <zone id="23" name="灵川县"/>
+      <zone id="24" name="全州县"/>
+      <zone id="25" name="兴安县"/>
+      <zone id="26" name="永福县"/>
+      <zone id="27" name="灌阳县"/>
+      <zone id="28" name="龙胜县"/>
+      <zone id="29" name="资源县"/>
+      <zone id="30" name="平乐县"/>
+      <zone id="32" name="恭城县"/>
+      <zone id="81" name="荔浦市"/>
+    </city>
+    <city id="04" name="梧州市">
+      <zone id="03" name="万秀区"/>
+      <zone id="05" name="长洲区"/>
+      <zone id="06" name="龙圩区"/>
+      <zone id="21" name="苍梧县"/>
+      <zone id="22" name="藤县"/>
+      <zone id="23" name="蒙山县"/>
+      <zone id="81" name="岑溪市"/>
+    </city>
+    <city id="05" name="北海市">
+      <zone id="02" name="海城区"/>
+      <zone id="03" name="银海区"/>
+      <zone id="12" name="铁山港区"/>
+      <zone id="21" name="合浦县"/>
+    </city>
+    <city id="06" name="防城港市">
+      <zone id="02" name="港口区"/>
+      <zone id="03" name="防城区"/>
+      <zone id="21" name="上思县"/>
+      <zone id="81" name="东兴市"/>
+    </city>
+    <city id="07" name="钦州市">
+      <zone id="02" name="钦南区"/>
+      <zone id="03" name="钦北区"/>
+      <zone id="21" name="灵山县"/>
+      <zone id="22" name="浦北县"/>
+    </city>
+    <city id="08" name="贵港市">
+      <zone id="02" name="港北区"/>
+      <zone id="03" name="港南区"/>
+      <zone id="04" name="覃塘区"/>
+      <zone id="21" name="平南县"/>
+      <zone id="81" name="桂平市"/>
+    </city>
+    <city id="09" name="玉林市">
+      <zone id="02" name="玉州区"/>
+      <zone id="03" name="福绵区"/>
+      <zone id="21" name="容县"/>
+      <zone id="22" name="陆川县"/>
+      <zone id="23" name="博白县"/>
+      <zone id="24" name="兴业县"/>
+      <zone id="81" name="北流市"/>
+    </city>
+    <city id="10" name="百色市">
+      <zone id="02" name="右江区"/>
+      <zone id="03" name="田阳区"/>
+      <zone id="22" name="田东县"/>
+      <zone id="24" name="德保县"/>
+      <zone id="26" name="那坡县"/>
+      <zone id="27" name="凌云县"/>
+      <zone id="28" name="乐业县"/>
+      <zone id="29" name="田林县"/>
+      <zone id="30" name="西林县"/>
+      <zone id="31" name="隆林县"/>
+      <zone id="81" name="靖西市"/>
+      <zone id="82" name="平果市"/>
+    </city>
+    <city id="11" name="贺州市">
+      <zone id="02" name="八步区"/>
+      <zone id="03" name="平桂区"/>
+      <zone id="21" name="昭平县"/>
+      <zone id="22" name="钟山县"/>
+      <zone id="23" name="富川县"/>
+    </city>
+    <city id="12" name="河池市">
+      <zone id="02" name="金城江区"/>
+      <zone id="03" name="宜州区"/>
+      <zone id="21" name="南丹县"/>
+      <zone id="22" name="天峨县"/>
+      <zone id="23" name="凤山县"/>
+      <zone id="24" name="东兰县"/>
+      <zone id="25" name="罗城县"/>
+      <zone id="26" name="环江县"/>
+      <zone id="27" name="巴马县"/>
+      <zone id="28" name="都安县"/>
+      <zone id="29" name="大化县"/>
+    </city>
+    <city id="13" name="来宾市">
+      <zone id="02" name="兴宾区"/>
+      <zone id="21" name="忻城县"/>
+      <zone id="22" name="象州县"/>
+      <zone id="23" name="武宣县"/>
+      <zone id="24" name="金秀县"/>
+      <zone id="81" name="合山市"/>
+    </city>
+    <city id="14" name="崇左市">
+      <zone id="02" name="江州区"/>
+      <zone id="21" name="扶绥县"/>
+      <zone id="22" name="宁明县"/>
+      <zone id="23" name="龙州县"/>
+      <zone id="24" name="大新县"/>
+      <zone id="25" name="天等县"/>
+      <zone id="81" name="凭祥市"/>
+    </city>
+  </province>
+  <province id="46" name="海南省">
+    <city id="01" name="海口市">
+      <zone id="05" name="秀英区"/>
+      <zone id="06" name="龙华区"/>
+      <zone id="07" name="琼山区"/>
+      <zone id="08" name="美兰区"/>
+    </city>
+    <city id="02" name="三亚市">
+      <zone id="02" name="海棠区"/>
+      <zone id="03" name="吉阳区"/>
+      <zone id="04" name="天涯区"/>
+      <zone id="05" name="崖州区"/>
+    </city>
+    <zone id="0300" name="三沙市"/>
+    <zone id="0400" name="儋州市（洋浦经济开发区）"/>
+    <zone id="9001" name="五指山市"/>
+    <zone id="9002" name="琼海市"/>
+    <zone id="9005" name="文昌市"/>
+    <zone id="9006" name="万宁市"/>
+    <zone id="9007" name="东方市"/>
+    <zone id="9021" name="定安县"/>
+    <zone id="9022" name="屯昌县"/>
+    <zone id="9023" name="澄迈县"/>
+    <zone id="9024" name="临高县"/>
+    <zone id="9025" name="白沙县"/>
+    <zone id="9026" name="昌江县"/>
+    <zone id="9027" name="乐东县"/>
+    <zone id="9028" name="陵水县"/>
+    <zone id="9029" name="保亭县"/>
+    <zone id="9030" name="琼中县"/>
+    <zone id="9031" name="西沙区"/>
+    <zone id="9032" name="南沙区"/>
+  </province>
+  <province id="50" name="重庆市">
+    <zone id="0101" name="万州区"/>
+    <zone id="0102" name="涪陵区"/>
+    <zone id="0103" name="渝中区"/>
+    <zone id="0104" name="大渡口区"/>
+    <zone id="0105" name="江北区"/>
+    <zone id="0106" name="沙坪坝区"/>
+    <zone id="0107" name="九龙坡区"/>
+    <zone id="0108" name="南岸区"/>
+    <zone id="0109" name="北碚区"/>
+    <zone id="0110" name="綦江区"/>
+    <zone id="0111" name="大足区"/>
+    <zone id="0112" name="渝北区"/>
+    <zone id="0113" name="巴南区"/>
+    <zone id="0114" name="黔江区"/>
+    <zone id="0115" name="长寿区"/>
+    <zone id="0116" name="江津区"/>
+    <zone id="0117" name="合川区"/>
+    <zone id="0118" name="永川区"/>
+    <zone id="0119" name="南川区"/>
+    <zone id="0120" name="璧山区"/>
+    <zone id="0151" name="铜梁区"/>
+    <zone id="0152" name="潼南区"/>
+    <zone id="0153" name="荣昌区"/>
+    <zone id="0154" name="开州区"/>
+    <zone id="0155" name="梁平区"/>
+    <zone id="0156" name="武隆区"/>
+    <zone id="0171" name="万盛经开区"/>
+    <zone id="0172" name="高新区"/>
+    <zone id="0229" name="城口县"/>
+    <zone id="0230" name="丰都县"/>
+    <zone id="0231" name="垫江县"/>
+    <zone id="0233" name="忠县"/>
+    <zone id="0235" name="云阳县"/>
+    <zone id="0236" name="奉节县"/>
+    <zone id="0237" name="巫山县"/>
+    <zone id="0238" name="巫溪县"/>
+    <zone id="0240" name="石柱县"/>
+    <zone id="0241" name="秀山县"/>
+    <zone id="0242" name="酉阳县"/>
+    <zone id="0243" name="彭水县"/>
+  </province>
+  <province id="51" name="四川省">
+    <city id="01" name="成都市">
+      <zone id="04" name="锦江区"/>
+      <zone id="05" name="青羊区"/>
+      <zone id="06" name="金牛区"/>
+      <zone id="07" name="武侯区"/>
+      <zone id="08" name="成华区"/>
+      <zone id="12" name="龙泉驿区"/>
+      <zone id="13" name="青白江区"/>
+      <zone id="14" name="新都区"/>
+      <zone id="15" name="温江区"/>
+      <zone id="16" name="双流区"/>
+      <zone id="17" name="郫都区"/>
+      <zone id="18" name="新津区"/>
+      <zone id="21" name="金堂县"/>
+      <zone id="29" name="大邑县"/>
+      <zone id="31" name="蒲江县"/>
+      <zone id="81" name="都江堰市"/>
+      <zone id="82" name="彭州市"/>
+      <zone id="83" name="邛崃市"/>
+      <zone id="84" name="崇州市"/>
+      <zone id="85" name="简阳市"/>
+    </city>
+    <city id="03" name="自贡市">
+      <zone id="02" name="自流井区"/>
+      <zone id="03" name="贡井区"/>
+      <zone id="04" name="大安区"/>
+      <zone id="11" name="沿滩区"/>
+      <zone id="21" name="荣县"/>
+      <zone id="22" name="富顺县"/>
+    </city>
+    <city id="04" name="攀枝花市">
+      <zone id="02" name="东区"/>
+      <zone id="03" name="西区"/>
+      <zone id="11" name="仁和区"/>
+      <zone id="21" name="米易县"/>
+      <zone id="22" name="盐边县"/>
+    </city>
+    <city id="05" name="泸州市">
+      <zone id="02" name="江阳区"/>
+      <zone id="03" name="纳溪区"/>
+      <zone id="04" name="龙马潭区"/>
+      <zone id="21" name="泸县"/>
+      <zone id="22" name="合江县"/>
+      <zone id="24" name="叙永县"/>
+      <zone id="25" name="古蔺县"/>
+    </city>
+    <city id="06" name="德阳市">
+      <zone id="03" name="旌阳区"/>
+      <zone id="04" name="罗江区"/>
+      <zone id="23" name="中江县"/>
+      <zone id="81" name="广汉市"/>
+      <zone id="82" name="什邡市"/>
+      <zone id="83" name="绵竹市"/>
+    </city>
+    <city id="07" name="绵阳市">
+      <zone id="03" name="涪城区"/>
+      <zone id="04" name="游仙区"/>
+      <zone id="05" name="安州区"/>
+      <zone id="22" name="三台县"/>
+      <zone id="23" name="盐亭县"/>
+      <zone id="25" name="梓潼县"/>
+      <zone id="26" name="北川县"/>
+      <zone id="27" name="平武县"/>
+      <zone id="81" name="江油市"/>
+    </city>
+    <city id="08" name="广元市">
+      <zone id="02" name="利州区"/>
+      <zone id="11" name="昭化区"/>
+      <zone id="12" name="朝天区"/>
+      <zone id="21" name="旺苍县"/>
+      <zone id="22" name="青川县"/>
+      <zone id="23" name="剑阁县"/>
+      <zone id="24" name="苍溪县"/>
+    </city>
+    <city id="09" name="遂宁市">
+      <zone id="03" name="船山区"/>
+      <zone id="04" name="安居区"/>
+      <zone id="21" name="蓬溪县"/>
+      <zone id="22" name="射洪市"/>
+      <zone id="23" name="大英县"/>
+    </city>
+    <city id="10" name="内江市">
+      <zone id="02" name="市中区"/>
+      <zone id="11" name="东兴区"/>
+      <zone id="24" name="威远县"/>
+      <zone id="25" name="资中县"/>
+      <zone id="83" name="隆昌市"/>
+    </city>
+    <city id="11" name="乐山市">
+      <zone id="02" name="市中区"/>
+      <zone id="11" name="沙湾区"/>
+      <zone id="12" name="五通桥区"/>
+      <zone id="13" name="金口河区"/>
+      <zone id="23" name="犍为县"/>
+      <zone id="24" name="井研县"/>
+      <zone id="26" name="夹江县"/>
+      <zone id="29" name="沐川县"/>
+      <zone id="32" name="峨边彝族自治县"/>
+      <zone id="33" name="马边彝族自治县"/>
+      <zone id="81" name="峨眉山市"/>
+    </city>
+    <city id="13" name="南充市">
+      <zone id="02" name="高新区（顺庆区）"/>
+      <zone id="03" name="高坪区"/>
+      <zone id="04" name="嘉陵区"/>
+      <zone id="21" name="南部县"/>
+      <zone id="22" name="营山县"/>
+      <zone id="23" name="蓬安县"/>
+      <zone id="24" name="仪陇县"/>
+      <zone id="25" name="西充县"/>
+      <zone id="81" name="阆中市"/>
+    </city>
+    <city id="14" name="眉山市">
+      <zone id="02" name="东坡区"/>
+      <zone id="03" name="彭山区"/>
+      <zone id="21" name="仁寿县"/>
+      <zone id="23" name="洪雅县"/>
+      <zone id="24" name="丹棱县"/>
+      <zone id="25" name="青神县"/>
+    </city>
+    <city id="15" name="宜宾市">
+      <zone id="02" name="翠屏区"/>
+      <zone id="03" name="南溪区"/>
+      <zone id="04" name="叙州区"/>
+      <zone id="23" name="江安县"/>
+      <zone id="24" name="长宁县"/>
+      <zone id="25" name="高县"/>
+      <zone id="26" name="珙县"/>
+      <zone id="27" name="筠连县"/>
+      <zone id="28" name="兴文县"/>
+      <zone id="29" name="屏山县"/>
+    </city>
+    <city id="16" name="广安市">
+      <zone id="02" name="广安区"/>
+      <zone id="03" name="前锋区"/>
+      <zone id="21" name="岳池县"/>
+      <zone id="22" name="武胜县"/>
+      <zone id="23" name="邻水县"/>
+      <zone id="81" name="华蓥市"/>
+    </city>
+    <city id="17" name="达州市">
+      <zone id="02" name="通川区"/>
+      <zone id="03" name="达川区"/>
+      <zone id="22" name="宣汉县"/>
+      <zone id="23" name="开江县"/>
+      <zone id="24" name="大竹县"/>
+      <zone id="25" name="渠县"/>
+      <zone id="81" name="万源市"/>
+    </city>
+    <city id="18" name="雅安市">
+      <zone id="02" name="雨城区"/>
+      <zone id="21" name="名山区"/>
+      <zone id="22" name="荥经县"/>
+      <zone id="23" name="汉源县"/>
+      <zone id="24" name="石棉县"/>
+      <zone id="25" name="天全县"/>
+      <zone id="26" name="芦山县"/>
+      <zone id="27" name="宝兴县"/>
+    </city>
+    <city id="19" name="巴中市">
+      <zone id="02" name="巴州区"/>
+      <zone id="03" name="恩阳区"/>
+      <zone id="21" name="通江县"/>
+      <zone id="22" name="南江县"/>
+      <zone id="23" name="平昌县"/>
+    </city>
+    <city id="20" name="资阳市">
+      <zone id="02" name="雁江区"/>
+      <zone id="21" name="安岳县"/>
+      <zone id="22" name="乐至县"/>
+    </city>
+    <city id="32" name="阿坝州">
+      <zone id="01" name="马尔康市"/>
+      <zone id="21" name="汶川县"/>
+      <zone id="22" name="理县"/>
+      <zone id="23" name="茂县"/>
+      <zone id="24" name="松潘县"/>
+      <zone id="25" name="九寨沟县"/>
+      <zone id="26" name="金川县"/>
+      <zone id="27" name="小金县"/>
+      <zone id="28" name="黑水县"/>
+      <zone id="30" name="壤塘县"/>
+      <zone id="31" name="阿坝县"/>
+      <zone id="32" name="若尔盖县"/>
+      <zone id="33" name="红原县"/>
+    </city>
+    <city id="33" name="甘孜州">
+      <zone id="21" name="康定市"/>
+      <zone id="22" name="泸定县"/>
+      <zone id="23" name="丹巴县"/>
+      <zone id="24" name="九龙县"/>
+      <zone id="25" name="雅江县"/>
+      <zone id="26" name="道孚县"/>
+      <zone id="27" name="炉霍县"/>
+      <zone id="28" name="甘孜县"/>
+      <zone id="29" name="新龙县"/>
+      <zone id="30" name="德格县"/>
+      <zone id="31" name="白玉县"/>
+      <zone id="32" name="石渠县"/>
+      <zone id="33" name="色达县"/>
+      <zone id="34" name="理塘县"/>
+      <zone id="35" name="巴塘县"/>
+      <zone id="36" name="乡城县"/>
+      <zone id="37" name="稻城县"/>
+      <zone id="38" name="得荣县"/>
+    </city>
+    <city id="34" name="凉山州">
+      <zone id="01" name="西昌市"/>
+      <zone id="02" name="会理市"/>
+      <zone id="22" name="木里县"/>
+      <zone id="23" name="盐源县"/>
+      <zone id="24" name="德昌县"/>
+      <zone id="26" name="会东县"/>
+      <zone id="27" name="宁南县"/>
+      <zone id="28" name="普格县"/>
+      <zone id="29" name="布拖县"/>
+      <zone id="30" name="金阳县"/>
+      <zone id="31" name="昭觉县"/>
+      <zone id="32" name="喜德县"/>
+      <zone id="33" name="冕宁县"/>
+      <zone id="34" name="越西县"/>
+      <zone id="35" name="甘洛县"/>
+      <zone id="36" name="美姑县"/>
+      <zone id="37" name="雷波县"/>
+    </city>
+  </province>
+  <province id="52" name="贵州省">
+    <city id="01" name="贵阳市">
+      <zone id="02" name="南明区"/>
+      <zone id="03" name="云岩区"/>
+      <zone id="11" name="花溪区"/>
+      <zone id="12" name="乌当区"/>
+      <zone id="13" name="白云区"/>
+      <zone id="14" name="观山湖区"/>
+      <zone id="21" name="开阳县"/>
+      <zone id="22" name="息烽县"/>
+      <zone id="23" name="修文县"/>
+      <zone id="81" name="清镇市"/>
+    </city>
+    <city id="02" name="六盘水市">
+      <zone id="01" name="钟山区"/>
+      <zone id="03" name="六枝特区"/>
+      <zone id="21" name="水城区"/>
+      <zone id="22" name="盘州市"/>
+    </city>
+    <city id="03" name="遵义市">
+      <zone id="02" name="红花岗区"/>
+      <zone id="03" name="汇川区"/>
+      <zone id="04" name="播州区"/>
+      <zone id="22" name="桐梓县"/>
+      <zone id="23" name="绥阳县"/>
+      <zone id="24" name="正安县"/>
+      <zone id="25" name="道真县"/>
+      <zone id="26" name="务川县"/>
+      <zone id="27" name="凤冈县"/>
+      <zone id="28" name="湄潭县"/>
+      <zone id="29" name="余庆县"/>
+      <zone id="30" name="习水县"/>
+      <zone id="81" name="赤水市"/>
+      <zone id="82" name="仁怀市"/>
+    </city>
+    <city id="04" name="安顺市">
+      <zone id="02" name="西秀区"/>
+      <zone id="03" name="平坝区"/>
+      <zone id="22" name="普定县"/>
+      <zone id="23" name="镇宁县"/>
+      <zone id="24" name="关岭县"/>
+      <zone id="25" name="紫云县"/>
+    </city>
+    <city id="05" name="毕节市">
+      <zone id="02" name="七星关区"/>
+      <zone id="21" name="大方县"/>
+      <zone id="22" name="黔西市"/>
+      <zone id="23" name="金沙县"/>
+      <zone id="24" name="织金县"/>
+      <zone id="25" name="纳雍县"/>
+      <zone id="26" name="威宁县"/>
+      <zone id="27" name="赫章县"/>
+    </city>
+    <city id="06" name="铜仁市">
+      <zone id="02" name="碧江区"/>
+      <zone id="03" name="万山区"/>
+      <zone id="21" name="江口县"/>
+      <zone id="22" name="玉屏县"/>
+      <zone id="23" name="石阡县"/>
+      <zone id="24" name="思南县"/>
+      <zone id="25" name="印江县"/>
+      <zone id="26" name="德江县"/>
+      <zone id="27" name="沿河县"/>
+      <zone id="28" name="松桃县"/>
+    </city>
+    <city id="23" name="黔西南州">
+      <zone id="01" name="兴义市"/>
+      <zone id="22" name="兴仁市"/>
+      <zone id="23" name="普安县"/>
+      <zone id="24" name="晴隆县"/>
+      <zone id="25" name="贞丰县"/>
+      <zone id="26" name="望谟县"/>
+      <zone id="27" name="册亨县"/>
+      <zone id="28" name="安龙县"/>
+    </city>
+    <city id="26" name="黔东南州">
+      <zone id="01" name="凯里市"/>
+      <zone id="22" name="黄平县"/>
+      <zone id="23" name="施秉县"/>
+      <zone id="24" name="三穗县"/>
+      <zone id="25" name="镇远县"/>
+      <zone id="26" name="岑巩县"/>
+      <zone id="27" name="天柱县"/>
+      <zone id="28" name="锦屏县"/>
+      <zone id="29" name="剑河县"/>
+      <zone id="30" name="台江县"/>
+      <zone id="31" name="黎平县"/>
+      <zone id="32" name="榕江县"/>
+      <zone id="33" name="从江县"/>
+      <zone id="34" name="雷山县"/>
+      <zone id="35" name="麻江县"/>
+      <zone id="36" name="丹寨县"/>
+    </city>
+    <city id="27" name="黔南州">
+      <zone id="01" name="都匀市"/>
+      <zone id="02" name="福泉市"/>
+      <zone id="22" name="荔波县"/>
+      <zone id="23" name="贵定县"/>
+      <zone id="25" name="瓮安县"/>
+      <zone id="26" name="独山县"/>
+      <zone id="27" name="平塘县"/>
+      <zone id="28" name="罗甸县"/>
+      <zone id="29" name="长顺县"/>
+      <zone id="30" name="龙里县"/>
+      <zone id="31" name="惠水县"/>
+      <zone id="32" name="三都县"/>
+    </city>
+  </province>
+  <province id="53" name="云南省">
+    <city id="01" name="昆明市">
+      <zone id="02" name="五华区"/>
+      <zone id="03" name="盘龙区"/>
+      <zone id="11" name="官渡区"/>
+      <zone id="12" name="西山区"/>
+      <zone id="13" name="东川区"/>
+      <zone id="21" name="呈贡区"/>
+      <zone id="22" name="晋宁区"/>
+      <zone id="24" name="富民县"/>
+      <zone id="25" name="宜良县"/>
+      <zone id="26" name="石林彝族自治县"/>
+      <zone id="27" name="嵩明县"/>
+      <zone id="28" name="禄劝县"/>
+      <zone id="29" name="寻甸县"/>
+      <zone id="81" name="安宁市"/>
+    </city>
+    <city id="03" name="曲靖市">
+      <zone id="02" name="麒麟区"/>
+      <zone id="03" name="沾益区"/>
+      <zone id="04" name="马龙区"/>
+      <zone id="22" name="陆良县"/>
+      <zone id="23" name="师宗县"/>
+      <zone id="24" name="罗平县"/>
+      <zone id="25" name="富源县"/>
+      <zone id="26" name="会泽县"/>
+      <zone id="81" name="宣威市"/>
+    </city>
+    <city id="04" name="玉溪市">
+      <zone id="02" name="红塔区"/>
+      <zone id="03" name="江川区"/>
+      <zone id="23" name="通海县"/>
+      <zone id="24" name="华宁县"/>
+      <zone id="25" name="易门县"/>
+      <zone id="26" name="峨山县"/>
+      <zone id="27" name="新平县"/>
+      <zone id="28" name="元江县"/>
+      <zone id="81" name="澄江市"/>
+    </city>
+    <city id="05" name="保山市">
+      <zone id="02" name="隆阳区"/>
+      <zone id="21" name="施甸县"/>
+      <zone id="23" name="龙陵县"/>
+      <zone id="24" name="昌宁县"/>
+      <zone id="81" name="腾冲市"/>
+    </city>
+    <city id="06" name="昭通市">
+      <zone id="02" name="昭阳区"/>
+      <zone id="21" name="鲁甸县"/>
+      <zone id="22" name="巧家县"/>
+      <zone id="23" name="盐津县"/>
+      <zone id="24" name="大关县"/>
+      <zone id="25" name="永善县"/>
+      <zone id="26" name="绥江县"/>
+      <zone id="27" name="镇雄县"/>
+      <zone id="28" name="彝良县"/>
+      <zone id="29" name="威信县"/>
+      <zone id="81" name="水富市"/>
+    </city>
+    <city id="07" name="丽江市">
+      <zone id="02" name="古城区"/>
+      <zone id="21" name="玉龙县"/>
+      <zone id="22" name="永胜县"/>
+      <zone id="23" name="华坪县"/>
+      <zone id="24" name="宁蒗县"/>
+    </city>
+    <city id="08" name="普洱市">
+      <zone id="02" name="思茅区"/>
+      <zone id="21" name="宁洱县"/>
+      <zone id="22" name="墨江县"/>
+      <zone id="23" name="景东县"/>
+      <zone id="24" name="景谷县"/>
+      <zone id="25" name="镇沅县"/>
+      <zone id="26" name="江城县"/>
+      <zone id="27" name="孟连县"/>
+      <zone id="28" name="澜沧县"/>
+      <zone id="29" name="西盟县"/>
+    </city>
+    <city id="09" name="临沧市">
+      <zone id="02" name="临翔区"/>
+      <zone id="21" name="凤庆县"/>
+      <zone id="22" name="云县"/>
+      <zone id="23" name="永德县"/>
+      <zone id="24" name="镇康县"/>
+      <zone id="25" name="双江县"/>
+      <zone id="26" name="耿马县"/>
+      <zone id="27" name="沧源县"/>
+    </city>
+    <city id="23" name="楚雄州">
+      <zone id="01" name="楚雄市"/>
+      <zone id="22" name="双柏县"/>
+      <zone id="23" name="牟定县"/>
+      <zone id="24" name="南华县"/>
+      <zone id="25" name="姚安县"/>
+      <zone id="26" name="大姚县"/>
+      <zone id="27" name="永仁县"/>
+      <zone id="28" name="元谋县"/>
+      <zone id="29" name="武定县"/>
+      <zone id="31" name="禄丰市"/>
+    </city>
+    <city id="25" name="红河州">
+      <zone id="01" name="个旧市"/>
+      <zone id="02" name="开远市"/>
+      <zone id="03" name="蒙自市"/>
+      <zone id="04" name="弥勒市"/>
+      <zone id="23" name="屏边县"/>
+      <zone id="24" name="建水县"/>
+      <zone id="25" name="石屏县"/>
+      <zone id="27" name="泸西县"/>
+      <zone id="28" name="元阳县"/>
+      <zone id="29" name="红河县"/>
+      <zone id="30" name="金平县"/>
+      <zone id="31" name="绿春县"/>
+      <zone id="32" name="河口县"/>
+    </city>
+    <city id="26" name="文山州">
+      <zone id="01" name="文山市"/>
+      <zone id="22" name="砚山县"/>
+      <zone id="23" name="西畴县"/>
+      <zone id="24" name="麻栗坡县"/>
+      <zone id="25" name="马关县"/>
+      <zone id="26" name="丘北县"/>
+      <zone id="27" name="广南县"/>
+      <zone id="28" name="富宁县"/>
+    </city>
+    <city id="28" name="西双版纳州">
+      <zone id="01" name="景洪市"/>
+      <zone id="22" name="勐海县"/>
+      <zone id="23" name="勐腊县"/>
+    </city>
+    <city id="29" name="大理州">
+      <zone id="01" name="大理市"/>
+      <zone id="22" name="漾濞县"/>
+      <zone id="23" name="祥云县"/>
+      <zone id="24" name="宾川县"/>
+      <zone id="25" name="弥渡县"/>
+      <zone id="26" name="南涧县"/>
+      <zone id="27" name="巍山县"/>
+      <zone id="28" name="永平县"/>
+      <zone id="29" name="云龙县"/>
+      <zone id="30" name="洱源县"/>
+      <zone id="31" name="剑川县"/>
+      <zone id="32" name="鹤庆县"/>
+    </city>
+    <city id="31" name="德宏州">
+      <zone id="02" name="瑞丽市"/>
+      <zone id="03" name="芒市"/>
+      <zone id="22" name="梁河县"/>
+      <zone id="23" name="盈江县"/>
+      <zone id="24" name="陇川县"/>
+    </city>
+    <city id="33" name="怒江州">
+      <zone id="21" name="泸水市"/>
+      <zone id="23" name="福贡县"/>
+      <zone id="24" name="贡山县"/>
+      <zone id="25" name="兰坪县"/>
+    </city>
+    <city id="34" name="迪庆州">
+      <zone id="21" name="香格里拉市"/>
+      <zone id="22" name="德钦县"/>
+      <zone id="23" name="维西傈僳族自治县"/>
+    </city>
+  </province>
+  <province id="54" name="西藏">
+    <city id="01" name="拉萨市">
+      <zone id="02" name="城关区"/>
+      <zone id="03" name="堆龙德庆区"/>
+      <zone id="04" name="达孜区"/>
+      <zone id="21" name="林周县"/>
+      <zone id="22" name="当雄县"/>
+      <zone id="23" name="尼木县"/>
+      <zone id="24" name="曲水县"/>
+      <zone id="27" name="墨竹工卡县"/>
+    </city>
+    <city id="02" name="日喀则市">
+      <zone id="02" name="桑珠孜区"/>
+      <zone id="21" name="南木林县"/>
+      <zone id="22" name="江孜县"/>
+      <zone id="23" name="定日县"/>
+      <zone id="24" name="萨迦县"/>
+      <zone id="25" name="拉孜县"/>
+      <zone id="26" name="昂仁县"/>
+      <zone id="27" name="谢通门县"/>
+      <zone id="28" name="白朗县"/>
+      <zone id="29" name="仁布县"/>
+      <zone id="30" name="康马县"/>
+      <zone id="31" name="定结县"/>
+      <zone id="32" name="仲巴县"/>
+      <zone id="33" name="亚东县"/>
+      <zone id="34" name="吉隆县"/>
+      <zone id="35" name="聂拉木县"/>
+      <zone id="36" name="萨嘎县"/>
+      <zone id="37" name="岗巴县"/>
+    </city>
+    <city id="03" name="昌都市">
+      <zone id="02" name="卡若区"/>
+      <zone id="21" name="江达县"/>
+      <zone id="22" name="贡觉县"/>
+      <zone id="23" name="类乌齐县"/>
+      <zone id="24" name="丁青县"/>
+      <zone id="25" name="察雅县"/>
+      <zone id="26" name="八宿县"/>
+      <zone id="27" name="左贡县"/>
+      <zone id="28" name="芒康县"/>
+      <zone id="29" name="洛隆县"/>
+      <zone id="30" name="边坝县"/>
+    </city>
+    <city id="04" name="林芝市">
+      <zone id="02" name="巴宜区"/>
+      <zone id="21" name="工布江达县"/>
+      <zone id="22" name="米林县"/>
+      <zone id="23" name="墨脱县"/>
+      <zone id="24" name="波密县"/>
+      <zone id="25" name="察隅县"/>
+      <zone id="26" name="朗县"/>
+    </city>
+    <city id="05" name="山南市">
+      <zone id="02" name="乃东区"/>
+      <zone id="21" name="扎囊县"/>
+      <zone id="22" name="贡嘎县"/>
+      <zone id="23" name="桑日县"/>
+      <zone id="24" name="琼结县"/>
+      <zone id="25" name="曲松县"/>
+      <zone id="26" name="措美县"/>
+      <zone id="27" name="洛扎县"/>
+      <zone id="28" name="加查县"/>
+      <zone id="29" name="隆子县"/>
+      <zone id="30" name="错那县"/>
+      <zone id="31" name="浪卡子县"/>
+    </city>
+    <city id="06" name="那曲市">
+      <zone id="02" name="色尼区"/>
+      <zone id="21" name="嘉黎县"/>
+      <zone id="22" name="比如县"/>
+      <zone id="23" name="聂荣县"/>
+      <zone id="24" name="安多县"/>
+      <zone id="25" name="申扎县"/>
+      <zone id="26" name="索县"/>
+      <zone id="27" name="班戈县"/>
+      <zone id="28" name="巴青县"/>
+      <zone id="29" name="尼玛县"/>
+      <zone id="30" name="双湖县"/>
+    </city>
+    <city id="25" name="阿里地区">
+      <zone id="21" name="普兰县"/>
+      <zone id="22" name="札达县"/>
+      <zone id="23" name="噶尔县"/>
+      <zone id="24" name="日土县"/>
+      <zone id="25" name="革吉县"/>
+      <zone id="26" name="改则县"/>
+      <zone id="27" name="措勤县"/>
+    </city>
+  </province>
+  <province id="61" name="陕西省">
+    <city id="01" name="西安市">
+      <zone id="02" name="新城区"/>
+      <zone id="03" name="碑林区"/>
+      <zone id="04" name="莲湖区"/>
+      <zone id="11" name="灞桥区"/>
+      <zone id="12" name="未央区"/>
+      <zone id="13" name="雁塔区"/>
+      <zone id="14" name="阎良区"/>
+      <zone id="15" name="临潼区"/>
+      <zone id="16" name="长安区"/>
+      <zone id="17" name="高陵区"/>
+      <zone id="18" name="鄠邑区"/>
+      <zone id="22" name="蓝田县"/>
+      <zone id="24" name="周至县"/>
+    </city>
+    <city id="02" name="铜川市">
+      <zone id="02" name="王益区"/>
+      <zone id="03" name="印台区"/>
+      <zone id="04" name="耀州区"/>
+      <zone id="22" name="宜君县"/>
+    </city>
+    <city id="03" name="宝鸡市">
+      <zone id="02" name="渭滨区"/>
+      <zone id="03" name="金台区"/>
+      <zone id="04" name="陈仓区"/>
+      <zone id="05" name="凤翔区"/>
+      <zone id="23" name="岐山县"/>
+      <zone id="24" name="扶风县"/>
+      <zone id="26" name="眉县"/>
+      <zone id="27" name="陇县"/>
+      <zone id="28" name="千阳县"/>
+      <zone id="29" name="麟游县"/>
+      <zone id="30" name="凤县"/>
+      <zone id="31" name="太白县"/>
+    </city>
+    <city id="04" name="咸阳市">
+      <zone id="02" name="秦都区"/>
+      <zone id="03" name="杨凌区"/>
+      <zone id="04" name="渭城区"/>
+      <zone id="22" name="三原县"/>
+      <zone id="23" name="泾阳县"/>
+      <zone id="24" name="乾县"/>
+      <zone id="25" name="礼泉县"/>
+      <zone id="26" name="永寿县"/>
+      <zone id="28" name="长武县"/>
+      <zone id="29" name="旬邑县"/>
+      <zone id="30" name="淳化县"/>
+      <zone id="31" name="武功县"/>
+      <zone id="81" name="兴平市"/>
+      <zone id="82" name="彬州市"/>
+    </city>
+    <city id="05" name="渭南市">
+      <zone id="02" name="临渭区"/>
+      <zone id="03" name="华州区"/>
+      <zone id="22" name="潼关县"/>
+      <zone id="23" name="大荔县"/>
+      <zone id="24" name="合阳县"/>
+      <zone id="25" name="澄城县"/>
+      <zone id="26" name="蒲城县"/>
+      <zone id="27" name="白水县"/>
+      <zone id="28" name="富平县"/>
+      <zone id="81" name="韩城市"/>
+      <zone id="82" name="华阴市"/>
+    </city>
+    <city id="06" name="延安市">
+      <zone id="02" name="宝塔区"/>
+      <zone id="03" name="安塞区"/>
+      <zone id="21" name="延长县"/>
+      <zone id="22" name="延川县"/>
+      <zone id="25" name="志丹县"/>
+      <zone id="26" name="吴起县"/>
+      <zone id="27" name="甘泉县"/>
+      <zone id="28" name="富县"/>
+      <zone id="29" name="洛川县"/>
+      <zone id="30" name="宜川县"/>
+      <zone id="31" name="黄龙县"/>
+      <zone id="32" name="黄陵县"/>
+      <zone id="81" name="子长市"/>
+    </city>
+    <city id="07" name="汉中市">
+      <zone id="02" name="汉台区"/>
+      <zone id="03" name="南郑区"/>
+      <zone id="22" name="城固县"/>
+      <zone id="23" name="洋县"/>
+      <zone id="24" name="西乡县"/>
+      <zone id="25" name="勉县"/>
+      <zone id="26" name="宁强县"/>
+      <zone id="27" name="略阳县"/>
+      <zone id="28" name="镇巴县"/>
+      <zone id="29" name="留坝县"/>
+      <zone id="30" name="佛坪县"/>
+    </city>
+    <city id="08" name="榆林市">
+      <zone id="02" name="榆阳区"/>
+      <zone id="03" name="横山区"/>
+      <zone id="22" name="府谷县"/>
+      <zone id="24" name="靖边县"/>
+      <zone id="25" name="定边县"/>
+      <zone id="26" name="绥德县"/>
+      <zone id="27" name="米脂县"/>
+      <zone id="28" name="佳县"/>
+      <zone id="29" name="吴堡县"/>
+      <zone id="30" name="清涧县"/>
+      <zone id="31" name="子洲县"/>
+      <zone id="81" name="神木市"/>
+    </city>
+    <city id="09" name="安康市">
+      <zone id="02" name="汉滨区"/>
+      <zone id="21" name="汉阴县"/>
+      <zone id="22" name="石泉县"/>
+      <zone id="23" name="宁陕县"/>
+      <zone id="24" name="紫阳县"/>
+      <zone id="25" name="岚皋县"/>
+      <zone id="26" name="平利县"/>
+      <zone id="29" name="白河县"/>
+      <zone id="81" name="旬阳市"/>
+    </city>
+    <city id="10" name="商洛市">
+      <zone id="02" name="商州区"/>
+      <zone id="21" name="洛南县"/>
+      <zone id="22" name="丹凤县"/>
+      <zone id="23" name="商南县"/>
+      <zone id="24" name="山阳县"/>
+      <zone id="25" name="镇安县"/>
+      <zone id="26" name="柞水县"/>
+    </city>
+  </province>
+  <province id="62" name="甘肃省">
+    <city id="01" name="兰州市">
+      <zone id="02" name="城关区"/>
+      <zone id="03" name="七里河区"/>
+      <zone id="04" name="西固区"/>
+      <zone id="05" name="安宁区"/>
+      <zone id="11" name="红古区"/>
+      <zone id="21" name="永登县"/>
+      <zone id="22" name="皋兰县"/>
+      <zone id="23" name="榆中县"/>
+      <zone id="71" name="兰州新区"/>
+    </city>
+    <zone id="0200" name="嘉峪关市"/>
+    <city id="03" name="金昌市">
+      <zone id="02" name="金川区"/>
+      <zone id="21" name="永昌县"/>
+    </city>
+    <city id="04" name="白银市">
+      <zone id="02" name="白银区"/>
+      <zone id="03" name="平川区"/>
+      <zone id="21" name="靖远县"/>
+      <zone id="22" name="会宁县"/>
+      <zone id="23" name="景泰县"/>
+    </city>
+    <city id="05" name="天水市">
+      <zone id="02" name="秦州区"/>
+      <zone id="03" name="麦积区"/>
+      <zone id="21" name="清水县"/>
+      <zone id="22" name="秦安县"/>
+      <zone id="23" name="甘谷县"/>
+      <zone id="24" name="武山县"/>
+      <zone id="25" name="张家川回族自治县"/>
+    </city>
+    <city id="06" name="武威市">
+      <zone id="02" name="凉州区"/>
+      <zone id="21" name="民勤县"/>
+      <zone id="22" name="古浪县"/>
+      <zone id="23" name="天祝藏族自治县"/>
+    </city>
+    <city id="07" name="张掖市">
+      <zone id="02" name="甘州区"/>
+      <zone id="21" name="肃南县"/>
+      <zone id="22" name="民乐县"/>
+      <zone id="23" name="临泽县"/>
+      <zone id="24" name="高台县"/>
+      <zone id="25" name="山丹县"/>
+    </city>
+    <city id="08" name="平凉市">
+      <zone id="02" name="崆峒区"/>
+      <zone id="21" name="泾川县"/>
+      <zone id="22" name="灵台县"/>
+      <zone id="23" name="崇信县"/>
+      <zone id="25" name="庄浪县"/>
+      <zone id="26" name="静宁县"/>
+      <zone id="81" name="华亭市"/>
+    </city>
+    <city id="09" name="酒泉市">
+      <zone id="02" name="肃州区"/>
+      <zone id="21" name="金塔县"/>
+      <zone id="22" name="瓜州县"/>
+      <zone id="23" name="肃北县"/>
+      <zone id="24" name="阿克塞县"/>
+      <zone id="81" name="玉门市"/>
+      <zone id="82" name="敦煌市"/>
+    </city>
+    <city id="10" name="庆阳市">
+      <zone id="02" name="西峰区"/>
+      <zone id="21" name="庆城县"/>
+      <zone id="22" name="环县"/>
+      <zone id="23" name="华池县"/>
+      <zone id="24" name="合水县"/>
+      <zone id="25" name="正宁县"/>
+      <zone id="26" name="宁县"/>
+      <zone id="27" name="镇原县"/>
+    </city>
+    <city id="11" name="定西市">
+      <zone id="02" name="安定区"/>
+      <zone id="21" name="通渭县"/>
+      <zone id="22" name="陇西县"/>
+      <zone id="23" name="渭源县"/>
+      <zone id="24" name="临洮县"/>
+      <zone id="25" name="漳县"/>
+      <zone id="26" name="岷县"/>
+    </city>
+    <city id="12" name="陇南市">
+      <zone id="02" name="武都区"/>
+      <zone id="21" name="成县"/>
+      <zone id="22" name="文县"/>
+      <zone id="23" name="宕昌县"/>
+      <zone id="24" name="康县"/>
+      <zone id="25" name="西和县"/>
+      <zone id="26" name="礼县"/>
+      <zone id="27" name="徽县"/>
+      <zone id="28" name="两当县"/>
+    </city>
+    <city id="29" name="临夏州">
+      <zone id="01" name="临夏市"/>
+      <zone id="21" name="临夏县"/>
+      <zone id="22" name="康乐县"/>
+      <zone id="23" name="永靖县"/>
+      <zone id="24" name="广河县"/>
+      <zone id="25" name="和政县"/>
+      <zone id="26" name="东乡族自治县"/>
+      <zone id="27" name="积石山县"/>
+    </city>
+    <city id="30" name="甘南州">
+      <zone id="01" name="合作市"/>
+      <zone id="21" name="临潭县"/>
+      <zone id="22" name="卓尼县"/>
+      <zone id="23" name="舟曲县"/>
+      <zone id="24" name="迭部县"/>
+      <zone id="25" name="玛曲县"/>
+      <zone id="26" name="碌曲县"/>
+      <zone id="27" name="夏河县"/>
+    </city>
+  </province>
+  <province id="63" name="青海省">
+    <city id="01" name="西宁市">
+      <zone id="02" name="城东区"/>
+      <zone id="03" name="城中区"/>
+      <zone id="04" name="城西区"/>
+      <zone id="05" name="城北区"/>
+      <zone id="06" name="湟中区"/>
+      <zone id="21" name="大通县"/>
+      <zone id="23" name="湟源县"/>
+    </city>
+    
+    <city id="02" name="海东市">
+      <zone id="02" name="乐都区"/>
+      <zone id="03" name="平安区"/>
+      <zone id="22" name="民和县"/>
+      <zone id="23" name="互助县"/>
+      <zone id="24" name="化隆回族自治县"/>
+      <zone id="25" name="循化撒拉族自治县"/>
+    </city>
+    <city id="22" name="海北州">
+      <zone id="21" name="门源县"/>
+      <zone id="22" name="祁连县"/>
+      <zone id="23" name="海晏县"/>
+      <zone id="24" name="刚察县"/>
+    </city>
+    <city id="23" name="黄南州">
+      <zone id="21" name="同仁市"/>
+      <zone id="22" name="尖扎县"/>
+      <zone id="23" name="泽库县"/>
+      <zone id="24" name="河南蒙古族自治县"/>
+    </city>
+    <city id="25" name="海南州">
+      <zone id="21" name="共和县"/>
+      <zone id="22" name="同德县"/>
+      <zone id="23" name="贵德县"/>
+      <zone id="24" name="兴海县"/>
+      <zone id="25" name="贵南县"/>
+    </city>
+    <city id="26" name="果洛州">
+      <zone id="21" name="玛沁县"/>
+      <zone id="22" name="班玛县"/>
+      <zone id="23" name="甘德县"/>
+      <zone id="24" name="达日县"/>
+      <zone id="25" name="久治县"/>
+      <zone id="26" name="玛多县"/>
+    </city>
+    <city id="27" name="玉树州">
+      <zone id="01" name="玉树市"/>
+      <zone id="22" name="杂多县"/>
+      <zone id="23" name="称多县"/>
+      <zone id="24" name="治多县"/>
+      <zone id="25" name="囊谦县"/>
+      <zone id="26" name="曲麻莱县"/>
+    </city>
+    <city id="28" name="海西州">
+      <zone id="01" name="格尔木市"/>
+      <zone id="02" name="德令哈市"/>
+      <zone id="03" name="茫崖市"/>
+      <zone id="21" name="乌兰县"/>
+      <zone id="22" name="都兰县"/>
+      <zone id="23" name="天峻县"/>
+      <zone id="24" name="冷湖行委"/>
+      <zone id="25" name="大柴旦行委"/>
+      <zone id="26" name="茫崖行委"/>
+      <zone id="57" name="大柴旦行委"/>
+    </city>
+  </province>
+  <province id="64" name="宁夏">
+    <city id="01" name="银川市">
+      <zone id="04" name="兴庆区"/>
+      <zone id="05" name="西夏区"/>
+      <zone id="06" name="金凤区"/>
+      <zone id="21" name="永宁县"/>
+      <zone id="22" name="贺兰县"/>
+      <zone id="81" name="灵武市"/>
+    </city>
+    <city id="02" name="石嘴山市">
+      <zone id="02" name="大武口区"/>
+      <zone id="05" name="惠农区"/>
+      <zone id="21" name="平罗县"/>
+    </city>
+    <city id="03" name="吴忠市">
+      <zone id="02" name="利通区"/>
+      <zone id="03" name="红寺堡区"/>
+      <zone id="23" name="盐池县"/>
+      <zone id="24" name="同心县"/>
+      <zone id="81" name="青铜峡市"/>
+    </city>
+    <city id="04" name="固原市">
+      <zone id="02" name="原州区"/>
+      <zone id="22" name="西吉县"/>
+      <zone id="23" name="隆德县"/>
+      <zone id="24" name="泾源县"/>
+      <zone id="25" name="彭阳县"/>
+    </city>
+    <city id="05" name="中卫市">
+      <zone id="02" name="沙坡头区"/>
+      <zone id="21" name="中宁县"/>
+      <zone id="22" name="海原县"/>
+    </city>
+    <zone id="0600" name="宁东区"/>
+  </province>
+  <province id="65" name="新疆">
+    <city id="01" name="乌鲁木齐市">
+      <zone id="02" name="天山区"/>
+      <zone id="03" name="沙依巴克区"/>
+      <zone id="04" name="高新区（新市区）"/>
+      <zone id="05" name="水磨沟区"/>
+      <zone id="06" name="经济开发区（头屯河区）"/>
+      <zone id="07" name="达坂城区"/>
+      <zone id="09" name="米东区"/>
+      <zone id="21" name="乌鲁木齐县"/>
+    </city>
+    <city id="02" name="克拉玛依市">
+      <zone id="02" name="独山子区"/>
+      <zone id="03" name="克拉玛依区"/>
+      <zone id="04" name="白碱滩区"/>
+      <zone id="05" name="乌尔禾区"/>
+    </city>
+    <zone id="0402" name="高昌区"/>
+    <zone id="0421" name="鄯善县"/>
+    <zone id="0422" name="托克逊县"/>
+    <zone id="0502" name="伊州区"/>
+    <zone id="0521" name="巴里坤县"/>
+    <zone id="0522" name="伊吾县"/>
+    <zone id="2100" name="吐鲁番市"/>
+    <zone id="2200" name="哈密市"/>
+    <zone id="2300" name="昌吉州"/>
+    <city id="27" name="博尔塔拉州">
+      <zone id="02" name="阿拉山口市"/>
+    </city>
+    <zone id="2800" name="巴音郭楞州"/>
+    <zone id="2900" name="阿克苏地区"/>
+    <zone id="3000" name="克孜勒苏州"/>
+    <city id="31" name="喀什地区">
+      <zone id="01" name="喀什市"/>
+      <zone id="21" name="疏附县"/>
+      <zone id="22" name="疏勒县"/>
+      <zone id="23" name="英吉沙县"/>
+      <zone id="24" name="泽普县"/>
+      <zone id="25" name="莎车县"/>
+      <zone id="26" name="叶城县"/>
+      <zone id="27" name="麦盖提县"/>
+      <zone id="28" name="岳普湖县"/>
+      <zone id="29" name="伽师县"/>
+      <zone id="30" name="巴楚县"/>
+      <zone id="31" name="塔什库尔干塔吉克县"/>
+    </city>
+    <city id="32" name="和田地区">
+      <zone id="26" name="于田县"/>
+    </city>
+    <city id="40" name="伊犁州">
+      <zone id="02" name="伊宁市"/>
+      <zone id="03" name="奎屯市"/>
+      <zone id="04" name="霍尔果斯市"/>
+      <zone id="21" name="伊宁县"/>
+      <zone id="22" name="察布县"/>
+      <zone id="23" name="霍城县"/>
+      <zone id="24" name="巩留县"/>
+      <zone id="25" name="新源县"/>
+      <zone id="26" name="昭苏县"/>
+      <zone id="27" name="特克斯县"/>
+      <zone id="28" name="尼勒克县"/>
+    </city>
+    <city id="42" name="塔城地区">
+      <zone id="01" name="塔城市"/>
+      <zone id="02" name="乌苏市"/>
+      <zone id="03" name="沙湾市"/>
+      <zone id="21" name="额敏县"/>
+      <zone id="24" name="托里县"/>
+      <zone id="25" name="裕民县"/>
+      <zone id="26" name="和布克赛尔县"/>
+    </city>
+  </province>
+</element>

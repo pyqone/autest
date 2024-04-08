@@ -8,8 +8,13 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.common.enums.SexType;
 
 /**
  * <p>
@@ -126,10 +131,12 @@ public class PresetString {
 	}
 
 	/**
-	 * 该方法用于随机生成一个身份证号
-	 *
-	 * @return 生成的身份证号码
-	 */
+     * 该方法用于随机生成一个身份证号
+     *
+     * @return 生成的身份证号码
+     * @deprecated 该方法已被{@link #identityCard(String, String, String, int, int, int, int, SexType)}方法代替，将在4.7.0或后续版本中删除
+     */
+    @Deprecated
 	public static String identityCard() {
 		StringBuilder sb = new StringBuilder();
 		RandomString rs = new RandomString("123456789");
@@ -182,7 +189,9 @@ public class PresetString {
      * @param endAge   结束年龄
      * @return 生成的身份证号码
      * @since autest 4.4.0
+     * @deprecated 该方法已被{@link #identityCard(String, String, String, int, int, int, int, SexType)}方法代替，将在4.7.0或后续版本中删除
      */
+    @Deprecated
     public static String identityCard(int startAge, int endAge) {
         StringBuilder sb = new StringBuilder();
         int age = new Random().nextInt(endAge - startAge) + startAge;
@@ -228,6 +237,176 @@ public class PresetString {
         sb.append(parity[(sum % 11)]);
 
         return sb.toString();
+    }
+
+    /**
+     * 该方法用于根据指定的参数，生成与参数匹配的随机身份证号
+     * <p>
+     * 在生成随机身份证时，除性别枚举传入为null则默认为女性身份证外，其余参数在传入错误的值时，均在合理范围内随机生成一个参数，具体规则如下：
+     * <ul>
+     * <li>行政区划代码：三个行政区划代码若传入空、null或错误的区划代码时，则在现有的参数文件中，随机查询一个行政区划。但需要注意的时，若指定了下级区划代码，
+     * 但上级随机的区划正好存在下级的区划代码时，则将生成其对应的区划，例如，当省级传入“32”，市级不传，而区级传入“11”时，若市级代码随机到“01”时，
+     * 则将生成区划代码为“320111”的身份证</li>
+     * <li>年龄段：传入年龄段后，则将在年龄段中随机生成一个年龄作为生日的年份，若起始年龄为小于1的数，则默认为18岁，若结束年龄小于1，则默认为65岁；
+     * 若传入的起始年龄大于结束年龄，则自动将其调换</li>
+     * <li>生日日期：月份若传入小于1，或大于12，则随机生成月份；日数若传入数值不合理时，则也在当前月份下随机一个日数</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <b>注意：</b>若行政区划为直辖市（例如北京市）或市级下无行政机构（例如新疆高昌区），则传入省份区划代码后，在市级行政区划代码传入4位的代码即可，例如，北京市朝阳区，
+     * 则省级代码传入“11”，市级代码传入“0105”，区级代码不用传
+     * </p>
+     *
+     * @param provinceCode 省级行政区划代码
+     * @param cityCode     市级行政区划代码
+     * @param zoneCode     区、县级行政区划代码
+     * @param startAge     随机年龄段起始年龄
+     * @param endAge       随机年龄段结束年龄
+     * @param moon         生日月份
+     * @param day          生日日数
+     * @param sexType      性别
+     * @return 参数对应的随机身份证号
+     * @since autest 4.5.0
+     */
+    public static String identityCard(String provinceCode, String cityCode, String zoneCode, int startAge, int endAge,
+            int moon, int day, SexType sexType) {
+        StringBuffer cardText = new StringBuffer();
+
+        // 定义随机数生成对象
+        Random random = new Random();
+
+        // 若起始年龄小于等于0，则默认取18岁作为起始年龄
+        if (startAge <= 0) {
+            startAge = 18;
+        }
+        // 若结束年龄小于等于0，则默认取65岁作为结束年龄
+        if (endAge <= 0) {
+            endAge = 65;
+        }
+        // 若起始年龄大于结束年龄，则对其进行交换
+        if (startAge > endAge) {
+            int temp = endAge;
+            endAge = startAge;
+            startAge = temp;
+        }
+        // 根据指定的起始与结束年龄，随机生成指定的年份
+        int age = startAge;
+        if (startAge != endAge) {
+            age = random.nextInt(endAge - startAge + 1) + startAge;
+        }
+        int year = LocalDateTime.now().getYear() - age;
+        String yearText = String.valueOf(year);
+
+        // 校验月份是否合理，若超出合理范围，则随机生成月份
+        String moonText = "";
+        if (moon < 1 || moon > 12) {
+            moonText = String.format("%02d", (random.nextInt(12 - 1 + 1) + 1));
+        } else {
+            moonText = String.format("%02d", moon);
+        }
+
+        // 根据年份与月份，生成当前月份最大日数
+        int maxDayNum = 31;
+        // 定义大月月份
+        String bigMoon = "01,03,05,07,08,10,12";
+        // 若当前月份不在大月月份中，则对最大日数进行修改
+        if (!bigMoon.contains(moonText)) {
+            // 若当前指定的月份为2月，则判断当前是否为闰年
+            if (moon == 2) {
+                maxDayNum = (year % 4 == 0 ? 29 : 28);
+            } else {
+                maxDayNum = 30;
+            }
+        }
+        // 校验日数是否合理，若超出合理范围，则随机生成日数
+        String dayText = "";
+        if (day < 1 || day > maxDayNum) {
+            dayText = String.format("%02d", (random.nextInt(maxDayNum - 1 + 1) + 1));
+        } else {
+            dayText = String.format("%02d", day);
+        }
+
+        // 读取配置文件
+        Document configXml = null;
+        try {
+            configXml = new SAXReader()
+                    .read(PresetString.class.getClassLoader()
+                            .getResourceAsStream("com/auxiliary/tool/data/AdministrativeCode.xml"));
+        } catch (DocumentException e) {
+            throw new IllegalDataException("配置文件错误，请检查行政区域代码配置文件是否存在");
+        }
+
+        // 定义层级xpath
+        String provinceXpath = "//province[@id='%s']";
+        String cityXpath = "/city[@id='%s']";
+        String zoneXpath = "/zone[@id='%s']";
+        // 定义随机对象类对象，并添加省级元素
+        RandomObject<Element> randomElement = new RandomObject<>();
+        // 查找省级元素是否存在
+        Element provinceElement = (Element) configXml.selectSingleNode(String.format(provinceXpath, provinceCode));
+        // 若省级元素不存在，则对省、市、区三个编码随机获取
+        if (provinceElement == null) {
+            randomElement.addObject(configXml.getRootElement().elements());
+            // 随机生成省级元素，并存储其编码
+            provinceElement = randomElement.toObject().get();
+            provinceCode = provinceElement.attributeValue("id");
+        }
+
+        Element cityElement = (Element) configXml.selectSingleNode(String.format(provinceXpath + cityXpath, provinceCode, cityCode));
+        Element cityZoneElement = (Element) configXml.selectSingleNode(String.format(provinceXpath + zoneXpath, provinceCode, cityCode));
+        // 若市级元素不存在，则对市、区三个编码随机获取
+        if (cityElement == null && cityZoneElement == null) {
+            // 随机生成市级元素
+            randomElement.clear(RandomObject.DEFAULT_NAME);
+            randomElement.addObject(provinceElement.elements());
+            Element e = randomElement.toObject().get();
+            if ("city".equals(e.getName())) {
+                cityElement = e;
+            } else {
+                cityZoneElement = e;
+            }
+            cityCode = e.attributeValue("id");
+        }
+
+        // 判断当前是否为县级市，若为县级市，则无需对区县级进行判断
+        if (cityElement == null && cityZoneElement != null) {
+            zoneCode = "";
+        } else {
+            Element zoneElement = (Element) configXml.selectSingleNode(
+                    String.format(provinceXpath + cityXpath + zoneXpath, provinceCode, cityCode, zoneCode));
+            if (zoneElement == null) {
+                randomElement.clear(RandomObject.DEFAULT_NAME);
+                randomElement.addObject(cityElement.elements());
+                zoneCode = randomElement.toObject().get().attributeValue("id");
+            }
+        }
+
+        // 拼接行政区号
+        cardText.append(provinceCode + cityCode + zoneCode);
+        // 拼接生日
+        cardText.append(yearText + moonText + dayText);
+        // 拼接两位随机数
+        cardText.append(String.format("%02d", random.nextInt(100)));
+        // 根据性别，拼接性别随机数
+        cardText.append((sexType != null && sexType == SexType.MAN) ? RandomString.randomString(1, 1, "13579")
+                : RandomString.randomString(1, 1, "24680"));
+
+        // 加权数
+        int[] factors = { 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 };
+        // 校验位
+        String[] parity = { "1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2" };
+        // 计算加权数
+        int sum = 0;
+        for (int i = 0; i < 17; i++) {
+            int code = Integer.valueOf(cardText.substring(i, i + 1));
+            int factor = Integer.valueOf(factors[i]);
+            sum += (code * factor);
+        }
+        // 根据加权数添加校验位
+        cardText.append(parity[(sum % 11)]);
+
+        // 返回拼接的身份证号
+        return cardText.toString();
     }
 
 	/**
