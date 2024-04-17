@@ -72,26 +72,4 @@ public class RandomNumber {
             return randomInteger(gropuStartNum, gropuEndNum);
         }
     }
-
-    /**
-     * 该方法用于生成指定数字以上的随机数字，该数字不超过整形数字的正数上限。例如，传入数字“5”，则生成大于等于5且小于等于{@link Integer#MAX_VALUE}的整形数字
-     *
-     * @param num 数字下限
-     * @return 大于等于数字下限的随机整形数字
-     * @since autest 5.0.0
-     */
-    public static int randomAboveInteger(int num) {
-        return randomInteger(num, Integer.MAX_VALUE);
-    }
-
-    /**
-     * 该方法用于生成指定数字以下的随机数字，该数字不超过整形数字的负数上限。例如，传入数字“5”，则生成小于等于5且大于等于{@link Integer#MAX_VALUE}的整形数字
-     *
-     * @param num 数字下限
-     * @return 大于等于数字下限的随机整形数字
-     * @since autest 5.0.0
-     */
-    public static int randomBelowInteger(int num) {
-        return randomInteger(num, Integer.MAX_VALUE);
-    }
 }
