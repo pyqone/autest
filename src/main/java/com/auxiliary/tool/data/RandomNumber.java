@@ -47,8 +47,8 @@ public class RandomNumber {
         if (diff > 0) {
             // 根据差值，生成一个随机随机值，该随机值即为随机数字所在的起始与结束值区间内的下标
             int randomNum = random.nextInt(diff);
-            // 得到差值后，使用如下公式后，可得到随机数字：随机数 = 结束值 - (差值 - 随机值)
-            return endNum - (diff - randomNum);
+            // 返回随机数
+            return randomNum + startNum;
         } else {
             // 使用长整形重新计算样本个数
             long longDiff = Long.valueOf(endNum) - Long.valueOf(startNum) + 1;
@@ -60,16 +60,53 @@ public class RandomNumber {
             int randomGroupIndex = random.nextInt(groupNum);
 
             // 根据分组数据，重新计算当前组的起始数字与结束数字
-            int gropuStartNum = startNum + randomGroupIndex * GROUP_DATA_NUM;
+            int groupStartNum = startNum + randomGroupIndex * GROUP_DATA_NUM;
             // 结束数字计算需要判断当前组数是否为最后一组，且是否存在余数
-            int gropuEndNum = 0;
+            int groupEndNum = 0;
             if (randomGroupIndex == (groupNum - 1) && remainingDataNum != 0) {
-                gropuEndNum = gropuStartNum + remainingDataNum - 1;
+                groupEndNum = groupStartNum + remainingDataNum - 1;
             } else {
-                gropuEndNum = gropuStartNum + GROUP_DATA_NUM - 1;
+                groupEndNum = groupStartNum + GROUP_DATA_NUM - 1;
             }
 
-            return randomInteger(gropuStartNum, gropuEndNum);
+            return randomInteger(groupStartNum, groupEndNum);
         }
+    }
+
+    /**
+     * 该方法用于生成指定范围内的随机小数，并且根据指定的小数位数进行四舍五入。若小数位小于0，则表示不进行四舍五入处理
+     * 
+     * @param startNum      起始数值
+     * @param endNum        结束数值
+     * @param decimalPlaces 保留小数位数
+     * @return 随机小数
+     * @since autest 5.0.0
+     */
+    public static double randomDouble(double startNum, double endNum, int decimalPlaces) {
+        // 若当前保留小数位为整数，则直接调用随机整数方法
+        if (decimalPlaces == 0) {
+            return randomInteger((int) startNum, (int) endNum) * 1.0;
+        }
+
+        // 若起始值与结束值相等，则直接返回起始值
+        if (startNum == endNum) {
+            return startNum;
+        }
+
+        // 判断起始值是否大于结束值
+        if (startNum > endNum) {
+            double temp = startNum;
+            startNum = endNum;
+            endNum = temp;
+        }
+
+        // 生成随机小数
+        double randomNum = random.nextDouble() * (endNum - startNum) + startNum;
+        // 判断当前是否需要保留小数位
+        if (decimalPlaces > 0) {
+            // 对随机数进行小数位四舍五入处理
+            randomNum = Math.round(randomNum * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+        }
+        return randomNum;
     }
 }
