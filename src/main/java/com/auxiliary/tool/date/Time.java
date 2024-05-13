@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
+import com.auxiliary.tool.regex.RegexType;
+
 /**
  * <p>
  * <b>文件名：</b>Time.java
@@ -25,51 +27,61 @@ import java.util.Optional;
  * <p>
  * <b>修改时间：</b>2023年5月6日 上午11:15:40
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.1
  * @since JDK 1.8
  * @since autest 2.0.0
  */
-public class Time implements Comparable<Time> {
+public class Time implements Comparable<Time>, Cloneable {
     /**
      * 定义默认时区
      */
     public static ZoneId defaultZoneId = ZoneId.systemDefault();
+    /**
+     * 默认格式化日期的规则
+     */
+    public final static String DEFAULT_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 指向初始化时设置的时间
      */
     private LocalDateTime initTime;
-    /**
-     * 指向根据初始化时间计算后得到的时间
-     */
-    private LocalDateTime calculateTime;
 
     /**
-     * 用于存储日期的格式，默认格式为yyyy-MM-dd HH:mm:ss
+     * 存储日期格式化字符串，默认格式为yyyy-MM-dd HH:mm:ss
      */
-    private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    private String dateFormatText = DEFAULT_FORMAT_PATTERN;
     /**
-     * 定义日期约束类型的传入格式
+     * 用于存储日期的格式化对象，默认格式为yyyy-MM-dd HH:mm:ss
      */
-    private final static String REGEX_DATE = "(\\D*((\\d{1,2})|(\\d{4}))\\D+\\d{1,2}\\D+\\d{1,2})((\\D+\\d{1,2}){3})?\\D*";
+    private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(DEFAULT_FORMAT_PATTERN);
 
     /**
      * 初始化日期/时间
-     * 
+     *
      * @param initTime 日期/时间
      * @since autest 2.0.0
      */
     private Time(LocalDateTime initTime) {
         this.initTime = initTime;
-        this.calculateTime = initTime;
+    }
+
+    /**
+     * 初始化日期/时间和格式化的规则
+     *
+     * @param initTime 日期/时间
+     * @param pattern  日期格式化规则
+     * @since autest 4.5.0
+     */
+    private Time(LocalDateTime initTime, String pattern) {
+        this(initTime);
+        setTimeFormat(pattern);
     }
 
     /**
      * 用于根据{@link Date}类对象初始化时间
-     * 
+     *
      * @param date Date类对象
      * @return 初始化后的类对象
      * @since autest 2.0.0
@@ -80,7 +92,7 @@ public class Time implements Comparable<Time> {
 
     /**
      * 用于根据毫秒数初始化时间
-     * 
+     *
      * @param ms 时间戳（毫秒值）
      * @return 初始化后的类对象
      * @since autest 2.0.0
@@ -92,7 +104,7 @@ public class Time implements Comparable<Time> {
 
     /**
      * 用于根据已格式化的时间初始化时间
-     * 
+     *
      * @param formatTime 已格式化的时间
      * @return 初始化后的类对象
      * @throws IncorrectConditionException 时间转换错误时抛出的异常
@@ -101,7 +113,8 @@ public class Time implements Comparable<Time> {
     public static Time parse(String formatTime) {
         // 判断传入的格式化时间是否符合要求，并将其转换为格式化字符串
         return parse(formatTime,
-                Optional.ofNullable(formatTime).filter(text -> !text.isEmpty()).filter(text -> text.matches(REGEX_DATE))
+                Optional.ofNullable(formatTime).filter(text -> !text.isEmpty())
+                        .filter(RegexType.FORMAT_DATE_REGEX::judgeString)
                         .map(Time::judgeDateFormatText)
                         .orElseThrow(() -> new IncorrectConditionException("时间“" + formatTime + "”不符合格式的规则")));
     }
@@ -114,7 +127,7 @@ public class Time implements Comparable<Time> {
      * Time time2 = Time.parse("15:15:15", "HH:mm:ss");//初始化为当天的15时15分15秒
      * </pre></code>
      * </p>
-     * 
+     *
      * @param formatTime 格式化的日期/时间
      * @param formatText 时间格式
      * @return 初始化后的类对象
@@ -122,22 +135,21 @@ public class Time implements Comparable<Time> {
      * @since autest 2.0.0
      */
     public static Time parse(String formatTime, String formatText) {
-        // 定义相应的时间格式，并用于解析传入的时间
-        dateFormat = DateTimeFormatter.ofPattern(formatText);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(formatText);
         try {
-            return new Time(LocalDateTime.parse(formatTime, dateFormat));
+            return new Time(LocalDateTime.parse(formatTime, dateFormat), formatText);
         } catch (DateTimeParseException e) {
             if (formatText.matches(".*M+.*")) {
-                return new Time(LocalDate.parse(formatTime, dateFormat).atStartOfDay());
+                return new Time(LocalDate.parse(formatTime, dateFormat).atStartOfDay(), formatText);
             } else {
-                return new Time(LocalTime.parse(formatTime, dateFormat).atDate(LocalDate.now()));
+                return new Time(LocalTime.parse(formatTime, dateFormat).atDate(LocalDate.now()), formatText);
             }
         }
     }
 
     /**
      * 用于根据{@link LocalDateTime}对象初始化日期/时间，若未传入时间或时间写入有误，则初始化为当前时间
-     * 
+     *
      * @param dateTime 指定的{@link LocalDateTime}对象
      * @return 初始化后的类对象
      * @since autest 2.0.0
@@ -148,7 +160,7 @@ public class Time implements Comparable<Time> {
 
     /**
      * 用于将时间初始化为当前时间
-     * 
+     *
      * @return 初始化后的类对象
      * @since autest 2.0.0
      */
@@ -158,7 +170,7 @@ public class Time implements Comparable<Time> {
 
     /**
      * 用于对日期/时间中的指定单位进行赋值
-     * 
+     *
      * @param timeNum  指定的数值
      * @param timeUnit 时间单位枚举{@link TimeUnit}
      * @return 类本身
@@ -167,12 +179,12 @@ public class Time implements Comparable<Time> {
      */
     public Time setTime(int timeNum, TimeUnit timeUnit) {
         // 记录每个时间下的数值
-        int year = calculateTime.getYear();
-        int month = calculateTime.getMonthValue();
-        int day = calculateTime.getDayOfMonth();
-        int hour = calculateTime.getHour();
-        int minute = calculateTime.getMinute();
-        int second = calculateTime.getSecond();
+        int year = initTime.getYear();
+        int month = initTime.getMonthValue();
+        int day = initTime.getDayOfMonth();
+        int hour = initTime.getHour();
+        int minute = initTime.getMinute();
+        int second = initTime.getSecond();
 
         // 根据枚举，对相应的日期进行赋值
         switch (timeUnit) {
@@ -200,7 +212,7 @@ public class Time implements Comparable<Time> {
 
         // 格式化时间，若时间无法被写入，则抛出IncorrectConditionException异常
         try {
-            calculateTime = LocalDateTime.of(year, month, day, hour, minute, second);
+            initTime = LocalDateTime.of(year, month, day, hour, minute, second);
         } catch (Exception e) {
             throw new IncorrectConditionException(
                     String.format("不存在的日期：%d-%d-%d %d:%d:%d", year, month, day, hour, minute, second), e);
@@ -212,19 +224,19 @@ public class Time implements Comparable<Time> {
     /**
      * 设置返回时间的格式，该方法可传入时间格式，亦可向该方法中传入时间格式的模板，
      * 通过识别模板得到日期的格式，但作为模板的日期也必须满足时间格式。例如：<br>
-     * 
+     *
      * <pre>
      * <code>
      * Time time = new Time(1575387800000L);
-     * 
+     *
      * time.setTimeFormat("yyyy年MM月dd日 HH:mm:ss");
      * getFormatTime();//输出：2019年12月03日 23:43:20
-     * 
+     *
      * time.setTimeFormat("2019/12/04 03:03:20");
      * getFormatTime();//输出：2019/12/03 23:43:20
      * </code>
      * </pre>
-     * 
+     *
      * <p>
      * <b>注意</b>
      * <ol>
@@ -232,20 +244,21 @@ public class Time implements Comparable<Time> {
      * <li>已格式化的时间中，其分隔符不能包含字母，否则转译将出错（在格式化时间的方法中也不允许存在字母）</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param pattern 指定的格式或已格式化的时间
      * @return 类本身
      * @since autest 2.0.0
      */
     public Time setTimeFormat(String pattern) {
         dateFormat = pattern2DateTimeFormatter(pattern);
+        dateFormatText = pattern;
 
         return this;
     }
 
     /**
      * 该方法用于将时间格式化文本转换为{@link DateTimeFormatter}类对象
-     * 
+     *
      * @param pattern 时间格式
      * @return 转换后的类对象
      * @since autest 4.2.0
@@ -254,7 +267,7 @@ public class Time implements Comparable<Time> {
         pattern = Optional.ofNullable(pattern).filter(text -> !text.isEmpty())
                 .orElseThrow(() -> new IncorrectConditionException("未指定时格式"));
 
-        if (pattern.matches(REGEX_DATE)) {
+        if (RegexType.FORMAT_DATE_REGEX.judgeString(pattern)) {
             try {
                 return DateTimeFormatter.ofPattern(judgeDateFormatText(pattern));
             } catch (IncorrectConditionException e) {
@@ -268,22 +281,22 @@ public class Time implements Comparable<Time> {
 
     /**
      * 用于返回Date类对象
-     * 
+     *
      * @return Date类对象
      * @since autest 2.0.0
      */
     public Date getDate() {
-        return Date.from(calculateTime.atZone(defaultZoneId).toInstant());
+        return Date.from(initTime.atZone(defaultZoneId).toInstant());
     }
 
     /**
      * 用于返回设置的时间的时间戳
-     * 
+     *
      * @return 时间戳
      * @since autest 2.0.0
      */
     public long getMilliSecond() {
-        return calculateTime.atZone(defaultZoneId).toInstant().toEpochMilli();
+        return initTime.atZone(defaultZoneId).toInstant().toEpochMilli();
     }
 
     /**
@@ -291,64 +304,34 @@ public class Time implements Comparable<Time> {
      * <p>
      * 若未设置时间格式，则默认按照“yyyy-MM-dd HH:mm:ss”的格式进行返回
      * </p>
-     * 
+     *
      * @return 格式化后的时间
      * @since autest 2.0.0
      */
     public String getFormatTime() {
-        return calculateTime.format(dateFormat);
+        return initTime.format(dateFormat);
     }
 
     /**
      * 该方法用于以临时指定的格式输出当前设置的日期时间，通过该方法设置的格式化时间不会影响通过{@link #setTimeFormat(String)}方法设置的时间格式，
      * 具体的设置方法可参考{@link #setTimeFormat(String)}
-     * 
+     *
      * @param pattern 格式化规则
      * @return 格式化后的日期时间
      * @since autest 4.2.0
      */
     public String getFormatTime(String pattern) {
-        return calculateTime.format(pattern2DateTimeFormatter(pattern));
+        return initTime.format(pattern2DateTimeFormatter(pattern));
     }
 
     /**
      * 用于以{@link LocalDateTime}类对象的形式，返回计算后的日期/时间
-     * 
+     *
      * @return {@link LocalDateTime}类对象
      * @since autest 2.0.0
      */
     public LocalDateTime getLocalDateTime() {
-        return LocalDateTime.of(calculateTime.toLocalDate(), calculateTime.toLocalTime());
-    }
-
-    /**
-     * 用于以{@link Time}的形式返回初始化时设置的时间
-     * 
-     * @return 始化时设置的时间
-     * @since autest 2.0.0
-     */
-    public Time getInitTime() {
-        return Time.parse(initTime);
-    }
-
-    /**
-     * 用于以{@link Time}的形式将设置后的时间作为初始时间进行返回
-     * 
-     * @return 计算后的时间
-     * @since autest 2.0.0
-     */
-    public Time getCalculateTime() {
-        return Time.parse(calculateTime);
-    }
-
-    /**
-     * 用于还原初始化时设置的日期/时间
-     * 
-     * @since autest 2.0.0
-     */
-    public Time initTime() {
-        calculateTime = initTime;
-        return this;
+        return LocalDateTime.of(initTime.toLocalDate(), initTime.toLocalTime());
     }
 
     /**
@@ -361,14 +344,15 @@ public class Time implements Comparable<Time> {
      * </ul>
      * 进行计算，在跨度大的计算中，其会存在精度的丢失
      * </p>
-     * 
+     *
      * @param num      日期/时间增减的数量
      * @param timeUnit 日期计算的单位
      * @since autest 2.0.0
      */
     public Time addTime(double num, TimeUnit timeUnit) {
-        calculateTime = calcuLocalTime(Double.valueOf(num), timeUnit, calculateTime);
-        return this;
+        Time newTime = this.clone();
+        newTime.initTime = calcuLocalTime(Double.valueOf(num), timeUnit, newTime.getLocalDateTime());
+        return newTime;
     }
 
     /**
@@ -388,7 +372,10 @@ public class Time implements Comparable<Time> {
      * </ul>
      * 具体的计算规则与{@link #addTime(double, TimeUnit)}方法一致
      * </p>
-     * 
+     * <p>
+     * <b>注意：</b>数字前不写运算符，则默认为增加时间，例如“-1d2s”意义为减少一天并增加两秒
+     * </p>
+     *
      * @param calculateTimeText 增减时间的规则
      * @return 返回修改后的时间戳
      * @since autest 2.0.0
@@ -401,13 +388,16 @@ public class Time implements Comparable<Time> {
                 .orElseThrow(() -> new IncorrectConditionException("必须指定修改时间的参数"));
 
         // 记录当前计算的时间
-        LocalDateTime nowTime = calculateTime;
+        Time nowTime = this.clone();
 
         /*
-         * 判断单位思路： 1.遍历通过calculateTimeText得到的每一个字符 2.判断当前字符是否为数字：
-         * a.若为数字，则判断上一次读取的内容是否为字符： I.若为字符，则表示上一个单位及计算数值已读取完毕，则先对上一次的数值对日期时间进行一次计算
-         * II.若为数字，则表示当前正在读取计算的数值，则不进行操作 判断结束后，记录isUnit为false，表示当前字符为数字，并拼接到numText中
-         * b.若为非数字，则将isUnit设置为true，并拼接计算单位
+         * 判断单位思路：
+         * 1.遍历通过calculateTimeText得到的每一个字符
+         * 2.判断当前字符是否为数字：
+         *  a.若为数字，则判断上一次读取的内容是否为字符：
+         *      I.若为字符，则表示上一个单位及计算数值已读取完毕，则先对上一次的数值对日期时间进行一次计算
+         *      II.若为数字，则表示当前正在读取计算的数值，则不进行操作 判断结束后，记录isUnit为false，表示当前字符为数字，并拼接到numText中
+         *  b.若为非数字，则将isUnit设置为true，并拼接计算单位
          */
         // 遍历所有的字符，区别存储单位与增减的数值
         StringBuilder numText = new StringBuilder();
@@ -415,14 +405,14 @@ public class Time implements Comparable<Time> {
         boolean isUnit = false;
         for (char ch : chars) {
             // 判断当前字符是否为数字
-            if (Character.isDigit(ch) || ch == '.' || ch == '-') {
+            if (Character.isDigit(ch) || ch == '.' || ch == '-' || ch == '+') {
                 // 判断上一次读取的内容是否为字符
                 if (isUnit) {
-                    nowTime = calcuLocalTime(disposeDoubleText(numText.toString()),
+                    nowTime.initTime = calcuLocalTime(disposeDoubleText(numText.toString()),
                             Arrays.stream(TimeUnit.values()).filter(unit -> unit.isTimeUnit(unitText.toString()))
                                     .findFirst().orElseThrow(
                                             () -> new IncorrectConditionException("无法识别的计算公式：" + numText + unitText)),
-                            nowTime);
+                            nowTime.initTime);
 
                     numText.delete(0, numText.length());
                     unitText.delete(0, unitText.length());
@@ -436,13 +426,12 @@ public class Time implements Comparable<Time> {
             }
         }
 
-        calculateTime = nowTime;
-        return this;
+        return nowTime;
     }
 
     /**
      * 用于对计算的double数值进行处理，补全小数点前后缺失的内容
-     * 
+     *
      * @param doubleText 数值文本
      * @return 转换后的double类型
      * @since autest 2.0.0
@@ -460,7 +449,7 @@ public class Time implements Comparable<Time> {
 
     /**
      * 用于对传入的时间进行计算，并返回计算结果
-     * 
+     *
      * @param num      计算数值
      * @param timeUnit 计算单位
      * @param time     指定的日期
@@ -486,7 +475,7 @@ public class Time implements Comparable<Time> {
      * <li>无法识别纯数字的日期格式</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param dateText 日期文本
      * @return 相应的日期格式化字符串
      * @since autest 2.0.0
@@ -501,13 +490,15 @@ public class Time implements Comparable<Time> {
         char[] chars = dateText.toCharArray();
 
         /*
-         * 转换思路： 1.遍历通过dateText得到的每一个字符 2.判断当前字符是否为数字：
-         * a.若为数字，则记录isSign为false，表示当前字符为数字，并拼接index指向的位数
-         * b.若为非数字，则记录isSign为true,表示当前字符为字符，则需要再次判断上一个字符是 否也是非数字（即isSign是否本身为false）:
-         * I.若上一个字符不为非数字（isSign原为true），则设置index指向的位数加1（即第一次读取到分隔符， 表示上一位的日期以存储完毕）
-         * II.若上一位为非数字（isSign原为false），则不做改动（即该字符仅为分隔符的一部分） 判断结束后，将isSign设置为true，并拼接分隔符
+         * 转换思路：
+         * 1.遍历通过dateText得到的每一个字符
+         * 2.判断当前字符是否为数字：
+         *  a.若为数字，则记录isSign为false，表示当前字符为数字，并拼接index指向的位数
+         *  b.若为非数字，则记录isSign为true,表示当前字符为字符，则需要再次判断上一个字符是 否也是非数字（即isSign是否本身为false）:
+         *      I.若上一个字符不为非数字（isSign原为true），则设置index指向的位数加1（即第一次读取到分隔符， 表示上一位的日期以存储完毕）
+         *      II.若上一位为非数字（isSign原为false），则不做改动（即该字符仅为分隔符的一部分） 判断结束后，将isSign设置为true，并拼接分隔符
          * 3.结束循环后，得到一个待转译的中间字符串
-         * 
+         *
          * 举例：传入“2020-12-25 14:12:12”最终会转换为“1111-22-33 44:55:66”
          */
         int index = 1;
@@ -550,7 +541,7 @@ public class Time implements Comparable<Time> {
 
     @Override
     public int compareTo(Time compateTime) {
-        return Optional.ofNullable(compateTime).map(Time::getLocalDateTime).map(calculateTime::compareTo)
+        return Optional.ofNullable(compateTime).map(Time::getLocalDateTime).map(initTime::compareTo)
                 .orElseThrow(() -> new IncorrectConditionException("需要比较的时间存在异常"));
     }
 
@@ -563,7 +554,7 @@ public class Time implements Comparable<Time> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((calculateTime == null) ? 0 : calculateTime.hashCode());
+        result = prime * result + ((initTime == null) ? 0 : initTime.hashCode());
         return result;
     }
 
@@ -579,11 +570,11 @@ public class Time implements Comparable<Time> {
             return false;
         }
         Time other = (Time) obj;
-        if (calculateTime == null) {
-            if (other.calculateTime != null) {
+        if (initTime == null) {
+            if (other.initTime != null) {
                 return false;
             }
-        } else if (!calculateTime.equals(other.calculateTime)) {
+        } else if (!initTime.equals(other.initTime)) {
             return false;
         }
         return true;
@@ -607,7 +598,7 @@ public class Time implements Comparable<Time> {
      * {@link TimeUnit#HOUR}、{@link TimeUnit#MINUTE}、{@link TimeUnit#SECOND}单位外，其他的
      * 单位传入进行判断时，会抛出异常
      * </p>
-     * 
+     *
      * @param compareTime 需要比对的时间
      * @param timeUnit    最小判断单位
      * @return 对比结果
@@ -627,35 +618,51 @@ public class Time implements Comparable<Time> {
 
         switch (timeUnit) {
         case SECOND:
-            result = (compareTime.getLocalDateTime().getSecond() == calculateTime.getSecond());
+            result = (compareTime.getLocalDateTime().getSecond() == initTime.getSecond());
             if (!result) {
                 return result;
             }
         case MINUTE:
-            result = (compareTime.getLocalDateTime().getMinute() == calculateTime.getMinute());
+            result = (compareTime.getLocalDateTime().getMinute() == initTime.getMinute());
             if (!result) {
                 return result;
             }
         case HOUR:
-            result = (compareTime.getLocalDateTime().getHour() == calculateTime.getHour());
+            result = (compareTime.getLocalDateTime().getHour() == initTime.getHour());
             if (!result) {
                 return result;
             }
         case DAY:
-            result = (compareTime.getLocalDateTime().getDayOfMonth() == calculateTime.getDayOfMonth());
+            result = (compareTime.getLocalDateTime().getDayOfMonth() == initTime.getDayOfMonth());
             if (!result) {
                 return result;
             }
         case MONTH:
-            result = (compareTime.getLocalDateTime().getMonth() == calculateTime.getMonth());
+            result = (compareTime.getLocalDateTime().getMonth() == initTime.getMonth());
             if (!result) {
                 return result;
             }
         case YEAR:
-            result = (compareTime.getLocalDateTime().getYear() == calculateTime.getYear());
+            result = (compareTime.getLocalDateTime().getYear() == initTime.getYear());
             return result;
         default:
             throw new IncorrectConditionException("无法比较的单位：" + timeUnit);
         }
+    }
+
+    @Override
+    public Time clone() {
+        Time newTime = null;
+        try {
+            newTime = (Time) super.clone();
+            newTime.initTime = LocalDateTime.of(this.initTime.getYear(), this.initTime.getMonthValue(),
+                    this.initTime.getDayOfMonth(), this.initTime.getHour(), this.initTime.getMinute(),
+                    this.initTime.getSecond(), this.initTime.getNano());
+            newTime.dateFormat = DateTimeFormatter.ofPattern(this.dateFormatText);
+        } catch (Exception e) {
+            throw new IncorrectConditionException("当前日期类对象无法被克隆");
+        }
+
+        return newTime;
     }
 }

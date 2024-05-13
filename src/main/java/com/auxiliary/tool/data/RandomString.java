@@ -52,14 +52,6 @@ public class RandomString {
 	private boolean repeat = true;
 
 	/**
-     * 指定通过{@link #toString()}方法默认输出的字符串长度
-     * 
-     * @deprecated 该属性以作废，默认属性将由
-     */
-	@Deprecated
-    public static int defaultLength = 6;
-
-	/**
 	 * 控制在需要生成的字符串大于字符串池时的处理方式
 	 */
 	private RepeatDisposeType dispose = RepeatDisposeType.DISPOSE_REPEAT;

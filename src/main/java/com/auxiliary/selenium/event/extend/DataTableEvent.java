@@ -81,12 +81,6 @@ public final class DataTableEvent extends AbstractEvent {
 	protected int listSize = -1;
 
 	/**
-	 * 用于存储是否需要严格检查
-	 */
-	@Deprecated
-	protected boolean isExamine = true;
-
-	/**
 	 * 构造对象
 	 *
 	 * @param brower 浏览器{@link AbstractBrower}类对象
@@ -98,18 +92,6 @@ public final class DataTableEvent extends AbstractEvent {
 		textEvent = new TextEvent(brower);
 		waitEvent = new WaitEvent(brower);
 		assertEvent = new AssertEvent(brower);
-	}
-
-	/**
-	 * 用于设置是否对传入的元素列表的个数进行严格校验，即在调用{@link #addList(FindDataListElement)}方法时，
-	 * 若元素个数与初次传入的个数不符且需要严格校验，则抛出异常；反之，则直接进行存储
-	 *
-	 * @param isExamine 是否严格校验元素个数
-	 * @deprecated 方法可在返回列表对象{@link TableData}中调用{@link TableData#setExamine(boolean)}进行设置
-	 */
-	@Deprecated
-	public void setExamine(boolean isExamine) {
-		this.isExamine = isExamine;
 	}
 
 	/**

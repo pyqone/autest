@@ -64,7 +64,7 @@ public class DisposeCodeUtils {
         romaNumLevelMap.put(4, "IV");
         romaNumLevelMap.put(1, "I");
     }
-    
+
     /**
      * 该方法用于对文本进行去正则特殊符号处理，使文本整体能在正则判断中不被转义
      * <p>
@@ -110,7 +110,7 @@ public class DisposeCodeUtils {
      * <p>
      * <b>注意：</b>最大、最小或下标差值小于等于0，且最小下标不能小于差值，否则将抛出异常
      * </p>
-     * 
+     *
      * @param index                   待处理下标
      * @param minIndex                自定义最小下标
      * @param maxIndex                自定义最大下标
@@ -204,7 +204,7 @@ public class DisposeCodeUtils {
      * <p>
      * <b>注意：</b>最大小于等于0，或最小值小于0，或最大值小于最小值时，将抛出异常
      * </p>
-     * 
+     *
      * @param index                 指定下标
      * @param minIndex              最小下标
      * @param maxIndex              最大下标
@@ -232,18 +232,16 @@ public class DisposeCodeUtils {
             } else {
                 return isMaxEmptyIndexRandom ? randomNum : maxIndex;
             }
-        } else { // 判断小于0的情况
-            if (isThrowException) {
-                throw new DisposeNumberException(String.format("指定下标“%d”小于数组最小下标“%d”", index, minIndex));
-            } else {
-                return isMinEmptyIndexRandom ? randomNum : minIndex;
-            }
+        } else if (isThrowException) {
+            throw new DisposeNumberException(String.format("指定下标“%d”小于数组最小下标“%d”", index, minIndex));
+        } else {
+            return isMinEmptyIndexRandom ? randomNum : minIndex;
         }
     }
 
     /**
      * 该方法用于查找符号的在字符串中的下标值
-     * 
+     *
      * @param text                  查找字符串
      * @param findStr               待查找字符
      * @param transferredMeaningStr 转义字符
@@ -292,7 +290,7 @@ public class DisposeCodeUtils {
 
     /**
      * 该方法用于对文本中的占位符进行替换的方法
-     * 
+     *
      * @param startSign     占位符起始标识
      * @param endSign       占位符结束标识
      * @param text          待替换的文本
@@ -330,7 +328,7 @@ public class DisposeCodeUtils {
 
     /**
      * 该方法用于获取指定占位符中的内容
-     * 
+     *
      * @param startSign 占位符开始标志
      * @param endSign   占位符结束标志
      * @param keyRegex  占位符中的关键词正则表达式
@@ -359,7 +357,7 @@ public class DisposeCodeUtils {
      * <p>
      * 若枚举转换失败，则根据指定的参数来判断是否抛出异常，若不抛出异常，则返回null
      * </p>
-     * 
+     *
      * @param <T>              枚举类对象
      * @param enumClass        枚举类{@link Class}对象
      * @param typeText         枚举文本
@@ -383,7 +381,7 @@ public class DisposeCodeUtils {
      * <li>当传入其他数值时，则不进行转换</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param <T>              枚举类对象
      * @param enumClass        枚举类{@link Class}对象
      * @param typeText         枚举文本
@@ -450,7 +448,7 @@ public class DisposeCodeUtils {
      * <p>
      * <b>注意：</b>转换后的罗马数字为大写字母，若转换的数字超过3999，则无法进行表示，故不建议使用
      * </p>
-     * 
+     *
      * @param arabicNum 阿拉伯数字
      * @return 罗马数字（大写）
      * @since autest 4.0.0
@@ -464,7 +462,7 @@ public class DisposeCodeUtils {
      * <p>
      * <b>注意：</b>转换后的罗马数字为大写字母，若转换的数字超过3999，则无法进行表示，故不建议使用
      * </p>
-     * 
+     *
      * @param arabicNum   阿拉伯数字
      * @param isLowerCase 是否输出小写字母
      * @return 罗马数字
@@ -508,7 +506,7 @@ public class DisposeCodeUtils {
      * <p>
      * <b>注意：</b>转换后的英文字母为大写字母，并且不能表示0
      * </p>
-     * 
+     *
      * @param numberIndex 列数字下标
      * @return 列英文下标
      * @since autest 4.0.0
@@ -530,7 +528,7 @@ public class DisposeCodeUtils {
      */
     public static int englishLetters2ArabicNum(String charIndex) {
         // 判断传入的内容是否符合正则
-        if (charIndex != null && !charIndex.matches("[a-zA-Z]+")) {
+        if (charIndex == null || !charIndex.matches("[a-zA-Z]+")) {
             throw new IncorrectIndexException("错误的英文下标：" + charIndex);
         }
 
@@ -556,7 +554,7 @@ public class DisposeCodeUtils {
      * 数字转换的方法为，根据英文字母的顺序，0则转换为字母A，1转换为字母B，以此类推；当表示完26个字母后，则继续从A开始，在其后添加字母，
      * 例如，27转换为AA，28转换为AB，类似于Excel表格的计数方式
      * </p>
-     * 
+     *
      * @param numberIndex 列数字下标
      * @param isLowerCase 是否输出小写字母
      * @return 列英文下标
@@ -594,7 +592,7 @@ public class DisposeCodeUtils {
 
     /**
      * 该方法用于重复拼接指定次数的字符串
-     * 
+     *
      * @param str         待拼接的字符串
      * @param repeatCount 需要重复拼接的次数
      * @return 拼接后的字符串
@@ -605,13 +603,13 @@ public class DisposeCodeUtils {
         for (int i = 0; i < repeatCount; i++) {
             newStr.append(str);
         }
-        
+
         return newStr.toString();
     }
 
     /**
      * 该方法用于统计在一长串字符串中，指定的字符串出现的次数
-     * 
+     *
      * @param text   长串字符串内容
      * @param target 待查找的字符串
      * @return 待查找字符串在长串字符串中出现的次数

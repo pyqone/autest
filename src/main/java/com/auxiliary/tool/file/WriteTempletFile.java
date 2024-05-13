@@ -3,19 +3,12 @@ package com.auxiliary.tool.file;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.auxiliary.datadriven.DataDriverFunction;
-import com.auxiliary.datadriven.DataDriverFunction.FunctionExceptional;
 import com.auxiliary.datadriven.DataFunction;
-import com.auxiliary.datadriven.Functions;
 import com.auxiliary.tool.common.AddPlaceholder;
 import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.common.VoidSupplier;
@@ -128,62 +121,9 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
         this.placeholder = placeholder;
     }
 
-    /**
-     * 设置需要被替换的词语以及替换的内容
-     * <p>
-     * 在调用{@link #addContent(String, String...)}等方法编写内容时，用“#xx#”来表示待替换的词语，
-     * </p>
-     *
-     * @param word        需要替换的词语
-     * @param replaceWord 被替换的词语
-     * @deprecated 该方法将由{@link #addReplaceWord(String, String)}方法代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public void setReplactWord(String word, String replaceWord) {
-        setReplactWord(new DataDriverFunction(word, text -> replaceWord));
-    }
-
     @Override
     public void addReplaceWord(String word, String replaceWord) {
         placeholder.addReplaceWord(word, replaceWord);
-    }
-
-    /**
-     * 用于添加匹配公式与处理方式
-     * <p>
-     * 该方法允许添加待替换词语的处理方式，在写入用例时，若指定的待替换内容符合此方法指定的正则时，则会使用存储的替换方式， 对词语进行替换。例如：
-     * <code><pre>
-     * {@literal @}Test
-     * public void setReplactWordTest_DataDriverFunction() {
-     * 	// 定义词语匹配规则和处理方式，当匹配到正则后，将获取“随机：”后的字母
-     *	// 若字母为“N”，则随机生成两位数字字符串
-     * 	// 若字母为“Y”，则随机生成两位中文字符串
-     *	test.setReplactWord(new DataDriverFunction("随机：[NC]", text -&gt; {
-     *		return "N".equals(text.split("：")[1]) ? RandomString.randomString(2, 2, StringMode.NUM)
-     *				: RandomString.randomString(2, 2, StringMode.CH);
-     *	}));
-     *
-     *	// 随机生成两位数字
-     *	test.addContent("title", "内容：#随机：N#").end();
-     *	// 随机生成两位中文
-     *	test.addContent("title", "内容：#随机：C#").end();
-     *
-     * 	// 控制台输出生成的内容json串
-     *	System.out.println(test.toWriteFileJson());
-     * }
-     * </pre></code>
-     * </p>
-     * <p>
-     * 部分定义方法可调用工具类{@link Functions}类获取
-     * </p>
-     *
-     * @param functions 替换词语使用的函数
-     * @throws FunctionExceptional 未指定替换词语或替换内容时抛出的异常
-     * @deprecated 该方法将由{@link #addReplaceFunction(String, DataFunction)}方法代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public void setReplactWord(DataDriverFunction functions) {
-        addReplaceFunction(functions.getRegex(), functions.getFunction());
     }
 
     @Override
@@ -430,34 +370,6 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
     }
 
     /**
-     * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下，并且可传入临时的替换词语，对文本中的占位符进行替换，且不影响已添加的替换词语
-     * <p>
-     * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
-     * </p>
-     * <p>
-     * <b>注意：</b>
-     * <ol>
-     * <li>当设置了自动换行字段时，则在插入该字段内容后（内容非空时），则会在插入当前内容前自动进行换行，再插入该内容，可参考{@link #setEndField(String)}的设置方法</li>
-     * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
-     * </ol>
-     * </p>
-     * 
-     * @param field          字段id
-     * @param index          指定插入的位置
-     * @param replaceWordMap 临时替换词语集合
-     * @param contents       相应字段的内容
-     * 
-     * @return 类本身
-     * @since autest 4.0.0
-     * @deprecated 该方法已无意义，已被{@link #addContent(String, int, Placeholder, String...)}方法代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public T addContent(String field, int index, Map<String, DataFunction> replaceWordMap, String... contents) {
-        return addContent(field, index, new Placeholder(WORD_SIGN, WORD_SIGN).addReplaceFunction(replaceWordMap, true),
-                contents);
-    }
-
-    /**
      * 根据传入的字段信息，将指定的内容插入到用例相应字段的指定下标下，并且可传入临时的占位符类对象，对文本中的占位符进行替换，且不影响已添加的替换词语
      * <p>
      * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
@@ -528,33 +440,6 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
         fieldJson.put(WriteTempletFile.KEY_DATA, contentListJson);
         data.getCaseJson().put(field, fieldJson);
         return (T) this;
-    }
-
-    /**
-     * 根据传入的字段信息，将指定的内容插入到用例相应字段的末尾，并且可传入临时的替换词语，对文本中的占位符进行替换，且不影响已添加的替换词语
-     * <p>
-     * 方法允许传入多条内容，每条内容在写入到文件时，均以换行符隔开。若指定的下标小于0或大于当前内容的最大个数时，则将内容写入到集合最后
-     * </p>
-     * <p>
-     * <b>注意：</b>
-     * <ol>
-     * <li>当设置了自动换行字段时，则在插入该字段内容后（内容非空时），则会在插入当前内容前自动进行换行，再插入该内容，可参考{@link #setEndField(String)}的设置方法</li>
-     * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
-     * </ol>
-     * </p>
-     * 
-     * @param field          字段id
-     * @param replaceWordMap 临时替换词语集合
-     * @param contents       相应字段的内容
-     * 
-     * @return 类本身
-     * @since autest 4.0.0
-     * @deprecated 该方法已无意义，已由{@link #addContent(String, Placeholder, String...)}方法代替，将在4.3.0或后续版本中是删除
-     */
-    @Deprecated
-    public T addContent(String field, Map<String, DataFunction> replaceWordMap, String... contents) {
-        return addContent(field, new Placeholder(WORD_SIGN, WORD_SIGN).addReplaceFunction(replaceWordMap, true),
-                contents);
     }
 
     /**
@@ -791,103 +676,6 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
                 }
             }
         }
-    }
-
-    /**
-     * 用于对当前文本内容中的词语进行提取，并返回替换后的内容
-     *
-     * @param content        文本内容
-     * @param replaceWordMap 待替换词语集合
-     * @return 替换词语后的文本内容
-     * @deprecated 该方法已无意义，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    protected String replaceWord(String content, Map<String, DataFunction> replaceWordMap) {
-        // 用于存储需要被替换的词语，用于判断当前词语是否被替换完毕
-        Set<String> doneReplaceWordSet = new HashSet<>();
-        // 获取内容中的待替换词语，并循环获取，以便于被替换的词语中仍包含替换词语的情况时，也能将其内的词语进行替换
-        Set<String> wordSet = null;
-        // TODO 增加自定义占位符标志后，此处使用的“#”符号也需要修改
-        while (!(wordSet = getReplaceWord(content, WORD_SIGN, WORD_SIGN)).isEmpty()) {
-            // 若当前需要替换的词语均被替换干净，则继续循环，判断是否还存在需要替换的内容；若
-            if (wordSet.equals(doneReplaceWordSet) && !doneReplaceWordSet.isEmpty()) {
-                break;
-            }
-
-            doneReplaceWordSet.addAll(wordSet);
-            // 循环，遍历待替换词语，并对内容进行替换
-            for (String word : wordSet) {
-                // 将词语与每一个规则进行匹配
-                for (String key : replaceWordMap.keySet()) {
-                    // 若传入的内容与正则匹配，则将数据进行处理，并返回处理结果
-                    if (Pattern.compile(key).matcher(word).matches()) {
-                        // 将待替换的词语进行拼装
-                        String oldWord = WORD_SIGN + word + WORD_SIGN;
-                        // 获取替换的词语
-                        String newWord = replaceWordMap.get(key).apply(word);
-                        // 循环，替换所有与oldWord相同的内容
-                        // 由于oldWord可能包含括号等特殊字符，故不能使用replaceAll方法进行替换
-                        // TODO 替换占位符的方法可移至“DisposeCodeUtils”类中
-                        while (content.contains(oldWord)) {
-                            int startIndex = content.indexOf(oldWord);
-                            int endIndex = startIndex + oldWord.length();
-                            content = content.substring(0, startIndex) + newWord + content.substring(endIndex);
-                        }
-
-                        doneReplaceWordSet.remove(word);
-                    }
-                }
-            }
-        }
-
-        return content;
-    }
-
-    /**
-     * 用于获取内容中的所有的带替换符号的词语
-     *
-     * @param content 文本内容
-     * @return 替换的词语集合
-     * @deprecated 该方法已由{@link #getReplaceWord(String, String, String)}方法代替，将在后续版本中删除
-     */
-    @Deprecated
-    protected ArrayList<String> getReplaceWord(String content) {
-        return new ArrayList<>(getReplaceWord(content, WORD_SIGN, WORD_SIGN));
-    }
-
-    /**
-     * 用于获取内容中的所有的带替换符号的词语
-     *
-     * @param content   文本内容
-     * @param startSign 占位符开始标志
-     * @param endSign   占位符结束标志
-     * @return 替换的词语集合
-     * @since autest 4.1.0
-     * @deprecated 该方法已无意义，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    protected Set<String> getReplaceWord(String content, String startSign, String endSign) {
-        // TODO 重构此处逻辑，目前DisposeCodeUtils类中包含转义正则的方法，即使自定义的内容中包含需要转义为正则内容，亦可按照正则切分，故此处考虑重构
-        Set<String> wordSet = new HashSet<>();
-        // 获取当前数据中是否存在符号
-        int index = -1;
-        // 循环，判断是否存在标记符号
-        while ((index = content.indexOf(startSign)) > -1) {
-            // 存在编号，则将内容按第一个符号切分，使其不包括第一个符号
-            content = content.substring(index + startSign.length());
-            // 再次获取符号所在的编号
-            index = content.indexOf(endSign);
-
-            // 若存在符号，则获取符号后的词语，到当前index位置
-            if (index > -1) {
-                wordSet.add(content.substring(0, index));
-
-                // 再次按照符号切分，并获取index
-                content = content.substring(index + endSign.length());
-            }
-        }
-
-        return wordSet;
     }
 
     /**

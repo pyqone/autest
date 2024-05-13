@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.auxiliary.datadriven.DataFunction;
-import com.auxiliary.selenium.location.ReadLocation;
 import com.auxiliary.sikuli.element.ElementLocationInfo;
 import com.auxiliary.tool.common.AddPlaceholder;
 import com.auxiliary.tool.common.Placeholder;
@@ -51,21 +50,6 @@ public abstract class AbstractSikuliLocation implements AddPlaceholder {
      * @since autest 3.1.0
      */
     public static final String FORMAT_REPLACE_REGEX = ".*%s.*%s.*";
-
-    /**
-     * 元素占位符起始标识，默认{@link ReadLocation#MATCH_START_SIGN}
-     * 
-     * @deprecated 该属性已无意义，占位符相关的内容由占位符类对象代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    protected String startRegex = ReadLocation.MATCH_START_SIGN;
-    /**
-     * 元素占位符结束标识，默认{@link ReadLocation#MATCH_END_SIGN}
-     * 
-     * @deprecated 该属性已无意义，占位符相关的内容由占位符类对象代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    protected String endRegex = ReadLocation.MATCH_END_SIGN;
 
     /**
      * 占位符类对象

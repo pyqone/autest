@@ -36,21 +36,6 @@ public abstract class AbstractLocation implements ReadLocation, AddPlaceholder {
     public static final String END_SIGN = "}";
 
     /**
-     * 元素占位符起始标识，默认{@link ReadLocation#MATCH_START_SIGN}
-     * 
-     * @deprecated 该属性已无意义，占位符相关的内容由占位符类对象代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    protected String startRegex = ReadLocation.MATCH_START_SIGN;
-    /**
-     * 元素占位符结束标识，默认{@link ReadLocation#MATCH_END_SIGN}
-     * 
-     * @deprecated 该属性已无意义，占位符相关的内容由占位符类对象代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    protected String endRegex = ReadLocation.MATCH_END_SIGN;
-
-    /**
      * 占位符类对象
      * 
      * @since autest 4.2.0
@@ -112,40 +97,6 @@ public abstract class AbstractLocation implements ReadLocation, AddPlaceholder {
         case "0":
         default:
             return ElementType.COMMON_ELEMENT;
-        }
-    }
-
-    /**
-     * 该方法用于根据标签的名称，返回相应的定位方式枚举
-     *
-     * @param labelName 标签名称
-     * @return {@link ByType}枚举
-     * @deprecated 该方法已过期，已被{@link ByType#typeText2Type(String)}方法代替，将在4.0.0版本后删除
-     */
-    @Deprecated
-    protected ByType toByType(String labelName) {
-        switch (labelName) {
-        case "xpath":
-            return ByType.XPATH;
-        case "css":
-            return ByType.CSS;
-        case "classname":
-            return ByType.CLASSNAME;
-        case "id":
-            return ByType.ID;
-        case "linktext":
-            return ByType.LINKTEXT;
-        case "name":
-            return ByType.NAME;
-        case "tagname":
-            return ByType.TAGNAME;
-        // 定义需要忽略的标签
-        case "element":
-        case "iframe":
-        case "limits":
-            return null;
-        default:
-            throw new IllegalArgumentException("不存在的定位方式: " + labelName);
         }
     }
 

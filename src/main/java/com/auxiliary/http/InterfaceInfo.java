@@ -1,6 +1,8 @@
 package com.auxiliary.http;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -176,11 +178,17 @@ public class InterfaceInfo implements Cloneable {
      */
     protected HashMap<String, String> requestHeaderMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
-     * 接口相应字符集
+     * 接口请求体字符集
      *
-     * @since autest 3.3.0
+     * @since autest 4.5.0
      */
-    protected String charsetname = "";
+    protected String requestCharsetname = "";
+    /**
+     * 接口响应体字符集
+     *
+     * @since autest 4.5.0
+     */
+    protected String responseCharsetname = "";
     /**
      * 接口响应内容格式集合
      *
@@ -492,17 +500,19 @@ public class InterfaceInfo implements Cloneable {
      */
     public void addParam(String expression) {
         // 过滤不符合正则的表达式，之后按照分隔符号切分，得到每个参数的表达式后，再按照参数与值的符号切分
-        Optional.ofNullable(expression).filter(exp -> exp.matches("[\\?？]?\\w+=\\w*(&\\w+=\\w*)*"))
+        String[] paramExps = Optional.ofNullable(expression).filter(exp -> exp.matches("[\\?？]?.+=\\w*(&.+=.*)*"))
                 .map(exp -> (exp.indexOf("?") == 0 || exp.indexOf("？") == 0) ? exp.substring(1) : exp)
-                .map(exp -> exp.split(SYMBOL_SPLIT_PARAM)).map(Arrays::stream)
-                .ifPresent(expStream -> expStream.filter(pramExp -> pramExp.contains(SYMBOL_SPLIT_PARAM_VALUE))
-                        .map(pramExp -> pramExp.split(SYMBOL_SPLIT_PARAM_VALUE)).forEach(params -> {
-                            if (params.length == 1) {
-                                addParam(params[0], "");
-                            } else {
-                                addParam(params[0], params[1]);
-                            }
-                        }));
+                .map(exp -> exp.split(SYMBOL_SPLIT_PARAM)).orElseGet(() -> new String[] {});
+
+        // 循环，对每个属性对按照“=”符号分割，并判断存储相应的属性
+        for (String paramExp : paramExps) {
+            String[] params = paramExp.split(SYMBOL_SPLIT_PARAM_VALUE);
+            if (params.length == 1) {
+                addParam(params[0], "");
+            } else {
+                addParam(params[0], params[1]);
+            }
+        }
     }
 
     /**
@@ -697,26 +707,49 @@ public class InterfaceInfo implements Cloneable {
     }
 
     /**
-     * 该方法用于返回接口响应内容的字符集编码名称
+     * 该方法用于返回接口请求响应内容的字符集编码名称，若未设置响应体字符集编码，则默认为“UTF-8”编码
      *
-     * @return 接口响应内容的字符集编码名称
-     * @since autest 3.3.0
+     * @return 接口请求内容的字符集编码名称
+     * @since autest 4.5.0
      */
-    public String getCharsetname() {
-        if (charsetname.isEmpty()) {
+    public String getRequestCharsetname() {
+        if (requestCharsetname.isEmpty()) {
             return DEFAULT_CHARSETNAME;
         }
-        return charsetname;
+        return requestCharsetname;
+    }
+
+    /**
+     * 该方法用于设置接口请求内容的字符集编码名称
+     *
+     * @param requestCharsetname 接口请求内容的字符集编码名称
+     * @since autest 4.5.0
+     */
+    public void setRequestCharsetname(String requestCharsetname) {
+        this.requestCharsetname = Optional.ofNullable(requestCharsetname).orElseGet(() -> "");
+    }
+
+    /**
+     * 该方法用于返回接口响应内容的字符集编码名称，若未设置响应体字符集编码，则默认为“UTF-8”编码
+     *
+     * @return 接口响应内容的字符集编码名称
+     * @since autest 4.5.0
+     */
+    public String getResponseCharsetname() {
+        if (responseCharsetname.isEmpty()) {
+            return DEFAULT_CHARSETNAME;
+        }
+        return responseCharsetname;
     }
 
     /**
      * 该方法用于设置接口响应内容的字符集编码名称
      *
-     * @param charsetname 接口响应内容的字符集编码名称
-     * @since autest 3.3.0
+     * @param responseCharsetname 接口响应内容的字符集编码名称
+     * @since autest 4.5.0
      */
-    public void setCharsetname(String charsetname) {
-        this.charsetname = Optional.ofNullable(charsetname).orElseGet(() -> "");
+    public void setResponseCharsetname(String responseCharsetname) {
+        this.responseCharsetname = Optional.ofNullable(responseCharsetname).orElseGet(() -> "");
     }
 
     /**
@@ -1334,11 +1367,21 @@ public class InterfaceInfo implements Cloneable {
     public String toUrlString() {
         // 拼接接口参数信息
         StringJoiner paramInfo = new StringJoiner(SYMBOL_SPLIT_PARAM);
-        paramMap.forEach((k, v) -> paramInfo.add(String.format("%s%s%s", k, SYMBOL_SPLIT_PARAM_VALUE, v)));
+        paramMap.forEach((k, v) -> {
+            try {
+                String keyEncode = URLEncoder.encode(k, getRequestCharsetname());
+                String valueEncode = URLEncoder.encode(v, getRequestCharsetname());
+                paramInfo.add(String.format("%s%s%s", keyEncode, SYMBOL_SPLIT_PARAM_VALUE, valueEncode));
+            } catch (UnsupportedEncodingException e) {
+                throw new InterfaceReadToolsException(
+                        String.format("当前参数内容“[%s, %s]”无法通过“%s”编码转换成有效的URL地址", k, v, getRequestCharsetname()), e);
+            }
+        });
 
-        return String.format("%s%s%s%s%s", getProtocol(), getHost(),
-                (getPort() == 80 ? "" : (SYMBOL_SPLIT_PORT + getPort())), getPath(),
+        String urlText = String.format("%s%s%s%s%s", getProtocol(), getHost(),
+                    (getPort() == 80 ? "" : (SYMBOL_SPLIT_PORT + getPort())), getPath(),
                 (paramInfo.length() != 0 ? (SYMBOL_SPLIT_START_PARAM + paramInfo.toString()) : ""));
+        return urlText;
     }
 
     @SuppressWarnings("unchecked")

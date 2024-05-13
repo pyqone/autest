@@ -60,13 +60,6 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
      */
     public static final String KEY_ROW_TEXT = "rowText";
     /**
-     * 标记json中的autoIndex字段
-     * 
-     * @deprecated 该属性已由{@link TempletAutoAddListSign#KEY_AUTO_LIST_SIGN}属性代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public static final String KEY_AUTO_NUMBER = "autoIndex";
-    /**
      * 标记json中的freezeTop字段
      */
     public static final String KEY_FREEZE_TOP = "freezeTop";
@@ -246,26 +239,6 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
         }
 
         return this;
-    }
-
-    /**
-     * 用于设置字段段落内容是否自动编号
-     * <p>
-     * 设置自动编号后，当写入文件时，将在每段内容前，加上“序号 + .”的内容
-     * </p>
-     * <p>
-     * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
-     * </p>
-     * 
-     * @param isAuto 是否自动编号
-     * @param fields 字段组
-     * @return 类本身
-     * @since autest 3.7.0
-     * @deprecated 该属性已由{@link TempletAutoAddListSign#setOrderedListSign(OrderedListSignType, String...)}方法代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public ExcelFileTemplet setAutoSerialNumber(boolean isAuto, String... fields) {
-        return setOrderedListSign(OrderedListSignType.ARABIC_NUM, fields);
     }
 
     /**
