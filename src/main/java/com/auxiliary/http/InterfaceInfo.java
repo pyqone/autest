@@ -178,14 +178,6 @@ public class InterfaceInfo implements Cloneable {
      */
     protected HashMap<String, String> requestHeaderMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
-     * 接口响应字符集
-     *
-     * @since autest 3.3.0
-     * @deprecated 由{@link #responseCharsetname}属性代替，将在4.7.0或后续版本删除
-     */
-    @Deprecated
-    protected String charsetname = "";
-    /**
      * 接口请求体字符集
      *
      * @since autest 4.5.0
@@ -712,33 +704,6 @@ public class InterfaceInfo implements Cloneable {
         Map<String, String> requestHeaderMap = getRequestHeaderMap();
         this.requestHeaderMap.clear();
         return requestHeaderMap;
-    }
-
-    /**
-     * 该方法用于返回接口响应内容的字符集编码名称
-     *
-     * @return 接口响应内容的字符集编码名称
-     * @since autest 3.3.0
-     * @deprecated 由{@link #getResponseCharsetname()}属性代替，将在4.7.0或后续版本删除
-     */
-    @Deprecated
-    public String getCharsetname() {
-        if (charsetname.isEmpty()) {
-            return DEFAULT_CHARSETNAME;
-        }
-        return charsetname;
-    }
-
-    /**
-     * 该方法用于设置接口响应内容的字符集编码名称
-     *
-     * @param charsetname 接口响应内容的字符集编码名称
-     * @since autest 3.3.0
-     * @deprecated 由{@link #setResponseCharsetname()}属性代替，将在4.7.0或后续版本删除
-     */
-    @Deprecated
-    public void setCharsetname(String charsetname) {
-        this.charsetname = Optional.ofNullable(charsetname).orElseGet(() -> "");
     }
 
     /**

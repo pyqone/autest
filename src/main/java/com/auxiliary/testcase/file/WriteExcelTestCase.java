@@ -1,7 +1,6 @@
 package com.auxiliary.testcase.file;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,9 +30,8 @@ import com.auxiliary.tool.file.excel.WriteExcelTempletFile;
  * @since autest 2.5.0
  * @param <T> 子类
  */
-@SuppressWarnings("deprecation")
 public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extends WriteExcelTempletFile<T>
-        implements RelevanceTestCaseTemplet<T>, BasicTsetCase<T> {
+        implements RelevanceTestCaseTemplet<T> {
     /**
      * 用于存储测试用例与测试用例模板字段之间的关联
      */
@@ -66,68 +64,10 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
 
     /**
      * 该方法用于初始化已知的模板字段与已知的用例字段之间的联系，在构造方法时进行调用，亦可不编写其中内容
-     * 
+     *
      * @since autest 2.5.0
      */
     protected abstract void initField();
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-    public T addStep(String... stepTexts) {
-        addContent(caseFieldMap.get(CASE_STEP), stepTexts);
-        return (T) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-    public T addTitle(String titleText) {
-        addContent(caseFieldMap.get(CASE_TITLE), titleText);
-        return (T) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-    public T addExcept(String... exceptTexts) {
-        addContent(caseFieldMap.get(CASE_EXCEPT), exceptTexts);
-        return (T) this;
-    }
-
-    @Override
-    @Deprecated
-    public T addStepAndExcept(String step, String except) {
-        return disposeWriteFieldsContent(Arrays.asList(caseFieldMap.get(CASE_STEP), caseFieldMap.get(CASE_EXCEPT)),
-                () -> {
-                    addStep(step);
-                    addExcept(except);
-                });
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-    public T addModule(String module) {
-        addContent(caseFieldMap.get(CASE_MODULE), module);
-        return (T) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-    public T addPrecondition(String... preconditions) {
-        addContent(caseFieldMap.get(CASE_PRECONDITION), preconditions);
-        return (T) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Deprecated
-    public T addPriority(String priority) {
-        addContent(caseFieldMap.get(CASE_RANK), priority);
-        return (T) this;
-    }
 
     @Override
     public void relevanceCase(String caseField, String templetField) {

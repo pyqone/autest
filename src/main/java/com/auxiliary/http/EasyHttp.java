@@ -9,15 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataDriverFunction;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.datadriven.Functions;
 import com.auxiliary.tool.common.AddPlaceholder;
-import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.Entry;
 import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.date.TimeUnit;
@@ -63,11 +60,6 @@ public class EasyHttp implements AddPlaceholder {
     private final String FUNCTION_END_SIGN = "}";
 
     /**
-     * 占位符标记
-     */
-    private final String FUNCTION_SIGN = FUNCTION_START_SIGN + ".+?" + FUNCTION_END_SIGN;
-
-    /**
      * 定义消息类型为NONE的请求体
      */
     private static final RequestBody NONE_REQUEST_BODY = RequestBody
@@ -83,23 +75,9 @@ public class EasyHttp implements AddPlaceholder {
     public static final String ASSERT_RESULT_JSON_RESULT = "result";
 
     /**
-     * 存储提词内容
-     *
-     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    private HashMap<String, String> extractMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
      * 存储断言结果
      */
     private Set<String> assertResultSet = new HashSet<>(ConstType.DEFAULT_MAP_SIZE);
-    /**
-     * 存储公式内容
-     *
-     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    private HashMap<String, DataFunction> functionMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储占位符类对象
      *
@@ -151,22 +129,6 @@ public class EasyHttp implements AddPlaceholder {
         placeholder.addReplaceFunction(regex, function);
     }
 
-    /**
-     * 该方法用于添加待替换的关键词及相应的替换内容
-     *
-     * @param key   待替换关键词
-     * @param value 替换内容
-     * @return 类本身
-     * @since autest 3.3.0
-     * @deprecated 该方法由{@link #addReplaceWord(String, String)}代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public EasyHttp addReplaceKey(String key, String value) {
-        placeholder.addReplaceWord(key, value);
-
-        return this;
-    }
-
     @Override
     public void addReplaceWord(String word, String replaceWord) {
         placeholder.addReplaceWord(word, replaceWord);
@@ -181,18 +143,6 @@ public class EasyHttp implements AddPlaceholder {
      */
     public String getReplaceKey(String key) {
         return placeholder.replaceWord(key);
-    }
-
-    /**
-     * 该方法用于设置自动断言失败时，是否需要抛出异常
-     *
-     * @param isAssertFailThrowException 断言失败是否抛出异常
-     * @since autest 3.3.0
-     * @deprecated 命名不规范，已由{@link #setAssertFailThrowException(boolean)}方法代替，将在3.8.0或以上版本中删除
-     */
-    @Deprecated
-    public void isAssertFailThrowException(boolean isAssertFailThrowException) {
-        this.isAssertFailThrowException = isAssertFailThrowException;
     }
 
     /**
@@ -286,7 +236,7 @@ public class EasyHttp implements AddPlaceholder {
         EasyResponse response = requst(interInfo.getRequestType(), placeholder.replaceText(interInfo.toUrlString()),
                 newHeadMap, body.getKey(), bodyContent, connectTime.getKey(), connectTime.getValue());
         // 设置响应体解析字符集
-        response.setCharsetName(interInfo.getCharsetname());
+        response.setCharsetName(interInfo.getResponseCharsetname());
         // 设置响应体内容格式
         interInfo.getAllSaveState()
                 .forEach(status -> response.setMessageType(status, interInfo.getResponseContentType(status)));
@@ -394,50 +344,6 @@ public class EasyHttp implements AddPlaceholder {
      */
     public static EasyResponse requst(String url) {
         return requst(RequestType.GET, url, null, null, null);
-    }
-
-    /**
-     * 该方法用于对所有可以使用公式的文本进行处理，返回处理后的文本
-     *
-     * @param content 待替换文本
-     * @return 处理后的文本
-     * @since autest 3.3.0
-     * @deprecated 占位符替换方法已由{@link #placeholder}代替，其属性及方法将在4.3.0或后续版本中删除
-     */
-    @SuppressWarnings("unused")
-    @Deprecated
-    private String disposeContent(String content) {
-        // 判断需要才处理的内容是否为空或是否包含公式标志，若存在，则返回content
-        String matchPrefix = ".*";
-        if (content == null || content.isEmpty() || !content.matches(matchPrefix + FUNCTION_SIGN + matchPrefix)) {
-            return content;
-        }
-
-        // 通过函数标志对文本中的函数或方法进行提取
-        Matcher m = Pattern.compile(FUNCTION_SIGN).matcher(content);
-        while (m.find()) {
-            // 去除标记符号，获取关键词
-            String signKey = m.group();
-            String key = signKey.replaceAll(FUNCTION_START_SIGN, "").replaceAll(FUNCTION_END_SIGN, "");
-
-            // 判断关键词是否为已存储的词语
-            if (extractMap.containsKey(key)) {
-                content = content.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey), extractMap.get(key));
-                continue;
-            }
-
-            // 若不是存储的词语，则判断关键词是否符合公式集合中的内容，符合公式，则使用公式对内容进行替换
-            for (String funKey : functionMap.keySet()) {
-                if (key.matches(funKey)) {
-                    content = content.replaceAll(DisposeCodeUtils.disposeRegexSpecialSymbol(signKey),
-                            functionMap.get(funKey).apply(key));
-                    break;
-                }
-            }
-
-        }
-
-        return content;
     }
 
     /**

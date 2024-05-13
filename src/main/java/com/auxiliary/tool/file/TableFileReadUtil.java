@@ -49,7 +49,7 @@ import com.opencsv.CSVReader;
  * <p>
  * <b>修改时间：</b>2020年12月25日下午6:40:07
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -65,77 +65,18 @@ public class TableFileReadUtil {
 	 * 指向xlsx文件后缀名
 	 */
 	private static final String FILE_SUFFIX_XLSX = "xlsx";
-	/**
-	 * 指向xls文件后缀名
-	 */
-	private static final String FILE_SUFFIX_XLS = "xls";
-	/**
-	 * 指向docx文件后缀名
-	 */
-	private static final String FILE_SUFFIX_DOCX = "docx";
-	/**
-	 * 指向doc文件后缀名
-	 */
-	private static final String FILE_SUFFIX_DOC = "doc";
-	/**
-	 * 指向csv文件后缀名
-	 */
-	private static final String FILE_SUFFIX_CSV = "csv";
-	/**
-	 * 指向txt文件后缀名
-	 */
-	private static final String FILE_SUFFIX_TXT = "txt";
-	
+
 	private TableFileReadUtil() {
 	}
 
-	/**
-	 * 根据传入文件格式，将文件的内容进行转换。其转换规则如下：
-	 * <ol>
-	 * <li>当读取的文件为Excel文件（xls/xlsx格式）时，其传入的regex表示需要读取的sheet名称</li>
-	 * <li>当读取的文件为文本文件（doc/docx/txt格式）时，其传入的regex表示对每一行文本的切分规则，以得到一个列表</li>
-	 * <li>当读取的文件为CSV文件（csv格式）时，其传入的regex无意义</li>
-	 * </ol>
-	 * 
-	 * @param file    待读取的文件对象
-	 * @param pattern sheet名称或切分文本的规则
-	 * @throws IOException 文件状态或路径不正确时抛出的异常
-	 */
-	@Deprecated
-	public static TableData<String> readFile(File file, String pattern, boolean isFirstTitle) {
-		// 若pattern为null，则赋为空
-		if (pattern == null) {
-			pattern = "";
-		}
-
-		// 存储文件的名称
-		String fileName = file.getName();
-		// 存储文件名的后缀，并根据后缀来判断采用哪一种读取方式
-		switch (fileName.substring(fileName.lastIndexOf(".") + 1)) {
-		case FILE_SUFFIX_DOC:
-			return readOldWord(file, pattern, isFirstTitle);
-		case FILE_SUFFIX_DOCX:
-			return readNewWord(file, pattern, isFirstTitle);
-		case FILE_SUFFIX_XLS:
-		case FILE_SUFFIX_XLSX:
-			return readExcel(file, pattern, isFirstTitle);
-		case FILE_SUFFIX_TXT:
-			return readTxt(file, pattern, isFirstTitle);
-		case FILE_SUFFIX_CSV:
-			return readCsv(file, isFirstTitle);
-		default:
-			throw new UnsupportedFileException("无法解析“" + fileName + "”文件格式");
-		}
-	}
-
-	/**
-	 * 用于读取并处理csv格式文件，并将内容转换为字符串列表进行返回
-	 * 
-	 * @param file         文件
-	 * @param isFirstTitle 首行是否为标题行
-	 * @return 数据表类对象
-	 * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
-	 */
+    /**
+     * 用于读取并处理csv格式文件，并将内容转换为字符串列表进行返回
+     * 
+     * @param file         文件
+     * @param isFirstTitle 首行是否为标题行
+     * @return 数据表类对象
+     * @throws UnsupportedFileException 文件未传入或读取异常时抛出的异常
+     */
 	public static TableData<String> readCsv(File file, boolean isFirstTitle) {
 		TableData<String> wordTable = new TableData<>();
 
@@ -169,7 +110,7 @@ public class TableFileReadUtil {
 
 	/**
 	 * 该方法用于读取并处理txt格式的文件，可通过切分规则对文本每一行的内容进行切分
-	 * 
+	 *
 	 * @param file         文件
 	 * @param regex        切分规则
 	 * @param isFirstTitle 首行是否为标题行
@@ -212,7 +153,7 @@ public class TableFileReadUtil {
 
 	/**
 	 * 该方法用于读取并处理excel文件，根据传入的sheet名称来读取不同的sheet
-	 * 
+	 *
 	 * @param file         待读取的文件
 	 * @param sheetName    需要读取的sheet名称
 	 * @param isFirstTitle 首行是否为标题行
@@ -235,17 +176,17 @@ public class TableFileReadUtil {
 		} catch (IOException e) {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
-		
+
 		try (Workbook excel = excelOptional.orElseThrow(() -> new UnsupportedFileException("Excel文件读取类未构造"))) {
 			return readExcel(excel, sheetName, isFirstTitle);
 		} catch (UnsupportedFileException | IOException e) {
 			throw new UnsupportedFileException("文件异常，无法进行读取：" + file.getAbsolutePath(), e);
 		}
 	}
-	
+
 	/**
 	 * 该方法用于读取并处理excel文件，根据传入的sheet名称来读取不同的sheet
-	 * 
+	 *
 	 * @param excel         excel类{@link Workbook}对象
 	 * @param sheetName    需要读取的sheet名称
 	 * @param isFirstTitle 首行是否为标题行
@@ -254,7 +195,7 @@ public class TableFileReadUtil {
 	 */
 	public static TableData<String> readExcel(Workbook excel, String sheetName, boolean isFirstTitle) {
 		TableData<String> wordTable = new TableData<>();
-		
+
 		// 读取excel中的内容，若未存储读取的sheet名称，则读取第一个sheet
 		Sheet sheet = Optional
 				.ofNullable(Optional.ofNullable(sheetName).orElse("").isEmpty() ? excel.getSheetAt(0)
@@ -294,7 +235,7 @@ public class TableFileReadUtil {
 
 	/**
 	 * 用于读取Excel中的一行数据，并以集合形式进行返回
-	 * 
+	 *
 	 * @param rowOption 行封装类对象
 	 * @return 数据集合
 	 */
@@ -306,13 +247,13 @@ public class TableFileReadUtil {
 				.map(TableFileReadUtil::getCellContent)
 				.forEach(dataList::add);
 		});
-		
+
 		return dataList;
 	}
 
 	/**
 	 * 根据单元格的类型，对其内容进行输出
-	 * 
+	 *
 	 * @param cell 单元格类对象
 	 * @return 单元格中的文本
 	 */
@@ -350,7 +291,7 @@ public class TableFileReadUtil {
 
 	/**
 	 * 该方法用于读取并处理旧版(后缀为“.doc”)word文件，可通过切分规则对文本每一行的内容进行切分
-	 * 
+	 *
 	 * @param file         文件
 	 * @param regex        切分规则
 	 * @param isFirstTitle 首行是否为标题行
@@ -417,7 +358,7 @@ public class TableFileReadUtil {
 
 	/**
 	 * 该方法用于读取并处理新版(后缀为“.docx”)word文件，可通过切分规则对文本每一行的内容进行切分
-	 * 
+	 *
 	 * @param file         文件
 	 * @param regex        切分规则
 	 * @param isFirstTitle 首行是否为标题行
@@ -479,7 +420,7 @@ public class TableFileReadUtil {
 
 	/**
 	 * 用于生成默认的列名
-	 * 
+	 *
 	 * @param length 数据列个数
 	 * @return 相应的默认列名
 	 */

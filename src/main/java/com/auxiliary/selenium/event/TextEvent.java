@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.TimeoutException;
@@ -132,46 +131,6 @@ public class TextEvent extends AbstractEvent {
         brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), text));
 
         return text;
-    }
-
-    /**
-     * 用于向页面上发送键盘按键，可使用{@link Keys}枚举类控制发送的特殊按键。 例如，需要在页面上按下“alt + d”，则可以传入<br>
-     * keyToSend(element, {@link Keys#ALT}, "d")
-     *
-     * @param element {@link Element}对象
-     * @param keys    需要传入的按键，可传入{@link Keys}枚举类或字符串,若传入字符串，则只取字符串中第一个字母
-     * @return 发送按键组合，每个按键间用“ + ”字符串连接
-     * @throws TimeoutException       元素无法操作时抛出的异常
-     * @throws NoSuchElementException 元素不存在或下标不正确时抛出的异常
-     * @deprecated 该方法已由{@link #keyToSend(Element, KeyType...)}方法代替，将在3.2.0或以后版本中删除
-     */
-    @Deprecated
-    public String keyToSend(Element element, CharSequence... keys) {
-        actionOperate(element, (e) -> {
-            e.getWebElement().sendKeys(keys);
-            return "";
-        });
-
-        StringBuilder textBul = new StringBuilder();
-        Arrays.asList(keys).stream().map(key -> {
-            // 判断key是否为Keys枚举，若是，则调用其name()方法，否则调用toString()方法
-            if (key instanceof Keys) {
-                return ((Keys) key).name();
-            } else {
-                return key.toString();
-            }
-        }).forEach(text -> {
-            textBul.append(text);
-            textBul.append(" + ");
-        });
-
-        // 删除最后多余的符号
-        String resultText = textBul.substring(0, textBul.lastIndexOf(" + "));
-        String logText = "在“%s”元素中发送按键“%s”";
-
-        brower.getLogRecord().recordLog(String.format(logText, element.getElementData().getName(), resultText));
-
-        return resultText;
     }
 
     /**

@@ -1,13 +1,9 @@
 package com.auxiliary.testcase.templet;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.common.AddPlaceholder;
 import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.file.WriteTempletFile;
-import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -36,14 +32,6 @@ public abstract class AbstractCaseTemplet implements AddPlaceholder {
      */
     protected final String REPLACE_WORD_SIGN = WriteTempletFile.WORD_SIGN;
 
-    /**
-     * 存储xml文件中其需要替换的词语
-     * 
-     * @since autest 4.0.0
-     * @deprecated 占位符替换方法由{@link Placeholder}类代替，其原有的占位符替换方法已失效，将在4.3.0或后续版本中进行删除
-     */
-    @Deprecated
-    protected Map<String, DataFunction> replaceWordMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
     /**
      * 存储xml文件中所有的占位符
      * 
@@ -77,15 +65,5 @@ public abstract class AbstractCaseTemplet implements AddPlaceholder {
      */
     public Placeholder getPlaceholder() {
         return placeholder;
-    }
-
-    /**
-     * 该方法用于返回需要替换的占位符内容集合
-     * 
-     * @return 待替换的占位符内容集合
-     * @since autest 4.0.0
-     */
-    public Map<String, DataFunction> getReplaceWordMap() {
-        return replaceWordMap;
     }
 }

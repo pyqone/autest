@@ -11,6 +11,7 @@ import java.util.Set;
 import com.alibaba.fastjson.JSONObject;
 import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.common.DisposeCodeUtils;
+import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.regex.ConstType;
 
 /**
@@ -47,7 +48,7 @@ public class CaseData {
      * 构造对象，并设置当前生成用例的模板类对象
      * <p>
      * 在写入用例时需要读取模板类中的内容，若通过用例模板子类生成的测试用例数据，建议使用该构造，在构造对象时使用如下形式进行构造
-     * 
+     *
      * <pre>
      * <code>CaseData caseData = new CaseData(this)</code>
      * </pre>
@@ -55,7 +56,7 @@ public class CaseData {
      * <p>
      * 若不存在模板，可传入null进行构造
      * </p>
-     * 
+     *
      * @param caseTemplet 用例模板类对象
      */
     public CaseData(AbstractCaseTemplet caseTemplet) {
@@ -64,7 +65,7 @@ public class CaseData {
 
     /**
      * 该方法用于返回用例模板类对象
-     * 
+     *
      * @return 用例模板类对象
      * @since autest 4.0.0
      */
@@ -91,7 +92,7 @@ public class CaseData {
      * </ul>
      * </ul>
      * </p>
-     * 
+     *
      * @param field       字段名称
      * @param insertIndex 插入的下标
      * @param contents    插入的内容字符串数组
@@ -122,7 +123,7 @@ public class CaseData {
      * </ul>
      * </ul>
      * </p>
-     * 
+     *
      * @param field       字段名称
      * @param insertIndex 插入的下标
      * @param contentList 插入的内容字符串集合
@@ -157,7 +158,7 @@ public class CaseData {
 
     /**
      * 该方法用于将测试用例类对象下下指定字段的内容拼接至当前测试用例类对象相应字段下
-     * 
+     *
      * @param caseDate 已生成的测试用例类对象
      * @param fields   指定的字段组
      * @return 当前用例类对象
@@ -201,7 +202,7 @@ public class CaseData {
      * </ul>
      * </ul>
      * </p>
-     * 
+     *
      * @param removeIndex 需要移除内容的真实所在下标
      * @param fields      需要删除指定下标的字段组
      * @return 类本身
@@ -212,7 +213,7 @@ public class CaseData {
         if (fields == null || fields.length == 0) {
             return this;
         }
-        
+
         // 遍历整个字段组，并根据字段组的长度，对相应下标的内容进行删除
         for (String field : fields) {
             // 判断当前字段在用例集合中是否存在，若不存在，则不进行删除操作
@@ -227,7 +228,7 @@ public class CaseData {
             // 对相应字段内容进行删除
             contentList.remove(removeIndex);
         }
-        
+
         return this;
     }
 
@@ -250,7 +251,7 @@ public class CaseData {
      * </ul>
      * </ul>
      * </p>
-     * 
+     *
      * @param field        字段名称
      * @param replaceIndex 需要替换的下标
      * @param contents     替换的内容组
@@ -278,7 +279,7 @@ public class CaseData {
 
     /**
      * 该方法用于返回指定字段的内容集合，若字段在用例集合中不存在，则初始化字段的内容集合，并返回相应字段的空集合对象
-     * 
+     *
      * @param field 字段名称
      * @return 用例集合中字段对应的内容集合
      * @since autest 4.0.0
@@ -295,7 +296,7 @@ public class CaseData {
 
     /**
      * 该方法用于对指定字段中的内容进行返回，若字段不存在，则返回空集合
-     * 
+     *
      * @param field 字段
      * @return 字段对应的内容集合
      * @since autest 4.0.0
@@ -306,7 +307,7 @@ public class CaseData {
 
     /**
      * 该方法用于返回用例中包含的所有字段
-     * 
+     *
      * @return 用例字段集合
      * @since autest 4.0.0
      */
@@ -316,18 +317,30 @@ public class CaseData {
 
     /**
      * 该方法用于返回指定的模板类对象中存储的需要替换模板占位符的词语集合，若未指定模板类对象，则返回空集合
-     * 
+     *
      * @return 需要替换模板占位符的词语集合
      * @since autest 4.0.0
+     * @deprecated 该方法已失效，已有{@link #getPlaceholder()}方法代替，将在5.1.0版本后删除
      */
+    @Deprecated
     public Map<String, DataFunction> getReplaceWordMap() {
-        return Optional.ofNullable(caseTemplet).map(ct -> ct.getReplaceWordMap())
+        return Optional.ofNullable(caseTemplet).map(ct -> ct.getPlaceholder().getReplaceFunctionMap())
                 .orElseGet(() -> new HashMap<>(ConstType.DEFAULT_MAP_SIZE));
     }
 
     /**
+     * 该方法用于返回模板的占位符类对象
+     *
+     * @return 占位符类对象
+     * @since autest 5.0.0
+     */
+    public Placeholder getPlaceholder() {
+        return caseTemplet.getPlaceholder();
+    }
+
+    /**
      * 该方法用于返回当前存储的用例内容，转换为json的形式进行返回
-     * 
+     *
      * @return 用例json形式
      * @since autest 4.0.0
      */

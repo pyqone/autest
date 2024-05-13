@@ -130,115 +130,6 @@ public class PresetString {
 		return s;
 	}
 
-	/**
-     * 该方法用于随机生成一个身份证号
-     *
-     * @return 生成的身份证号码
-     * @deprecated 该方法已被{@link #identityCard(String, String, String, int, int, int, int, SexType)}方法代替，将在4.7.0或后续版本中删除
-     */
-    @Deprecated
-	public static String identityCard() {
-		StringBuilder sb = new StringBuilder();
-		RandomString rs = new RandomString("123456789");
-
-		// 省份
-		int[] province = { 13, 14, 15, 21, 22, 23, 31, 32, 33, 34, 35, 36, 37, 41, 42, 43, 44, 45, 46, 50, 51, 52, 53,
-				54, 61, 62, 63, 64, 65, 71, 81, 82, 91 };
-		// 城市
-		String[] city = { "01", "02", "03" };
-		// 区县
-		String[] county = { "01", "02", "03", "04", "05" };
-		// 生日年份前两位
-        int[] year = { 19 };
-
-		// 加权数
-		int[] factors = { 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 };
-		// 校验位
-		String[] parity = { "1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2" };
-
-		// 随机添加一个省份
-		sb.append(province[new Random().nextInt(province.length)]);
-		// 随机添加一个城市
-		sb.append(city[new Random().nextInt(city.length)]);
-		// 随机添加一个区县
-		sb.append(county[new Random().nextInt(county.length)]);
-		// 随机生日年份
-		sb.append(year[new Random().nextInt(year.length)]).append(rs.toString(2));
-		// 随机生日月份及日子
-		sb.append("0" + rs.toString(1)).append("0" + rs.toString(1));
-		// 随机三位数
-		sb.append(rs.toString(3));
-
-		// 计算加权数
-		int sum = 0;
-		for (int i = 0; i < 17; i++) {
-			int code = Integer.valueOf(sb.substring(i, i + 1));
-			int factor = Integer.valueOf(factors[i]);
-			sum += (code * factor);
-		}
-		// 根据加权数添加校验位
-		sb.append(parity[(sum % 11)]);
-
-		return sb.toString();
-	}
-
-    /**
-     * 该方法用于根据年龄范围，随机生成一个身份证号
-     *
-     * @param startAge 起始年龄
-     * @param endAge   结束年龄
-     * @return 生成的身份证号码
-     * @since autest 4.4.0
-     * @deprecated 该方法已被{@link #identityCard(String, String, String, int, int, int, int, SexType)}方法代替，将在4.7.0或后续版本中删除
-     */
-    @Deprecated
-    public static String identityCard(int startAge, int endAge) {
-        StringBuilder sb = new StringBuilder();
-        int age = new Random().nextInt(endAge - startAge) + startAge;
-        String year = String.valueOf(LocalDateTime.now().getYear() - age);
-
-        rs.clear();
-        rs.addMode(StringMode.NUM);
-
-        // 省份
-        int[] province = { 13, 14, 15, 21, 22, 23, 31, 32, 33, 34, 35, 36, 37, 41, 42, 43, 44, 45, 46, 50, 51, 52, 53,
-                54, 61, 62, 63, 64, 65, 71, 81, 82, 91 };
-        // 城市
-        String[] city = { "01", "02", "03" };
-        // 区县
-        String[] county = { "01", "02", "03", "04", "05" };
-
-        // 加权数
-        int[] factors = { 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 };
-        // 校验位
-        String[] parity = { "1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2" };
-
-        // 随机添加一个省份
-        sb.append(province[new Random().nextInt(province.length)]);
-        // 随机添加一个城市
-        sb.append(city[new Random().nextInt(city.length)]);
-        // 随机添加一个区县
-        sb.append(county[new Random().nextInt(county.length)]);
-        // 随机生日年份
-        sb.append(year);
-        // 随机生日月份及日子
-        sb.append("0" + rs.toString(1)).append("0" + rs.toString(1));
-        // 随机三位数
-        sb.append(rs.toString(3));
-
-        // 计算加权数
-        int sum = 0;
-        for (int i = 0; i < 17; i++) {
-            int code = Integer.valueOf(sb.substring(i, i + 1));
-            int factor = Integer.valueOf(factors[i]);
-            sum += (code * factor);
-        }
-        // 根据加权数添加校验位
-        sb.append(parity[(sum % 11)]);
-
-        return sb.toString();
-    }
-
     /**
      * 该方法用于根据指定的参数，生成与参数匹配的随机身份证号
      * <p>
@@ -250,6 +141,7 @@ public class PresetString {
      * <li>年龄段：传入年龄段后，则将在年龄段中随机生成一个年龄作为生日的年份，若起始年龄为小于1的数，则默认为18岁，若结束年龄小于1，则默认为65岁；
      * 若传入的起始年龄大于结束年龄，则自动将其调换</li>
      * <li>生日日期：月份若传入小于1，或大于12，则随机生成月份；日数若传入数值不合理时，则也在当前月份下随机一个日数</li>
+     * <li>性别枚举：若性别枚举为空，则随机产生一个性别数（传入性别枚举时亦是随机产生一个和该性别相应的随机数）</li>
      * </ul>
      * </p>
      * <p>
@@ -344,7 +236,7 @@ public class PresetString {
         RandomObject<Element> randomElement = new RandomObject<>();
         // 查找省级元素是否存在
         Element provinceElement = (Element) configXml.selectSingleNode(String.format(provinceXpath, provinceCode));
-        // 若省级元素不存在，则对省、市、区三个编码随机获取
+        // 若省级元素不存在，则随机获取一个省级节点
         if (provinceElement == null) {
             randomElement.addObject(configXml.getRootElement().elements());
             // 随机生成省级元素，并存储其编码
@@ -354,12 +246,12 @@ public class PresetString {
 
         Element cityElement = (Element) configXml.selectSingleNode(String.format(provinceXpath + cityXpath, provinceCode, cityCode));
         Element cityZoneElement = (Element) configXml.selectSingleNode(String.format(provinceXpath + zoneXpath, provinceCode, cityCode));
-        // 若市级元素不存在，则对市、区三个编码随机获取
+        // 若市级元素与区级市元素均不存在，则根据省级元素，产生一个随机的市级或区级市元素
         if (cityElement == null && cityZoneElement == null) {
-            // 随机生成市级元素
             randomElement.clear(RandomObject.DEFAULT_NAME);
             randomElement.addObject(provinceElement.elements());
             Element e = randomElement.toObject().get();
+            // 对元素的节点名称判断，并存储相应的市级或区级市节点
             if ("city".equals(e.getName())) {
                 cityElement = e;
             } else {
@@ -368,10 +260,8 @@ public class PresetString {
             cityCode = e.attributeValue("id");
         }
 
-        // 判断当前是否为县级市，若为县级市，则无需对区县级进行判断
-        if (cityElement == null && cityZoneElement != null) {
-            zoneCode = "";
-        } else {
+        // 若市级元素存在，则对区级元素随机提取；若市级元素不存在，则直接将区级代码置空（通过上面的代码判断后，不存在市级节点与区级市节点均为空的情况）
+        if (cityElement != null) {
             Element zoneElement = (Element) configXml.selectSingleNode(
                     String.format(provinceXpath + cityXpath + zoneXpath, provinceCode, cityCode, zoneCode));
             if (zoneElement == null) {
@@ -379,6 +269,8 @@ public class PresetString {
                 randomElement.addObject(cityElement.elements());
                 zoneCode = randomElement.toObject().get().attributeValue("id");
             }
+        } else {
+            zoneCode = "";
         }
 
         // 拼接行政区号
@@ -387,9 +279,13 @@ public class PresetString {
         cardText.append(yearText + moonText + dayText);
         // 拼接两位随机数
         cardText.append(String.format("%02d", random.nextInt(100)));
-        // 根据性别，拼接性别随机数
-        cardText.append((sexType != null && sexType == SexType.MAN) ? RandomString.randomString(1, 1, "13579")
-                : RandomString.randomString(1, 1, "24680"));
+        // 根据性别，拼接性别随机数，若性别枚举为null，则随机生成尾数
+        if (sexType == null) {
+            cardText.append(RandomString.randomString(1, 1, StringMode.NUM));
+        } else {
+            cardText.append(sexType == SexType.MAN ? RandomString.randomString(1, 1, "13579")
+                    : RandomString.randomString(1, 1, "24680"));
+        }
 
         // 加权数
         int[] factors = { 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 };
@@ -426,30 +322,6 @@ public class PresetString {
 		s += rs.toString(1, 2);
 
 		return s;
-	}
-
-	/**
-	 * 生成手机号码
-	 *
-	 * @return 手机号码
-	 * @deprecated 已使用{@link #mobleNumber(MobleNumberType)}方法代替
-	 */
-	@Deprecated
-    public static String phoneID(PhoneType phoneType) {
-		if (phoneType == PhoneType.MOBLE) {
-			return "139" + new RandomString(StringMode.NUM).toString(8);
-		} else {
-			String s = "077";
-			rs.clear();
-			rs.addMode("12345");
-			s += rs.toString(1);
-
-			rs.clear();
-			rs.addMode("23456789");
-			s += rs.toString(7);
-
-			return s;
-		}
 	}
 
 	/**

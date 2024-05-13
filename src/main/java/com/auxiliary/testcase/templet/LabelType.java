@@ -21,13 +21,6 @@ package com.auxiliary.testcase.templet;
  */
 public enum LabelType {
 	/**
-     * 用例标签
-     * 
-     * @deprecated 该标签已失效，将在4.1.0或后续版本中删除
-     */
-    @Deprecated
-	CASE("case"), 
-	/**
      * 步骤
      */
 	STEP("step"), 

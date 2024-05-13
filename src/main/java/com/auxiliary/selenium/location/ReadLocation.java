@@ -24,21 +24,6 @@ import com.auxiliary.tool.common.Placeholder;
  */
 public interface ReadLocation {
     /**
-     * 定义用于正则的替换符开始标记
-     * 
-     * @deprecated 占位符相关的内容由元素模板读取基类的占位符类对象代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public static final String MATCH_START_SIGN = "\\$\\{";
-    /**
-     * 定义用于正则的替换符结束标记
-     * 
-     * @deprecated 占位符相关的内容由元素模板读取基类的占位符类对象代替，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public static final String MATCH_END_SIGN = "\\}";
-
-    /**
      * 用于返回元素的定位信息
      *
      * @return 元素定位信息

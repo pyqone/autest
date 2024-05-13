@@ -678,7 +678,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
                 inter.addRequestHeaderMap(interGroup.getRequestHeaderMap());
             }
             if (interGroup.isWriteCharsetname()) {
-                inter.setCharsetname(interGroup.getCharsetname());
+                inter.setResponseCharsetname(interGroup.getResponseCharsetname());
             }
             if (interGroup.isWriteResponseContentType()) {
                 for (int state : interGroup.getAllSaveState()) {
@@ -767,7 +767,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
         // 读取请求体信息
         readInterBody(inter, interElement);
         // 读取响应体字符集
-        inter.setCharsetname(readCharsetname(interElement));
+        inter.setResponseCharsetname(readCharsetname(interElement));
         // 读取接口不同状态的响应报文格式
         readResponseTypes(inter, interElement);
         // 读取接口断言规则信息
@@ -962,7 +962,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
             // 读取请求体信息
             readInterBody(group, groupElement);
             // 读取响应体字符集
-            group.setCharsetname(readCharsetname(groupElement));
+            group.setResponseCharsetname(readCharsetname(groupElement));
             // 读取接口不同状态的响应报文格式
             readResponseTypes(group, groupElement);
             // 读取接口断言规则信息
@@ -1308,7 +1308,7 @@ public class ReadInterfaceFromXml extends ReadInterfaceFromAbstract
          * @since autest 4.4.0
          */
         protected boolean isWriteCharsetname() {
-            return !charsetname.isEmpty();
+            return !responseCharsetname.isEmpty();
         }
 
         /**

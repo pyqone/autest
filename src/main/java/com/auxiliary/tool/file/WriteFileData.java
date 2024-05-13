@@ -1,15 +1,10 @@
 package com.auxiliary.tool.file;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.auxiliary.datadriven.DataDriverFunction;
-import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.file.excel.ExcelFileTemplet;
-import com.auxiliary.tool.regex.ConstType;
 
 /**
  * <p>
@@ -54,13 +49,6 @@ public class WriteFileData {
      * 存储当前模板的名称
      */
     private String tempName = "";
-    /**
-     * 存储待替换的词语以及被替换的词语
-     * 
-     * @deprecated 该属性已无意义，占位符替换及添加方法已写入到{@link WriteTempletFile}类中，相关属性与方法将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    private HashMap<String, DataFunction> replaceWordMap = new HashMap<>(ConstType.DEFAULT_MAP_SIZE);
 
     /**
      * 初始化相关的数据
@@ -124,21 +112,6 @@ public class WriteFileData {
      */
     public void setNowCaseNum(int nowCaseNum) {
         this.nowCaseNum = nowCaseNum;
-    }
-
-    /**
-     * 用于添加待替换的词语及相应的替换方法
-     *
-     * @param functions 替换词语使用的函数
-     * @deprecated 该属性已无意义，占位符替换及添加方法已写入到{@link WriteTempletFile}类中，相关属性与方法将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public void addReplaceWord(DataDriverFunction functions) {
-        if (functions == null) {
-            return;
-        }
-
-        replaceWordMap.put(functions.getRegex(), functions.getFunction());
     }
 
     /**
@@ -245,17 +218,6 @@ public class WriteFileData {
      */
     public String getTempName() {
         return tempName;
-    }
-
-    /**
-     * 用于返回当前模板中需要替换的词语集合
-     *
-     * @return 替换的词语集合
-     * @deprecated 该属性已无意义，占位符替换及添加方法已写入到{@link WriteTempletFile}类中，相关属性与方法将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    public Map<String, DataFunction> getReplaceWordMap() {
-        return replaceWordMap;
     }
 
     /**

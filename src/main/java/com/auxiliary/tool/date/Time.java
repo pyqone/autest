@@ -176,10 +176,7 @@ public class Time implements Comparable<Time>, Cloneable {
      * @return 类本身
      * @throws IncorrectConditionException 数值无法被赋入相应的单位下时抛出的异常
      * @since autest 2.0.0
-     *
-     * @deprecated 该方法使用不方便，如需设置日期、时间可通过{@code parse()}等静态方法重新生成{@code Time}类对象，该方法将在4.7.0或后续版本中删除
      */
-    @Deprecated
     public Time setTime(int timeNum, TimeUnit timeUnit) {
         // 记录每个时间下的数值
         int year = initTime.getYear();
@@ -338,41 +335,6 @@ public class Time implements Comparable<Time>, Cloneable {
     }
 
     /**
-     * 用于以{@link Time}的形式返回初始化时设置的时间
-     *
-     * @return 始化时设置的时间
-     * @since autest 2.0.0
-     * @deprecated 该方法已经失效，自4.5.0版本修改后，已不再存储计算后的时间，该方法将在4.7.0或后续版本中删除
-     */
-    @Deprecated
-    public Time getInitTime() {
-        return this;
-    }
-
-    /**
-     * 用于以{@link Time}的形式将设置后的时间作为初始时间进行返回
-     *
-     * @return 计算后的时间
-     * @since autest 2.0.0
-     * @deprecated 该方法已经失效，自4.5.0版本修改后，已不再存储计算后的时间，该方法将在4.7.0或后续版本中删除
-     */
-    @Deprecated
-    public Time getCalculateTime() {
-        return this;
-    }
-
-    /**
-     * 用于还原初始化时设置的日期/时间
-     *
-     * @since autest 2.0.0
-     * @deprecated 该方法已经失效，自4.5.0版本修改后，已不再存储计算后的时间，该方法将在4.7.0或后续版本中删除
-     */
-    @Deprecated
-    public Time initTime() {
-        return this;
-    }
-
-    /**
      * 用于根据条件计算日期/时间，方法允许传入小数与负数进行计算
      * <p>
      * <b>注意：</b>在计算年、月时，若传入的数值是小数，在转换毫秒值时，其会按照
@@ -528,8 +490,8 @@ public class Time implements Comparable<Time>, Cloneable {
         char[] chars = dateText.toCharArray();
 
         /*
-         * 转换思路： 
-         * 1.遍历通过dateText得到的每一个字符 
+         * 转换思路：
+         * 1.遍历通过dateText得到的每一个字符
          * 2.判断当前字符是否为数字：
          *  a.若为数字，则记录isSign为false，表示当前字符为数字，并拼接index指向的位数
          *  b.若为非数字，则记录isSign为true,表示当前字符为字符，则需要再次判断上一个字符是 否也是非数字（即isSign是否本身为false）:

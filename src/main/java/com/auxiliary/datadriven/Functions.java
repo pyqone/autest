@@ -57,7 +57,7 @@ public class Functions {
 		return new DataDriverFunction(regex, text -> {
 			//获取公式中有效部分
 			String str = text.substring(text.indexOf("(") + 1, text.indexOf(")"));
-			
+
 			//将公式有效部分按照分隔符号进行切分
 			String[] parameters = str.split(", ?");
 			//切分的第一个元素为字符串种子
@@ -66,7 +66,7 @@ public class Functions {
 			int startIndex = Integer.valueOf(parameters[1]);
 			//判断parameters是否存在第三个元素，若不存在，则将字符串最长长度设置为与最小字符串长度一致
 			int endIndex = parameters.length > 2 ? Integer.valueOf(parameters[2]) : startIndex;
-			
+
 			//判断字符串种子是否包含双引号，若包含双引号，则去掉双引号后将其转换，若不包含，则
 			//表示字符串种子属于特殊种子，按照枚举进行添加
 			if (seed.indexOf("\"") > -1) {
@@ -95,12 +95,12 @@ public class Functions {
 					break;
 				}
 			}
-			
+
 			//返回生成的随机字符串
 			return new RandomString(seed).toString(startIndex, endIndex);
 		});
 	}
-	
+
 	/**
 	 * 定义对指定时间处理的函数
 	 * <p>
@@ -146,11 +146,11 @@ public class Functions {
 			String str = text.substring(text.indexOf("(") + 1, text.indexOf(")"));
 			//将公式有效部分按照分隔符号进行切分
 			String[] parameters = str.split(", ?");
-			
+
 			return disposeTime(parameters[0], parameters[1]);
 		});
 	}
-	
+
 	/**
 	 * 定义对当前时间处理的函数
 	 * <p>
@@ -184,11 +184,11 @@ public class Functions {
 		return new DataDriverFunction(regex, text -> {
 			//获取公式中有效部分
 			String str = text.substring(text.indexOf("(") + 1, text.indexOf(")"));
-			
+
 			return disposeTime("", str);
 		});
 	}
-	
+
 	/**
 	 * 用于对时间进行处理
 	 * @param timeText 设置时间的文本
@@ -198,19 +198,19 @@ public class Functions {
 	private static String disposeTime(String timeText, String pattern) {
 		timeText = Optional.ofNullable(timeText).orElse("");
 		pattern = Optional.ofNullable(pattern).orElse("");
-		
+
 		Time time = Time.parse();
 		if (!timeText.isEmpty()) {
 			time = Time.parse(timeText);
 		}
-		
+
 		if (!pattern.isEmpty()) {
 			time.addTime(pattern);
 		}
-		
+
 		return time.getFormatTime();
 	}
-	
+
 	/**
 	 * 定义标记当前元素为空元素
 	 * <p>
@@ -225,7 +225,7 @@ public class Functions {
 			return "";
 		});
 	}
-	
+
 	/**
 	 * 定义生成随机18位长度的身份证信息函数
 	 * <p>
@@ -235,9 +235,10 @@ public class Functions {
 	 */
 	public static DataDriverFunction randomIdCard() {
 		String regex = "(idcard)|(身份证)";
-		return new DataDriverFunction(regex, text -> PresetString.identityCard());
+        return new DataDriverFunction(regex,
+                text -> PresetString.identityCard(null, null, null, -1, -1, -1, -1, null));
 	}
-	
+
 	/**
 	 * 定义生成随机手机号码函数
 	 * <p>
@@ -289,10 +290,10 @@ public class Functions {
 				}
 			} else {
 				return PresetString.mobleNumber(MobleNumberType.CHINA_MOBILE);
-			} 
+			}
 		});
 	}
-	
+
 	/**
 	 * 定义生成随机姓名函数
 	 * <p>
@@ -304,7 +305,7 @@ public class Functions {
 		String regex = "(name)|(姓名)";
 		return new DataDriverFunction(regex, text -> PresetString.name());
 	}
-	
+
 	/**
 	 * 定义生成随机随机车牌号码函数
 	 * <p>
@@ -352,14 +353,14 @@ public class Functions {
 				case "民用":
 				default:
 					return PresetString.carLicence(CarLicecenType.CIVIL);
-					
+
 				}
 			} else {
 				return PresetString.carLicence(CarLicecenType.CIVIL);
-			} 
+			}
 		});
 	}
-	
+
 	/**
 	 * 定义根据预设词语随机返回函数，该函数需要预先设定切分词语的标识符
 	 * <p>
@@ -384,7 +385,7 @@ public class Functions {
 	 * <li>词语间分隔符为英文的逗号，在词语中请勿使用该符号</li>
 	 * </ol>
 	 * </p>
-	 * 
+	 *
 	 * @return {@link DataDriverFunction}类对象
 	 */
 	public static DataDriverFunction randomWord() {
@@ -392,11 +393,11 @@ public class Functions {
 		return new DataDriverFunction(regex, text -> {
 			//获取括号中的内容，并按照传入的规则，对内容进行截取
 			String[] words = text.substring(text.indexOf("(") + 1, text.indexOf(")")).split(",");
-			
+
 			//将词语添加至随机对象中
 			RandomObject<String> word = new RandomObject<>();
 			word.addObject(words);
-			
+
 			//返回词语，若词语为空，则返回空串
 			return word.toObject().orElse("");
 		});

@@ -117,7 +117,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 构造对象，读取模板文件，并初始化各个参数
-     * 
+     *
      * @param excelFile 接口模板文件
      */
     public ReadInterfaceFromExcel(File excelFile) {
@@ -133,7 +133,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         } catch (Exception e) {
             throw new InterfaceReadToolsException(String.format("文件读取异常，请检查文件：%s", excelFile.getAbsolutePath()), e);
         }
-        
+
         // 读取接口数据
         Optional.ofNullable(excel.getSheet(ExcelField.SHEET_INTER.getKey()))
                 .ifPresent(dataSheet -> addInterNameRowIndex(interMap, ExcelField.INTER_INTER_NAME, dataSheet));
@@ -195,7 +195,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                     if (envName.isEmpty()) {
                         continue;
                     }
-                    
+
                     // 存储当前环境内容，并获取其url
                     envMap.put(envName, cellList.get(ExcelField.ENV_URL).map(format::formatCellValue)
                             .orElse(InterfaceInfo.DEFAULT_PROTOCOL + InterfaceInfo.DEFAULT_HOST));
@@ -313,7 +313,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         interfaceCacheMap.put(interName, inter);
         return inter;
     }
-    
+
     protected void readBodySheetContent(String interName, InterfaceInfo inter) {
         // 若模板中指定了普通请求体文本，则对接口添加普通请求体文本
         if (normalBodyMap.containsKey(interName)) {
@@ -343,7 +343,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                             }
                             return content;
                         }).orElse("");
-                
+
                 // 若请求体内容不为空，则按照指定的方式设置请求体内容
                 if (!contentCellText.isEmpty()) {
                     try {
@@ -447,7 +447,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取一个接口占多行的sheet页内容
-     * 
+     *
      * @param interName 接口名称
      * @param sheetName sheet页名称
      * @param inter     接口信息类对象
@@ -459,7 +459,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         if (!map.containsKey(interName)) {
             return;
         }
-        
+
         // 获取sheet类对象
         Sheet sheet = excel.getSheet(sheetName);
 
@@ -492,7 +492,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
             if (sheetName.equals(ExcelField.SHEET_RESPONSE.getKey())) {
                 // 若当前行为首行，则设置其响应字符集
                 if (rowIndex == startRowIndex) {
-                    inter.setCharsetname(Optional.ofNullable(row.getCell(ExcelField.RESPONSE_RESPONSE_CHARSET))
+                    inter.setResponseCharsetname(Optional.ofNullable(row.getCell(ExcelField.RESPONSE_RESPONSE_CHARSET))
                             .map(format::formatCellValue).orElse(""));
                 }
                 readResponseSheetContent(row, inter);
@@ -511,7 +511,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取接口提词sheet页内容
-     * 
+     *
      * @param row   行对象
      * @param inter 接口信息类对象
      * @since autest 3.7.0
@@ -548,7 +548,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取接口断言sheet页内容
-     * 
+     *
      * @param row   行对象
      * @param inter 接口信息类对象
      * @since autest 3.7.0
@@ -561,7 +561,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         if (assertRegex.isEmpty()) {
             return;
         }
-        
+
         // 通过判断后，则对断言json串进行存储
         JSONObject assertJson = new JSONObject();
         assertJson.put(AssertResponse.JSON_ASSERT_ASSERT_REGEX, assertRegex);
@@ -587,7 +587,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取接口响应sheet页内容
-     * 
+     *
      * @param row   行对象
      * @param inter 接口信息类对象
      * @since autest 3.7.0
@@ -614,7 +614,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取前置接口sheet页的接口信息
-     * 
+     *
      * @param row   行对象
      * @param inter 接口信息类对象
      * @since autest 3.7.0
@@ -636,13 +636,13 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
                 .map(format::formatCellValue).filter(num -> num.matches(RegexType.INTEGER.getRegex()))
                 .map(Integer::valueOf).orElse(0);
         beforeInterfaceOperation.setActionCount(count);
-        
+
         inter.addBeforeOperation(beforeInterfaceOperation);
     }
 
     /**
      * 该方法用于接口cookie sheet页内容
-     * 
+     *
      * @param row   行对象
      * @param inter 接口信息类对象
      * @since autest 3.7.0
@@ -663,7 +663,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取接口请求头sheet页内容
-     * 
+     *
      * @param row   行对象
      * @param inter 接口信息类对象
      * @since autest 3.7.0
@@ -685,7 +685,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取接口参数sheet页内容
-     * 
+     *
      * @param row   行对象
      * @param inter 接口信息对象
      * @since autest 3.7.0
@@ -707,7 +707,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于读取“接口”sheet页中接口相关的基本信息
-     * 
+     *
      * @param interName 接口名称
      * @param inter     接口信息类对象
      * @since autest 3.7.0
@@ -730,7 +730,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于关闭对接口模板的读取
-     * 
+     *
      * @since autest 3.7.0
      */
     public void close() {
@@ -743,7 +743,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于获取当前sheet中所有行对象的集合
-     * 
+     *
      * @param sheet sheet对象
      * @return 当前sheet所有行对象集合
      * @since autest 3.7.0
@@ -755,7 +755,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         if (rowLastIndex == 0) {
             return new ArrayList<>();
         }
-        
+
         // 遍历所有的行，并将其存储至集合中
         return IntStream.range(1, rowLastIndex + 1)
                 // 转换下标为行对象，并进行存储
@@ -764,7 +764,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于获取当前行中所有单元格对象的集合
-     * 
+     *
      * @param row         行对象
      * @param columnIndex 当前行下的列数
      * @return 当前行中所有单元格对象的集合
@@ -783,7 +783,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
 
     /**
      * 该方法用于将sheet所有行中指定下标单元格中不为空的内容进行存储，并记录其内容及行号至指定的map集合中
-     * 
+     *
      * @param map        存储内容及下标的集合
      * @param fieldIndex 指定字段所在的列的下标
      * @param dataSheet  数据sheet页
@@ -802,12 +802,12 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
             // 若内容不为空串，则在指定的map中进行存储
             if (!content.isEmpty()) {
                 int rowIndex = rowList.get(index).getRowNum();
-                
+
                 // 判断当前是否有存储内容，若存在需要存储的内容，则记录其结束下标
                 if (!saveContent.isEmpty()) {
                     map.put(saveContent, new Entry<>(startIndex, rowIndex - 1));
                 }
-                
+
                 // 存储当前内容，并将开始下标置为当前行所在下标
                 saveContent = content;
                 startIndex = rowIndex;
@@ -942,7 +942,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
         public static final int BEFORE_INTER_OPEARTE_BEFORE_INTER_NAME = 1;
         /**
          * 前置接口操作sheet中的执行次数名称
-         * 
+         *
          * @since 4.3.0
          */
         public static final int BEFORE_INTER_OPEARTE_ACTION_COUNT = 2;
@@ -1061,7 +1061,7 @@ public class ReadInterfaceFromExcel extends ReadInterfaceFromAbstract
          * 接口断言sheet中的读取下标
          */
         public static final int ASSERT_ORD = 7;
-        
+
         /**
          * 接口提词sheet中的接口名称
          */

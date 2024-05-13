@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -40,7 +39,6 @@ import org.dom4j.Element;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.auxiliary.datadriven.DataFunction;
 import com.auxiliary.tool.common.DisposeCodeUtils;
 import com.auxiliary.tool.common.Placeholder;
 import com.auxiliary.tool.common.enums.OrderedListSignType;
@@ -481,27 +479,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
     }
 
     @Override
-    @Deprecated
-    public T addContent(String field, int index, Map<String, DataFunction> replaceWordMap, String... contents) {
-        String[] newContents = new String[contents.length];
-        // 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
-        for (int i = 0; i < contents.length; i++) {
-            try {
-                // 尝试将传入的内容转换为数字，以获取数据有效性的内容
-                int optionIndex = Integer.valueOf(contents[i]);
-                // 获取模板中的数据有效性内容
-                newContents[i] = Optional.ofNullable(data.getTemplet().getTempletAttribute(ExcelFileTemplet.KEY_DATA))
-                        .map(o -> (JSONObject) o).map(json -> json.getJSONArray(field))
-                        .map(list -> list.getString(analysisIndex(list.size(), optionIndex, true))).orElse(contents[i]);
-            } catch (Exception e) {
-                newContents[i] = contents[i];
-            }
-        }
-
-        return super.addContent(field, index, replaceWordMap, newContents);
-    }
-
-    @Override
     public T addContent(String field, int index, Placeholder placeholder, String... contents) {
         String[] newContents = new String[contents.length];
         // 遍历当前的传参，若为数字，则将其转换为读取相关的数据有效性数据
@@ -834,33 +811,6 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
         // 返回创建的第一个单元格
         return getCell(templetSheet, rowIndex, columnIndex);
-    }
-
-    /**
-     * 用于对需要写入单元格的文本进行拼接
-     *
-     * @param content      需要拼接的富文本内容
-     * @param style        样式
-     * @param text         文本内容
-     * @param isAutoNumber 是否自动编号
-     * @param textIndex    文本下标
-     * @return 拼接后的富文本对象
-     * @deprecated 该方法已由{@link #appendContent(XSSFRichTextString, XSSFCellStyle, String, JSONObject, int)}方法代替，
-     *             且不再进行引用，将在4.3.0或后续版本中删除
-     */
-    @Deprecated
-    protected XSSFRichTextString appendContent(XSSFRichTextString content, XSSFCellStyle style, String text,
-            boolean isAutoNumber, int textIndex) {
-        // 获取单元格内容，判断内容是否需要自动标号
-        if (isAutoNumber) {
-            text = String.format("%d.%s", (textIndex + 1), text);
-        }
-
-        // 判断当前文本前是否包含了文本，若存在文本，则添加换行
-        text = (content.length() == 0 ? "" : "\n") + text;
-        content.append(text, style.getFont());
-
-        return content;
     }
 
     /**
