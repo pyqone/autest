@@ -22,18 +22,40 @@ import com.alibaba.fastjson.JSONObject;
  * </p>
  * 
  * @author 彭宇琦
- * @version Ver1.0
+ * @version Ver2.0
  * @since JDK 1.8
  * @since autest 2.4.0
  */
-public class FileTemplet {
+public class FileTemplet<T extends FileTemplet<T>> {
+    /**
+     * 标记json中的save字段
+     * 
+     * @since autest 2.4.0
+     */
     public static final String KEY_SAVE = "save";
+    /**
+     * 标记json中的field字段
+     * 
+     * @since autest 2.4.0
+     */
     public static final String KEY_FIELD = "field";
+    /**
+     * 标记json中的index字段
+     * 
+     * @since autest 2.4.0
+     */
     public static final String KEY_INDEX = "index";
+    /**
+     * 标记json中的name字段
+     * 
+     * @since autest 2.4.0
+     */
     public static final String KEY_NAME = "name";
 
     /**
      * 存储模板json串
+     * 
+     * @since autest 2.4.0
      */
     protected JSONObject templetJson = new JSONObject();
 
@@ -41,6 +63,7 @@ public class FileTemplet {
      * 初始化模板文件的保存路径
      * 
      * @param saveFile 模板文件保存路径
+     * @since autest 2.4.0
      */
     public FileTemplet(File saveFile) {
         templetJson.put(KEY_SAVE, saveFile.getAbsolutePath());
@@ -51,6 +74,7 @@ public class FileTemplet {
      * 根据已有的模板json串，初始化模板
      * 
      * @param templetJsonText 模板json串
+     * @since autest 2.4.0
      */
     public FileTemplet(String templetJsonText) {
         // 将传入的json字符串转换成JSONObject类，并判断其是否包含必要字段，若不存在，则抛出异常
@@ -75,9 +99,14 @@ public class FileTemplet {
      * 用于变更模板的保存路径
      * 
      * @param saveFile 模板文件保存路径
+     * 
+     * @since autest 2.4.0
+     * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码
      */
-    public void setSaveFile(File saveFile) {
+    @SuppressWarnings("unchecked")
+    public T setSaveFile(File saveFile) {
         templetJson.put(KEY_SAVE, saveFile.getAbsolutePath());
+        return (T) this;
     }
 
     /**
@@ -87,8 +116,12 @@ public class FileTemplet {
      * </p>
      * 
      * @param field 字段ID
+     * 
+     * @since autest 2.4.0
+     * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码
      */
-    public void addField(String field) {
+    @SuppressWarnings("unchecked")
+    public T addField(String field) {
         // 判断文本内容是否为空
         if (!isEmpty(field)) {
             JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
@@ -96,6 +129,8 @@ public class FileTemplet {
             addFieldAttribute(field, KEY_INDEX, fieldJson.keySet().size() - 1);
             addFieldAttribute(field, KEY_NAME, field);
         }
+
+        return (T) this;
     }
 
     /**
@@ -107,11 +142,15 @@ public class FileTemplet {
      * @param field    字段ID
      * @param attName  属性名称
      * @param attValue 属性值
+     * 
+     * @since autest 2.4.0
+     * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码
      */
-    public void addFieldAttribute(String field, String attName, Object attValue) {
+    @SuppressWarnings("unchecked")
+    public T addFieldAttribute(String field, String attName, Object attValue) {
         // 判断字段内容是否为空，任何一个内容为空时，则不进行存储
         if (isEmpty(field) || isEmpty(attName)) {
-            return;
+            return (T) this;
         }
 
         JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
@@ -119,6 +158,7 @@ public class FileTemplet {
         if (fieldJson.containsKey(field)) {
             fieldJson.getJSONObject(field).put(attName, attValue);
         }
+        return (T) this;
     }
 
     /**
@@ -151,11 +191,15 @@ public class FileTemplet {
      * 
      * @param attName  属性名称
      * @param attValue 属性值
+     * 
+     * @since autest 2.4.0
+     * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码
      */
-    public void addTempletAttribute(String attName, Object attValue) {
+    @SuppressWarnings("unchecked")
+    public T addTempletAttribute(String attName, Object attValue) {
         // 判断字段内容是否为空，任何一个内容为空时，则不进行存储
         if (isEmpty(attName) || attValue == null) {
-            return;
+            return (T) this;
         }
 
         // 判断关键词是否与指定关键词重复
@@ -164,6 +208,7 @@ public class FileTemplet {
         }
 
         templetJson.put(attName, attValue);
+        return (T) this;
     }
 
     /**
