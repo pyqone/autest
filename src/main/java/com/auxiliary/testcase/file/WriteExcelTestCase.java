@@ -57,7 +57,7 @@ public abstract class WriteExcelTestCase<T extends WriteExcelTestCase<T>> extend
      * @param templetName 模板名称
      * @param templet     模板类
      */
-    public WriteExcelTestCase(String templetName, FileTemplet templet) {
+    public WriteExcelTestCase(String templetName, FileTemplet<?> templet) {
         super(templetName, templet);
         initField();
     }

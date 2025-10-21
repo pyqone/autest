@@ -22,7 +22,7 @@ import com.auxiliary.tool.file.WriteTempletFile;
  * <p>
  * <b>修改时间：</b>2021年6月13日下午3:33:31
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -33,7 +33,7 @@ public class WriteBasicExcelTempletFile extends WriteExcelTempletFile<WriteBasic
 	 * <p>
 	 * 通过该方法构造的写入类为包含模板的写入类，可直接按照字段编写文件内容
 	 * </p>
-	 * 
+	 *
 	 * @param templetXml 模板配置文件
 	 * @param saveFile   文件保存路径
 	 */
@@ -43,17 +43,17 @@ public class WriteBasicExcelTempletFile extends WriteExcelTempletFile<WriteBasic
 
 	/**
 	 * 构造Excel写入类，并设置一个Sheet页的模板及相应的名称
-	 * 
+	 *
 	 * @param templetName 模板名称
 	 * @param templet     模板类
 	 */
-	public WriteBasicExcelTempletFile(String templetName, FileTemplet templet) {
+    public WriteBasicExcelTempletFile(String templetName, FileTemplet<?> templet) {
 		super(templetName, templet);
 	}
 
 	/**
 	 * 使用默认的excel模板，快速将列表数据类对象中的数据，写入到指定的文件中
-	 * 
+	 *
 	 * @param saveFile 存储数据的文件对象
 	 * @param data     表格数据类对象
 	 * @return saveFile指向的文件类对象
@@ -67,12 +67,12 @@ public class WriteBasicExcelTempletFile extends WriteExcelTempletFile<WriteBasic
 	 * <p>
 	 * <b>注意：</b>若模板类对象中不存在表格数据类对象中的字段（不是名称）时，则程序会自动创建该字段
 	 * </p>
-	 * 
+	 *
 	 * @param templet 模板类对象
 	 * @param data    数据类对象
 	 * @return 模板对象中存储的文件所指向的对象
 	 */
-	public static File writeTabelData(FileTemplet templet, TableData<String> data) {
+    public static File writeTabelData(FileTemplet<?> templet, TableData<String> data) {
 		// 读取表格数据中的字段并写入到模板的字段中，作为模板中的标题
 		List<String> titleList = data.getColumnName();
 		titleList.forEach(templet::addField);

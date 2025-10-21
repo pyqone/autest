@@ -116,7 +116,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
      * @param templetName 模板名称
      * @param templet     模板类
      */
-    public WriteExcelTempletFile(String templetName, FileTemplet templet) {
+    public WriteExcelTempletFile(String templetName, FileTemplet<?> templet) {
         super(templetName, new ExcelFileTemplet(templet.getTempletJson()));
     }
 
@@ -153,7 +153,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
                         .orElseThrow(() -> new WriteFileException(
                                 String.format("未指定模板字段ID，位于“%s”中的第%d行", sheetName, fieldIndex.getAndAdd(1))));
                 // 存储字段名称
-                excel.addTitle(fieldId, fieldElement.attributeValue("name"));
+                excel.addField(fieldId, fieldElement.attributeValue("name"));
 
                 // 存储字段对应单元格的宽度
                 Optional<String> wide = Optional.ofNullable(fieldElement.attributeValue("wide"));
@@ -251,7 +251,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
             return (T) this;
         }
 
-        FileTemplet templet = this.data.getTemplet();
+        FileTemplet<?> templet = this.data.getTemplet();
 
         // 判断当前是否存在切分符，并确定指定列的下标
         if (linkField.contains("|")) {
@@ -351,7 +351,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为空时，则默认对所有的字段设置边框
      * </p>
-     * 
+     *
      * @param borderStyle 边框样式枚举
      * @param fields      字段组
      * @return 类本身
@@ -366,7 +366,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为空时，则默认对所有的字段设置边框
      * </p>
-     * 
+     *
      * @param borderStyle      边框样式枚举
      * @param fields           字段组
      * @param orientationTypes 边框朝向枚举
@@ -499,7 +499,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
     }
 
     @Override
-    protected void createTempletFile(FileTemplet templet) {
+    protected void createTempletFile(FileTemplet<?> templet) {
         JSONObject tempJson = JSONObject.parseObject(templet.getTempletJson());
         // 判断文件是否已经存在，若文件存在，则读取原文件，若文件不存在，则添加一个新的对象
         File templetFile = new File(tempJson.getString(ExcelFileTemplet.KEY_SAVE));
@@ -611,7 +611,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
     }
 
     @Override
-    protected void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
+    protected void contentWriteTemplet(FileTemplet<?> templet, int caseStartIndex, int caseEndIndex) {
         File templetFile = new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString());
         if (!templetFile.exists()) {
             throw new WriteFileException("文件模板路径不存在，无法写入数据：" + templetFile.getAbsolutePath());
@@ -930,7 +930,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
 
     /**
      * 该方法用于将字段的json转换为字段样式json
-     * 
+     *
      * @param templetName      模板名称
      * @param templetFieldJson 模板字段json
      * @param textJson         文本json
@@ -1063,7 +1063,7 @@ public abstract class WriteExcelTempletFile<T extends WriteExcelTempletFile<T>> 
     }
 
     @Override
-    protected boolean isExistTemplet(File templetFile, FileTemplet templet) {
+    protected boolean isExistTemplet(File templetFile, FileTemplet<?> templet) {
         // 判断文件是否存在，不存在则返回false
         if (!templetFile.exists()) {
             return false;

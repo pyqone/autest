@@ -19,7 +19,7 @@ import com.alibaba.fastjson.JSONArray;
  * <p>
  * <b>修改时间：</b>2021年5月31日下午8:50:42
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -27,7 +27,7 @@ import com.alibaba.fastjson.JSONArray;
  */
 public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>> extends WriteTempletFile<T> {
 
-	public WriteSingleTempletFile(FileTemplet templet) {
+    public WriteSingleTempletFile(FileTemplet<?> templet) {
 		super(templet);
 	}
 
@@ -47,7 +47,7 @@ public abstract class WriteSingleTempletFile<T extends WriteSingleTempletFile<T>
 	}
 
 	@Override
-	public void write(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
+    public void write(FileTemplet<?> templet, int caseStartIndex, int caseEndIndex) {
 		// 判断模板文件是否存在，若不存在，则创建模板文件
 		if (!new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString()).exists()) {
 			createTempletFile(templet);

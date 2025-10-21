@@ -13,6 +13,7 @@ import com.auxiliary.tool.common.enums.OrderedListSignType;
 import com.auxiliary.tool.common.enums.OrientationType;
 import com.auxiliary.tool.file.FileTemplet;
 import com.auxiliary.tool.file.TempletAutoAddListSign;
+import com.auxiliary.tool.file.TempletGroupField;
 import com.auxiliary.tool.file.excel.WriteExcelTempletFile.AlignmentType;
 
 /**
@@ -28,13 +29,14 @@ import com.auxiliary.tool.file.excel.WriteExcelTempletFile.AlignmentType;
  * <p>
  * <b>修改时间：</b>2022年10月19日 上午8:13:53
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.2
  * @since JDK 1.8
  * @since autest 2.4.0
  */
-public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListSign<ExcelFileTemplet> {
+public class ExcelFileTemplet extends FileTemplet<ExcelFileTemplet> implements TempletAutoAddListSign<ExcelFileTemplet>,
+        TempletGroupField<ExcelFileTemplet> {
     /**
      * 标记json中的name字段
      */
@@ -75,10 +77,16 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
      * 标记json中的data字段
      */
     public static final String KEY_DATA = "data";
+    /**
+     * 标记json中的titleRow字段
+     *
+     * @since autest 5.1.0
+     */
+    public static final String KEY_TITLE_ROW = "titleRow";
 
     /**
      * 定义无序列表标记类型的默认编码
-     * 
+     *
      * @since autest 4.2.0
      */
     public static final int UNORDERED_LIST_SIGN_TYPE_CODE = -1;
@@ -123,15 +131,17 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
     }
 
     /**
-     * 用于在模板中添加标题以及写入到excel中标题的名称
+     * 用于在模板中添加字段以及写入到excel中标题的名称
      * <p>
      * <b>注意：</b>调用该方法后，若字段不存在，则向模板中添加指定的字段；若标题名称为空，则已字段名称进行命名
      * </p>
-     * 
+     *
      * @param field 字段
      * @param name  对应字段写入到模板中的名称
      * @return 类本身
+     * @deprecated autest 5.1.0 该方法已弃用，请使用{@link #addField(String, String)}方法
      */
+    @Deprecated
     public ExcelFileTemplet addTitle(String field, String name) {
         if (!containsField(field)) {
             addField(field);
@@ -142,11 +152,31 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
     }
 
     /**
+     * 用于在模板中添加字段以及写入到excel中标题的名称
+     * <p>
+     * <b>注意：</b>调用该方法后，若字段不存在，则向模板中添加指定的字段；若标题名称为空，则已字段名称进行命名
+     * </p>
+     *
+     * @param field 字段
+     * @param name  对应字段写入到模板中的名称
+     * @return 类本身
+     * @since autest 5.1.0
+     */
+    public ExcelFileTemplet addField(String field, String name) {
+        if (!containsField(field)) {
+            addField(field);
+        }
+
+        setTitleName(field, name);
+        return this;
+    }
+
+    /**
      * 用于在模板中添加指定多个字段指向的单元格的宽度
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
-     * 
+     *
      * @param wide   宽度
      * @param fields 字段组
      * @return 类本身
@@ -155,7 +185,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
     public ExcelFileTemplet setWide(double wide, String... fields) {
         if (wide > 0) {
             // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
-            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(this::getFields);
             for (String field : fields) {
                 addFieldAttribute(field, KEY_WIDE, String.valueOf(wide));
             }
@@ -166,7 +196,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
 
     /**
      * 用于设置全局单元格的高度
-     * 
+     *
      * @param high 高度
      * @return 类本身
      */
@@ -193,7 +223,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
-     * 
+     *
      * @param alignmentType 对齐方式枚举
      * @param fields        字段组
      * @return 类本身
@@ -206,7 +236,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
         }
 
         // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
-        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(this::getFields);
         for (String field : fields) {
             addFieldAttribute(field, (alignmentType.getHorizontal() != null ? KEY_HORIZONTAL : KEY_VERTICAL),
                     String.valueOf(alignmentType.code));
@@ -222,7 +252,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
-     * 
+     *
      * @param paragraphNum 分行段落数
      * @param fields       字段组
      * @return 类本身
@@ -232,7 +262,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
         // 判断字段是否存在
         if (paragraphNum > 0) {
             // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
-            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(this::getFields);
             for (String field : fields) {
                 addFieldAttribute(field, KEY_ROW_TEXT, String.valueOf(paragraphNum));
             }
@@ -242,11 +272,26 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
     }
 
     /**
+     * 该方法用于为字段添加标题名称，以写入到excel模板中
+     * 
+     * @param fieldName 字段名称
+     * @param titleName 标题名称
+     * @return 类本身
+     * @author 彭宇琦
+     * @since autest 5.1.0
+     */
+    public ExcelFileTemplet setTitleName(String fieldName, String titleName) {
+        addFieldAttribute(fieldName, KEY_NAME, Optional.ofNullable(titleName).filter(n -> !n.isEmpty()).orElse(
+                fieldName));
+        return this; 
+    }
+
+    /**
      * 该方法用于对指定的标题添加所有朝向的边框
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
-     * 
+     *
      * @param borderStyle 边框样式枚举
      * @param fields      字段组
      * @return 类本身
@@ -261,7 +306,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
-     * 
+     *
      * @param borderStyle 边框样式枚举
      * @param fields      字段组
      * @return 类本身
@@ -272,7 +317,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
         // 当颜举不为null时则对标题进行添加
         if (borderStyle != null) {
             // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
-            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(this::getFields);
             // 获取所有字段，并将所有字段加上边框
             for (String field : fields) {
                 if (containsField(field)) {
@@ -289,7 +334,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
      * <p>
      * <b>注意：</b>若不传入字段组或字段组为null时，则为所有字段添加该属性
      * </p>
-     * 
+     *
      * @param indexedColors 颜色枚举
      * @param fields        字段组
      * @return 类本身
@@ -298,7 +343,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
     public ExcelFileTemplet setTitleBackground(IndexedColors indexedColors, String... fields) {
         if (indexedColors != null) {
             // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
-            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+            fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(this::getFields);
             for (String field : fields) {
                 if (containsField(field)) {
                     addFieldAttribute(field, ExcelCommonJsonField.KEY_BACKGROUND, indexedColors.index);
@@ -314,7 +359,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
      * <p>
      * 可设置自顶部开始以及自左边开始需要冻结的表格行（列）数，当值设置为0时，则表示不冻结。默认情况下，顶部冻结1行，左边不冻结
      * </p>
-     * 
+     *
      * @param topIndex  顶部冻结行数
      * @param leftIndex 左边冻结列数
      * @return 类本身
@@ -328,7 +373,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
 
     /**
      * 用于设置是否在标题上加入筛选按钮，默认则存在筛选按钮
-     * 
+     *
      * @param isFiltrate 是否添加筛选
      * @return 类本身
      */
@@ -339,7 +384,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
 
     /**
      * 用于设置模板的名称
-     * 
+     *
      * @param name 模板名称
      * @return 类本身
      */
@@ -350,7 +395,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
 
     /**
      * 用于添加数据选项
-     * 
+     *
      * @param field      字段名称
      * @param optionList 数据集
      * @return 类本身
@@ -376,7 +421,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
 
     /**
      * 该方法用于判断当前模板的所有字段是否被转换成字段数组，若未转换，则将字段集合转化成字段数组进行存储，并将其返回
-     * 
+     *
      * @return 字段数组
      * @since autest 3.7.0
      */
@@ -397,7 +442,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
         }
 
         // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
-        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(this::getFields);
         for (String field : fields) {
             // 标记当前字段需要进行自动添加列表标记
             addFieldAttribute(field, KEY_AUTO_LIST_SIGN, true);
@@ -416,7 +461,7 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
         }
 
         // 遍历所有字段，为所有字段加上相应的属性，若传入的字段组为空或为null时，则将所有的字段均加上该属性
-        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(this::getFields);
         for (String field : fields) {
             // 标记当前字段需要进行自动添加列表标记
             addFieldAttribute(field, KEY_AUTO_LIST_SIGN, true);
@@ -431,12 +476,30 @@ public class ExcelFileTemplet extends FileTemplet implements TempletAutoAddListS
 
     @Override
     public ExcelFileTemplet clearAutoListSign(String... fields) {
-        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(() -> getFields());
+        fields = Optional.ofNullable(fields).filter(arr -> arr.length != 0).orElseGet(this::getFields);
         for (String field : fields) {
             // 标记当前字段需要进行自动添加列表标记
             addFieldAttribute(field, KEY_AUTO_LIST_SIGN, false);
         }
 
         return this;
+    }
+
+    @Override
+    public ExcelFileTemplet addGroup(String groupName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addGroup'");
+    }
+
+    @Override
+    public ExcelFileTemplet addGroup(String parentGroupName, String groupName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ExcelFileTemplet addGroupField(String groupName, String fieldName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addGroupField'");
     }
 }

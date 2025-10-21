@@ -26,7 +26,7 @@ import com.auxiliary.tool.file.excel.ExcelFileTemplet;
  * <p>
  * <b>修改时间：</b>2023年2月15日 上午8:23:26
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -40,7 +40,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
      * <p>
      * 通过该方法构造的写入类为包含模板的写入类，可直接按照字段编写文件内容
      * </p>
-     * 
+     *
      * @param templetXml 模板配置文件
      * @param saveFile   文件保存路径
      * @since autest 2.4.0
@@ -54,7 +54,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
      * <p>
      * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
      * </p>
-     * 
+     *
      * @since autest 2.4.0
      */
     public WriteJiraExcelTestCase() {
@@ -66,7 +66,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
      * <p>
      * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
      * </p>
-     * 
+     *
      * @param saveFile 保存路径文件类对象
      * @since autest 2.4.0
      */
@@ -78,11 +78,11 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 
     /**
      * 构造用例写入类，并重新设置模板
-     * 
+     *
      * @param templet 模板类对象
      * @since autest 2.4.0
      */
-    public WriteJiraExcelTestCase(FileTemplet templet) {
+    public WriteJiraExcelTestCase(FileTemplet<?> templet) {
         this();
         // 重新设置模板
         addTemplet(DEFAULT_CASE_NAME, templet);
@@ -106,7 +106,7 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
 
     /**
      * 用于生成默认的jira测试用例模板类对象
-     * 
+     *
      * @return jira测试用例模板类对象
      * @since autest 2.4.0
      */
@@ -117,38 +117,27 @@ public class WriteJiraExcelTestCase extends WriteExcelTestCase<WriteJiraExcelTes
         jiraTemplet.setFreeze(1, 3).setFiltrate(true);
 
         // 设置模板字段内容
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_TITLE);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_TITLE, JiraPresetFieldType.TITLE_TITLE);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_TITLE, JiraPresetFieldType.TITLE_TITLE);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_OBJECTIVE);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_OBJECTIVE, JiraPresetFieldType.TITLE_OBJECTIVE);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_OBJECTIVE, JiraPresetFieldType.TITLE_OBJECTIVE);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_PRECONDITION);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_PRECONDITION, JiraPresetFieldType.TITLE_PRECONDITION);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_PRECONDITION, JiraPresetFieldType.TITLE_PRECONDITION);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_STEP);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_STEP, JiraPresetFieldType.TITLE_STEP);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_STEP, JiraPresetFieldType.TITLE_STEP);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_EXCEPT);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_EXCEPT, JiraPresetFieldType.TITLE_EXCEPT);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_EXCEPT, JiraPresetFieldType.TITLE_EXCEPT);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_MODULE);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_MODULE, JiraPresetFieldType.TITLE_MODULE);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_MODULE, JiraPresetFieldType.TITLE_MODULE);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_STATUS);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_STATUS, JiraPresetFieldType.TITLE_STATUS);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_STATUS, JiraPresetFieldType.TITLE_STATUS);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_RANK);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_RANK, JiraPresetFieldType.TITLE_RANK);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_RANK, JiraPresetFieldType.TITLE_RANK);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_COMPONENT);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_COMPONENT, JiraPresetFieldType.TITLE_COMPONENT);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_COMPONENT, JiraPresetFieldType.TITLE_COMPONENT);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_OWNER);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_OWNER, JiraPresetFieldType.TITLE_OWNER);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_OWNER, JiraPresetFieldType.TITLE_OWNER);
 
-        jiraTemplet.addField(JiraPresetFieldType.FIELD_ISSUES);
-        jiraTemplet.addTitle(JiraPresetFieldType.FIELD_ISSUES, JiraPresetFieldType.TITLE_ISSUES);
+        jiraTemplet.addField(JiraPresetFieldType.FIELD_ISSUES, JiraPresetFieldType.TITLE_ISSUES);
 
         // 设置字段垂直居中对齐
         jiraTemplet.setAlignment(AlignmentType.VERTICAL_CENTER);

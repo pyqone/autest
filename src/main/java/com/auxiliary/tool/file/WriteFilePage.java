@@ -13,7 +13,7 @@ package com.auxiliary.tool.file;
  * <p>
  * <b>修改时间：</b>2021年8月27日下午7:16:06
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -26,32 +26,32 @@ public interface WriteFilePage {
 
 	/**
 	 * 用于添加模板，并设置模板的名称，方便模板之间的切换
-	 * 
+	 *
 	 * @param name    模板名称
 	 * @param templet 模板类对象
 	 */
-	default void addTemplet(String name, FileTemplet templet) {
+    default void addTemplet(String name, FileTemplet<?> templet) {
 		templet.addTempletAttribute(KEY_NAME, name);
 	}
 
 	/**
 	 * 根据模板名称，对模板文件进行切换
-	 * 
+	 *
 	 * @param name 模板名称
 	 */
 	void switchPage(String name);
 
 	/**
 	 * 用于返回指定名称的模板类
-	 * 
+	 *
 	 * @param name 模板名称
 	 * @return 相应名称的模板类
 	 */
-	FileTemplet getTemplet(String name);
+    FileTemplet<?> getTemplet(String name);
 
 	/**
 	 * 用于返回模板名称对应的待写入数据类对象
-	 * 
+	 *
 	 * @param name 模板名称
 	 * @return 待写入数据类对象
 	 */

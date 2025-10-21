@@ -53,7 +53,7 @@ public abstract class MarkdownPresetCaseTemplet<T extends WriteMarkdownTestCase<
      * <p>
      * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
      * </p>
-     * 
+     *
      * @param saveFile 保存路径文件类对象
      */
     public MarkdownPresetCaseTemplet(File saveFile) {
@@ -64,10 +64,10 @@ public abstract class MarkdownPresetCaseTemplet<T extends WriteMarkdownTestCase<
 
     /**
      * 构造用例写入类，并重新设置模板
-     * 
+     *
      * @param templet 模板类对象
      */
-    public MarkdownPresetCaseTemplet(FileTemplet templet) {
+    public MarkdownPresetCaseTemplet(FileTemplet<?> templet) {
         super(templet);
         initField();
     }
@@ -91,12 +91,12 @@ public abstract class MarkdownPresetCaseTemplet<T extends WriteMarkdownTestCase<
 
     /**
      * 该方法用于生成默认的模板类对象
-     * 
+     *
      * @return 默认模板类对象
      * @since autest 4.2.0
      */
-    public static FileTemplet getMarkdownTemplet() {
-        FileTemplet templet = new FileTemplet(
+    public static FileTemplet<?> getMarkdownTemplet() {
+        FileTemplet<?> templet = new FileTemplet<>(
                 new File(String.format("result/Markdown测试用例-%d.md", Time.parse().getMilliSecond())));
 
         templet.addField(MarkdownPresetFieldType.FIELD_CREATE_DATE);

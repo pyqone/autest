@@ -21,7 +21,7 @@ import com.auxiliary.tool.file.WriteSingleTempletFile;
  * <p>
  * <b>修改时间：</b>2023年4月28日 上午10:30:52
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver2.0
  * @since JDK 1.8
@@ -36,25 +36,25 @@ public abstract class WriteMarkdownTestCase<T extends WriteMarkdownTestCase<T>> 
 
     /**
      * 构造用例写入类，并重新设置模板
-     * 
+     *
      * @param templet 模板类对象
      * @since autest 4.2.0
      */
-    public WriteMarkdownTestCase(FileTemplet templet) {
+    public WriteMarkdownTestCase(FileTemplet<?> templet) {
         super(templet);
         initField();
     }
 
     /**
      * 该方法用于初始化已知的模板字段与已知的用例字段之间的联系，在构造方法时进行调用，亦可不编写其中内容
-     * 
+     *
      * @since autest 4.2.0
      */
     protected abstract void initField();
 
     /**
      * 该方法用于拼接markdown语法的层级关系标志
-     * 
+     *
      * @param signType   标志
      * @param signLength 需要添加的标志个数
      * @param text       用例内容
@@ -71,7 +71,7 @@ public abstract class WriteMarkdownTestCase<T extends WriteMarkdownTestCase<T>> 
     }
 
     @Override
-    protected void createTempletFile(FileTemplet templet) {
+    protected void createTempletFile(FileTemplet<?> templet) {
         File tempFile = new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString());
 
         File floderFile = tempFile.getParentFile();

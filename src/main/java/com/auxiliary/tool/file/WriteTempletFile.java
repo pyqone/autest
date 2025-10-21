@@ -77,7 +77,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
 
     /**
      * 占位符类对象
-     * 
+     *
      * @since autest 4.2.0
      */
     protected Placeholder placeholder = new Placeholder(WORD_SIGN, WORD_SIGN);
@@ -87,7 +87,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
      *
      * @param templet 模板类对象
      */
-    protected WriteTempletFile(FileTemplet templet) {
+    protected WriteTempletFile(FileTemplet<?> templet) {
         data = new WriteFileData(templet);
     }
 
@@ -100,7 +100,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
     /**
      * 该方法用于返回当前存储的占位符类对象，若修改了占位符类对象的内容，
      * 需要通过{@link #setPlaceholder(Placeholder)}方法对重新生成的占位符类对象进行整体设置
-     * 
+     *
      * @return 占位符类对象
      * @since autest 4.2.0
      */
@@ -113,7 +113,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
      * <p>
      * <b>注意：</b>该方法是对整个占位符类对象进行整体设置，需要保证添加的占位符的前后标志与设置的占位符标志保持一致
      * </p>
-     * 
+     *
      * @param placeholder 占位符类对象
      * @since autest 4.2.0
      */
@@ -200,7 +200,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
      *
      * @param templet 模板类对象
      */
-    public void setFileTemplet(FileTemplet templet) {
+    public void setFileTemplet(FileTemplet<?> templet) {
         data.setTemplet(templet.toString());
     }
 
@@ -381,12 +381,12 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
      * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param field       字段id
      * @param index       指定插入的位置
      * @param placeholder 占位符类
      * @param contents    相应字段的内容
-     * 
+     *
      * @return 类本身
      * @since autest 4.2.0
      */
@@ -454,11 +454,11 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
      * <li>若临时替换的词语集合中包含类中添加的替换词语，则以类中设置替换词语为主</li>
      * </ol>
      * </p>
-     * 
+     *
      * @param field       字段id
      * @param placeholder 占位符类对象
      * @param contents    相应字段的内容
-     * 
+     *
      * @return 类本身
      * @since autest 4.2.0
      */
@@ -617,7 +617,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
      * @param caseStartIndex 写入文件开始下标
      * @param caseEndIndex   写入文件结束下标
      */
-    protected abstract void write(FileTemplet templet, int caseStartIndex, int caseEndIndex);
+    protected abstract void write(FileTemplet<?> templet, int caseStartIndex, int caseEndIndex);
 
     /**
      * 用于将缓存的数据内容，写入到模板中
@@ -626,7 +626,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
      * @param caseStartIndex 用例起始行
      * @param caseEndIndex   用例结束行
      */
-    protected abstract void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex);
+    protected abstract void contentWriteTemplet(FileTemplet<?> templet, int caseStartIndex, int caseEndIndex);
 
     /**
      * 用于根据当前实际的模板数量，返回拼接后的模板json内容
@@ -733,7 +733,7 @@ public abstract class WriteTempletFile<T extends WriteTempletFile<T>> implements
      *
      * @param templet 模板文件对象
      */
-    protected abstract void createTempletFile(FileTemplet templet);
+    protected abstract void createTempletFile(FileTemplet<?> templet);
 
     /**
      * 该方法用于处理在一次性插入多个字段内容时，进行的自动换行处理。

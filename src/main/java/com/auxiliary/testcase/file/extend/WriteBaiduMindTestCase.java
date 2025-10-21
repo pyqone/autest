@@ -52,7 +52,7 @@ public class WriteBaiduMindTestCase extends MarkdownPresetCaseTemplet<WriteBaidu
      * <p>
      * 默认的模板可通过{@link WriteJiraExcelTestCase#getJiraCaseExcelTemplet()}方法进行获取
      * </p>
-     * 
+     *
      * @param saveFile 保存路径文件类对象
      */
     public WriteBaiduMindTestCase(File saveFile) {
@@ -63,16 +63,16 @@ public class WriteBaiduMindTestCase extends MarkdownPresetCaseTemplet<WriteBaidu
 
     /**
      * 构造用例写入类，并重新设置模板
-     * 
+     *
      * @param templet 模板类对象
      */
-    public WriteBaiduMindTestCase(FileTemplet templet) {
+    public WriteBaiduMindTestCase(FileTemplet<?> templet) {
         super(templet);
         initField();
     }
 
     @Override
-    protected void contentWriteTemplet(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
+    protected void contentWriteTemplet(FileTemplet<?> templet, int caseStartIndex, int caseEndIndex) {
         // 获取md文件的保存路径
         String mdFilePath = templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString();
 
@@ -88,7 +88,7 @@ public class WriteBaiduMindTestCase extends MarkdownPresetCaseTemplet<WriteBaidu
     }
 
     @Override
-    protected void createTempletFile(FileTemplet templet) {
+    protected void createTempletFile(FileTemplet<?> templet) {
         File tempFile = new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString());
 
         File floderFile = tempFile.getParentFile();
@@ -99,12 +99,12 @@ public class WriteBaiduMindTestCase extends MarkdownPresetCaseTemplet<WriteBaidu
 
     /**
      * 该方法用于重新生成markdown内容
-     * 
+     *
      * @param caseStartIndex 需要读取用例的起始下标
      * @param caseEndIndex   需要读取用例的结束下标
      * @since autest 4.2.0
      */
-    private String createMarkdownContent(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
+    private String createMarkdownContent(FileTemplet<?> templet, int caseStartIndex, int caseEndIndex) {
         // 存储生成的markdown内容
         StringJoiner markdownContent = new StringJoiner("\r\n");
         // 拼接根节点

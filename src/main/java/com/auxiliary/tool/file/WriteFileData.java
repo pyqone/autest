@@ -28,7 +28,7 @@ public class WriteFileData {
     /**
      * 存储当前使用的模板
      */
-    private FileTemplet templet;
+    private FileTemplet<?> templet;
     /**
      * 存储当前需要写入文件的内容
      */
@@ -55,7 +55,7 @@ public class WriteFileData {
      *
      * @param fileTemplet 模板文件对象
      */
-    public WriteFileData(FileTemplet fileTemplet) {
+    public WriteFileData(FileTemplet<?> fileTemplet) {
         setTemplet(
                 Optional.ofNullable(fileTemplet).orElseThrow(() -> new WriteFileException("未指定模板类")).getTempletJson());
         contentJson.put(WriteTempletFile.KEY_CASE, new JSONArray());
@@ -81,7 +81,7 @@ public class WriteFileData {
      * @param templetJsonText 模板json
      */
     public void setTemplet(String templetJsonText) {
-        this.templet = new FileTemplet(templetJsonText);
+        this.templet = new FileTemplet<>(templetJsonText);
         if (templet.containsAttribute(ExcelFileTemplet.KEY_NAME)) {
             tempName = templet.getTempletAttribute(ExcelFileTemplet.KEY_NAME).toString();
         }
@@ -119,7 +119,7 @@ public class WriteFileData {
      *
      * @return 模板类对象
      */
-    public FileTemplet getTemplet() {
+    public FileTemplet<?> getTemplet() {
         return templet;
     }
 

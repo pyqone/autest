@@ -22,7 +22,7 @@ import com.auxiliary.tool.file.excel.ExcelFileTemplet;
  * <p>
  * <b>修改时间：</b>2021年8月27日下午7:43:03
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver1.0
  * @since JDK 1.8
@@ -42,11 +42,11 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 
 	/**
 	 * 构造对象，初始化创建文件的模板
-	 * 
+	 *
 	 * @param templetName 模板名称
 	 * @param templet     模板类对象
 	 */
-	public WriteMultipleTempletFile(String templetName, FileTemplet templet) {
+    public WriteMultipleTempletFile(String templetName, FileTemplet<?> templet) {
 		addTemplet(templetName, templet);
 	}
 
@@ -68,10 +68,10 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	}
 
 	@Override
-	public FileTemplet getTemplet(String name) {
+    public FileTemplet<?> getTemplet(String name) {
 		return dataMap.get(name).getTemplet();
 	}
-	
+
 	@Override
 	public WriteFileData getWriteFileData(String name) {
 		return dataMap.get(name);
@@ -84,7 +84,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	 * </p>
 	 */
 	@Override
-	public void addTemplet(String name, FileTemplet templet) {
+    public void addTemplet(String name, FileTemplet<?> templet) {
 		// 初始化模板信息
 		WriteFilePage.super.addTemplet(name, templet);
 		dataMap.put(name, new WriteFileData(templet));
@@ -103,7 +103,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 			// TODO 该行代码可能冗余，但我暂时无法测试
 			dataMap.get(tempName).setNowCaseNum(data.getNowCaseNum());
 		}
-		
+
         data = dataMap.get(nowTempName);
 		return (T) this;
 	}
@@ -122,7 +122,7 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	}
 
 	@Override
-	public void write(FileTemplet templet, int caseStartIndex, int caseEndIndex) {
+    public void write(FileTemplet<?> templet, int caseStartIndex, int caseEndIndex) {
 		if (!isExistTemplet(new File(templet.getTempletAttribute(FileTemplet.KEY_SAVE).toString()), templet)) {
 			createTempletFile(templet);
 		}
@@ -155,16 +155,16 @@ public abstract class WriteMultipleTempletFile<T extends WriteMultipleTempletFil
 	 * <p>
 	 * 该方法用于作为是否需要创建模板文件的依据
 	 * </p>
-	 * 
+	 *
 	 * @param templetFile 模板文件对象
 	 * @param templet     模板对象
 	 * @return 模板对象是否存在于模板文件中
 	 */
-	protected abstract boolean isExistTemplet(File templetFile, FileTemplet templet);
+    protected abstract boolean isExistTemplet(File templetFile, FileTemplet<?> templet);
 
 	/**
 	 * 用于返回当前的数据集合
-	 * 
+	 *
 	 * @return 数据集合
 	 */
 	protected HashMap<String, WriteFileData> getDataMap() {
