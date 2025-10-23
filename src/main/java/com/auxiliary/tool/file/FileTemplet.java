@@ -20,7 +20,7 @@ import com.alibaba.fastjson.JSONObject;
  * <p>
  * <b>修改时间：</b>2021年6月12日下午3:21:29
  * </p>
- * 
+ *
  * @author 彭宇琦
  * @version Ver2.0
  * @since JDK 1.8
@@ -29,39 +29,39 @@ import com.alibaba.fastjson.JSONObject;
 public class FileTemplet<T extends FileTemplet<T>> {
     /**
      * 标记json中的save字段
-     * 
+     *
      * @since autest 2.4.0
      */
     public static final String KEY_SAVE = "save";
     /**
      * 标记json中的field字段
-     * 
+     *
      * @since autest 2.4.0
      */
     public static final String KEY_FIELD = "field";
     /**
      * 标记json中的index字段
-     * 
+     *
      * @since autest 2.4.0
      */
     public static final String KEY_INDEX = "index";
     /**
      * 标记json中的name字段
-     * 
+     *
      * @since autest 2.4.0
      */
     public static final String KEY_NAME = "name";
 
     /**
      * 存储模板json串
-     * 
+     *
      * @since autest 2.4.0
      */
     protected JSONObject templetJson = new JSONObject();
 
     /**
      * 初始化模板文件的保存路径
-     * 
+     *
      * @param saveFile 模板文件保存路径
      * @since autest 2.4.0
      */
@@ -72,7 +72,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 根据已有的模板json串，初始化模板
-     * 
+     *
      * @param templetJsonText 模板json串
      * @since autest 2.4.0
      */
@@ -97,9 +97,9 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 用于变更模板的保存路径
-     * 
+     *
      * @param saveFile 模板文件保存路径
-     * 
+     *
      * @since autest 2.4.0
      * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码
      */
@@ -114,16 +114,20 @@ public class FileTemplet<T extends FileTemplet<T>> {
      * <p>
      * 创建写入文件内容的字段定位信息，在写入文件内容时，将根据该ID内容，查找到相应的字段，进而将相应的内容写入到文件的正确位置中
      * </p>
-     * 
+     *
      * @param field 字段ID
-     * 
+     *
      * @since autest 2.4.0
-     * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码
+     * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码，并且修改字段添加逻辑，若字段存在，则抛出异常
      */
     @SuppressWarnings("unchecked")
     public T addField(String field) {
         // 判断文本内容是否为空
         if (!isEmpty(field)) {
+            // 判断当前字段是否已存在，若存在则抛出异常
+            if (getFieldList().contains(field)) {
+                throw new IncorrectFieldException(String.format("“%s”字段已存在，无法添加至模板", field));
+            }
             JSONObject fieldJson = templetJson.getJSONObject(KEY_FIELD);
             fieldJson.put(field, new JSONObject());
             addFieldAttribute(field, KEY_INDEX, fieldJson.keySet().size() - 1);
@@ -138,11 +142,11 @@ public class FileTemplet<T extends FileTemplet<T>> {
      * <p>
      * 该属性为模板文件中字段所拥有的属性，用于在文件中的特殊处理。字段可拥有多个属性，需根据实际的文件写入类来确定生效的属性。当未添加字段ID时，则不会写入信息
      * </p>
-     * 
+     *
      * @param field    字段ID
      * @param attName  属性名称
      * @param attValue 属性值
-     * 
+     *
      * @since autest 2.4.0
      * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码
      */
@@ -163,7 +167,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 用于返回字段的属性内容
-     * 
+     *
      * @param field   字段名称
      * @param attName 属性名称
      * @return 属性对应的内容
@@ -188,10 +192,10 @@ public class FileTemplet<T extends FileTemplet<T>> {
      * <p>
      * 该属性为模板中的属性，对于不同的模板文件而言，可能存在不同的处理方式，故可通过添加该属性来执行处理的方式。
      * </p>
-     * 
+     *
      * @param attName  属性名称
      * @param attValue 属性值
-     * 
+     *
      * @since autest 2.4.0
      * @since autest 5.1.0 将方法由无返回改为返回类本身，兼容旧代码
      */
@@ -213,7 +217,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 用于返回模板的属性
-     * 
+     *
      * @param attName 属性名
      * @return 属性值
      */
@@ -223,7 +227,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 用于返回创建的模板json串
-     * 
+     *
      * @return 模板json串
      */
     public String getTempletJson() {
@@ -232,7 +236,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 判断模板中是否存在指定的字段
-     * 
+     *
      * @param field 字段
      * @return 模板中是否存在指定的字段
      */
@@ -242,7 +246,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 判断模板中是否存在指定的属性
-     * 
+     *
      * @param attribute 属性
      * @return 模板中是否存在指定的属性
      */
@@ -252,7 +256,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 用于返回模板中的字段集合
-     * 
+     *
      * @return 字段Set集合
      */
     public Set<String> getFieldList() {
@@ -261,7 +265,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 用于返回模板中的属性集合
-     * 
+     *
      * @return 属性集合
      */
     public Set<String> getTempletAttributeList() {
@@ -275,7 +279,7 @@ public class FileTemplet<T extends FileTemplet<T>> {
 
     /**
      * 判断文本内容是否为空
-     * 
+     *
      * @param text 文本内容
      * @return 文本内容是否为空
      */
